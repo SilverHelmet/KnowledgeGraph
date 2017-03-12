@@ -4,6 +4,7 @@ import sys
 class Extractor:
     def __init__(self, schema_filepath, inpath, outdir):
         self.out_map = {}
+        self.ban_objs = {}
         self.inpath = inpath
         self.init(schema_filepath, os.path.basename(inpath), outdir)
 
@@ -12,7 +13,12 @@ class Extractor:
             line = line.rstrip()
             if line.startswith("#") or line == "":
                 continue
-            self.register(line, self.infer_outpath(infile, line, outdir))
+            if line.startswith('+'):
+                line = line[1:]
+                self.register(line, self.infer_outpath(infile, line, outdir))
+            elif line.startswith('-'):
+                line = line[1:]
+                self.ban(line[1:])
 
     def infer_outpath(self, infile, predicate, outdir):
         name = predicate[predicate.find(":")+1:]
@@ -23,9 +29,17 @@ class Extractor:
         out_filepath = os.path.join(out_filepath, infile)
         return out_filepath
 
+    def get_predicate(self, predicate):
+        predicate = predicate.replace("fb:", "http://rdf.freebase.com/ns/")
+        predicate = predicate.replace("rdf:", "http://www.w3.org/2000/01/rdf-schema#")
+        return predicate
+
     def register(self, predicate, out_filepath):
-        predicate = "<" + predicate.replace("fb:", "http://rdf.freebase.com/ns/") + ">"
+        predicate = "<" + get_predicate(predicate) + ">"
         self.out_map[predicate] = file(out_filepath, 'w')
+    
+    def ban(self, object):
+        self.ban_objs.add(object)
 
     def extract(self):
         cnt = 0
@@ -36,6 +50,8 @@ class Extractor:
                 ratio += 1
                 print "ratio = %d%% cnt = %d " %(ratio, cnt) 
             p = line.rstrip().split("\t")
+            if p[2] in self.ban_objs:
+                continue
             out_f = self.out_map.get(p[1], None)
             if out_f:
                 out_f.write(line)
