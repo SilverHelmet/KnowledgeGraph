@@ -4,7 +4,7 @@ import sys
 class Extractor:
     def __init__(self, schema_filepath, inpath, outdir):
         self.out_map = {}
-        self.ban_objs = {}
+        self.ban_objs = set()
         self.inpath = inpath
         self.init(schema_filepath, os.path.basename(inpath), outdir)
 
