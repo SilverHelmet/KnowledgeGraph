@@ -18,7 +18,7 @@ class Extractor:
                 self.register(line, self.infer_outpath(infile, line, outdir))
             elif line.startswith('-'):
                 line = line[1:]
-                self.ban(line[1:])
+                self.ban(line)
 
     def infer_outpath(self, infile, predicate, outdir):
         name = predicate[predicate.find(":")+1:]
