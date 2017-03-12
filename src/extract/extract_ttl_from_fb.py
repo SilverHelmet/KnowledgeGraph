@@ -27,30 +27,34 @@ class Extractor:
             os.makedirs(out_filepath)
 
         out_filepath = os.path.join(out_filepath, infile)
+        print 
         return out_filepath
 
-    def get_predicate(self, predicate):
-        predicate = predicate.replace("fb:", "http://rdf.freebase.com/ns/")
-        predicate = predicate.replace("rdf:", "http://www.w3.org/2000/01/rdf-schema#")
-        return predicate
+    def decode_uri(self, uri):
+        uri = uri.replace("fb:", "http://rdf.freebase.com/ns/")
+        uri = uri.replace("rdf:", "http://www.w3.org/2000/01/rdf-schema#")
+        return uri
 
     def register(self, predicate, out_filepath):
-        predicate = "<" + get_predicate(predicate) + ">"
+        predicate = "<" + self.decode_uri(predicate) + ">"
         self.out_map[predicate] = file(out_filepath, 'w')
     
-    def ban(self, object):
-        self.ban_objs.add(object)
+    def ban(self, obj):
+        obj = self.decode_uri(obj)
+        self.ban_objs.add(obj)
 
     def extract(self):
         cnt = 0
         ratio = 0
+        ban_cnt = 0
         for line in file(self.inpath):
             cnt += 1
             if cnt % 200000 == 0:
                 ratio += 1
-                print "ratio = %d%% cnt = %d " %(ratio, cnt) 
+                print "ratio = %d%% cnt = %d ban_cnt = %d" %(ratio, cnt, ban_cnt) 
             p = line.rstrip().split("\t")
             if p[2] in self.ban_objs:
+                ban_cnt += 1
                 continue
             out_f = self.out_map.get(p[1], None)
             if out_f:
