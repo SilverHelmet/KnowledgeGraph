@@ -31,11 +31,11 @@ class Extractor:
 
     def decode_uri(self, uri):
         uri = uri.replace("fb:", "http://rdf.freebase.com/ns/")
-        uri = uri.replace("rdf:", "http://www.w3.org/2000/01/rdf-schema#")
+        uri = '<' + uri.replace("rdf:", "http://www.w3.org/2000/01/rdf-schema#") + '>'
         return uri
 
     def register(self, predicate, out_filepath):
-        predicate = "<" + self.decode_uri(predicate) + ">"
+        predicate = self.decode_uri(predicate)
         self.out_map[predicate] = file(out_filepath, 'w')
     
     def ban(self, obj):
