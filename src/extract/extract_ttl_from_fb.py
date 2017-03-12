@@ -24,7 +24,6 @@ class Extractor:
         name = predicate[predicate.find(":")+1:]
         out_filepath = os.path.join(outdir, name)
         if not os.path.exists(out_filepath):
-            print os.path.exists(out_filepath)
             os.makedirs(out_filepath)
 
         out_filepath = os.path.join(out_filepath, infile)
@@ -41,6 +40,7 @@ class Extractor:
     
     def ban(self, obj):
         obj = self.decode_uri(obj)
+        print obj
         self.ban_objs.add(obj)
 
     def extract(self):
