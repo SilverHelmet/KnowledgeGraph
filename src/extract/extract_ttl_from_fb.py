@@ -24,10 +24,10 @@ class Extractor:
         name = predicate[predicate.find(":")+1:]
         out_filepath = os.path.join(outdir, name)
         if not os.path.exists(out_filepath):
+            print os.path.exists(out_filepath)
             os.makedirs(out_filepath)
 
         out_filepath = os.path.join(out_filepath, infile)
-        print 
         return out_filepath
 
     def decode_uri(self, uri):
