@@ -20,7 +20,7 @@ partterns = [pref + p + "/*ttl" for p in partterns]
 
 outf = file('result/freebase_domain/schema.ttl', 'w')
 for p in partterns:
-    print "parttern is %s" %partterns
+    print "parttern is %s" %p
     for filepath in glob.glob(p):
         for line in file(filepath):
             p = line.strip().split('\t')
