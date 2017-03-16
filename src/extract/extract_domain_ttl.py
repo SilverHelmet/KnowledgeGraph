@@ -4,7 +4,7 @@ from process_fb_result import get_domain
 
 def load_domain():
     domains = set()
-    for line in file('result/freebase_domain/schema.domain.tsv'):
+    for line in file('result/freebase_domain/schema.domain.txt'):
         line = line.strip()
         if line:
             domains.add(domain)
