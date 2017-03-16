@@ -12,9 +12,7 @@ def get_domain(uri):
     else:
         return None
     p = uri.split('.')
-    if len(p) <= 2:
-        return None
-    return '.'.join(p[:-2])
+    return '.'.join(p[:1])
 
 def get_type(uri):
     global fb_prefix
@@ -24,9 +22,9 @@ def get_type(uri):
     else:
         return None
     p = uri.split('.')
-    if len(p) <= 2:
+    if len(p) < 2:
         return None
-    return '.'.join(p[:-1])
+    return '.'.join(p[:2])
 
 def add_to_dict(cnt, key):
     if key is None:
@@ -51,13 +49,13 @@ if __name__ == "__main__":
         ttl = line.split('\t')
         fb_domain = get_domain(ttl[0])
         fb_type = get_type(ttl[0])
-        if fb_domain and not fb_domain.startswith("base") and not fb_domain.startswith('user') and not fb_domain.startswith('freebase'):
+        if fb_domain and not fb_domain in ['m', 'base', 'user', 'freebase']:
             add_to_dict(domain_cnt, fb_domain)
             add_to_dict(type_cnt, fb_type)
 
         fb_domain = get_domain(ttl[2])
         fb_type = get_type(ttl[2])
-        if fb_domain and not fb_domain.startswith("base") and not fb_domain.startswith('user') and not fb_domain.startswith('freebase'):
+        if fb_domain and not fb_domain in ['m', 'base', 'user', 'freebase']:
             add_to_dict(domain_cnt, fb_domain)
             add_to_dict(type_cnt, fb_type)
 

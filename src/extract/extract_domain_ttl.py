@@ -16,6 +16,7 @@ pref = 'result/freebase/'
 partterns = ["type.property.unique", 'type.property.unit', 'type.property.reverse_property', 'type.object.type', 
 'type.object.name', 'freebase.type_profile.instance_count', 'freebase.type_hints.mediator', 'freebase.type_hints.included_types', 
 'common.topic.description','type.property.schema', 'type.property.expected_type']
+
 partterns = [pref + p + "/*ttl" for p in partterns]
 
 outf = file('result/freebase_domain/schema.ttl', 'w')
