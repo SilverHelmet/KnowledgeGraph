@@ -42,26 +42,27 @@ def print_cnt(cnt, out_filepath):
         outf.write("%s\n" %(key))
     outf.close()
 
-domain_cnt = {}
-type_cnt = {}
+if __name__ == "__main__":
+    domain_cnt = {}
+    type_cnt = {}
 
-for line in file(sys.argv[1]):
-    line = line.strip()
-    ttl = line.split('\t')
-    fb_domain = get_domain(ttl[0])
-    fb_type = get_type(ttl[0])
-    if fb_domain and not fb_domain.startswith("base") and not fb_domain.startswith('user') and not fb_domain.startswith('freebase'):
-        add_to_dict(domain_cnt, fb_domain)
-        add_to_dict(type_cnt, fb_type)
+    for line in file(sys.argv[1]):
+        line = line.strip()
+        ttl = line.split('\t')
+        fb_domain = get_domain(ttl[0])
+        fb_type = get_type(ttl[0])
+        if fb_domain and not fb_domain.startswith("base") and not fb_domain.startswith('user') and not fb_domain.startswith('freebase'):
+            add_to_dict(domain_cnt, fb_domain)
+            add_to_dict(type_cnt, fb_type)
 
-    fb_domain = get_domain(ttl[2])
-    fb_type = get_type(ttl[2])
-    if fb_domain and not fb_domain.startswith("base") and not fb_domain.startswith('user') and not fb_domain.startswith('freebase'):
-        add_to_dict(domain_cnt, fb_domain)
-        add_to_dict(type_cnt, fb_type)
+        fb_domain = get_domain(ttl[2])
+        fb_type = get_type(ttl[2])
+        if fb_domain and not fb_domain.startswith("base") and not fb_domain.startswith('user') and not fb_domain.startswith('freebase'):
+            add_to_dict(domain_cnt, fb_domain)
+            add_to_dict(type_cnt, fb_type)
 
 
-print_cnt(domain_cnt, sys.argv[2])
-print_cnt(type_cnt, sys.argv[3])
-    
-    
+    print_cnt(domain_cnt, sys.argv[2])
+    print_cnt(type_cnt, sys.argv[3])
+        
+        
