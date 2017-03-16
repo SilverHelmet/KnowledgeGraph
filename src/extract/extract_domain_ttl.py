@@ -7,10 +7,11 @@ def load_domain():
     for line in file('result/freebase_domain/schema.domain.txt'):
         line = line.strip()
         if line:
-            domains.add(domain)
+            domains.add(line)
     return domains
 
 domains = load_domain()
+print domains
 pref = 'result/freebase/'
 partterns = ["type.property.unique", 'type.property.unit', 'type.property.reverse_property', 'type.object.type', 
 'type.object.name', 'freebase.type_profile.instance_count', 'freebase.type_hints.mediator', 'freebase.type_hints.included_types', 
