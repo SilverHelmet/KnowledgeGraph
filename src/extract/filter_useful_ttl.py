@@ -11,10 +11,7 @@ def useful_domain(ttl):
     return not domain in black_schema_domains
 
 def filter_type(ttl):
-    ttl = ttl.strip()
     uri = encode(ttl.split('\t')[2])
-    print ttl.split('\t')[2], uri
-    print uri == "fb:type.type"
     return uri == 'fb:type.type'
 
 def filter_property(ttl):
@@ -27,11 +24,12 @@ def filter_ttl(in_filepath, out_filepath, valid_func):
     outf = file(out_filepath, 'w')
     cnt = 0
     for line in file(in_filepath):
+        line = line.strip()
         cnt += 1
         if cnt % 100000 == 0:
             print "cnt = %d" %cnt
         if valid_func(line):
-            outf.write("\t".join(line.strip().split('\t')[:3]) + "\n")
+            outf.write("\t".join(line.split('\t')[:3]) + "\n")
     outf.close()
     
 
