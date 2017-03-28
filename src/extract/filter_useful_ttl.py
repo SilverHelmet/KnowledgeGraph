@@ -11,8 +11,10 @@ def useful_domain(ttl):
     return not domain in black_schema_domains
 
 def filter_type(ttl):
+    ttl = ttl.strip()
     uri = encode(ttl.split('\t')[2])
     print ttl.split('\t')[2], uri
+    print uri == "fb:type.type"
     return uri == 'fb:type.type'
 
 def filter_property(ttl):
@@ -34,7 +36,6 @@ def filter_ttl(in_filepath, out_filepath, valid_func):
     
 
 if __name__ == "__main__":
-    print encode("<http://rdf.freebase.com/ns/type.type>")
     in_filepath = sys.argv[1]
     out_filepath = sys.argv[2]
     mode = sys.argv[3]
