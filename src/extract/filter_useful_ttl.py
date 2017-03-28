@@ -1,7 +1,7 @@
 import sys
 from .extract_util import get_domain
 
-black_schema_domains = set(['fb:freebase', 'fb:base', 'fb:type', 'fb:m', 'fb:g'])
+black_schema_domains = set(['fb:freebase', 'fb:base', 'fb:type', 'fb:m', 'fb:g', 'fb:user'])
 def useful_domain(ttl):
     p = ttl.split('\t')
     global black_schema_domains
