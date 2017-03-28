@@ -34,6 +34,7 @@ def filter_ttl(in_filepath, out_filepath, valid_func):
     
 
 if __name__ == "__main__":
+    print encode("<http://rdf.freebase.com/ns/type.type>")
     in_filepath = sys.argv[1]
     out_filepath = sys.argv[2]
     mode = sys.argv[3]
