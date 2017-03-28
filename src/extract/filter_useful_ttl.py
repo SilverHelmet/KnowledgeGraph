@@ -12,7 +12,7 @@ def useful_domain(ttl):
 
 def filter_type(ttl):
     uri = encode(ttl.split('\t')[2])
-    print uri
+    print ttl.split('\t')[2], uri
     return uri == 'fb:type.type'
 
 def filter_property(ttl):
