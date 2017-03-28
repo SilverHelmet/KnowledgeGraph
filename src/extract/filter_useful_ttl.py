@@ -1,13 +1,14 @@
 import sys
 from .extract_util import get_domain
 
-black_schema_domains = set(['freebase', 'base', 'type', 'm', 'g'])
+black_schema_domains = set(['fb:freebase', 'fb:base', 'fb:type', 'fb:m', 'fb:g'])
 def useful_domain(ttl):
     p = ttl.split('\t')
     global black_schema_domains
     domain = get_domain(p[0])
     if domain is None:
         return False
+    print domain
     return not domain in black_schema_domains
 
     
@@ -17,7 +18,7 @@ def filter_ttl(in_filepath, out_filepath, valid_func):
     cnt = 0
     for line in file(in_filepath):
         cnt += 1
-        if cnt % 10000 == 0:
+        if cnt % 100000 == 0:
             print "cnt = %d" %cnt
         if valid_func(line):
             outf.write("\t".join(line.strip().split('\t')[:3]) + "\n")
