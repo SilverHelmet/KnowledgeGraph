@@ -8,7 +8,6 @@ def useful_domain(ttl):
     domain = get_domain(p[0])
     if domain is None:
         return False
-    print domain
     return not domain in black_schema_domains
 
     
