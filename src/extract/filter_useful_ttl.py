@@ -23,5 +23,4 @@ def filter_ttl(in_filepath, out_filepath, valid_func):
 if __name__ == "__main__":
     in_filepath = sys.argv[1]
     out_filepath = sys.argv[2]
-    useful_ttl()
     filter_ttl(in_filepath, out_filepath, useful_domain)
