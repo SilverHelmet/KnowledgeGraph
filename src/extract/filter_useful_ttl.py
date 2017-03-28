@@ -14,7 +14,11 @@ def useful_domain(ttl):
 
 def filter_ttl(in_filepath, out_filepath, valid_func):
     outf = file(out_filepath, 'w')
+    cnt = 0
     for line in file(in_filepath):
+        cnt += 1
+        if cnt % 10000 == 0:
+            print "cnt = %d" %cnt
         if valid_func(line):
             outf.write("\t".join(line.split('\t')[:3]))
     outf.close()
