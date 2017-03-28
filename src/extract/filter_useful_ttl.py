@@ -20,7 +20,7 @@ def filter_ttl(in_filepath, out_filepath, valid_func):
         if cnt % 10000 == 0:
             print "cnt = %d" %cnt
         if valid_func(line):
-            outf.write("\t".join(line.split('\t')[:3]))
+            outf.write("\t".join(line.strip().split('\t')[:3]) + "\n")
     outf.close()
     
 
