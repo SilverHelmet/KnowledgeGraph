@@ -13,6 +13,7 @@ def is_type(uri):
 if __name__ == "__main__":
     l = []
     mode = sys.argv[1]
+    func = None
     if mode == 'type':
         func = is_type
     elif mode == "property":
