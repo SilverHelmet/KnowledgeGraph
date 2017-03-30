@@ -28,5 +28,5 @@ def parse_properties_of_types():
     write_strs('result/old_freebase/queried_property.txt', properties, sorted_flag = True)
 
 if __name__ == "__main__":
-    # parse_types_of_domains()
+    parse_types_of_domains()
     parse_properties_of_types()

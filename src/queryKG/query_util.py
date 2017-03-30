@@ -49,8 +49,11 @@ def parse_json_binding(one_result):
     if obj_type == 'uri':
         return "<" + value + ">"
     elif obj_type == "literal":
-        lang = one_result['xml:lang'].encode('utf-8')
-        return value + "@" + lang
+        if "xml:lang" in one_result:
+            lang = one_result['xml:lang'].encode('utf-8')
+            return value + "@" + lang
+        else:
+            return value
     else:
         return value
     
@@ -75,4 +78,11 @@ def parse_single_json(result, name):
     return ret    
         
 
-
+def get_unique_attr():
+    return set([
+        "fb:type.property.expected_type",
+        "fb:type.property.schema",
+        'fb:type.property.unique',
+        "fb:type.property.reverse_property",
+        'fb:type.property.master_property',
+    ])

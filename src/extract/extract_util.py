@@ -21,7 +21,10 @@ def get_type(uri):
         raise Exception("error uri")
 
 def encode(uri):
-    
+    if type(uri) == unicode:
+        uri = uri.encode('utf-8')
+    if type(uri) != str:
+        return uri
     if uri.startswith("<"):
         # uri
         if uri.startswith("<http://rdf.freebase.com/ns/") and uri.endswith('>'):

@@ -4,6 +4,11 @@ from ..IOUtil import write_strs
 import urllib2
 import json
 
+def query_count(query):
+    ret = "count(*)"
+    result = call(ret, query, format = 'json')
+    result = parse_single_json(result, 'callret-0')
+    return int(result[0])
 
 def query_all_domains():
     domain_uris = set()
@@ -68,6 +73,8 @@ def query_type_attrs(in_path, out_path):
             result = [encode(x) for x in result]
             if len(result) > 0:
                 attrs[predicate] = result
+        
+        attrs['count'] = query_count('?s fb:type.object.type %s' %type)
         outf.write(type + "\t" + json.dumps(attrs) + "\n")
     outf.close()
 
@@ -90,7 +97,10 @@ def query_property_attrs(in_path, out_path):
             result = [encode(x) for x in result]
             if len(result) > 0:
                 attrs[attr_property] = result
+        
+        attrs['count'] = query_count('?s %s ?p' %property)
         outf.write(property + '\t' + json.dumps(attrs) + "\n")
+        
     outf.close()
     
 
@@ -102,19 +112,23 @@ if __name__ == "__main__":
     # write_strs('result/old_freebase/queried_domain.txt', domain_uris, sorted_flag = True)
 
     # query attributes of domains
-    in_path = 'result/old_freebase/queried_domain.txt'
-    out_path = 'result/old_freebase/queried_domain_attrs.json'
-    query_domain_attrs(in_path, out_path)
+    # in_path = 'result/old_freebase/queried_domain.txt'
+    # out_path = 'result/old_freebase/queried_domain_attrs.json'
+    # query_domain_attrs(in_path, out_path)
 
     #query attributes of types
-    in_path = 'result/old_freebase/queried_type.txt'
-    out_path = 'result/old_freebase/queried_type_attrs.json'
+    # in_path = 'result/old_freebase/queried_type.txt'
+    # out_path = 'result/old_freebase/queried_type_attrs.json'
+    in_path = 'result/freebase_merged/type.txt'
+    out_path = 'result/freebase_merged/type_attrs.json'
     query_type_attrs(in_path, out_path)
 
     #query attributes of properties
-    in_path = 'result/old_freebase/queried_property.txt'
-    out_path = 'result/old_freebase/queried_property_attrs.json'
-    query_property_attrs(in_path, out_path)
+    # in_path = 'result/old_freebase/queried_property.txt'
+    # out_path = 'result/old_freebase/queried_property_attrs.json'
+    # in_path = "result/freebase_merged/property.txt"
+    # out_path = 'result/freebase_merged/property_attrs.json'
+    # query_property_attrs(in_path, out_path)
 
 
 
