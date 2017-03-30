@@ -22,5 +22,6 @@ if __name__ == "__main__":
         p = line.strip().split("\t")
         if func(p[2]):
             l.append(encode(p[0]))
-    for x in sorted(l):
-        print x
+            print p[0]
+    # for x in sorted(l):
+        # print x

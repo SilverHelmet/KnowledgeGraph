@@ -35,7 +35,7 @@ def load_valid_types(filepath):
 def check_valid_type(type):
     global valid_types
     domain = get_domain(type)
-    if domain in ['fb:type']:
+    if domain in ['fb:type', 'fb:common']:
         return True
     # if domain in ['fb:type', 'fb:common', 'fb:user', 'fb:freebase', 'fb:base']:
         # return True
@@ -75,7 +75,9 @@ class Property:
         if 'fb:type.property.expected_type' in self.attrs:
             flag =  check_valid_type(self.attrs['fb:type.property.expected_type'])
             if not flag:
-                print self.uri, self.attrs['fb:type.property.expected_type']
+                return False
+                print self.uri, self.attrs['count'], self.attrs['fb:type.property.expected_type']
+        return True
 
 def init_property(attrs_path):
     unique_attrs = get_unique_attr()
@@ -99,8 +101,13 @@ def init_property(attrs_path):
     return p_map
 
 def check_complete(property_map):
-    for fb_property in property_map.values():
-        fb_property.check_complete()
+    error_uris = []
+    for uri, fb_property in property_map.iteritems():
+        if not fb_property.check_complete():
+            error_uris.append(uri)
+    for uri in error_uris:
+        property_map.pop(uri)
+    
 
 def squeeze(attrs):
     uniq_attrs = get_unique_attr()
@@ -120,7 +127,7 @@ def complement(property_map, attrs_path):
         if uri in property_map:
             cnt += 1
             property_map[uri].fusion(attrs)
-    print "complement check cnt = %d" %cnt
+    print "complement cnt = %d" %cnt
 
 if __name__ == "__main__":
     data_dir = os.path.join(result_dir, 'freebase_merged')
@@ -132,7 +139,9 @@ if __name__ == "__main__":
     attrs_path = os.path.join(data_dir, 'property_attrs.json')
     property_map = init_property(attrs_path)
 
+    print len(property_map)
     check_complete(property_map)
+    print len(property_map)
 
     # old_attrs_path = os.path.join(result_dir, 'old_freebase/queried_property_attrs.json')    
     # complement(property_map, old_attrs_path)
