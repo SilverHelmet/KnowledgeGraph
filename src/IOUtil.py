@@ -1,5 +1,6 @@
 import sys
 import os
+import json
 
 def write_strs(out_path, l, sorted_flag = False):
     if sorted_flag:
@@ -16,6 +17,10 @@ def load_file(in_path):
         ret.append(line.strip())
     return ret
 
+        
+        
+
 
 base_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 result_dir = os.path.join(base_dir, 'result')
+doc_dir = os.path.join(base_dir, "docs")

@@ -85,4 +85,6 @@ def get_unique_attr():
         'fb:type.property.unique',
         "fb:type.property.reverse_property",
         'fb:type.property.master_property',
+        "fb:freebase.type_hints.mediator",
+        'fb:freebase.type_hints.enumeration',
     ])

@@ -1,4 +1,4 @@
-from ..IOUtil import result_dir
+from ..IOUtil import result_dir, base_dir
 from ..extract.extract_util import get_type, encode, get_domain
 from ..queryKG.query_util import get_unique_attr
 import os
@@ -17,7 +17,7 @@ def boolean_of(value):
 
 
 def check_compatiable(name, value1, value2):
-    if name == "fb:type.property.unique":
+    if name in ["fb:type.property.unique"]:
         return boolean_of(value1) == boolean_of(value2)
     else:
         return value1 == value2
@@ -28,15 +28,15 @@ def load_valid_types(filepath):
         p = line.split('\t')
         fb_type = p[0]
         attrs = json.loads(p[1])
-        if attrs['count'] > 0:
+        if attrs['count'] > 0 or get_domain(fb_type) == "fb:type":
             ret.add(fb_type)
     return ret
 
 def check_valid_type(type):
     global valid_types
     domain = get_domain(type)
-    if domain in ['fb:type', 'fb:common']:
-        return True
+    # if domain in ['fb:type', 'fb:common']:
+        # return True
     # if domain in ['fb:type', 'fb:common', 'fb:user', 'fb:freebase', 'fb:base']:
         # return True
     return type in valid_types
@@ -60,13 +60,15 @@ class Property:
 
     def fusion(self, attrs):
         for name in attrs:
+            if name in ['fb:type.property.master_property', 'fb:type.property.expected_type', 'fb:type.property.reverse_property']:
+                continue
             if name in self.attrs:
                 if not check_compatiable(name, attrs[name], self.attrs[name]):
                     print 'conflict ', self.uri, name, self.attrs[name], attrs[name]
                 # assert check_compatiable(name, attrs[name], self.attrs[name])
             else:
-                if name not in ['fb:common.topic.description', 'fb:type.property.master_property', 'fb:freebase.property_hints.inverse_description', 'fb:freebase.property_hints.enumeration'] and self.attrs['count'] > 0:
-                    print 'add ', self.uri, name, attrs[name]
+                if name not in ['fb:common.topic.description', 'fb:freebase.property_hints.inverse_description', 'fb:freebase.property_hints.enumeration']:
+                    print 'add ', self.uri, name, atrs[name]
                 self.attrs[name] = attrs[name]
 
     def check_complete(self):
@@ -94,6 +96,9 @@ def init_property(attrs_path):
             if name in unique_attrs:
                 assert len(value) == 1
                 value = value[0]
+            if name == "fb:type.property.reverse_property" and get_domain(value) == "fb:m":
+                print "delete attr %s fb:type.property.reverse_property %s" %(property_uri, value)
+                continue
             fb_property.set_attr(name, value)
 
             
@@ -106,8 +111,8 @@ def check_complete(property_map):
         if not fb_property.check_complete():
             error_uris.append(uri)
     for uri in error_uris:
+        print "drop at check_complete: %s" %uri
         property_map.pop(uri)
-    
 
 def squeeze(attrs):
     uniq_attrs = get_unique_attr()
@@ -129,6 +134,38 @@ def complement(property_map, attrs_path):
             property_map[uri].fusion(attrs)
     print "complement cnt = %d" %cnt
 
+def check_expected_type(property_map):
+    error_uris = []
+    for uri, fb_property in property_map.iteritems():
+        if not "fb:type.property.expected_type" in fb_property.attrs:
+            print "miss expected_type: %s" %(uri) 
+            error_uris.append(uri)
+    for uri in error_uris:
+        property_map.pop(uri)
+
+def check_reverse_property(property_map):
+    schema = 'fb:type.property.schema'
+    expected = "fb:type.property.expected_type"
+    for uri, fb_property in property_map.iteritems():
+        if "fb:type.property.reverse_property" in fb_property.attrs:
+            other_uri = fb_property.attrs['fb:type.property.reverse_property']
+            if not other_uri in property_map:
+                print "miss reverse property", uri, other_uri
+            else:
+                other = property_map[other_uri]
+                assert fb_property.attrs[schema] == other.attrs[expected]
+                assert fb_property.attrs[expected] == other.attrs[schema]
+
+            # other = property_map[fb_property.attrs['fb:type.property.reverse_property']]
+
+def write_json_map(map, outpath):
+    f = file(outpath, 'w')
+    for name in sorted(map.keys()):
+        value = map[name]
+        f.write(name + "\t" + json.dumps(value.attrs) + "\n")
+    f.close()
+
+
 if __name__ == "__main__":
     data_dir = os.path.join(result_dir, 'freebase_merged')
     
@@ -143,7 +180,14 @@ if __name__ == "__main__":
     check_complete(property_map)
     print len(property_map)
 
-    # old_attrs_path = os.path.join(result_dir, 'old_freebase/queried_property_attrs.json')    
-    # complement(property_map, old_attrs_path)
-    # check_complete(propery_map)
-    # load()
+    old_attrs_path = os.path.join(result_dir, 'old_freebase/queried_property_attrs.json')    
+    complement(property_map, old_attrs_path)
+    
+    
+
+    check_expected_type(property_map)
+    print len(property_map)
+
+    check_reverse_property(property_map)
+
+    write_json_map(property_map, os.path.join(result_dir, 'final_property_attrs.json'))

@@ -85,6 +85,9 @@ def query_property_attrs(in_path, out_path):
         'fb:freebase.property_hints.inverse_description', 'fb:freebase.property_hints.enumeration']
     outf = file(out_path, 'w')
     for cnt, property in enumerate(file(in_path, 'r')):
+        domain = get_domain(property)
+        if domain in ['fb:type', 'fb:common']:
+            continue
         if cnt % 100 == 0:
             print "cnt = %d" %cnt
         ret = "?attr"
@@ -119,16 +122,16 @@ if __name__ == "__main__":
     #query attributes of types
     # in_path = 'result/old_freebase/queried_type.txt'
     # out_path = 'result/old_freebase/queried_type_attrs.json'
-    in_path = 'result/freebase_merged/type.txt'
-    out_path = 'result/freebase_merged/type_attrs.json'
-    query_type_attrs(in_path, out_path)
+    # in_path = 'result/freebase_merged/type.txt'
+    # out_path = 'result/freebase_merged/type_attrs.json'
+    # query_type_attrs(in_path, out_path)
 
     #query attributes of properties
     # in_path = 'result/old_freebase/queried_property.txt'
     # out_path = 'result/old_freebase/queried_property_attrs.json'
-    # in_path = "result/freebase_merged/property.txt"
-    # out_path = 'result/freebase_merged/property_attrs.json'
-    # query_property_attrs(in_path, out_path)
+    in_path = "result/freebase_merged/property.txt"
+    out_path = 'result/freebase_merged/property_attrs.json'
+    query_property_attrs(in_path, out_path)
 
 
 
