@@ -44,6 +44,9 @@ if __name__ == "__main__":
     in_filepath = sys.argv[1]
     out_filepath = sys.argv[2]
     mode = sys.argv[3]
+    print "load from [%s]" %in_filepath
+    print 'write to [%s]' %out_filepath
+    print "mode = %s" %mode
     if mode == "schema":
         func = useful_domain
     elif mode == "type":
