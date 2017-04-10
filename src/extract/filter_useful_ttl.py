@@ -24,6 +24,8 @@ def filter_entity(ttl):
     global types
     p = ttl.split("\t")
     uri = encode(p[2])
+    if get_type(uri) in ['fb:measurement_unit', 'fb:type', 'fb:common']:
+        return False
     return uri in types
     
 
