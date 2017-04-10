@@ -1,5 +1,5 @@
 import sys
-from .extract_util import get_domain, encode
+from .extract_util import get_domain, encode, get_type
 from ..schema import schema
 
 black_schema_domains = set(['fb:freebase', 'fb:base', 'fb:m', 'fb:g', 'fb:user'])
