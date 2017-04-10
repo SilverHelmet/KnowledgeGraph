@@ -1,5 +1,6 @@
 import sys
 from .extract_util import get_domain, encode
+from ..schema import schema
 
 black_schema_domains = set(['fb:freebase', 'fb:base', 'fb:m', 'fb:g', 'fb:user'])
 def useful_domain(ttl):
@@ -18,6 +19,12 @@ def filter_property(ttl):
     uri = encode(ttl.split("\t")[2])
     return uri == 'fb:type.property'
 
+types = schema.load_types()
+def filter_entity(ttl):
+    global types
+    p = ttl.split("\t")
+    uri = encode(p[2])
+    return uri in types
     
 
 def filter_ttl(in_filepath, out_filepath, valid_func):
@@ -43,4 +50,6 @@ if __name__ == "__main__":
         func = filter_type
     elif mode == 'property':
         func = filter_property
+    elif mode == "entity":
+        func = filter_entity
     filter_ttl(in_filepath, out_filepath, func)
