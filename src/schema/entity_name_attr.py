@@ -34,6 +34,6 @@ def load(filepath, outpath):
 if __name__ == "__main__":
     outpath = os.path.join(result_dir, 'freebase/entity_name.json')
     name_path = "/home/lhr/tmp"
-    load(name_path, outpath)
-    # load(os.path.join(result_dir, 'freebase_merged/type.object.name.ttl'), outpath)
+    # load(name_path, outpath)
+    load(os.path.join(result_dir, 'freebase_merged/type.object.name.ttl'), outpath)
 

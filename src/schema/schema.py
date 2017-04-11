@@ -1,6 +1,7 @@
 #encode:utf-8
 from ..extract.extract_util import get_domain
 from ..IOUtil import doc_dir, result_dir
+import sys
 import os
 
 def load_entity():
@@ -13,11 +14,12 @@ def load_entity():
     for line in file(os.path.join(result_dir, 'freebase/entity_type.json'), 'r'):
         cnt += 1
         if cnt >= next_percent_cnt:
-            print "load entity %d%%" %percent
+            sys.stdout.write("\rload entity %d%%" %percent)
             percent += 1
             next_percent_cnt += chunk
         uri = line.split('\t')[0]
         entities.add(uri)
+    print "load entity finished"
     return entities
 
 
@@ -29,10 +31,6 @@ def load_types():
 
 def is_zh_en_literal(uri):
     p = uri.strip().split("@")
-    print p
-    print len(p) == 2
-    print p[0].startswith('"')
-    print p[0].endswith('"')
     if len(p) == 2 and p[0].startswith('"') and p[0].endswith('"'):
         return p[1] in ['zh', 'en']
     return False
