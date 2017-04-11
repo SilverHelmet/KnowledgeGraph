@@ -8,7 +8,7 @@ def load(filepath):
     attrs = {}
     print filepath
     for cnt, line in enumerate(file(filepath, 'r')):
-        
+        print cnt, line
         if cnt+1 % 10 == 0:
             print "cnt = %dW" %(cnt / 10000)
             break
