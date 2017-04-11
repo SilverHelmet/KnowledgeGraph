@@ -1,6 +1,6 @@
 from ..IOUtil import result_dir
 from ..extract.extract_util import encode
-import json
+import json, os
 
 
 
