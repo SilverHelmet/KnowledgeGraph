@@ -14,7 +14,7 @@ def parse_info_value(info_values):
     global html_parser
     # to do
     # parse multi value in one slot
-    info_values = [html_parser.unescape(x) for x in info_values]
+    info_values = [html_unescape(x) for x in info_values]
     return info_values        
 
 def parse_entity_info(info_list):
@@ -34,6 +34,12 @@ def parse_id_from_url(url):
     else:
         return -1, -1
 
+def html_unescape(html_str):
+    global html_parser
+    if html_str:
+        html_str = html_parser.unescape(html_str)
+    return html_str
+
 def parse_ename(obj):
     global html_parser
     ename = None
@@ -41,14 +47,14 @@ def parse_ename(obj):
         ename = obj['entry_feature'].get('ename')
     if not ename and 'entry_info' in obj:
         ename = obj['entry_info'].get('ename')
-    return html_parser.unescape(ename)
+    return html_unescape(ename)
 
 def parse_title(obj):
     global html_parser
     title = None
     if 'intro_info' in obj and type(obj['intro_info']) == dict:
         title = obj['intro_info']['title']
-    return html_parser.unescape(title)
+    return html_unescape(title)
     
     
 
