@@ -7,7 +7,7 @@ import json, os
 def load(filepath):
     attrs = {}
     for cnt, line in enumerate(filepath):
-        if cnt % 1000000 == 0:
+        if cnt+1 % 1000000 == 0:
             print "cnt = %dW" %(cnt / 10000)
             break
         p = line.strip().split('\t')[:2]
