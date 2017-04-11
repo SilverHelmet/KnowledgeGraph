@@ -70,9 +70,9 @@ def strip_url(url):
     return url
 
 def check_valid(attr):
-    if 'ename' in attr and 'title' in attr:
-        if attr['ename'] != attr['title']:
-            print "error: different name", attr['url'], attr['ename'], attr['title']
+    # if 'ename' in attr and 'title' in attr:
+    #     if attr['ename'] != attr['title']:
+    #         print "error: different name", attr['url'], attr['ename'], attr['title']
     if not 'title' in attr or not 'ename' in attr:
         print 'fatal error: no name', attr['url']
         return False
