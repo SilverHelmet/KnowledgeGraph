@@ -16,6 +16,8 @@ def is_true(uri):
 if __name__ == "__main__":
     l = []
     mode = sys.argv[1]
+    outf = file(sys.argv[2], 'w')
+    
     func = None
     if mode == 'type':
         func = is_type
@@ -32,4 +34,6 @@ if __name__ == "__main__":
             print "cnt = %dW, #subj = %d" %(cnt/10000, len(l)) 
             # print p[0]
     for x in sorted(l):
-        print x
+        outf.write(x)
+        outf.write('\n')
+    outf.close()
