@@ -6,12 +6,12 @@ import json, os
 
 def load(filepath):
     attrs = {}
-    for cnt, line in enumerate(file(filepath)):
+    for cnt, line in enumerate(file(filepath, 'w')):
         
         if cnt+1 % 1000000 == 0:
             print "cnt = %dW" %(cnt / 10000)
             break
-        p = line.strip().split('\t')[:2]
+        p = line.strip().split('\t')[:3]
         p = [encode(x) for x in p]
 
         if not p[0] in attrs:
