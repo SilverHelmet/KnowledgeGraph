@@ -1,6 +1,6 @@
 #encode:utf-8
 from ..extract.extract_util import get_domain
-from ..IOUtil import doc_dir
+from ..IOUtil import doc_dir, result_dir
 import os
 
 def load_entity():
@@ -26,6 +26,15 @@ def is_zh_en_literal(uri):
     if len(p) == 2 and p[0].startswith('"') and p[0].endswith('"'):
         return p[1] in ['zh', 'en']
     return False
+
+def add_attr(dict, id, name, value):
+    if not id in dict:
+        dict[id] = {}
+    attr = dict[id]
+    if not name in attr:
+        attr[name] = []
+    attr[name].append(value)
+        
         
 
 if __name__ == "__main__":
