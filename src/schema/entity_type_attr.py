@@ -14,7 +14,7 @@ def load(filepath):
             break
         p = line.strip().split('\t')[:3]
         p = [encode(x) for x in p]
-
+        print p
         if not p[0] in attrs:
             attrs[p[0]] = {}
         attr = attrs[p[0]]
