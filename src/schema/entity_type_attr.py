@@ -19,6 +19,7 @@ def load(filepath):
         if not p[1] in attr:
             attr[p[1]] = []
         attr[p[1]].append(p[2])
+    return attrs
 
         
             
