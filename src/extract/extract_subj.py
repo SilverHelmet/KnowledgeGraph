@@ -24,10 +24,12 @@ if __name__ == "__main__":
     elif mode == "True":
         func = is_true
 
-    for line in sys.stdin:
+    for cnt, line in enumerate(sys.stdin):
         p = line.strip().split("\t")
         if func(p[2]):
             l.append(encode(p[0]))
+        if cnt % 100000 == 0:
+            print "cnt = %dW, #subj = %d" %(cnt/10000, len(l)) 
             # print p[0]
     for x in sorted(l):
         print x
