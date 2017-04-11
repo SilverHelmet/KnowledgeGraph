@@ -12,7 +12,7 @@ def load_entity():
     percent = 0
     for line in file(os.path.join(result_dir, 'freebase/entity_type.json'), 'r'):
         cnt += 1
-        if cnt >= next_percent:
+        if cnt >= next_percent_cnt:
             print "load entity %d%%" %percent
             percent += 1
             next_percent_cnt += chunk
