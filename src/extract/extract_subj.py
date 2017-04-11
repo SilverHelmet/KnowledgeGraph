@@ -14,7 +14,7 @@ def is_true(uri):
     
     
 if __name__ == "__main__":
-    l = []
+    l = set()
     mode = sys.argv[1]
     outf = file(sys.argv[2], 'w')
     
@@ -29,7 +29,7 @@ if __name__ == "__main__":
     for cnt, line in enumerate(sys.stdin):
         p = line.strip().split("\t")
         if func(p[2]):
-            l.append(encode(p[0]))
+            l.add(encode(p[0]))
         if cnt % 100000 == 0:
             print "cnt = %dW, #subj = %d" %(cnt/10000, len(l)) 
             # print p[0]
