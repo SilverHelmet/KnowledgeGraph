@@ -59,10 +59,14 @@ def parse_title(obj):
     
 
 def parse_line(line):
-    tokens = line.strip().split('\t')
-    url = tokens[0]
-    content = json.loads(base64.b64decode(tokens[1]))
-    return url, content
+    try:
+        tokens = line.strip().split('\t')
+        url = tokens[0]
+        content = json.loads(base64.b64decode(tokens[1]))
+        return url, content
+    except Exception, e:
+        return None, None
+    
 
 def strip_url(url):
     if url.startswith("http://"):
@@ -85,6 +89,9 @@ def parse(filepath, outf):
     for line in file(filepath):
         cnt += 1
         url, obj = parse_line(line)
+        if url is None:
+            print "fatal error: parse_line error, ", line
+            continue
         attr = {'url': url}
 
         ename = parse_ename(obj)
