@@ -9,7 +9,7 @@ def load(filepath):
     print filepath
     for cnt, line in enumerate(file(filepath, 'r')):
         
-        if cnt+1 % 1 == 0:
+        if cnt+1 % 10 == 0:
             print "cnt = %dW" %(cnt / 10000)
             break
         p = line.strip().split('\t')[:3]
