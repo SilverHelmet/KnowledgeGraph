@@ -6,6 +6,7 @@ import json, os
 
 def load(filepath):
     attrs = {}
+    print filepath
     for cnt, line in enumerate(file(filepath, 'r')):
         
         if cnt+1 % 1 == 0:
