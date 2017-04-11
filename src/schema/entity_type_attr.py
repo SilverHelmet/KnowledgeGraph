@@ -13,6 +13,7 @@ def load(filepath):
             print "cnt = %dW" %(cnt / 10000)
             break
         p = line.strip().split('\t')[:3]
+        print p
         p = [encode(x) for x in p]
         print p
         if not p[0] in attrs:
