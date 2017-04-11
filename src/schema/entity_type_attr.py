@@ -5,7 +5,7 @@ import json, os
 
 
 def load(filepath):
-    attrs = []
+    attrs = {}
     for cnt, line in enumerate(filepath):
         if cnt % 1000000 == 0:
             print "cnt = %dW" %(cnt / 10000)
