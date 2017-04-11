@@ -32,7 +32,6 @@ def load(filepath, outpath):
 
 
 if __name__ == "__main__":
-    e_set = load_entity()
     outpath = os.path.join(result_dir, 'freebase/entity_name.json')
     name_path = "/home/lhr/tmp"
     load(name_path, outpath)

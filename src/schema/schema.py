@@ -4,8 +4,18 @@ from ..IOUtil import doc_dir, result_dir
 import os
 
 def load_entity():
+    total = 56490649
     entities = set()
+    cnt = 0
+    chunk = total / 100
+    next_percent_cnt = 0
+    percent = 0
     for line in file(os.path.join(result_dir, 'freebase/entity_type.json'), 'r'):
+        cnt += 1
+        if cnt >= next_percent:
+            print "load entity %d%%" %percent
+            percent += 1
+            next_percent_cnt += chunk
         uri = line.split('\t')[0]
         entities.add(uri)
     return entities
