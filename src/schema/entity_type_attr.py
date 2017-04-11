@@ -8,14 +8,11 @@ def load(filepath):
     attrs = {}
     print filepath
     for cnt, line in enumerate(file(filepath, 'r')):
-        print cnt, line
-        if cnt+1 % 10 == 0:
+        if (cnt+1) % 10000 == 0:
             print "cnt = %dW" %(cnt / 10000)
             break
         p = line.strip().split('\t')[:3]
-        print p
         p = [encode(x) for x in p]
-        print p
         if not p[0] in attrs:
             attrs[p[0]] = {}
         attr = attrs[p[0]]
