@@ -1,7 +1,7 @@
 import sys
 import os
 from .schema import load_entity, is_zh_en_literal, add_attr
-from ..IOUtil import result_dir
+from ..IOUtil import freebase_rel_dir, result_dir
 from ..extract.extract_util import encode
 import json
 
@@ -32,8 +32,16 @@ def load(filepath, outpath):
 
 
 if __name__ == "__main__":
-    outpath = os.path.join(result_dir, 'freebase/entity_name.json')
-    name_path = "/home/lhr/tmp"
-    # load(name_path, outpath)
-    load(os.path.join(result_dir, 'freebase_merged/type.object.name.ttl'), outpath)
+    # inpath = os.path.join(freebase_rel_dir, 'type.object.name.ttl')
+    # outpath = os.path.join(result_dir, 'freebase/entity_name.json')
+
+    inpath = os.path.join(freebase_rel_dir, 'common.topic.description.ttl')
+    outpath = os.path.join(result_dir, 'freebase/entity_description.json')
+
+    inpath = os.path.join(freebase_rel_dir, 'common.topic.alias.ttl')
+    outpath = os.path.join(result_dir, 'freebase/entity_alias.json')
+
+    load(os.path.join(result_dir, inpath), outpath)
+
+
 

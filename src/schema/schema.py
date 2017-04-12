@@ -19,7 +19,7 @@ def load_entity():
             next_percent_cnt += chunk
         uri = line.split('\t')[0]
         entities.add(uri)
-    print "load entity finished"
+    print "\nload entity finished"
     return entities
 
 

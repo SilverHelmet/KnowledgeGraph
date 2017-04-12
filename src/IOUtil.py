@@ -16,11 +16,11 @@ def load_file(in_path):
     for line in file(in_path):
         ret.append(line.strip())
     return ret
-
         
         
 
 
 base_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 result_dir = os.path.join(base_dir, 'result')
+freebase_rel_dir = os.path.join(result_dir, 'freebase_rel')
 doc_dir = os.path.join(base_dir, "docs")
