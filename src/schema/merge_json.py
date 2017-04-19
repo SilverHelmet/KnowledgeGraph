@@ -5,7 +5,7 @@ import json
 if __name__ == "__main__":
     outpath = sys.argv[1]
     inpaths = sys.argv[2:]
-    P("outpath is %s" %outpah)
+    P("outpath is %s" %outpath)
     P("inpaths is %s" %"   ".join(inpaths))
     
     res = {}
