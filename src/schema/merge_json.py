@@ -16,7 +16,7 @@ if __name__ == "__main__":
     
     outf = file(outpath, 'w')
     for key in sorted(res.keys()):
-        outf.write(key + '\t' + json.dumps(res[key], ensure_ascii = False))
+        outf.write(key + '\t' + json.dumps(res[key], ensure_ascii = False) + '\n')
     outf.close()
 
         
