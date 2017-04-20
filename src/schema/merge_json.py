@@ -12,7 +12,9 @@ if __name__ == "__main__":
     for inpath in inpaths:
         P("load path %s" %inpath)
         other_res = load_json_dict(inpath)
+        P("merge dict %s" %inpath)
         merge_dict(res, other_res)
+        
     
     outf = file(outpath, 'w')
     for key in sorted(res.keys()):

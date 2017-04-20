@@ -3,6 +3,14 @@ import os
 import json
 import datetime
 
+def now():
+    time = datetime.datetime.now()
+    return time.strftime('%m-%d %H:%M:%S')
+    
+def Print(*l):
+    l = map(str, l)
+    print now() + "\t" + " ".join(l)
+
 def write_strs(out_path, l, sorted_flag = False):
     if sorted_flag:
         l = sorted(l)
@@ -20,7 +28,11 @@ def load_file(in_path):
      
 def load_json_dict(path):
     res = {}
+    cnt = 0
     for line in file(path):
+        cnt += 1
+        if cnt % 100000 == 0:
+            Print()
         p = line.split('\t')
         key = p[0]
         value = json.loads(p[1])
@@ -31,7 +43,7 @@ def merge_dict(x, other):
     cnt = 0
     for key in other:
         cnt += 1
-        if cnt % 10000 == 0:
+        if cnt % 100000 == 0:
             Print("load cnt = %d") 
         if not key in x:
             x[key] = other[key]
@@ -41,14 +53,6 @@ def merge_dict(x, other):
             for name in oattr:
                 assert name not in mattr
                 mattr[name] = oattr[name]
-
-def now():
-    time = datetime.datetime.now()
-    return time.strftime('%m-%d %H:%M:%S')
-    
-def Print(*l):
-    l = map(str, l)
-    print now() + "\t" + " ".join(l)
     
     
         
