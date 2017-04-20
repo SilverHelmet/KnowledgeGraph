@@ -1,6 +1,7 @@
 import sys
 import os
 import json
+import datetime
 
 def write_strs(out_path, l, sorted_flag = False):
     if sorted_flag:
@@ -18,7 +19,7 @@ def load_file(in_path):
     return ret
      
 def load_json_dict(path):
-    res = []
+    res = {}
     for line in file(path):
         p = line.split('\t')
         key = p[0]
@@ -27,7 +28,11 @@ def load_json_dict(path):
     return value
 
 def merge_dict(x, other):
+    cnt = 0
     for key in other:
+        cnt += 1
+        if cnt % 10000 == 0:
+            Print("load cnt = %d") 
         if not key in x:
             x[key] = other[key]
         else:
