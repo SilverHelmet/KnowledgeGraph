@@ -14,6 +14,7 @@ if __name__ == "__main__":
         other_res = load_json_dict(inpath)
         P("merge dict %s" %inpath)
         merge_dict(res, other_res)
+        P("res size = %d" %len(res))
         
     
     outf = file(outpath, 'w')
