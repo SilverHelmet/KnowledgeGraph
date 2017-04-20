@@ -32,7 +32,7 @@ def load_json_dict(path):
     for line in file(path):
         cnt += 1
         if cnt % 100000 == 0:
-            Print()
+            Print("load cnt = %d" %cnt)
         p = line.split('\t')
         key = p[0]
         value = json.loads(p[1])
@@ -44,7 +44,7 @@ def merge_dict(x, other):
     for key in other:
         cnt += 1
         if cnt % 100000 == 0:
-            Print("load cnt = %d") 
+            Print("merged cnt = %d" %cnt) 
         if not key in x:
             x[key] = other[key]
         else:
