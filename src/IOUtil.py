@@ -37,7 +37,7 @@ def load_json_dict(path):
         key = p[0]
         value = json.loads(p[1])
         res[key] = value
-    return value
+    return res
 
 def merge_dict(x, other):
     cnt = 0
