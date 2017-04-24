@@ -11,7 +11,7 @@ def add_to_dict(d, key, oattr):
         mattr = d[key]
         for name in oattr:
             assert name not in mattr
-            mattr[name] = oattr[name]
+            mattr[name] = sorted(set(oattr[name]))
 
 def load_and_merge(res, inpath):
     cnt = 0

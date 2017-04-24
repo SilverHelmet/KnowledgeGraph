@@ -32,11 +32,12 @@ def load_json_dict(path):
     for line in file(path):
         cnt += 1
         if cnt % 1000000 == 0:
-            Print("load cnt = %d" %cnt)
+            Print("\rload cnt = %d," %cnt)
         p = line.split('\t')
         key = p[0]
         value = json.loads(p[1])
         res[key] = value
+    Print("load finished")
     return res
 
 def merge_dict(x, other):
