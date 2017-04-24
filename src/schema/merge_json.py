@@ -1,6 +1,8 @@
 from ..IOUtil import load_json_dict, Print as P, merge_dict
 import sys
 import json
+reload(sys)
+sys.setdefaultencoding('utf-8')
 
 if __name__ == "__main__":
     outpath = sys.argv[1]
