@@ -6,20 +6,20 @@ sys.setdefaultencoding('utf-8')
 
 def add_to_dict(d, key, oattr):
     if not key in d:
-        d[key] = oattr
-    else:
-        mattr = d[key]
-        for name in oattr:
-            assert name not in mattr
-            mattr[name] = sorted(set(oattr[name]))
+        d[key] = {}
+    mattr = d[key]
+    for name in oattr:
+        # assert name not in mattr
+        mattr[name] = sorted(set(oattr[name]))
 
 def load_and_merge(res, inpath):
     cnt = 0
+    P("")
     for line in file(inpath):
         p = line.split('\t')
         cnt += 1
         if cnt % 1000000 == 0:
-            P("\tload cnt = %d" %cnt)
+            P("\b\rload cnt = %d" %cnt)
         key = p[0]
         value = json.loads(p[1])
         add_to_dict(res, key, value)
