@@ -10,10 +10,10 @@ def add_to_dict(d, key, oattr):
     mattr = d[key]
     for name in oattr:
         # assert name not in mattr
-        length = len(oattr[name])
+        # length = len(oattr[name])
         mattr[name] = sorted(set(oattr[name]))
-        if len(mattr[name]) != length:
-            print length, oattr[name], mattr[name]
+        # if len(mattr[name]) != length:
+        #     print length, oattr[name], mattr[name]
 
 def load_and_merge(res, inpath):
     cnt = 0
