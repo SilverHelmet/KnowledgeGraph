@@ -51,12 +51,11 @@ def mapping(name_mapping, name, res, key):
         
 
 def do_mapping(name_mapping, baike_path, out_path):
+    Print('mapping from %s' %baike_path)
     Print("do mapping, write to %s" %out_path)
     outf = file(out_path, 'w')
 
     for cnt, line in enumerate(file(baike_path), start = 1):
-        if cnt != 1001:
-            continue
         if cnt % 100000 == 0:
             Print("mapping cnt = %d" %cnt)
         p = line.split("\t")
@@ -99,4 +98,3 @@ if __name__ == "__main__":
     name_mapping = extract_name_mapping(fb_attrs_path)
     do_mapping(name_mapping, baike_attrs_path, out_path)
 
-    print name_mapping['Barack Hussein Obama II']
