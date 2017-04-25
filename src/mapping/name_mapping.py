@@ -8,7 +8,7 @@ reload(sys)
 sys.setdefaultencoding('utf-8')
 
 def del_space(text):
-    return text.replace(" ", "")
+    return text.replace(" ", "").replace(u'\xa0', '')
 
 def extract_str(attrs, name):
     if name in attrs:
