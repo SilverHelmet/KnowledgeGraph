@@ -14,7 +14,6 @@ def add_to_dict(d, key, oattr):
 
 def load_and_merge(res, inpath):
     cnt = 0
-    P("")
     for line in file(inpath):
         p = line.split('\t')
         cnt += 1
