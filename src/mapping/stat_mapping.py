@@ -1,5 +1,5 @@
 import json
-from ..IOUtil import result_dir
+from ..IOUtil import result_dir, write_dict_cnt, Print
 import os
 import sys
 
@@ -24,7 +24,9 @@ class Mapping:
 
 def count(mapping_path):
     mapping_cnt = {}
-    for line in file(mapping_path):
+    for cnt, line in enumerate(file(mapping_path), start = 1):
+        if cnt % 100000 == 0:
+            Print("count %d" %cnt)
         p = line.split('\t')
         key = p[0]
         mappings = json.loads(p[1])
