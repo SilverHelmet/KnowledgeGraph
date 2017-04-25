@@ -19,7 +19,7 @@ def load_and_merge(res, inpath):
         p = line.split('\t')
         cnt += 1
         if cnt % 1000000 == 0:
-            P("\b\rload cnt = %d" %cnt)
+            P("load cnt = %d" %cnt)
         key = p[0]
         value = json.loads(p[1])
         add_to_dict(res, key, value)
