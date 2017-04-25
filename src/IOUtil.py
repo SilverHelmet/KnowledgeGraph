@@ -55,10 +55,15 @@ def merge_dict(x, other):
                 assert name not in mattr
                 mattr[name] = oattr[name]
 
-    
-    
-        
-
+def write_dict_cnt(dict_cnt, outpath):
+    outf = file(outpath, 'w')
+    cnt = 0
+    for key in sorted(dict_cnt.keys(), key = lambda x: dict_cnt[x], reverse = True):
+        cnt += 1
+        if cnt % 100000 == 0:
+            Print("write cnt = %d" %cnt)
+        outf.write(str(key) + '\t' + str(dict_cnt[key]) + '\n')
+    outf.close()
 
 base_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 result_dir = os.path.join(base_dir, 'result')
