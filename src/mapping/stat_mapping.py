@@ -53,8 +53,8 @@ if __name__ == "__main__":
     inpath = os.path.join(result_dir, '360/360_mapping.json')
     outpath = os.path.join(result_dir, '360/360_mapping_cnt.txt')
 
-    inpath = os.path.join(result_dir, 'test/mapping_result.json')
-    outpath = os.path.join(result_dir, 'test/mapping_cnt.txt')
+    # inpath = os.path.join(result_dir, 'test/mapping_result.json')
+    # outpath = os.path.join(result_dir, 'test/mapping_cnt.txt')
 
     
     mapping_cnt, mapping_set = count(inpath)
