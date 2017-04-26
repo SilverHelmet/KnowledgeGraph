@@ -10,6 +10,7 @@ def load_attrs():
 
 if __name__ == "__main__":
     attrs = load_attrs()
+    print attrs
     one_cnt = 0
     for cnt, line in enumerate(sys.stdin, start = 1):
         if cnt % 100000 == 0:
