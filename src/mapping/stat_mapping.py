@@ -24,6 +24,7 @@ class Mapping:
 
 def count(mapping_path):
     mapping_cnt = {}
+    mapping_set = {}
     for cnt, line in enumerate(file(mapping_path), start = 1):
         if cnt % 100000 == 0:
             Print("count %d" %cnt)
@@ -36,25 +37,36 @@ def count(mapping_path):
             for tag in values:
                 mapped_fb_uri, fb_uri = tag.split("#")
                 mapping = Mapping(baike_uri, fb_uri)
+                if not mapping in mapping_cnt:
+                    mapping_cnt[mapping] = 0
+                    mapping_set[mapping] = set()
+                mapping_set[mapping].add(mapped_fb_uri)
                 if mapping in cnted_maps:
                     continue
                 cnted_maps.add(mapping)
-                if not mapping in mapping_cnt:
-                    mapping_cnt[mapping] = 0
+                
                 mapping_cnt[mapping] += 1
-    return mapping_cnt
+    return mapping_cnt, mapping_set
 
 
 if __name__ == "__main__":
     inpath = os.path.join(result_dir, '360/360_mapping.json')
     outpath = os.path.join(result_dir, '360/360_mapping_cnt.txt')
 
-    # inpath = os.path.join(result_dir, 'test/mapping_result.json')
-    # outpath = os.path.join(result_dir, 'test/mapping_cnt.txt')
+    inpath = os.path.join(result_dir, 'test/mapping_result.json')
+    outpath = os.path.join(result_dir, 'test/mapping_cnt.txt')
 
     
-    mapping_cnt = count(inpath)
-    write_dict_cnt(mapping_cnt, outpath)
+    mapping_cnt, mapping_set = count(inpath)
+    # print len(mapping_cnt.keys())
+    Print("write")
+    outf = file(outpath, 'w')
+    for key in sorted(mapping_cnt.keys(), key = lambda x: mapping_cnt[x], reverse = True):
+        outf.write("%s\t%s\t%s\n" %(key, mapping_cnt[key], len(mapping_set[key])))
+    outf.close()
+        
+        
+    # write_dict_cnt(mapping_cnt, outpath)
 
 
 
