@@ -23,6 +23,7 @@ class Mapping:
         
 
 def count(mapping_path):
+    Print("counting %s" %mapping_path)
     mapping_cnt = {}
     mapping_set = {}
     for cnt, line in enumerate(file(mapping_path), start = 1):
@@ -58,12 +59,22 @@ if __name__ == "__main__":
 
     
     mapping_cnt, mapping_set = count(inpath)
-    # print len(mapping_cnt.keys())
     Print("write")
     outf = file(outpath, 'w')
     for key in sorted(mapping_cnt.keys(), key = lambda x: mapping_cnt[x], reverse = True):
         outf.write("%s\t%s\t%s\n" %(key, mapping_cnt[key], len(mapping_set[key])))
     outf.close()
+
+    inpath = os.path.join(result_dir, '360/360_mapping_lowercase.json')
+    outpath = os.path.join(result_dir, '360/360_mapping_lower_cnt.txt')
+
+    mapping_cnt, mapping_set = count(inpath)
+    Print("write")
+    outf = file(outpath, 'w')
+    for key in sorted(mapping_cnt.keys(), key = lambda x: mapping_cnt[x], reverse = True):
+        outf.write("%s\t%s\t%s\n" %(key, mapping_cnt[key], len(mapping_set[key])))
+    outf.close()
+
         
         
     # write_dict_cnt(mapping_cnt, outpath)
