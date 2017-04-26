@@ -54,5 +54,5 @@ if __name__ == "__main__":
     outpath = os.path.join(result_dir, 'test/entity_info_processed.json')
 
     inpath = os.path.join(result_dir, '360/360_entity_info.json')
-    inpath = os.path.join(result_dir, '360/360_entity_info_processed.json')
+    outpath = os.path.join(result_dir, '360/360_entity_info_processed.json')
     process(inpath, outpath)
