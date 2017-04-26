@@ -9,7 +9,7 @@ def load_attrs():
     return attrs
 
 if __name__ == "__main__":
-    attrs = load_attrs
+    attrs = load_attrs()
     one_cnt = 0
     for cnt, line in enumerate(sys.stdin, start = 1):
         if cnt % 100000 == 0:
