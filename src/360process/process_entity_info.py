@@ -37,7 +37,7 @@ def process(inpath, outpath):
             new_info = {}
             for name in info:
                 values = info[name]
-                new_name = del_space(name)
+                new_name = del_space(name).replace(" ", "")
                 new_values = []
                 for value in values:
                     new_values.extend(unfold(value))
