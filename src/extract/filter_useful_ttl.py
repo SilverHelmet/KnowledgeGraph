@@ -46,7 +46,7 @@ def filter_ttl(in_filepath, out_filepath, valid_func):
     for line in file(in_filepath):
         line = line.strip()
         cnt += 1
-        if cnt % 100000 == 0:
+        if cnt % 1000000 == 0:
             print "cnt = %d out_cnt = %d" %(cnt, out_cnt)
         if valid_func(line):
             out_cnt += 1
