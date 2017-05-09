@@ -1,6 +1,7 @@
 import sys
 from .extract_util import get_domain, encode, get_type
 from ..schema import schema
+from ..IOUtil import Print
 
 black_schema_domains = set(['fb:freebase', 'fb:base', 'fb:m', 'fb:g', 'fb:user'])
 def useful_domain(ttl):
@@ -47,7 +48,7 @@ def filter_ttl(in_filepath, out_filepath, valid_func):
         line = line.strip()
         cnt += 1
         if cnt % 1000000 == 0:
-            print "cnt = %d out_cnt = %d" %(cnt, out_cnt)
+            Print("cnt = %d out_cnt = %d" %(cnt, out_cnt))
         if valid_func(line):
             out_cnt += 1
             p = line.split('\t')[:3]
