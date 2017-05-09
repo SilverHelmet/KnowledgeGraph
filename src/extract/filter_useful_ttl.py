@@ -50,7 +50,7 @@ def filter_ttl(in_filepath, out_filepath, valid_func):
             print "cnt = %d out_cnt = %d" %(cnt, out_cnt)
         if valid_func(line):
             out_cnt += 1
-            outf.write("\t".join(line.split('\t')[:3]) + "\n")
+            outf.write("\t".join([encode(x) for x in line.split('\t')[:3]]) + "\n")
     outf.close()
 
 
