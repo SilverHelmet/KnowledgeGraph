@@ -32,7 +32,7 @@ if __name__ == "__main__":
         fb_uris = set(fb_uris)
         if len(fb_uris) == 1:
             for name in attrs:
-                if name_attr in obj:
+                if name in obj:
                     cnt_map[name_attr] += 1
             one_cnt += 1
 
