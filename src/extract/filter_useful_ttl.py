@@ -19,7 +19,7 @@ def filter_property(ttl):
     uri = encode(ttl.split("\t")[2])
     return uri == 'fb:type.property'
 
-types = schema.load_types()
+
 def filter_entity(ttl):
     global types
     p = ttl.split("\t")
@@ -27,19 +27,33 @@ def filter_entity(ttl):
     if get_domain(uri) in ['fb:measurement_unit', 'fb:type', 'fb:common']:
         return False
     return uri in types
+
+
+
+def filter_property_ttl(ttl):
+    global predicates, entities
+    p = ttl.split('\t')
+    s = encode(p[0])
+    m = encode(p[1])
+    return s in entities and m in predicates
+
     
 
 def filter_ttl(in_filepath, out_filepath, valid_func):
     outf = file(out_filepath, 'w')
     cnt = 0
+    out_cnt = 0
     for line in file(in_filepath):
         line = line.strip()
         cnt += 1
         if cnt % 100000 == 0:
-            print "cnt = %d" %cnt
+            print "cnt = %d out_cnt = %d" %(cnt, out_cnt)
         if valid_func(line):
+            out_cnt += 1
             outf.write("\t".join(line.split('\t')[:3]) + "\n")
     outf.close()
+
+
     
 
 if __name__ == "__main__":
@@ -56,5 +70,10 @@ if __name__ == "__main__":
     elif mode == 'property':
         func = filter_property
     elif mode == "entity":
+        types = schema.load_types()
         func = filter_entity
+    elif mode == "property_ttl":
+        predicates = schema.load_predicates()
+        entities = schema.load_entity()
+        func = filter_property_ttl
     filter_ttl(in_filepath, out_filepath, func)

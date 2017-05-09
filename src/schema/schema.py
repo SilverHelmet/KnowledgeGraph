@@ -29,6 +29,12 @@ def load_types():
         types.add(line.strip().split("\t")[0])
     return types
 
+def load_predicates():
+    pres = set()
+    for line in file(os.path.join(doc_dir, 'final_property_attrs.json'), 'r'):
+        pres.add(line.strip().split('\t')[0])
+    return types
+
 def is_zh_en_literal(uri):
     p = uri.strip().split("@")
     if len(p) == 2 and p[0].startswith('"') and p[0].endswith('"'):
