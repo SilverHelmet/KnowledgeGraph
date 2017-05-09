@@ -31,7 +31,8 @@ def encode(uri):
             uri = "fb:" + uri[len('<http://rdf.freebase.com/ns/'):-1]
             return uri
         else:
-            return None
+            return uri
+            # return None
     elif uri.startswith('fb:'):
         # fb:xxx
         return uri
