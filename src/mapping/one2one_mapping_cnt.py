@@ -7,6 +7,7 @@ def load_attrs():
     path = os.path.join(base_dir, 'docs/name_attr.txt')
     attrs = load_file(path)
     attrs = [attr.strip().split("\t")[-1].decode('utf-8') for attr in attrs]
+    attrs = [x for x in attrs if not x.startswith('#')]
     return attrs
 
 if __name__ == "__main__":
@@ -40,9 +41,9 @@ if __name__ == "__main__":
             map_name = None
             for name in attrs:
                 if name in obj:
-                    cnt_map[name] += 1
                     if map_name is None:
                         map_name = name
+            cnt_map[map_name] += 1
             one_cnt += 1
             key = key.decode('utf-8')
             x = key + '\t' + list(fb_uris)[0] + '\t' + map_name + '\n'
