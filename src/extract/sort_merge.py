@@ -16,7 +16,7 @@ if __name__ == "__main__":
 
 
     for cnt, line in enumerate(file(in_file), start = 1):
-        if cnt % 1000000 == 0:
+        if cnt % 10000 == 0:
             Print("load cnt = %d" %cnt)
         p = line.split('\t')
         s = p[0]
