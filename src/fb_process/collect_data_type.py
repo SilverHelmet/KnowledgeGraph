@@ -15,7 +15,8 @@ if __name__ == "__main__":
         if "^^" in value:
             t = value.split("^^")
             if len(t) > 2:
-                print line
+                print "error", line
+                continue
             _, data_type  = value.split('^^')
             if not data_type in data_types:
                 data_types.add(data_type)
