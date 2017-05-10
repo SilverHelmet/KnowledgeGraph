@@ -15,6 +15,7 @@ if __name__ == "__main__":
         if "^^" in value:
             _, data_type  = value.split('^^')
             if not data_type in data_types:
+                data_types.add(data_type)
                 print "add data_type", data_types, prop_attrs_map[p[1]]['fb:type.property.expected_type']
                 print line
     
