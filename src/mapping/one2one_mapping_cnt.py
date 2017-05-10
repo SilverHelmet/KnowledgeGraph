@@ -15,8 +15,8 @@ if __name__ == "__main__":
     in_path = os.path.join(result_dir, '360/360_mapping.json')
 
     # debug
-    in_path = os.path.join(result_dir, 'test/mapping_result.json')
-    out_path = os.path.join(result_dir, 'test/exact_mapping.tsv')
+    # in_path = os.path.join(result_dir, 'test/mapping_result.json')
+    # out_path = os.path.join(result_dir, 'test/exact_mapping.tsv')
 
     outf = file(out_path, 'w')
     
