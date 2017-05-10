@@ -53,6 +53,8 @@ if __name__ == "__main__":
     for key in sorted(cnt_map.keys(), key = lambda x: cnt_map[x], reverse = True):
         print type(key)
         print key.encode('utf-8')
+        print sys.stdout.encoding
+        
         print key, cnt_map[key]
 
     
