@@ -31,12 +31,14 @@ if __name__ == "__main__":
                 fb_uris.extend(obj[name_attr])
         fb_uris = set(fb_uris)
         if len(fb_uris) == 1:
+            map_name = None
             for name in attrs:
                 if name in obj:
                     cnt_map[name] += 1
+                    map_name = name
             one_cnt += 1
 
-            outf.write(key + "\t" + list(fb_uris)[0] + '\n')
+            outf.write(key + "\t" + list(fb_uris)[0] + "\t" + map_name + '\n')
 
     outf.close()
     print "one cnt = %d" %one_cnt
