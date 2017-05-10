@@ -9,6 +9,7 @@ if __name__ == "__main__":
         if cnt > 1:
             if last_line > line:
                 print "error", cnt, last_line, line
+                break
         if cnt % 1000000 == 0:
             Print('load cnt = %d' %cnt)
         last_line = line
