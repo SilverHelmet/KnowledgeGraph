@@ -1,6 +1,6 @@
 import sys
 import json
-from ..extract.extract_util import get_domain
+from ..fb_process.extract_util import get_domain
 from ..IOUtil import write_strs
 
 def parse_types_of_domains():

@@ -1,5 +1,5 @@
 from ..IOUtil import result_dir, base_dir
-from ..extract.extract_util import get_type, encode, get_domain
+from ..fb_process.extract_util import get_type, encode, get_domain
 from ..queryKG.query_util import get_unique_attr
 import os
 import json

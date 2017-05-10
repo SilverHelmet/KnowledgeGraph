@@ -1,5 +1,5 @@
 from ..IOUtil import result_dir
-from ..extract.extract_util import encode
+from ..fb_process.extract_util import encode
 import json, os
 
 

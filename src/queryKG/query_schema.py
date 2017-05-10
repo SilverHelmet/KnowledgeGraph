@@ -1,5 +1,5 @@
 from .query_util import call, parse_single_simple_ret, parse_single_json
-from ..extract.extract_util import encode, get_domain
+from ..fb_process.extract_util import encode, get_domain
 from ..IOUtil import write_strs
 import urllib2
 import json

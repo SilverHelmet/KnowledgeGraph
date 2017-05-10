@@ -1,5 +1,5 @@
 import json
-from ..extract.extract_util import get_type, get_domain
+from ..fb_process.extract_util import get_type, get_domain
 from ..IOUtil import load_file
 
 class Predicate:

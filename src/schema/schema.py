@@ -1,8 +1,9 @@
 #encode:utf-8
-from ..extract.extract_util import get_domain
+from ..fb_process.extract_util import get_domain
 from ..IOUtil import doc_dir, result_dir
 import sys
 import os
+import json
 
 def load_entity():
     total = 56490649
@@ -34,6 +35,13 @@ def load_predicates():
     for line in file(os.path.join(doc_dir, 'final_property_attrs.json'), 'r'):
         pres.add(line.strip().split('\t')[0])
     return pres
+
+def load_property_attrs():
+    attrs_map = {}
+    for line in file(os.path.join(doc_dir, 'final_property_attrs.json'), 'r'):
+        key, obj = line.split('\t')
+        attrs_map[key] = json.loads(obj)
+    return attrs_map
 
 def is_zh_en_literal(uri):
     p = uri.strip().split("@")

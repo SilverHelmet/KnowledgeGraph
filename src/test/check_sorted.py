@@ -8,8 +8,7 @@ if __name__ == "__main__":
         line = line.split('\t')[0]
         if cnt > 1:
             if last_line > line:
-                print "error", cnt, last_line, line
-                break
+                print "error", cnt, last_line
         if cnt % 1000000 == 0:
             Print('load cnt = %d' %cnt)
         last_line = line

@@ -2,7 +2,7 @@ import sys
 import os
 from .schema import load_entity, is_zh_en_literal, add_attr
 from ..IOUtil import freebase_rel_dir, result_dir
-from ..extract.extract_util import encode
+from ..fb_process.extract_util import encode
 import json
 
 
