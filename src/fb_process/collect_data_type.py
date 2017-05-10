@@ -13,6 +13,9 @@ if __name__ == "__main__":
         p = line.split('\t')
         value = p[2]
         if "^^" in value:
+            t = value.split("^^")
+            if len(t) > 2:
+                print line
             _, data_type  = value.split('^^')
             if not data_type in data_types:
                 data_types.add(data_type)
@@ -20,3 +23,4 @@ if __name__ == "__main__":
                 print line
     
             
+
