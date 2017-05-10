@@ -15,8 +15,8 @@ if __name__ == "__main__":
     in_path = os.path.join(result_dir, '360/360_mapping.json')
 
     # debug
-    # in_path = os.path.join(result_dir, 'test/mapping_result.json')
-    # out_path = os.path.join(result_dir, 'test/exact_mapping.tsv')
+    in_path = os.path.join(result_dir, 'test/mapping_result.json')
+    out_path = os.path.join(result_dir, 'test/exact_mapping.tsv')
 
     outf = file(out_path, 'w')
     
@@ -28,9 +28,6 @@ if __name__ == "__main__":
     for cnt, line in enumerate(file(in_path), start = 1):
         if cnt % 100000 == 0:
             Print("cnt = %d one_cnt = %d" %(cnt, one_cnt))
-        if cnt == 2:
-            break
-        
         key, obj = line.split('\t')
         obj = json.loads(obj)
         fb_uris = []
@@ -47,8 +44,9 @@ if __name__ == "__main__":
                     if map_name is None:
                         map_name = name
             one_cnt += 1
-
-            outf.write(key + "\t" + list(fb_uris)[0] + "\t" + map_name + '\n')
+            key = key.decode('utf-8')
+            x = key + '\t' + list(fb_uris)[0] + '\t' + map_name + '\n'
+            outf.write(x.encode('utf-8'))
 
     outf.close()
     print "one cnt = %d" %one_cnt
