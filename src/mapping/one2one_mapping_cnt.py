@@ -33,7 +33,7 @@ if __name__ == "__main__":
         if len(fb_uris) == 1:
             for name in attrs:
                 if name in obj:
-                    cnt_map[name_attr] += 1
+                    cnt_map[name] += 1
             one_cnt += 1
 
             outf.write(key + "\t" + list(fb_uris)[0] + '\n')
