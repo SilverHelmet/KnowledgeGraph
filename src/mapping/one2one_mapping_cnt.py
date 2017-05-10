@@ -51,8 +51,7 @@ if __name__ == "__main__":
     outf.close()
     print "one cnt = %d" %one_cnt
     for key in sorted(cnt_map.keys(), key = lambda x: cnt_map[x], reverse = True):
-        key = key.encode('utf-8')
-        print key, cnt_map[key]
+        print key.encode('utf-8'), cnt_map[key]
 
     
     
