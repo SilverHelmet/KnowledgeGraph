@@ -91,7 +91,7 @@ if __name__ == "__main__":
             cnt_map[map_name] += 1
             one_cnt += 1
             x = baike_key + "\t" + fb_uri + '\t' + map_name + '\n'
-            outf.write(x.decode('utf-8'))
+            outf.write(x.encode('utf-8'))
     outf.close()
 
     print "one cnt = %d" %one_cnt
