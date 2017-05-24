@@ -81,7 +81,22 @@ if __name__ == "__main__":
             # x = key + '\t' + list(fb_uris)[0] + '\t' + map_name + '\n'
 
     print "one cnt = %d" %one_cnt
+    fb_uris = [uri for _, uri, _ in maps]
+    fb_uri_cnt = {}
+    for uri in fb_uris:
+        if not uri in fb_uri_cnt:
+            fb_uri_cnt[uri] = 0
+        fb_uri_cnt[uri] += 1
+
+    exact_one_cnt = 0
+    for baike_key, fb_uri, _ in maps:
+        if fb_uri_cnt[fb_uri] == 1:
+            exact_one_cnt += 1
+    print 'exact one cnt = %d' %exact_one_cnt
+        
+
     uri_lv_map = count_lv_map(maps)
+
 
     outf = file(out_path, 'w')
     one_cnt = 0
