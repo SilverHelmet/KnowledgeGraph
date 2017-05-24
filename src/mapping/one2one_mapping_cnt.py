@@ -88,7 +88,7 @@ if __name__ == "__main__":
     for baike_key, fb_uri, map_name in maps:
 
         level = uri_lv_map[fb_uri]
-        if attr_level(fb_uri) == level:
+        if attr_level(map_name) == level:
             cnt_map[map_name] += 1
             one_cnt += 1
             x = baike_key + "\t" + fb_uri + '\t' + map_name + '\n'
