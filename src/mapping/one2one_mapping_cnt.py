@@ -14,12 +14,13 @@ def attr_level(attr):
     '''
      0: none
      1: infobox
-     2: ename, title
-     3: error
+     2: multi_infobox
+     3 ename, title
+     4: multi_ename(title)
     '''
     
     if attr in ['ename', 'title']:
-        return 2
+        return 3
     else:
         return 1
 
@@ -30,8 +31,8 @@ def count_lv_map(maps):
             uri_lv_map[fb_uri] = 0
         level = attr_level(attr)
         last_level = uri_lv_map[fb_uri]
-        if last_level == 2 and level == 2:
-            uri_lv_map[fb_uri] = 3
+        if last_level == level and level in [1, 3]:
+            uri_lv_map[fb_uri] = level + 1
         else:
             uri_lv_map[fb_uri] = max(level, last_level)
 
