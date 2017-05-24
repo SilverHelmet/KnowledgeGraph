@@ -4,11 +4,40 @@ from ..IOUtil import base_dir, load_file, Print, result_dir
 import os
 
 def load_attrs():
-    path = os.path.join(base_dir, 'docs/name_attr.txt')
+    path = os.path.join(base_dir, 'docs/one2one_name_attr.txt')
     attrs = load_file(path)
     attrs = [attr.strip().split("\t")[-1].decode('utf-8') for attr in attrs]
     attrs = [x for x in attrs if not x.startswith('#')]
     return attrs
+
+def attr_level(attr):
+    '''
+     0: none
+     1: infobox
+     2: ename, title
+     3: error
+    '''
+    
+    if attr in ['ename', 'title']:
+        return 2
+    else:
+        return 1
+
+def count_lv_map(maps):
+    uri_lv_map = {}
+    for _, fb_uri, attr in maps:
+        if not fb_uri in uri_lv_map:
+            uri_lv_map[fb_uri] = 0
+        level = attr_level(attr)
+        last_level = uri_lv_map[fb_uri]
+        if last_level == 2 and level == 2:
+            uri_lv_map[fb_uri] = 3
+        else:
+            uri_lv_map[fb_uri] = max(level, last_level)
+
+
+    return uri_lv_map
+
 
 if __name__ == "__main__":
     attrs = load_attrs()
@@ -18,14 +47,12 @@ if __name__ == "__main__":
     # debug
     # in_path = os.path.join(result_dir, 'test/mapping_result.json')
     # out_path = os.path.join(result_dir, 'test/exact_mapping.tsv')
-
-    outf = file(out_path, 'w')
     
     one_cnt = 0
     cnt_map = {}
     for x in attrs:
         cnt_map[x] = 0
-
+    maps = []
     for cnt, line in enumerate(file(in_path), start = 1):
         if cnt % 100000 == 0:
             Print("cnt = %d one_cnt = %d" %(cnt, one_cnt))
@@ -43,14 +70,32 @@ if __name__ == "__main__":
                 if name in obj:
                     if map_name is None:
                         map_name = name
+            # cnt_map[map_name] += 1
+            one_cnt += 1
+
+            fb_uri = list(fb_uris)[0]
+            maps.append((key.decode('utf-8'), fb_uri, map_name))
+
+            # key = key.decode('utf-8')
+            # x = key + '\t' + list(fb_uris)[0] + '\t' + map_name + '\n'
+
+    print "one cnt = %d" %one_cnt
+    uri_lv_map = count_lv_map(maps)
+
+    outf = file(out_path, 'w')
+    one_cnt = 0
+    for baike_key, fb_uri, map_name in maps:
+
+        level = uri_lv_map[fb_uri]
+        if attr_level(fb_uri) == level:
             cnt_map[map_name] += 1
             one_cnt += 1
-            key = key.decode('utf-8')
-            x = key + '\t' + list(fb_uris)[0] + '\t' + map_name + '\n'
-            outf.write(x.encode('utf-8'))
-
+            x = baike_key + "\t" + fb_uri + '\t' + map_name + '\n'
+            outf.write(x.decode('utf-8'))
     outf.close()
+
     print "one cnt = %d" %one_cnt
+
     for key in sorted(cnt_map.keys(), key = lambda x: cnt_map[x], reverse = True):
         print key.encode('utf-8'), cnt_map[key]
 
