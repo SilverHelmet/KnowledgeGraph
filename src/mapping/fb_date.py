@@ -59,6 +59,9 @@ class FBDatetime:
             args['hour'] = int(match.group('hour'))
             args['second'] = int(match.group('second'))
             args['msec'] = int(match.group('msec'))
+        else:
+            print "error date type", time_str
+            return None
         return FBDatetime(**args)
 
     def __str__(self):
