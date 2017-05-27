@@ -3,6 +3,8 @@ from ..IOUtil import result_dir, Print
 import os
 import json
 from tqdm import tqdm
+from .fb_date import FBDatetime, BaikeDatetime
+from .name_mapping import del_space
 
 def extract_name(value):
     suffix = value[-4:]
@@ -59,6 +61,37 @@ def load_exact_map(exact_map_path, total = 558541):
         fb2baike[fb_uri] = baike_url
     return fb2baike
 
+def map_time(fb_date, baike_date):
+    
+    if fb_date is None or baike_date is None:
+        return False
+    if fb_date.year != baike_date.year:
+        return False
+    if fb_date.month == 0 or baike_date.month == 0:
+        return True
+    if fb_date.month != baike_date.month:
+        return False
+    if fb_date.day == 0 or baike_date.day == 0:
+        return True
+    return fb_date.day == baike_date.day
+
+def map_str(fb_str, baike_str):
+    return fb_str.find(baike_str) != -1 or baike_str.find(fb_str) != -1
+
+def map_value(fb_value, baike_value):
+    fb_value = del_space(fb_value)
+    baike_value = del_space(baike_value)
+    if len(fb_value) == 0 or len(baike_value) == 0:
+        return False
+    fb_date = FBDatetime.parse_fb_datetime(fb_value)
+    if fb_date is not None:
+        baike_date = BaikeDatetime.parse(baike_value)
+        return map_time(fb_date, baike_date)
+    else:
+        return map_str(fb_value, baike_value)
+
+        
+
 def do_predicate_mapping(outpath, name_map, fb2baike, baike_entity_info, fb_property_path, total):
     Print("do predicate mapping %s, write to %s" %(fb_property_path, outpath))
     outf = file(outpath, 'w')
@@ -80,7 +113,12 @@ def do_predicate_mapping(outpath, name_map, fb2baike, baike_entity_info, fb_prop
             for fb_value_name in values:
                 for baike_info_name in baike_attr:
                     baike_values = baike_attr[baike_info_name]
-                    if baike_values.index(fb_value_name) != -1:
+                    match = False
+                    for baike_value in baike_values:
+                        if map_value(fb_value_name, baike_value):
+                            match = True
+                            break
+                    if match:
                         outf.write("{}\t{}\t{}\t{}\t{}\n".format(fb_uri, baike_url, name, baike_info_name, fb_value_name))
         
     outf.close()
@@ -89,8 +127,8 @@ def do_predicate_mapping(outpath, name_map, fb2baike, baike_entity_info, fb_prop
 
 if __name__ == "__main__":
     exact_mapping_file = os.path.join(result_dir, "360/mapping/exact_mapping.tsv")
-    name_files = [os.path.join(result_dir, 'freebase/entity_name.json'), 
-                os.path.join(result_dir, 'freebase/entity_alias.json')]
+    name_files = [os.path.join(result_dir, 'freebase/entity_name.json')]
+                # os.path.join(result_dir, 'freebase/entity_alias.json')]
     totals = [39345270, 2197095]
 
     name_map = load_name_attr(name_files, totals)
@@ -103,6 +141,6 @@ if __name__ == "__main__":
     exact_map_path = os.path.join(result_dir, '360/mapping/exact_mapping.tsv')
     fb2baike = load_exact_map(exact_map_path)
 
-    fb_property_path = os.path.join(result_dir, 'entity_property.json')
+    fb_property_path = os.path.join(result_dir, 'freebase/entity_property.json')
     outpath = os.path.join(result_dir, '360/mapping/info_predicate_mapping.tsv')
     do_predicate_mapping(outpath, name_map, fb2baike, baike_entity_info, fb_property_path, total = 53574900)
