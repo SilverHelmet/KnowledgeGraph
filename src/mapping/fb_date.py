@@ -29,18 +29,26 @@ class FBDatetime:
         args = {}
         if date_type == "<http://www.w3.org/2001/XMLSchema#date>":
             match = FBDatetime.date_p.match(value)
+            if match is None:
+                print "error", value
             args['year'] = int(match.group('year'))
             args['month'] = int(match.group('month'))
             args['day'] = int(match.group('day'))
         elif date_type == "<http://www.w3.org/2001/XMLSchema#gYear>":
             match = FBDatetime.year_p.match(value)
+            if match is None:
+                print "error", value
             args['year'] = int(match.group('year'))
         elif date_type == '<http://www.w3.org/2001/XMLSchema#gYearMonth>':
             match = FBDatetime.yearmonth_p.match(value)
+            if match is None:
+                print "error", value
             args['year'] = int(match.group('year'))
             args['month'] = int(match.group('month'))
         elif date_type == "<http://www.w3.org/2001/XMLSchema#dateTime>":
             match = FBDatetime.datetime_p.match(value)
+            if match is None:
+                print "error", value
             args['year'] = int(match.group('year'))
             args['month'] = int(match.group('month'))
             args['day'] = int(match.group('day'))
@@ -104,7 +112,7 @@ if __name__ == "__main__":
         d = FBDatetime.parse_fb_datetime(value)
         print d
 
-    values = ['2003年8月26日', '2003年8', '2003', '2003年8月', '2003年', '203-8', u'1916年']
+    values = ['2003年8月26日', '2003年8', '2003', '2003年8月', '2003年', '203-8', u'1916年', '公元前485年10月']
     for value in values:
         print "str", value
         d = BaikeDatetime.parse(value)
