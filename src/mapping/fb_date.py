@@ -3,10 +3,10 @@ import dateparser
 import re
 
 class FBDatetime:
-    date_p = re.compile(r'(?P<year>\d{2,4})-(?P<month>\d{1,2})-(?P<day>\d{1,2})$')
-    year_p = re.compile(r'(?P<year>\d{2,4})$')
-    yearmonth_p = re.compile(r'(?P<year>\d{2,4})-(?P<month>\d{1,2})$')
-    datetime_p = re.compile(r'(?P<year>\d{2,4})-(?P<month>\d{1,2})-(?P<day>\d{1,2})T(?P<hour>\d{1,2}):(?P<minute>\d{1,2}):(?P<second>\d{1,2})\.(?P<msec>\d+)Z$')
+    date_p = re.compile(r'(?P<year>-?\d{1,4})-(?P<month>\d{1,2})-(?P<day>\d{1,2})$')
+    year_p = re.compile(r'(?P<year>-?\d{1,4})$')
+    yearmonth_p = re.compile(r'(?P<year>-?\d{1,4})-(?P<month>\d{1,2})$')
+    datetime_p = re.compile(r'(?P<year>-?\d{1,4})-(?P<month>\d{1,2})-(?P<day>\d{1,2})T(?P<hour>\d{1,2}):(?P<minute>\d{1,2}):(?P<second>\d{1,2})\.(?P<msec>\d+)Z$')
     def __init__(self, year, month = 0, day = 0, hour = -1, minute = -1, second = -1, msec = -1):
         self.year = year
         self.month = month
@@ -30,25 +30,29 @@ class FBDatetime:
         if date_type == "<http://www.w3.org/2001/XMLSchema#date>":
             match = FBDatetime.date_p.match(value)
             if match is None:
-                print "error", value
+                print "\nerror", time_str
+                return None
             args['year'] = int(match.group('year'))
             args['month'] = int(match.group('month'))
             args['day'] = int(match.group('day'))
         elif date_type == "<http://www.w3.org/2001/XMLSchema#gYear>":
             match = FBDatetime.year_p.match(value)
             if match is None:
-                print "error", value
+                print "\nerror", time_str
+                return None
             args['year'] = int(match.group('year'))
         elif date_type == '<http://www.w3.org/2001/XMLSchema#gYearMonth>':
             match = FBDatetime.yearmonth_p.match(value)
             if match is None:
-                print "error", value
+                print "\nerror", time_str
+                return None
             args['year'] = int(match.group('year'))
             args['month'] = int(match.group('month'))
         elif date_type == "<http://www.w3.org/2001/XMLSchema#dateTime>":
             match = FBDatetime.datetime_p.match(value)
             if match is None:
-                print "error", value
+                print "\nerror", time_str
+                return None
             args['year'] = int(match.group('year'))
             args['month'] = int(match.group('month'))
             args['day'] = int(match.group('day'))
@@ -61,9 +65,9 @@ class FBDatetime:
         return "%d-%d-%d %d:%d:%d.%d" %(self.year, self.month, self.day, self.hour, self.minute, self.second, self.msec)
 
 class BaikeDatetime:
-    date_p = re.compile(r'(?P<year>\d{2,4})(-|年)(?P<month>\d{1,2})(-|月)(?P<day>\d{1,2})(日)?$')
-    year_p = re.compile(r'(?P<year>\d{2,4})(年)?$')
-    yearmonth_p = re.compile(r'(?P<year>\d{2,4})(-|年)(?P<month>\d{1,2})(月)?$')
+    date_p = re.compile(r'(?P<year>-?\d{1,4})(-|年)(?P<month>\d{1,2})(-|月)(?P<day>\d{1,2})(日)?$')
+    year_p = re.compile(r'(?P<year>-?\d{1,4})(年)?$')
+    yearmonth_p = re.compile(r'(?P<year>-?\d{1,4})(-|年)(?P<month>\d{1,2})(月)?$')
     def __init__(self, year, month = 0, day = 0):
         self.year = year
         self.month = month
@@ -105,9 +109,10 @@ class BaikeDatetime:
 
 if __name__ == "__main__":
     values = ['"2009-09-24"^^<http://www.w3.org/2001/XMLSchema#date>',
-         '"2001"^^<http://www.w3.org/2001/XMLSchema#gYear>', 
-         '"2006-02"^^<http://www.w3.org/2001/XMLSchema#gYearMonth>', 
-         '"1975-05-15T22:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>']
+         '"-2001"^^<http://www.w3.org/2001/XMLSchema#gYear>', 
+         '"-2006-02"^^<http://www.w3.org/2001/XMLSchema#gYearMonth>', 
+         '"1975-05-15T22:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>', 
+         '"-0269-07"^^<http://www.w3.org/2001/XMLSchema#gYear>']
     for value in values:
         d = FBDatetime.parse_fb_datetime(value)
         print d
