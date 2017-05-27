@@ -61,6 +61,6 @@ if __name__ == "__main__":
     # name_map = load_name_attr(name_files, totals)
 
     baike_entity_info_path = os.path.join(result_dir, '360/360_entity_info_processed.json')
-    baike_entity_info = load_dict(baike_entity_info_path, total = 21710208)
+    baike_entity_info = load_baike_info(baike_entity_info_path, total = 21710208)
     
     print baike_entity_info['baike.so.com/doc/6692614-6906520.html']
