@@ -2,6 +2,7 @@ import sys
 from ..IOUtil import Print, result_dir
 import os
 import json
+from tqdm imprt tqdm
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
@@ -15,10 +16,8 @@ if __name__ == "__main__":
 
 
 
-    for cnt, line in enumerate(file(in_file), start = 1):
-        if cnt % 1000000 == 0:
-            Print("load cnt = %d" %cnt)
-        p = line.split('\t')
+    for cnt, line in tqdm(enumerate(file(in_file), start = 1), total  = 53574900):
+        p = line.strip().split('\t')
         s = p[0]
         if not s in property_map:
             property_map[s] = []
