@@ -127,8 +127,8 @@ def do_predicate_mapping(outpath, name_map, fb2baike, baike_entity_info, fb_prop
 
 if __name__ == "__main__":
     exact_mapping_file = os.path.join(result_dir, "360/mapping/exact_mapping.tsv")
-    name_files = [os.path.join(result_dir, 'freebase/entity_name.json')]
-                # os.path.join(result_dir, 'freebase/entity_alias.json')]
+    name_files = [os.path.join(result_dir, 'freebase/entity_name.json'),
+                os.path.join(result_dir, 'freebase/entity_alias.json')]
     totals = [39345270, 2197095]
 
     name_map = load_name_attr(name_files, totals)
