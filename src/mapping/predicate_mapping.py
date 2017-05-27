@@ -75,7 +75,7 @@ if __name__ == "__main__":
     baike_entity_info_path = os.path.join(result_dir, '360/360_entity_info_processed.json')
     # baike_entity_info = load_baike_info(baike_entity_info_path, total = 21710208)
     
-    print baike_entity_info['baike.so.com/doc/6692614-6906520.html']
+
 
     exact_map_path = os.path.join(result_dir, '360/mapping/exact_mapping.tsv')
     fb2baike = load_exact_map(exact_map_path)
