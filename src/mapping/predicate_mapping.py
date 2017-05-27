@@ -11,11 +11,11 @@ def extract_name(value):
     return name
 
 
-def load_name_attr(filepaths):
+def load_name_attr(filepaths, totals):
     name_map = {}
-    for filepath in filepaths:
+    for filepath, total in zip(filepaths, totals):
         Print("load name %s" %filepath)
-        for line in tqdm(file(filepath)):
+        for line in tqdm(file(filepath), total = total):
             p = line.split('\t')
             key = p[0].decode('utf-8')
             if not key in name_map:
@@ -36,6 +36,7 @@ if __name__ == "__main__":
     exact_mapping_file = os.path.join(result_dir, "360/mapping/exact_mapping.tsv")
     name_files = [os.path.join(result_dir, 'freebase/entity_name.json'), 
                 os.path.join(result_dir, 'freebase/entity_alias.json')]
+    totals = [39345270, 2197095]
 
-    name_map = load_name_attr(name_files)
+    name_map = load_name_attr(name_files, totals)
     print name_map['fb:m.010016']
