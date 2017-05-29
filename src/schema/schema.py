@@ -5,6 +5,39 @@ import sys
 import os
 import json
 
+class Schema:
+    def __init__(self):
+        pass
+    
+    def init(self):
+        self.property_attrs = load_property_attrs()
+        self.type_attrs = load_type_attrs()
+        self.reverse_prop_map = get_reverse_property_map(self.property_attrs)
+    
+    def get_reverse_property_map(self, property_attrs):
+        reverse_map = {}
+        reverse_property = 'fb:type.property.reverse_property'
+        for fb_property in property_attrs:
+            attr = property_attrs[fb_property]
+            if reverse_property in attr:
+                reverse_fb_prop = attr[reverse_property]
+                assert fb_property not in reverse_map and reverse_fb_prop not in reverse_map
+                reverse_map[fb_property] = reverse_fb_prop
+                reverse_map[reverse_fb_prop] = fb_property
+
+
+    def is_mediator(self, fb_type):
+        if fb_type in self.property_attrs:
+            return bool(self.property_attrs[fb_type]['fb:freebase.type_hints.mediator'])
+        else:
+            return False
+    
+    def reverse_property(self, fb_property):
+        return self.reverse_prop_map.get(fb_property, None)
+
+    def expected_type(self, fb_property):
+        return self.property_attrs
+
 def load_entity():
     total = 56490649
     entities = set()
@@ -29,6 +62,13 @@ def load_types():
     for line in file(os.path.join(doc_dir, 'final_type_attrs.json'), 'r'):
         types.add(line.strip().split("\t")[0])
     return types
+
+def load_type_attrs():
+    attrs_map = {}
+    for line in file(os.path.join(doc_dir, 'final_type_attrs.json'), 'r'):
+        key, obj = line.split('\t')
+        attrs_map[key] = json.loads(obj)
+    return attrs_map
 
 def load_predicates():
     pres = set()

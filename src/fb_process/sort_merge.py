@@ -16,7 +16,7 @@ if __name__ == "__main__":
     property_map = {}
 
 
-
+283388281
     for cnt, line in tqdm(enumerate(file(in_file), start = 1), total  = 53574900):
         p = line.strip().split('\t')
         s = p[0]
@@ -26,8 +26,6 @@ if __name__ == "__main__":
 
     outf = file(out_file, 'w')
     Print("start sorting")
-    for cnt, key in enumerate(sorted(property_map.keys()), start = 0):
-        if cnt % 100000 == 0:
-            Print("write cnt = %d" %cnt)
+    for key in tqdm(sorted(property_map.keys()), total = len(property_map)):
         outf.write("%s\t%s\n" %(key, json.dumps(property_map[key])))
     outf.close()
