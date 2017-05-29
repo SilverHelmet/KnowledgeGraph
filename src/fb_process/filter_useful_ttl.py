@@ -44,7 +44,9 @@ def filter_property_ttl(ttl):
 
 def filter_ttl(in_filepath, out_filepath, valid_func, total = None):
     outf = file(out_filepath, 'w')
-    for line in tqdm(file(in_filepath), total = total):
+    for cnt, line in enumerate(file(in_filepath), start = 1):
+        if cnt % 100000 == 0:
+            Print(cnt)
         line = line.strip()
         if valid_func(line):
             p = line.split('\t')[:3]
