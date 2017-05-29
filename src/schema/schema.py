@@ -27,8 +27,8 @@ class Schema:
 
 
     def is_mediator(self, fb_type):
-        if fb_type in self.property_attrs:
-            return bool(self.property_attrs[fb_type].get('fb:freebase.type_hints.mediator', False))
+        if fb_type in self.type_attrs:
+            return get_bool(self.type_attrs[fb_type].get('fb:freebase.type_hints.mediator', '0'))
         else:
             return False
     
@@ -37,6 +37,17 @@ class Schema:
 
     def expected_type(self, fb_property):
         return self.property_attrs[fb_property]['fb:type.property.expected_type']
+
+def get_bool(value):
+    if value == "1":
+        return True
+    elif value == "0":
+        return False
+    elif value.lower() == "true":
+        return True
+    elif value.lower() == "false":
+        return False
+    return value
 
 def load_entity():
     total = 56490649
@@ -100,4 +111,8 @@ def add_attr(dict, id, name, value):
         
 
 if __name__ == "__main__":
-    pass
+    schema = Schema()
+    schema.init()
+    print schema.is_mediator('fb:geography.mountain_age')
+    print schema.is_mediator('fb:location.dated_location')
+    print schema.is_mediator('fb:location.cotermination')
