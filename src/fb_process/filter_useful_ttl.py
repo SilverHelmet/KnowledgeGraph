@@ -45,7 +45,7 @@ def filter_property_ttl(ttl):
 def filter_ttl(in_filepath, out_filepath, valid_func, total = None):
     outf = file(out_filepath, 'w')
     for cnt, line in enumerate(file(in_filepath), start = 1):
-        if cnt % 100000 == 0:
+        if cnt % 10 == 0:
             Print(cnt)
         line = line.strip()
         if valid_func(line):
@@ -85,9 +85,7 @@ if __name__ == "__main__":
         func = filter_property_ttl
     elif mode == "property_mediator_ttl":
         predicates = schema.load_predicates()
-        print len(predicates)
         entities = load_file(os.path.join(result_dir, 'freebase/mediator_entities.txt'))
-        print len(entities)
         func = filter_property_ttl
         
     filter_ttl(in_filepath, out_filepath, func, total)
