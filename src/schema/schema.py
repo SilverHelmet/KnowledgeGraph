@@ -12,7 +12,7 @@ class Schema:
     def init(self):
         self.property_attrs = load_property_attrs()
         self.type_attrs = load_type_attrs()
-        self.reverse_prop_map = get_reverse_property_map(self.property_attrs)
+        self.reverse_prop_map = self.get_reverse_property_map(self.property_attrs)
     
     def get_reverse_property_map(self, property_attrs):
         reverse_map = {}
