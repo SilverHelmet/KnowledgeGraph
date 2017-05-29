@@ -36,7 +36,7 @@ class Schema:
         return self.reverse_prop_map.get(fb_property, None)
 
     def expected_type(self, fb_property):
-        return self.property_attrs
+        return self.property_attrs[fb_property]
 
 def load_entity():
     total = 56490649
