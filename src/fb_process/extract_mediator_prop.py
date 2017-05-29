@@ -24,7 +24,7 @@ def parse_mediator_entities(property_path, total = 283388281):
 
 
 if __name__ == "__main__":
-    property_path = os.path.join(result_dir, 'freebase/entity_propery.ttl')
+    property_path = os.path.join(result_dir, 'freebase/entity_property.ttl')
     freebase_path = "/home/wzc/freebase/fb.ttl"
 
     mediator_entities = parse_mediator_entities(property_path)
