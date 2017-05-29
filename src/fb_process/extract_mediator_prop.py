@@ -13,6 +13,7 @@ def parse_mediator_entities(property_path, total = 283388281):
         prop = p[1]
         value = p[2]
         value_type = schema.expected_type(prop)
+        print value_type, type(value_type)
         if schema.is_mediator(value_type):
             med_entities.append(value)
 
