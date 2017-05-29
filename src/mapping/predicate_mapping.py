@@ -62,7 +62,6 @@ def load_exact_map(exact_map_path, total = 558541):
     return fb2baike
 
 def map_time(fb_date, baike_date):
-    
     if fb_date is None or baike_date is None:
         return False
     if fb_date.year != baike_date.year:
@@ -76,6 +75,12 @@ def map_time(fb_date, baike_date):
     return fb_date.day == baike_date.day
 
 def map_str(fb_str, baike_str):
+    if fb_str.startswith('"') and fb_str.endswith('"'):
+        fb_str = fb_str[1:-1]
+    longer = max(len(fb_str), len(baike_str))
+    shorter = min(len(fb_str), len(baike_str))
+    if shorter * 3 <= longer:
+        return False
     return fb_str.find(baike_str) != -1 or baike_str.find(fb_str) != -1
 
 def map_value(fb_value, baike_value):
@@ -90,7 +95,10 @@ def map_value(fb_value, baike_value):
     else:
         return map_str(fb_value, baike_value)
 
+def extend_fb_attr(fb_attr, fb_uri):
+    if not 'mediator_ttls' in fb_attr:
         
+
 
 def do_predicate_mapping(outpath, name_map, fb2baike, baike_entity_info, fb_property_path, total):
     Print("do predicate mapping %s, write to %s" %(fb_property_path, outpath))
@@ -102,6 +110,7 @@ def do_predicate_mapping(outpath, name_map, fb2baike, baike_entity_info, fb_prop
             continue
         baike_url = fb2baike[fb_uri]
         fb_attr = json.loads(p[1])
+        extend_fb_attr(fb_attr, fb_uri)
         baike_attr = baike_entity_info[baike_url]
 
         for name, value in fb_attr:
