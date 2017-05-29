@@ -28,7 +28,7 @@ class Schema:
 
     def is_mediator(self, fb_type):
         if fb_type in self.property_attrs:
-            return bool(self.property_attrs[fb_type]['fb:freebase.type_hints.mediator'])
+            return bool(self.property_attrs[fb_type].get('fb:freebase.type_hints.mediator', False))
         else:
             return False
     
