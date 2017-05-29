@@ -2,6 +2,8 @@ import sys
 import os
 import json
 import datetime
+from tqdm import tqdm
+
 
 def now():
     time = datetime.datetime.now()
@@ -65,6 +67,23 @@ def write_dict_cnt(dict_cnt, outpath):
         outf.write(str(key) + '\t' + str(dict_cnt[key]) + '\n')
     outf.close()
 
+def load_ttl2map(filepath, total = None):
+    Print('load ttl from %s' %filepath)
+    if total:
+        generator = tqdm(file(filepath), total = total)
+    else:
+        generator = file(filepath)
+    prop_map = {}
+    for line in generator:
+        s, p, o = line.strip().split('\n')
+        if not s in prop_map:
+            prop_map[s] = []
+        prop_map[s].append((s, p, o))
+    return prop_map
+
+
+        
+        
 base_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 result_dir = os.path.join(base_dir, 'result')
 freebase_rel_dir = os.path.join(result_dir, 'freebase_rel')

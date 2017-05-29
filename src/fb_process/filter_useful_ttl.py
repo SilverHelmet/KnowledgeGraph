@@ -1,7 +1,9 @@
 import sys
+import os
 from .extract_util import get_domain, encode, get_type
 from ..schema import schema
-from ..IOUtil import Print
+from ..IOUtil import Print, load_file, result_dir
+from tqdm import tqdm
 
 black_schema_domains = set(['fb:freebase', 'fb:base', 'fb:m', 'fb:g', 'fb:user'])
 def useful_domain(ttl):
@@ -40,15 +42,11 @@ def filter_property_ttl(ttl):
 
     
 
-def filter_ttl(in_filepath, out_filepath, valid_func):
+def filter_ttl(in_filepath, out_filepath, valid_func, total = None):
     outf = file(out_filepath, 'w')
-    cnt = 0
     out_cnt = 0
-    for line in file(in_filepath):
+    for line in tqdm(file(in_filepath), total = total):
         line = line.strip()
-        cnt += 1
-        if cnt % 1000000 == 0:
-            Print("cnt = %d out_cnt = %d" %(cnt, out_cnt))
         if valid_func(line):
             out_cnt += 1
             p = line.split('\t')[:3]
@@ -66,6 +64,9 @@ if __name__ == "__main__":
     in_filepath = sys.argv[1]
     out_filepath = sys.argv[2]
     mode = sys.argv[3]
+    total = None
+    if len(sys.argv) >= 5:
+        total = int(sys.argv[4])
     print "load from [%s]" %in_filepath
     print 'write to [%s]' %out_filepath
     print "mode = %s" %mode
@@ -82,4 +83,9 @@ if __name__ == "__main__":
         predicates = schema.load_predicates()
         entities = schema.load_entity()
         func = filter_property_ttl
-    filter_ttl(in_filepath, out_filepath, func)
+    elif mode == "property_mediator_ttl":
+        predicates = schema.load_predicates()
+        entities = load_file(os.path.join(result_dir, 'freebase/mediator_entities.txt'))
+        func = filter_property_ttl
+        
+    filter_ttl(in_filepath, out_filepath, func, total)

@@ -16,7 +16,8 @@ def parse_mediator_entities(property_path, total = 283388281):
         if schema.is_mediator(value_type):
             med_entities.append(value)
 
-    print "size = %d, %d" %(len(med_entities), len(set(med_entities)) )
+    med_entities = set(med_entities)
+    print "size = %d" %len(med_entities)
     return med_entities
 
 
@@ -30,6 +31,6 @@ if __name__ == "__main__":
     mediator_entities = parse_mediator_entities(property_path)
 
     outf = file(os.path.join(result_dir, 'freebase/mediator_entities.txt'), 'w')
-    for e in tqdm(mediator_entities, total = len(mediator_entities)):
+    for e in tqdm(sorted(mediator_entities), total = len(mediator_entities)):
         outf.write("%s\n" %e)
     outf.close()

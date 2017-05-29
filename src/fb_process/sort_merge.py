@@ -1,23 +1,29 @@
 
 import sys
-from ..IOUtil import Print, result_dir
+from ..IOUtil import Print, result_dir, load_ttl2map
 import os
 import json
 from tqdm import tqdm
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
+
+        
+
+
+
 if __name__ == "__main__":
     in_file = os.path.join(result_dir, 'freebase/entity_property.ttl')
     out_file = os.path.join(result_dir, 'freebase/entity_property.json')
-
+    
     # in_file = os.path.join(result_dir, 'test/entity_property.ttl')
     # out_file = os.path.join(result_dir, 'test/entity_property.json')
+
     property_map = {}
 
+    mediator_ttl_map = load_ttl2map(os.path.join(result_dir, 'freebase/mediator_property.ttl'), total = None)
 
-283388281
-    for cnt, line in tqdm(enumerate(file(in_file), start = 1), total  = 53574900):
+    for line in tqdm(file(in_file), total  = 283388281):
         p = line.strip().split('\t')
         s = p[0]
         if not s in property_map:
@@ -27,5 +33,12 @@ if __name__ == "__main__":
     outf = file(out_file, 'w')
     Print("start sorting")
     for key in tqdm(sorted(property_map.keys()), total = len(property_map)):
-        outf.write("%s\t%s\n" %(key, json.dumps(property_map[key])))
+        ttls = property_map[key]
+        mediator_ttls = []
+        for _, value in ttls:
+            if value in mediator_ttl_map:
+                mediator_ttls.extend(mediator_ttl_map[value])
+        if len(mediator_ttls) > 0:
+            ttls['mediator_ttls'] = mediator_ttls
+        outf.write("%s\t%s\n" %(key, json.dumps(ttls)))
     outf.close()
