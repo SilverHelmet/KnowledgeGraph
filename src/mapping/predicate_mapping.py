@@ -1,5 +1,5 @@
 import sys
-from ..IOUtil import result_dir, Print
+from ..IOUtil import result_dir, Print, load_ttl2map
 import os
 import json
 from tqdm import tqdm
@@ -95,37 +95,19 @@ def map_value(fb_value, baike_value):
     else:
         return map_str(fb_value, baike_value)
 
-def merge_ttls(ttls, key = None):
-    p_map = {}
-    for s, p, o in ttls:
-        if o == key:
-            continue
-        if not s in p_map:
-            p_map[s] = []
-        p_map[s].append((p, o))
-    return p_map
+def extend_fb_ttls(fb_ttls, fb_uri, mediator_ttl_map):
+    new_fb_ttls = []
+    for p1, value1 in fb_ttls:
+        if value1 in mediator_ttl_map:
+            for p2, value2 in mediator_ttl_map[value1]:
+                if value2 != fb_uri:
+                    p = '%s^%s' %(p1, p2)
+                    new_fb_ttls.append((p, value2))
+        else:
+            new_fb_ttls.append((p1, value1))
+    return new_fb_ttls
 
-
-def extend_fb_attr(fb_attrs, fb_uri):
-    if not 'mediator_property' in fb_attrs:
-        old_ttls = fb_attrs['property']
-        new_ttls = []
-        mediator_prop_map = merge_ttls(fb_attrs['mediator_property'], fb_uri)
-        new_attrs = []
-        for fb_property, value in old_ttls:
-            if value in mediator_prop_map:
-                for p2, v2 in mediator_prop_map[value]:
-                    p = "%s^%s" %(fb_property, p2)
-                    new_attrs.append((p, v2))
-            else:
-                new_attrs.append((fb_property, value))
-        return new_attrs
-    else:
-        return fb_attrs['property']
-
-
-
-def do_predicate_mapping(outpath, name_map, fb2baike, baike_entity_info, fb_property_path, total):
+def do_predicate_mapping(outpath, mediator_ttl_map, name_map, fb2baike, baike_entity_info, fb_property_path, total):
     Print("do predicate mapping %s, write to %s" %(fb_property_path, outpath))
     outf = file(outpath, 'w')
     for line in tqdm(file(fb_property_path), total = total):
@@ -134,8 +116,8 @@ def do_predicate_mapping(outpath, name_map, fb2baike, baike_entity_info, fb_prop
         if not fb_uri in fb2baike:
             continue
         baike_url = fb2baike[fb_uri]
-        fb_attr = json.loads(p[1])
-        fb_ttls = extend_fb_attr(fb_attr, fb_uri)
+        fb_ttls = json.loads(p[1])
+        fb_ttls = extend_fb_ttls(fb_ttls, fb_uri, mediator_ttl_map)
         baike_attr = baike_entity_info[baike_url]
 
         for name, value in fb_ttls:
@@ -166,6 +148,7 @@ if __name__ == "__main__":
     totals = [39345270, 2197095]
 
     name_map = load_name_attr(name_files, totals)
+    mediator_ttl_map = load_ttl2map(os.path.join(result_dir, 'freebase/mediator_property.ttl'), total = 50413655)
 
     baike_entity_info_path = os.path.join(result_dir, '360/360_entity_info_processed.json')
     baike_entity_info = load_baike_info(baike_entity_info_path, total = 21710208)
@@ -177,4 +160,4 @@ if __name__ == "__main__":
 
     fb_property_path = os.path.join(result_dir, 'freebase/entity_property.json')
     outpath = os.path.join(result_dir, '360/mapping/info_predicate_mapping.tsv')
-    do_predicate_mapping(outpath, name_map, fb2baike, baike_entity_info, fb_property_path, total = 53574900)
+    do_predicate_mapping(outpath, mediator_ttl_map, name_map, fb2baike, baike_entity_info, fb_property_path, total = 53574900)
