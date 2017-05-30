@@ -87,6 +87,21 @@ def load_predicates():
         pres.add(line.strip().split('\t')[0])
     return pres
 
+def load_mediator_predicates():
+    type_attrs = load_type_attrs()
+    pres = set()
+    for line in file(os.path.join(doc_dir, 'final_property_attrs.json'), 'r'):
+        key, attrs = line.strip().split('\t')
+        attrs = json.loads(attrs)
+        schema_type = attrs['fb:type.property.schema']
+        if not schema_type in type_attrs:
+            continue
+        if get_bool(type_attrs[schema_type].get('fb:freebase.type_hints.mediator', '0')):
+            pres.add(key)
+    return pres
+            
+
+
 def load_property_attrs():
     attrs_map = {}
     for line in file(os.path.join(doc_dir, 'final_property_attrs.json'), 'r'):
@@ -111,8 +126,13 @@ def add_attr(dict, id, name, value):
         
 
 if __name__ == "__main__":
-    schema = Schema()
-    schema.init()
-    print schema.is_mediator('fb:geography.mountain_age')
-    print schema.is_mediator('fb:location.dated_location')
-    print schema.is_mediator('fb:location.cotermination')
+    # schema = Schema()
+    # schema.init()
+    # print schema.is_mediator('fb:geography.mountain_age')
+    # print schema.is_mediator('fb:location.dated_location')
+    # print schema.is_mediator('fb:location.cotermination')
+    pres = load_mediator_predicates()
+    print "fb:location.country.calling_code" in pres
+    print "fb:book.book_subject.works" in pres 
+    print "fb:education.education.student" in pres
+    

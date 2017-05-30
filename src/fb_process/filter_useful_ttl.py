@@ -82,8 +82,9 @@ if __name__ == "__main__":
         entities = schema.load_entity()
         func = filter_property_ttl
     elif mode == "property_mediator_ttl":
-        predicates = schema.load_predicates()
+        predicates = schema.load_mediator_predicates()
         entities = set(load_file(os.path.join(result_dir, 'freebase/mediator_entities.txt')))
         func = filter_property_ttl
+
         
     filter_ttl(in_filepath, out_filepath, func, total)
