@@ -23,12 +23,7 @@ if __name__ == "__main__":
 
     mediator_ttl_map = load_ttl2map(os.path.join(result_dir, 'freebase/mediator_property.ttl'), total = 50413655)
 
-    cnt = 0
-    # 283388281
-    for line in tqdm(file(in_file), total  = 10000):
-        cnt += 1
-        if cnt >= 10000:
-            break
+    for line in tqdm(file(in_file), total  = 283388281):
         p = line.strip().split('\t')
         s = p[0]
         if not s in property_map:
@@ -48,3 +43,4 @@ if __name__ == "__main__":
             p_map['mediator_property'] = mediator_ttls
         outf.write("%s\t%s\n" %(key, json.dumps(p_map)))
     outf.close()
+    Print("Write Over")
