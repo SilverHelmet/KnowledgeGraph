@@ -5,6 +5,7 @@ import json
 from tqdm import tqdm
 from .fb_date import FBDatetime, BaikeDatetime
 from .name_mapping import del_space
+from ..schema.schema import Schema
 
 def extract_name(value):
     suffix = value[-4:]
@@ -95,12 +96,13 @@ def map_value(fb_value, baike_value):
     else:
         return map_str(fb_value, baike_value)
 
-def extend_fb_ttls(fb_ttls, fb_uri, mediator_ttl_map):
+def extend_fb_ttls(fb_ttls, fb_uri, mediator_ttl_map, schema):
     new_fb_ttls = []
     for p1, value1 in fb_ttls:
-        if value1 in mediator_ttl_map:
+        expected_type = schema.expected_type(p1)
+        if schema.is_mediator(expected_type):
             for p2, value2 in mediator_ttl_map[value1]:
-                if value2 != fb_uri:
+                if value2 != fb_uri and scheme.schema_type(p2) == expected_type:
                     p = '%s^%s' %(p1, p2)
                     new_fb_ttls.append((p, value2))
         else:
@@ -108,6 +110,8 @@ def extend_fb_ttls(fb_ttls, fb_uri, mediator_ttl_map):
     return new_fb_ttls
 
 def do_predicate_mapping(outpath, mediator_ttl_map, name_map, fb2baike, baike_entity_info, fb_property_path, total):
+    schema = Schema()
+    schema.init()
     Print("do predicate mapping %s, write to %s" %(fb_property_path, outpath))
     outf = file(outpath, 'w')
     for line in tqdm(file(fb_property_path), total = total):
@@ -117,7 +121,7 @@ def do_predicate_mapping(outpath, mediator_ttl_map, name_map, fb2baike, baike_en
             continue
         baike_url = fb2baike[fb_uri]
         fb_ttls = json.loads(p[1])
-        fb_ttls = extend_fb_ttls(fb_ttls, fb_uri, mediator_ttl_map)
+        fb_ttls = extend_fb_ttls(fb_ttls, fb_uri, mediator_ttl_map, schema)
         baike_attr = baike_entity_info[baike_url]
 
         for name, value in fb_ttls:
@@ -148,7 +152,7 @@ if __name__ == "__main__":
     totals = [39345270, 2197095]
 
     name_map = load_name_attr(name_files, totals)
-    mediator_ttl_map = load_ttl2map(os.path.join(result_dir, 'freebase/mediator_property.ttl'), total = 50413655)
+    mediator_ttl_map = load_ttl2map(os.path.join(result_dir, 'freebase/mediator_med_property.ttl'), total = 50413655)
 
     baike_entity_info_path = os.path.join(result_dir, '360/360_entity_info_processed.json')
     baike_entity_info = load_baike_info(baike_entity_info_path, total = 21710208)

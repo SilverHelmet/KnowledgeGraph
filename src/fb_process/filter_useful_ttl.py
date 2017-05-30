@@ -86,5 +86,5 @@ if __name__ == "__main__":
         entities = set(load_file(os.path.join(result_dir, 'freebase/mediator_entities.txt')))
         func = filter_property_ttl
 
-        
+    
     filter_ttl(in_filepath, out_filepath, func, total)

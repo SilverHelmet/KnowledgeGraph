@@ -25,6 +25,9 @@ class Schema:
                 reverse_map[fb_property] = reverse_fb_prop
                 reverse_map[reverse_fb_prop] = fb_property
 
+    def is_mediator_prop(self, fb_property):
+        expected_type = self.expected_type(fb_property)
+        return self.is_mediator(expected_type)
 
     def is_mediator(self, fb_type):
         if fb_type in self.type_attrs:
@@ -37,6 +40,9 @@ class Schema:
 
     def expected_type(self, fb_property):
         return self.property_attrs[fb_property]['fb:type.property.expected_type']
+    
+    def schema_type(self, fb_property):
+        return self.property_attrs[fb_property]['fb:type.property.schema']
 
 def get_bool(value):
     if value == "1":
