@@ -24,7 +24,8 @@ if __name__ == "__main__":
     mediator_ttl_map = load_ttl2map(os.path.join(result_dir, 'freebase/mediator_property.ttl'), total = 50413655)
 
     cnt = 0
-    for line in tqdm(file(in_file), total  = 283388281):
+    # 283388281
+    for line in tqdm(file(in_file), total  = 10000):
         cnt += 1
         if cnt >= 10000:
             break
