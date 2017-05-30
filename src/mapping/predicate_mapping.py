@@ -101,7 +101,7 @@ def extend_fb_ttls(fb_ttls, fb_uri, mediator_ttl_map, schema):
     for p1, value1 in fb_ttls:
         expected_type = schema.expected_type(p1)
         if schema.is_mediator(expected_type):
-            for p2, value2 in mediator_ttl_map[value1]:
+            for p2, value2 in mediator_ttl_map.get(value1, []):
                 if value2 != fb_uri and schema.schema_type(p2) == expected_type:
                     p = '%s^%s' %(p1, p2)
                     new_fb_ttls.append((p, value2))

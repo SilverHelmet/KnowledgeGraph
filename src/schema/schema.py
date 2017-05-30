@@ -137,8 +137,16 @@ if __name__ == "__main__":
     # print schema.is_mediator('fb:geography.mountain_age')
     # print schema.is_mediator('fb:location.dated_location')
     # print schema.is_mediator('fb:location.cotermination')
-    pres = load_mediator_predicates()
-    print "fb:location.country.calling_code" in pres
-    print "fb:book.book_subject.works" in pres 
-    print "fb:education.education.student" in pres
+
+    # pres = load_mediator_predicates()
+    # print "fb:location.country.calling_code" in pres
+    # print "fb:book.book_subject.works" in pres 
+    # print "fb:education.education.student" in pres
+
+    schema = Schema()
+    schema.init()
+    ex_type = schema.expected_type('fb:organization.organization.phone_number')
+    print ex_type
+    print schema.type_attrs[ex_type]
+    print schema.is_mediator(ex_type)
     
