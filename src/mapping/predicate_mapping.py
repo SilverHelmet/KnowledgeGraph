@@ -95,9 +95,34 @@ def map_value(fb_value, baike_value):
     else:
         return map_str(fb_value, baike_value)
 
-def extend_fb_attr(fb_attr, fb_uri):
-    if not 'mediator_ttls' in fb_attr:
-        
+def merge_ttls(ttls, key = None):
+    p_map = {}
+    for s, p, o in ttls:
+        if o == key:
+            continue
+        if not s in p_map:
+            p_map[s] = []
+        p_map[s].append((p, o))
+    return p_map
+
+
+def extend_fb_attr(fb_attrs, fb_uri):
+    if not 'mediator_property' in fb_attrs:
+        old_ttls = fb_attrs['property']
+        new_ttls = []
+        mediator_prop_map = merge_ttls(fb_attrs['mediator_property'], fb_uri)
+        new_attrs = []
+        for fb_property, value in old_ttls:
+            if value in mediator_prop_map:
+                for p2, v2 in mediator_prop_map[value]:
+                    p = "%s^%s" %(fb_property, p2)
+                    new_attrs.append((p, v2))
+            else:
+                new_attrs.append((fb_property, value))
+        return new_attrs
+    else:
+        return fb_attrs['property']
+
 
 
 def do_predicate_mapping(outpath, name_map, fb2baike, baike_entity_info, fb_property_path, total):
@@ -110,10 +135,10 @@ def do_predicate_mapping(outpath, name_map, fb2baike, baike_entity_info, fb_prop
             continue
         baike_url = fb2baike[fb_uri]
         fb_attr = json.loads(p[1])
-        extend_fb_attr(fb_attr, fb_uri)
+        fb_ttls = extend_fb_attr(fb_attr, fb_uri)
         baike_attr = baike_entity_info[baike_url]
 
-        for name, value in fb_attr:
+        for name, value in fb_ttls:
             if value in name_map:
                 values = name_map[value]
             else:
