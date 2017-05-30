@@ -75,7 +75,7 @@ def load_ttl2map(filepath, total = None):
         generator = file(filepath)
     prop_map = {}
     for line in generator:
-        s, p, o = line.strip().split('\n')
+        s, p, o = line.strip().split('\t')
         if not s in prop_map:
             prop_map[s] = []
         prop_map[s].append((s, p, o))
