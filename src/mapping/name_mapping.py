@@ -88,7 +88,7 @@ def do_mapping(name_mapping, baike_path, out_path):
 
 if __name__ == "__main__":
     fb_attrs_path = os.path.join(result_dir, 'freebase/entity_attr.json')
-    baike_attrs_path = os.path.join(result_dir, '360/360_entity_info.json')
+    baike_attrs_path = os.path.join(result_dir, '360/360_entity_info_processed.json.json')
 
     # debug
     # fb_attrs_path = os.path.join(result_dir, 'test/fb_attr.json')
