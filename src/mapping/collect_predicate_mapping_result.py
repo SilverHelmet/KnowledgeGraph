@@ -16,7 +16,7 @@ class Prob:
 
     def top_k(self, k):
         top_keys = sorted(self.cnt_map.keys(), key = lambda x: self.cnt_map[x], reverse = True)
-        ret = [(key, '%d/%d' %(self.cnt_map[key], self.total))for key in top_keys]
+        ret = [[key, '%d/%d' %(self.cnt_map[key], self.total)]for key in top_keys]
         return ret
 
 
