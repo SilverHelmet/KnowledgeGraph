@@ -43,7 +43,7 @@ if __name__ == "__main__":
 
     outf = file(os.path.join(result_dir, '360/mapping/predicates_map.json'), 'w')
     for key in map_result.sorted_keys():
-        outf.write("%s\t%s\n" %(key, map_result.baike2fb[key].top_k(20)))
+        outf.write("%s\t%s\n" %(key, json.dumps(map_result.baike2fb[key].top_k(20)) ) )
     outf.close()
 
 

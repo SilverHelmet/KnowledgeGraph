@@ -37,9 +37,12 @@ class Mapping:
 if __name__ == "__main__":
     inpath = os.path.join(result_dir, '360/mapping/predicates_map.json')
     outpath = os.path.join(result_dir, '360/mapping/predicates_map.txt')
+    x = [['123', '1/123']]
+    print json.dumps(x)
+    print json.loads(json.dumps(x))
+    # for line in file(inpath):
+    #     p = line.split("\t")
+    #     name = p[0]
+    #     print p[1]
+    #     obj = json.loads(p[1])
 
-    for line in file(inpath):
-        p = line.split("\t")
-        name = p[0]
-        obj = json.loads(p[1])
-            
