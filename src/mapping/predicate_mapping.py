@@ -80,7 +80,7 @@ def map_str(fb_str, baike_str):
         fb_str = fb_str[1:-1]
     longer = max(len(fb_str), len(baike_str))
     shorter = min(len(fb_str), len(baike_str))
-    if shorter * 3 < longer:
+    if shorter * 2 < longer:
         return False
     return fb_str.find(baike_str) != -1 or baike_str.find(fb_str) != -1
 
