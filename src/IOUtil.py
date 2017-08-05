@@ -3,6 +3,7 @@ import os
 import json
 import datetime
 from tqdm import tqdm
+import commands
 
 
 def now():
