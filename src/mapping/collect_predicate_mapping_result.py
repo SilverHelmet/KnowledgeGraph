@@ -35,7 +35,7 @@ class MappingResult:
 
 
 if __name__ == "__main__":
-    predict_map_result_path = os.path.join(result_dir, '360/mapping/info_predicate_mapping_1.tsv')
+    predict_map_result_path = os.path.join(result_dir, '360/mapping/info_predicate_mapping.tsv')
     map_result = MappingResult()
     for line in file(predict_map_result_path):
         fb_uri, baike_url, fb_property, baike_info, fb_value = line.strip().split("\t")
