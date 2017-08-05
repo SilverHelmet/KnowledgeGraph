@@ -2,7 +2,7 @@ from ..IOUtil import result_dir, nb_lines_of
 import os
 from tqdm import tqdm
 import json
-import json
+import sys
 reload(sys)
 sys.setdefaultencoding('utf8')
 
