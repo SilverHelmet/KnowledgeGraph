@@ -1,4 +1,4 @@
-from ..IOUtil import result_dir, nb_lines_of
+from ..IOUtil import result_dir, nb_lines_of, doc_dir
 import os
 from tqdm import tqdm
 import json

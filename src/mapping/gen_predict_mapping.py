@@ -16,7 +16,7 @@ class Mapping:
         self.maps.append((name, count, total))
         self.count += count
 
-    def check_filter(self, threshold = 0.1, min_count = 5, k  = 7):
+    def check_filter(self, threshold = 0.05, min_count = 3, k  = 15):
         maps = []
         for name, count, total in self.maps:
             if count / (total + 0.0) < threshold or count < min_count:
