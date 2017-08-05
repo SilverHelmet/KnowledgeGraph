@@ -81,6 +81,11 @@ def load_ttl2map(filepath, total = None):
         prop_map[s].append((p, o))
     return prop_map
 
+def nb_lines_of(filepath):
+    output = commands.getoutput('wc -l %s' %filepath)
+    p = int(output.split(" ")[0])
+    return p
+
 
         
         
