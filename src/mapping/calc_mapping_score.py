@@ -42,7 +42,7 @@ if __name__ == "__main__":
 			os.path.join(result_dir, 'freebase/entity_alias.json')]
 	totals = [39345270, 2197095]
 
-	name_map = load_name_attr(name_files, totals, fb_entities)
+	name_map = load_name_attr(name_files, totals, set(fb_entities))
 	print len(name_map)
 	# mediator_ttl_map = load_ttl2map(os.path.join(result_dir, 'freebase/mediator_med_property.ttl'), total = 50413655)
 
