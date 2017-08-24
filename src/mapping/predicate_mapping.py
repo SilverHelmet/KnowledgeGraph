@@ -14,13 +14,15 @@ def extract_name(value):
     return name
 
 
-def load_name_attr(filepaths, totals):
+def load_name_attr(filepaths, totals, fb_entities = None):
     name_map = {}
     for filepath, total in zip(filepaths, totals):
         Print("load name %s" %filepath)
         for line in tqdm(file(filepath), total = total):
             p = line.split('\t')
             key = p[0].decode('utf-8')
+            if fb_entities is not None and key not in fb_entities:
+                continue
             if not key in name_map:
                 name_map[key] = []
             obj = json.loads(p[1])
