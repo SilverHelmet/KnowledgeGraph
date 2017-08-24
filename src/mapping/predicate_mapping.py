@@ -158,9 +158,7 @@ if __name__ == "__main__":
     baike_entity_info = load_baike_info(baike_entity_info_path, total = 21710208)
     
 
-
-    exact_map_path = os.path.join(result_dir, '360/mapping/exact_mapping.tsv')
-    fb2baike = load_exact_map(exact_map_path)
+    fb2baike = load_exact_map(exact_mapping_file)
 
     fb_property_path = os.path.join(result_dir, 'freebase/entity_property.json')
     outpath = os.path.join(result_dir, '360/mapping/info_predicate_mapping.tsv')

@@ -39,6 +39,8 @@ class Mapping:
     def __str__(self):
         map_out = "\t".join(["%s %d/%d" %(name, count, total) for name , count, total in self.maps])
         out = "%s\t%s\t%s" %(self.concept, self.name, map_out)
+        # map_out = "\t".join(["%s" %(name) for name , count, total in self.maps])
+        # out = "%s\t%s\t%s" %(self.concept, self.name, map_out)
         return out
 
             
