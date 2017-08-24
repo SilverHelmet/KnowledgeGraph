@@ -2,14 +2,15 @@ from ..IOUtil import result_dir
 import os
 import json
 from .one2one_mapping_cnt import load_attrs
+from tqdm import tqdm
 
-def load_mapping_pairs(filepath):
+def load_mapping_pairs(filepath, total = 4483846):
 	mapping_attrs = load_attrs()
 
 	baike_entities = []
 	fb_entities = set()
 	baike2fb = {}
-	for line in file(filepath):
+	for line in tqdm(file(filepath), total = total):
 		baike_url, map_info = line.split('\t')
 		baike_url = baike_url.decode('utf-8')
 		map_info = json.loads(map_info)
