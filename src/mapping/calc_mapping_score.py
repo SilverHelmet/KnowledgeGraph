@@ -3,7 +3,7 @@ import os
 import json
 from .one2one_mapping_cnt import load_attrs
 from tqdm import tqdm
-from .predicate_mapping import load_name_attr, load_ttl2map
+from .predicate_mapping import load_name_attr, load_ttl2map, load_baike_info
 
 def load_mapping_pairs(filepath, total = 4483846):
 	mapping_attrs = load_attrs()
@@ -37,18 +37,19 @@ def load_mapping_pairs(filepath, total = 4483846):
 if __name__ == "__main__":
 	mapping_file = os.path.join(result_dir, '360/360_mapping.json')
 	baike2fb_map, baike_entities, fb_entities = load_mapping_pairs(mapping_file)
-	print len(baike2fb_map)
-	print len(baike_entities)
-	print len(fb_entities)
+	print "baike2fb_map", len(baike2fb_map)
+	print "baike_entities", len(baike_entities)
+	print "fb_entities", len(fb_entities)
 	name_files = [os.path.join(result_dir, 'freebase/entity_name.json'),
 			os.path.join(result_dir, 'freebase/entity_alias.json')]
 	totals = [39345270, 2197095]
 
 	name_map = load_name_attr(name_files, totals, set(fb_entities))
-	print len(name_map)
+	print "name_map", len(name_map)
 	mediator_ttl_map = load_ttl2map(os.path.join(result_dir, 'freebase/mediator_med_property.ttl'), total = 50413655, entities = set(fb_entities) )
 
-	print len(mediator_ttl_map)
+	print "mediator_ttl_mapl", en(mediator_ttl_map)
 
-	# baike_entity_info_path = os.path.join(result_dir, '360/360_entity_info_processed.json')
-	# baike_entity_info = load_baike_info(baike_entity_info_path, total = 21710208, baike_entities)
+	baike_entity_info_path = os.path.join(result_dir, '360/360_entity_info_processed.json')
+	baike_entity_info = load_baike_info(baike_entity_info_path, total = 21710208, entities = baike_entities)
+	print "baike_entitiy_info", len(baike_entity_info)

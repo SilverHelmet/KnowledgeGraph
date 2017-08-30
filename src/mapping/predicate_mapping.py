@@ -36,12 +36,14 @@ def load_name_attr(filepaths, totals, fb_entities = None):
                     name_map[key].append(name)
     return name_map
 
-def load_baike_info(filepath, total):
+def load_baike_info(filepath, total, entities = None):
     Print("load baike info from %s" %filepath)
     info_map = {}
     for line in tqdm(file(filepath), total = total):
         p = line.split('\t')
         key = p[0]
+        if entities is not None and key not in entities:
+            continue
         obj = json.loads(p[1])
         attr = {}
         if 'ename' in obj:
