@@ -68,7 +68,7 @@ def write_dict_cnt(dict_cnt, outpath):
         outf.write(str(key) + '\t' + str(dict_cnt[key]) + '\n')
     outf.close()
 
-def load_ttl2map(filepath, total = None):
+def load_ttl2map(filepath, total = None, entities = None):
     Print('load ttl from %s' %filepath)
     if total:
         generator = tqdm(file(filepath), total = total)
@@ -77,6 +77,8 @@ def load_ttl2map(filepath, total = None):
     prop_map = {}
     for line in generator:
         s, p, o = line.strip().split('\t')
+        if entities is not None and s in entities:
+            continue
         if not s in prop_map:
             prop_map[s] = []
         prop_map[s].append((p, o))
