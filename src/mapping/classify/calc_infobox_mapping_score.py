@@ -36,7 +36,7 @@ def load_and_ext_entity_info(fb_property_path, mediator_ttl_map, total = None, e
 	schema = Schema()
 	schema.init()
 	entity_info = {}
-	for line in tqdm(file(fb_property_path), total = total, entities = entities):
+	for line in tqdm(file(fb_property_path), total = total):
 		p = line.split('\t')
 		fb_uri = p[0]
 		if entities is not None and fb_uri not in entities:
@@ -73,7 +73,7 @@ if __name__ == "__main__":
 	fb_entity_info = load_and_ext_entity_info(fb_property_path, mediator_ttl_map)
 	out_path = os.path.join(out_dir, 'mapped_fb_entity_info.json')
 	write_json_map(out_path, fb_entity_info, sort = True)
-	
+
 
 
 
