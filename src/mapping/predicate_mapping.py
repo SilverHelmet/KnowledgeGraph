@@ -34,6 +34,10 @@ def load_name_attr(filepaths, totals, fb_entities = None):
                 for x in obj['fb:common.topic.alias']:
                     name = extract_name(x)
                     name_map[key].append(name)
+            if "fb:common.topic.description" in obj:
+                for x in obj['fb:common.topic.description']:
+                    name = extract_name(x)
+                    name_map[key].append(name)
     return name_map
 
 def load_baike_info(filepath, total, entities = None):
@@ -148,7 +152,6 @@ def do_predicate_mapping(outpath, mediator_ttl_map, name_map, fb2baike, baike_en
     outf.close()
 
 
-
 if __name__ == "__main__":
     exact_mapping_file = os.path.join(result_dir, "360/mapping/exact_mapping.tsv")
     name_files = [os.path.join(result_dir, 'freebase/entity_name.json'),
@@ -159,7 +162,7 @@ if __name__ == "__main__":
     mediator_ttl_map = load_ttl2map(os.path.join(result_dir, 'freebase/mediator_med_property.ttl'), total = 50413655)
 
     baike_entity_info_path = os.path.join(result_dir, '360/360_entity_info_processed.json')
-    baike_entity_info = load_baike_info(baike_entity_info_path, total = 21710208)
+    baike_entity_info = load_baike_info(baike_entity_info_path, total = 21710208, entities = None)
     
 
     fb2baike = load_exact_map(exact_mapping_file)

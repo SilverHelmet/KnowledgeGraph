@@ -4,7 +4,8 @@ import json
 import datetime
 from tqdm import tqdm
 import commands
-
+reload(sys)
+sys.setdefaultencoding('utf-8')
 
 def now():
     time = datetime.datetime.now()
@@ -22,6 +23,15 @@ def write_strs(out_path, l, sorted_flag = False):
         outf.write(x + '\n')
     outf.close()
         
+def write_json_map(out_path, json_map, sort = False):
+    keys = json_map.keys()
+    if sort:
+        keys = sorted(keys)
+    outf = file(out_path, 'w')
+    for key in keys:
+        outf.write("%s\t%s\n" %(key, json.dumps(json_map[key], ensure_ascii = True)))
+    outf.close()
+
 
 def load_file(in_path):
     ret = []
