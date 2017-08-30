@@ -70,7 +70,7 @@ if __name__ == "__main__":
 	print "mediator_ttl_mapl", len(mediator_ttl_map)
 
 	fb_property_path = os.path.join(result_dir, 'freebase/entity_property.json')
-	fb_entity_info = load_and_ext_entity_info(fb_property_path, mediator_ttl_map)
+	fb_entity_info = load_and_ext_entity_info(fb_property_path, mediator_ttl_map, entities = set(fb_entities))
 	out_path = os.path.join(out_dir, 'mapped_fb_entity_info.json')
 	write_json_map(out_path, fb_entity_info, sort = True)
 
