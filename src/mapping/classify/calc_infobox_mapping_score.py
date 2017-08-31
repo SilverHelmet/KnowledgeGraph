@@ -79,10 +79,10 @@ def calc_infobox_mapping_score(baike2fb_map, baike_entitiy_info, fb_entity_info,
                 for baike_value in baike_values:
                     if baike_value in fb_str_values:
                         match = True
-                    else:
-                        baike_date = BaikeDatetime.parse(baike_value)
-                        if baike_date is not None:
-                            match = find_match(baike_date, fb_time_values)
+                    # else:
+                    #     baike_date = BaikeDatetime.parse(baike_value)
+                    #     if baike_date is not None:
+                    #         match = find_match(baike_date, fb_time_values)
 
                         
                     if match:
