@@ -1,4 +1,4 @@
-from ...IOUtil import load_json_map
+from ...IOUtil import load_json_map, result_dir
 from .gen_fb_property import load_mapping_pairs
 import os
 
