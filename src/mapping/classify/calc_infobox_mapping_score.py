@@ -96,6 +96,7 @@ def calc_infobox_mapping_score(baike2fb_map, baike_entitiy_info, fb_entity_info,
                 "#match": match_cnt
             }
             outf.write(json.dumps(map_obj) + '\n')
+            outf.flush()
             # maps.append(map_obj)
     # return maps
 
