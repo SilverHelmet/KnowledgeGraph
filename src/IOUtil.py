@@ -32,6 +32,15 @@ def write_json_map(out_path, json_map, sort = False):
         outf.write("%s\t%s\n" %(key, json.dumps(json_map[key], ensure_ascii = True)))
     outf.close()
 
+def load_json_map(in_path, total = None):
+    json_map = {}
+    Print("load json map from %s" %in_path)
+    for line in tqdm(file(in_path), total = total):
+        p = line.split('\t')
+        key = p[0]
+        json_map[key.decode('utf-8')] = json.loads(p[1])
+    return json_map
+
 
 def load_file(in_path):
     ret = []
