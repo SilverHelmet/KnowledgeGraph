@@ -104,6 +104,7 @@ def map_value(fb_value, baike_value):
         return map_time(fb_date, baike_date)
     else:
         return map_str(fb_value, baike_value)
+ 
 
 def extend_fb_ttls(fb_ttls, fb_uri, mediator_ttl_map, schema):
     new_fb_ttls = []

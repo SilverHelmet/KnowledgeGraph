@@ -30,7 +30,7 @@ class FBDatetime:
         if date_type == "<http://www.w3.org/2001/XMLSchema#date>":
             match = FBDatetime.date_p.match(value)
             if match is None:
-                print "\nerror", time_str
+                # print "\nerror", time_str
                 return None
             args['year'] = int(match.group('year'))
             args['month'] = int(match.group('month'))
@@ -38,20 +38,20 @@ class FBDatetime:
         elif date_type == "<http://www.w3.org/2001/XMLSchema#gYear>":
             match = FBDatetime.year_p.match(value)
             if match is None:
-                print "\nerror", time_str
+                # print "\nerror", time_str
                 return None
             args['year'] = int(match.group('year'))
         elif date_type == '<http://www.w3.org/2001/XMLSchema#gYearMonth>':
             match = FBDatetime.yearmonth_p.match(value)
             if match is None:
-                print "\nerror", time_str
+                # print "\nerror", time_str
                 return None
             args['year'] = int(match.group('year'))
             args['month'] = int(match.group('month'))
         elif date_type == "<http://www.w3.org/2001/XMLSchema#dateTime>":
             match = FBDatetime.datetime_p.match(value)
             if match is None:
-                print "\nerror", time_str
+                # print "\nerror", time_str
                 return None
             args['year'] = int(match.group('year'))
             args['month'] = int(match.group('month'))

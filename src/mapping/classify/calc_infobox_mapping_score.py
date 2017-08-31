@@ -7,7 +7,9 @@ from ...IOUtil import result_dir, load_json_map, Print
 from ..predicate_mapping import load_baike_info, load_name_attr, load_ttl2map, extend_fb_ttls
 from .gen_fb_property import load_mapping_pairs
 from ..one2one_mapping_cnt import load_attrs
-from ..predicate_mapping import map_value
+from ..predicate_mapping import map_time
+from ..fb_date import FBDatetime, BaikeDatetime
+from ..name_mapping import del_space
 
 def ignore_baike_name_attr(baike_entity_info, baike_name_attrs, url):
     baike_info = baike_entity_info[url]
@@ -26,14 +28,38 @@ def extend_name(fb_info, name_map):
         value_names.append((name, values))
     return value_names
 
-def find_match(baike_value, fb_info):
-    for fb_name, fb_values in fb_info:
+def extract_info_value(info):
+    str_values = []
+    time_values = []
+    for name, fb_values in info:
         for fb_value in fb_values:
-            if map_value(fb_value, baike_value):
-                return True
+            fb_value = del_space(fb_value)
+            str_values.append(fb_value)
+            fb_time = FBDatetime.parse_fb_datetime(fb_value)
+            if fb_time is not None:
+                time_values.append(fb_time)
+    return set(str_values), time_values
+
+
+
+
+def extend_name_onece(fb_entity_info, name_map):
+    new_entity_info = {}
+    Print("extend fb entity info's name")
+    for e in tqdm(fb_entity_info, total = len(fb_entity_info)):
+        new_info = extend_name(fb_entity_info[e], name_map)
+        str_values, time_values = extract_info_value(new_info)
+        new_entity_info[e] = (str_values, time_values)
+    return new_entity_info
+
+def find_match(baike_date, fb_time_values):
+    for fb_date in fb_time_values:
+        if map_time(fb_date, baike_date):
+            return True
     return False
 
-def calc_infobox_mapping_score(baike2fb_map, baike_entitiy_info, fb_entity_info, fb_name_map, baike_name_attrs):
+
+def calc_infobox_mapping_score(baike2fb_map, baike_entitiy_info, fb_entity_info, baike_name_attrs):
     baike_name_attrs = set(baike_name_attrs)
     Print('calc mapping score')
     maps = []
@@ -42,9 +68,8 @@ def calc_infobox_mapping_score(baike2fb_map, baike_entitiy_info, fb_entity_info,
         baike_info = ignore_baike_name_attr(baike_entity_info, baike_name_attrs, baike_url)
         nb_baike_info = len(baike_info)
         for fb_uri in fb_uris:
-            fb_info = fb_entity_info.get(fb_uri, [])
-            nb_fb_info = len(fb_info)
-            fb_info = extend_name(fb_info, fb_name_map)
+            fb_str_values, fb_time_values = fb_entity_info.get(fb_uri, (set(), []))
+            nb_fb_info = len(fb_str_values)
             match_cnt = 0
 
             for baike_info_name in baike_info:
@@ -52,9 +77,17 @@ def calc_infobox_mapping_score(baike2fb_map, baike_entitiy_info, fb_entity_info,
                 match = False
 
                 for baike_value in baike_values:
-                    if find_match(baike_value, fb_info):
+                    if baike_value in fb_str_values:
                         match = True
+                    else:
+                        baike_date = BaikeDatetime.parse(baike_value)
+                        if baike_date is not None:
+                            match = find_match(baike_date, fb_time_values)
+
+                        
+                    if match:
                         break
+
                 if match:
                     match_cnt += 1
             map_obj = {
@@ -88,9 +121,19 @@ if __name__ == "__main__":
     name_files = [os.path.join(result_dir, 'freebase/entity_name.json'),
             os.path.join(result_dir, 'freebase/entity_alias.json')]
     totals = [39345270, 2197095]
-    name_map = load_name_attr(name_files, totals, set(fb_entities))
+    name_map = load_name_attr(name_files, totals)
 
-    map_scores = calc_infobox_mapping_score(baike2fb_map, baike_entity_info, fb_entity_info, name_map, baike_name_attrs)
+    fb_entity_info = extend_name_onece(fb_entity_info, name_map)
+    for idx, key in enumerate(fb_entity_info, start = 1):
+        if idx >= 5:
+            break
+        print key
+        print fb_entity_info[key][0]
+        print fb_entity_info[key][1]
+
+    del  name_map
+
+    map_scores = calc_infobox_mapping_score(baike2fb_map, baike_entity_info, fb_entity_info, baike_name_attrs)
     out_path = os.path.join(out_dir, 'map_scores.json')
     outf = file(out_path, 'w')
     for map_obj in map_scores:
