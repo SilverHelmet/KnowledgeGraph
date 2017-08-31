@@ -38,8 +38,7 @@ def extract_info_value(info):
             fb_time = FBDatetime.parse_fb_datetime(fb_value)
             if fb_time is not None:
                 time_values.append(fb_time)
-    return set(str_values), time_values
-
+    return str_values, time_values
 
 
 
@@ -68,7 +67,8 @@ def calc_infobox_mapping_score(baike2fb_map, baike_entitiy_info, fb_entity_info,
         baike_info = ignore_baike_name_attr(baike_entity_info, baike_name_attrs, baike_url)
         nb_baike_info = len(baike_info)
         for fb_uri in fb_uris:
-            fb_str_values, fb_time_values = fb_entity_info.get(fb_uri, (set(), []))
+            fb_str_values, fb_time_values = fb_entity_info.get(fb_uri, ([], []))
+            fb_str_values = set(fb_str_values)
             nb_fb_info = len(fb_str_values)
             match_cnt = 0
 
