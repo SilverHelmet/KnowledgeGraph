@@ -130,15 +130,16 @@ if __name__ == "__main__":
     name_map = load_name_attr(name_files, totals)
 
     fb_entity_info = extend_name_onece(fb_entity_info, name_map)
-    # cnt = 0
-    # for key in fb_entity_info:
-    #     if len(fb_entity_info[key][1]) > 0:
-    #         cnt += 1
-    #         if cnt >= 5:
-    #             break
-    #         print key
-    #         print fb_entity_info[key][0]
-    #         print fb_entity_info[key][1]
+    cnt = 0
+    for key in fb_entity_info:
+        if len(fb_entity_info[key][1]) > 0:
+            cnt += 1
+            if cnt >= 6:
+                break
+            print key
+            print fb_entity_info[key][0]
+            print fb_entity_info[key][1]
+            print map(str, fb_entity_info[key][1])
 
     del  name_map
 
