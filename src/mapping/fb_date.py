@@ -104,8 +104,9 @@ class BaikeDatetime:
                     args['year'], args['month'], args['day'] = result.year, result.month, result.day
                     match_flag = True
             except Exception, e:
-                print "\nException", e
-                print "\n dataparser error ", time_str
+                pass
+                # print "\nException", e
+                # print "\n dataparser error ", time_str
             
         if match_flag:
             return BaikeDatetime(**args)

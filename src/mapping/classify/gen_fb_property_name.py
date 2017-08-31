@@ -1,7 +1,7 @@
 from .calc_infobox_mapping_score import extend_name
 from ..predicate_mapping import load_name_attr
 from tqdm import tqdm
-from ...IOUtil import Print, result_dir
+from ...IOUtil import Print, result_dir, load_json_map
 import json
 import os
 
@@ -32,9 +32,13 @@ if __name__ == "__main__":
     in_path = os.path.join(out_dir, 'mapped_fb_entity_info.json')
     out_path = os.path.join(out_dir, 'mapped_fb_entity_info_processed.json')
 
+    fb_entity_info = load_json_map(in_path)
+    
     name_files = [os.path.join(result_dir, 'freebase/entity_name.json'),
         os.path.join(result_dir, 'freebase/entity_alias.json')]
     totals = [39345270, 2197095]
     name_map = load_name_attr(name_files, totals)
 
-    fb_entity_info = add_property_name_all(fb_entity_info, name_map, out_path)
+    
+
+    add_property_name_all(fb_entity_info, name_map, out_path)
