@@ -1,4 +1,5 @@
 from ...baike_process.parse import strip_url, parse_summary
+from .gen_fb_property import load_mapping_pairs
 import glob
 from tqdm import tqdm
 from ...IOUtil import Print, nb_lines_of, result_dir
