@@ -1,7 +1,7 @@
 from ...baike_process.parse import strip_url, parse_summary
 import glob
 from tqdm import tqdm
-from ...IOUtil import Print, nb_lines_of
+from ...IOUtil import Print, nb_lines_of, result_dir
 import json
 import base64
 import os
