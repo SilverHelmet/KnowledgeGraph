@@ -59,10 +59,10 @@ def find_match(baike_date, fb_time_values):
     return False
 
 
-def calc_infobox_mapping_score(baike2fb_map, baike_entitiy_info, fb_entity_info, baike_name_attrs):
+def calc_infobox_mapping_score(baike2fb_map, baike_entitiy_info, fb_entity_info, baike_name_attrs, outf):
     baike_name_attrs = set(baike_name_attrs)
     Print('calc mapping score')
-    maps = []
+    # maps = []
     for baike_url in tqdm(baike2fb_map, total = len(baike2fb_map)):
         fb_uris = baike2fb_map[baike_url]
         baike_info = ignore_baike_name_attr(baike_entity_info, baike_name_attrs, baike_url)
@@ -95,8 +95,9 @@ def calc_infobox_mapping_score(baike2fb_map, baike_entitiy_info, fb_entity_info,
                 "nb_fb_info": nb_fb_info,
                 "#match": match_cnt
             }
-            maps.append(map_obj)
-    return maps
+            outf.write(json.dumps(map_obj) + '\n')
+            # maps.append(map_obj)
+    # return maps
 
 
 if __name__ == "__main__":
@@ -124,21 +125,26 @@ if __name__ == "__main__":
     name_map = load_name_attr(name_files, totals)
 
     fb_entity_info = extend_name_onece(fb_entity_info, name_map)
-    for idx, key in enumerate(fb_entity_info, start = 1):
-        if idx >= 5:
-            break
-        print key
-        print fb_entity_info[key][0]
-        print fb_entity_info[key][1]
+    cnt = 0
+    for key in fb_entity_info:
+        if len(fb_entity_info[key][1]) > 0:
+            cnt += 1
+            if cnt >= 5:
+                break
+            print key
+            print fb_entity_info[key][0]
+            print fb_entity_info[key][1]
 
     del  name_map
 
-    map_scores = calc_infobox_mapping_score(baike2fb_map, baike_entity_info, fb_entity_info, baike_name_attrs)
     out_path = os.path.join(out_dir, 'map_scores.json')
     outf = file(out_path, 'w')
-    for map_obj in map_scores:
-        outf.write(json.dumps(map_obj) + '\n')
+    calc_infobox_mapping_score(baike2fb_map, baike_entity_info, fb_entity_info, baike_name_attrs, outf)
     outf.close()
+    # outf = file(out_path, 'w')
+    # for map_obj in map_scores:
+    #     outf.write(json.dumps(map_obj) + '\n')
+    # outf.close()
     
     # print "name_map", len(name_map)
     # description_map = load_name_attr([os.path.join(result_dir, 'freebase/entity_description.json')], totals = [6426977], fb_entities = set(fb_entities))
