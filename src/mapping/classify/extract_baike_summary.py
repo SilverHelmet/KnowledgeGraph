@@ -31,5 +31,5 @@ if __name__ == "__main__":
     outf = file(os.path.join(out_dir, 'baike_summary.json'), 'w')
     for idx, filepath in enumerate(glob.glob('data/360/*finish'), start = 1):
         Print('parse %3d %s' %(idx, os.path.basename(filepath)))
-        parse(filepath, baike_entities)
+        parse(filepath, baike_entities, outf)
     outf.close()
