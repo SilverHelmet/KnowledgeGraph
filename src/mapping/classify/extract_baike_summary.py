@@ -9,7 +9,7 @@ import os
 
 def parse(filepath, entities, outf):
     cnt = 0
-    for line in tqdm(file(tqdm), total = nb_lines_of(filepath)):
+    for line in tqdm(file(filepath), total = nb_lines_of(filepath)):
         parts = line.split('\t')
         url = strip_url(parts[0])
         if url in entities:
