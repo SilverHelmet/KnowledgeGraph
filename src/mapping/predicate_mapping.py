@@ -6,6 +6,7 @@ from tqdm import tqdm
 from .fb_date import FBDatetime, BaikeDatetime
 from .name_mapping import del_space
 from ..schema.schema import Schema
+from .one2one_mapping_cnt import load_attrs
 
 def extract_name(value):
     suffix = value[-4:]
