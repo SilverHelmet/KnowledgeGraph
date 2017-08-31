@@ -6,6 +6,7 @@ import json
 import base64
 
 def parse(filepath, entities, outf):
+    cnt = 0
     for line in tqdm(file(tqdm), total = nb_lines_of(filepath)):
         parts = line.split('\t')
         url = strip_url(parts[0])
@@ -15,6 +16,8 @@ def parse(filepath, entities, outf):
             if summary is not None:
                 obj = {'summary': summary}
                 outf.write("%s\t%s\n" %(url, json.dumps(obj, ensure_ascii = False)))
+                cnt += 1
+    return cnt
 
 
 
@@ -29,7 +32,9 @@ if __name__ == "__main__":
     nb_files = 461
     Print("---- parse summary ----")
     outf = file(os.path.join(out_dir, 'baike_summary.json'), 'w')
+    cnt = 0
     for idx, filepath in enumerate(glob.glob('data/360/*finish'), start = 1):
         Print('parse %3d %s' %(idx, os.path.basename(filepath)))
-        parse(filepath, baike_entities, outf)
+        cnt += parse(filepath, baike_entities, outf)
+        Print("cnt = %d" %(cnt))
     outf.close()
