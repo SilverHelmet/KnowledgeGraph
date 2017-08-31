@@ -1,6 +1,6 @@
 from .calc_infobox_mapping_score import extend_name
 from tqdm import tqdm
-from ...IOUtil import Print
+from ...IOUtil import Print, result_dir
 import json
 import os
 
