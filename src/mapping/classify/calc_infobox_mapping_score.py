@@ -77,7 +77,7 @@ if __name__ == "__main__":
     baike_name_attrs = load_attrs()
 
     baike_entity_info_path = os.path.join(result_dir, '360/360_entity_info_processed.json')
-    baike_entity_info = load_baike_info(baike_entity_info_path, total = 21710208, entities = baike_entities)
+    baike_entity_info = load_baike_info(baike_entity_info_path, total = 21710208, entities = set(baike_entities))
     baike_name_attrs = load_attrs()
     print "baike_entitiy_info", len(baike_entity_info)
 
