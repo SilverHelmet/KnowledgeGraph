@@ -24,6 +24,8 @@ def extend_name(fb_info, name_map):
         if value in name_map:
             values = name_map[value]
         else:
+            if value.startswith('"') and value.endswith('"'):
+                value = value[1:-1]
             values = [value]
         value_names.append((name, values))
     return value_names
@@ -79,10 +81,10 @@ def calc_infobox_mapping_score(baike2fb_map, baike_entitiy_info, fb_entity_info,
                 for baike_value in baike_values:
                     if baike_value in fb_str_values:
                         match = True
-                    # else:
-                    #     baike_date = BaikeDatetime.parse(baike_value)
-                    #     if baike_date is not None:
-                    #         match = find_match(baike_date, fb_time_values)
+                    else:
+                        baike_date = BaikeDatetime.parse(baike_value)
+                        if baike_date is not None:
+                            match = find_match(baike_date, fb_time_values)
 
                         
                     if match:
@@ -91,6 +93,8 @@ def calc_infobox_mapping_score(baike2fb_map, baike_entitiy_info, fb_entity_info,
                 if match:
                     match_cnt += 1
             map_obj = {
+                'baike_url': baike_url,
+                'fb_uri': fb_uri,
                 'nb_baike_info': nb_baike_info,
                 "nb_fb_info": nb_fb_info,
                 "#match": match_cnt
@@ -126,15 +130,15 @@ if __name__ == "__main__":
     name_map = load_name_attr(name_files, totals)
 
     fb_entity_info = extend_name_onece(fb_entity_info, name_map)
-    cnt = 0
-    for key in fb_entity_info:
-        if len(fb_entity_info[key][1]) > 0:
-            cnt += 1
-            if cnt >= 5:
-                break
-            print key
-            print fb_entity_info[key][0]
-            print fb_entity_info[key][1]
+    # cnt = 0
+    # for key in fb_entity_info:
+    #     if len(fb_entity_info[key][1]) > 0:
+    #         cnt += 1
+    #         if cnt >= 5:
+    #             break
+    #         print key
+    #         print fb_entity_info[key][0]
+    #         print fb_entity_info[key][1]
 
     del  name_map
 
