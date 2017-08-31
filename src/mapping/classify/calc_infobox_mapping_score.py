@@ -38,7 +38,7 @@ def extract_info_value(info):
             fb_time = FBDatetime.parse_fb_datetime(fb_value)
             if fb_time is not None:
                 time_values.append(fb_time)
-    return str_values, time_values
+    return list(set(str_values)), time_values
 
 
 
