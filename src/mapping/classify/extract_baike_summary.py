@@ -4,6 +4,7 @@ from tqdm import tqdm
 from ...IOUtil import Print, nb_lines_of
 import json
 import base64
+import os
 
 def parse(filepath, entities, outf):
     cnt = 0
