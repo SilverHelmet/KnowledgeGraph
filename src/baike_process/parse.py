@@ -1,11 +1,13 @@
-from ..IOUtil import result_dir
-import sys
-import os
 import base64
-import json
 import glob
-import re
 import HTMLParser
+import json
+import os
+import re
+import sys
+
+from ..IOUtil import result_dir
+
 html_parser = HTMLParser.HTMLParser()
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -56,7 +58,17 @@ def parse_title(obj):
         title = obj['intro_info']['title']
     return html_unescape(title)
     
-    
+def parse_summary(obj):
+    global html_parser
+    summary = None
+    if 'intro_info' in obj:
+        intro_info = obj['intro_info']
+        if 'summary' in intro_info:
+            summary = intro_info['summary']
+    if summary:
+        return html_unescape(summary)
+    else:
+        return None
 
 def parse_line(line):
     try:
@@ -114,3 +126,5 @@ if __name__ == "__main__":
     for filepath in glob.glob('data/360/*finish'):
         parse(filepath, outf)
     outf.close()
+
+    
