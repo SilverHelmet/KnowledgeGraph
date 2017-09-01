@@ -3,6 +3,8 @@ from .gen_fb_property import load_mapping_pairs
 import os
 
 if __name__ == "__main__":
+
+    # baike.so.com/doc/2180018-2307096.html
     fb_entity_info_path = os.path.join(result_dir, '360/mapping/classify/mapped_fb_entity_info.json')
     fb_entity_info = load_json_map(fb_entity_info_path, total = 6282988)
 

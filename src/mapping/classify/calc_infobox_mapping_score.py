@@ -77,7 +77,7 @@ def find_match(baike_date, fb_time_values):
             return True
     return False
 
-def calc_infobox_mapping_score(baike2fb_map, baike_entitiy_info, fb_entity_info, baike_name_attrs, outf):
+def calc_infobox_mapping_score(baike2fb_map, baike_entity_info, fb_entity_info, baike_name_attrs, outf):
     baike_name_attrs = set(baike_name_attrs)
     Print('calc mapping score')
     # maps = []
@@ -85,6 +85,7 @@ def calc_infobox_mapping_score(baike2fb_map, baike_entitiy_info, fb_entity_info,
         print "baike_url is", baike_url
         fb_uris = baike2fb_map[baike_url]
         baike_info = ignore_baike_name_attr(baike_entity_info, baike_name_attrs, baike_url)
+        print baike_info
         nb_baike_info = len(baike_info)
         for fb_uri in fb_uris:
             fb_str_values, fb_time_values = fb_entity_info.get(fb_uri, ([], []))
