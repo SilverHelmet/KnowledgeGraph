@@ -80,7 +80,6 @@ def find_match(baike_date, fb_time_values):
 def calc_infobox_mapping_score(baike2fb_map, baike_entity_info, fb_entity_info, baike_name_attrs, outf):
     baike_name_attrs = set(baike_name_attrs)
     Print('calc mapping score')
-    # maps = []
     for baike_url in tqdm(baike2fb_map, total = len(baike2fb_map)):
         fb_uris = baike2fb_map[baike_url]
         baike_info = ignore_baike_name_attr(baike_entity_info, baike_name_attrs, baike_url)
@@ -90,14 +89,21 @@ def calc_infobox_mapping_score(baike2fb_map, baike_entity_info, fb_entity_info, 
         for fb_uri in fb_uris:
             fb_str_values, fb_time_values = fb_entity_info.get(fb_uri, ([], []))
             fb_str_values = set(fb_str_values)
-            nb_fb_info = len(fb_str_values)
+            # nb_fb_info = len(fb_str_values)
+            nb_fb_time_info = len(fb_time_values)
+
             match_cnt = 0
+            time_match_cnt = 0 
+            nb_baike_time_info = 0
+            nb_baike_info = 0
+            
 
             for baike_info_name in baike_info:
                 baike_values = baike_info[baike_info_name]
                 match = False
 
                 for baike_value in baike_values:
+                    nb_baike_info += 1
                     if baike_value in fb_str_values:
                         match = True
                     else:
@@ -105,7 +111,10 @@ def calc_infobox_mapping_score(baike2fb_map, baike_entity_info, fb_entity_info, 
                             str2date_cache[baike_value] = BaikeDatetime.parse(baike_value)
                         baike_date = str2date_cache[baike_value]
                         if baike_date is not None:
+                            nb_baike_time_info += 1
                             match = find_match(baike_date, fb_time_values)
+                            if match:
+                                time_match_cnt += 1
 
                     if match:
                         break
@@ -116,8 +125,11 @@ def calc_infobox_mapping_score(baike2fb_map, baike_entity_info, fb_entity_info, 
                 'baike_url': baike_url,
                 'fb_uri': fb_uri,
                 '#baike_info': nb_baike_info,
+                '#baike_time_info': nb_baike_time_info,
                 "#fb_info": nb_fb_info,
-                "#match": match_cnt
+                '#fb_time_info': nb_fb_time_info
+                "#match": match_cnt,
+                '#time_match': time_match_cnt,
             }
             outf.write(json.dumps(map_obj) + '\n')
             # outf.flush()
