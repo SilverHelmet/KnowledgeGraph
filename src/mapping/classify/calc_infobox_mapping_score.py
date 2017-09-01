@@ -82,11 +82,11 @@ def calc_infobox_mapping_score(baike2fb_map, baike_entity_info, fb_entity_info, 
     Print('calc mapping score')
     # maps = []
     for baike_url in tqdm(baike2fb_map, total = len(baike2fb_map)):
-        print "baike_url is", baike_url
         fb_uris = baike2fb_map[baike_url]
         baike_info = ignore_baike_name_attr(baike_entity_info, baike_name_attrs, baike_url)
-        print baike_info
         nb_baike_info = len(baike_info)
+
+        str2date_cache = {}
         for fb_uri in fb_uris:
             fb_str_values, fb_time_values = fb_entity_info.get(fb_uri, ([], []))
             fb_str_values = set(fb_str_values)
@@ -101,9 +101,11 @@ def calc_infobox_mapping_score(baike2fb_map, baike_entity_info, fb_entity_info, 
                     if baike_value in fb_str_values:
                         match = True
                     else:
-                        baike_date = BaikeDatetime.parse(baike_value)
-                        # if baike_date is not None:
-                        #     match = find_match(baike_date, fb_time_values)
+                        if not baike_value in str2date_cache:
+                            str2date_cache[baike_value] = BaikeDatetime.parse(baike_value)
+                        baike_date = str2date_cache[baike_value]
+                        if baike_date is not None:
+                            match = find_match(baike_date, fb_time_values)
 
                     if match:
                         break
