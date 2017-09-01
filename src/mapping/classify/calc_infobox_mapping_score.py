@@ -127,7 +127,7 @@ def calc_infobox_mapping_score(baike2fb_map, baike_entity_info, fb_entity_info, 
                 '#baike_info': nb_baike_info,
                 '#baike_time_info': nb_baike_time_info,
                 "#fb_info": nb_fb_info,
-                '#fb_time_info': nb_fb_time_info
+                '#fb_time_info': nb_fb_time_info, 
                 "#match": match_cnt,
                 '#time_match': time_match_cnt,
             }
