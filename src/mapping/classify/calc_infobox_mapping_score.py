@@ -111,8 +111,8 @@ def calc_infobox_mapping_score(baike2fb_map, baike_entitiy_info, fb_entity_info,
             map_obj = {
                 'baike_url': baike_url,
                 'fb_uri': fb_uri,
-                'nb_baike_info': nb_baike_info,
-                "nb_fb_info": nb_fb_info,
+                '#baike_info': nb_baike_info,
+                "#fb_info": nb_fb_info,
                 "#match": match_cnt
             }
             outf.write(json.dumps(map_obj) + '\n')

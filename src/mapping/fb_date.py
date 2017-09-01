@@ -60,7 +60,7 @@ class FBDatetime:
             args['second'] = int(match.group('second'))
             args['msec'] = int(match.group('msec'))
         else:
-            print "error date type", time_str
+            # print "error date type", time_str
             return None
         return FBDatetime(**args)
 
@@ -69,7 +69,7 @@ class FBDatetime:
 
 class BaikeDatetime:
     date_p = re.compile(r'(?P<year>-?\d{1,4})(-|年)(?P<month>\d{1,2})(-|月)(?P<day>\d{1,2})(日)?$')
-    year_p = re.compile(r'(?P<year>-?\d{1,4})(年)?$')
+    # year_p = re.compile(r'(?P<year>-?\d{1,4})(年)?$')
     year_p = re.compile(r'(?P<year>-?\d{1,4})年$')
     yearmonth_p = re.compile(r'(?P<year>-?\d{1,4})(-|年)(?P<month>\d{1,2})(月)?$')
     def __init__(self, year, month = 0, day = 0):
@@ -104,6 +104,7 @@ class BaikeDatetime:
                 if result is not None:
                     args['year'], args['month'], args['day'] = result.year, result.month, result.day
                     match_flag = True
+                    print "dateparser", args
             except Exception, e:
                 pass
                 # print "\nException", e
