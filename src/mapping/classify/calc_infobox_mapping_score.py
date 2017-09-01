@@ -88,8 +88,7 @@ def calc_infobox_mapping_score(baike2fb_map, baike_entity_info, fb_entity_info, 
         str2date_cache = {}
         for fb_uri in fb_uris:
             fb_str_values, fb_time_values = fb_entity_info.get(fb_uri, ([], []))
-            fb_str_values = set(fb_str_values)
-            # nb_fb_info = len(fb_str_values)
+            nb_fb_info = len(fb_str_values)
             nb_fb_time_info = len(fb_time_values)
 
             match_cnt = 0
