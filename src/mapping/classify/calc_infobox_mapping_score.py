@@ -82,6 +82,7 @@ def calc_infobox_mapping_score(baike2fb_map, baike_entitiy_info, fb_entity_info,
     Print('calc mapping score')
     # maps = []
     for baike_url in tqdm(baike2fb_map, total = len(baike2fb_map)):
+        print "baike_url is", baike_url
         fb_uris = baike2fb_map[baike_url]
         baike_info = ignore_baike_name_attr(baike_entity_info, baike_name_attrs, baike_url)
         nb_baike_info = len(baike_info)
