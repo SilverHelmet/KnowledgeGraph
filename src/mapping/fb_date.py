@@ -104,7 +104,7 @@ class BaikeDatetime:
                 if result is not None:
                     args['year'], args['month'], args['day'] = result.year, result.month, result.day
                     match_flag = True
-                    print "dateparser", args
+                    print "dateparser", args, time_str
             except Exception, e:
                 pass
                 # print "\nException", e
