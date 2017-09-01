@@ -101,19 +101,19 @@ class BaikeDatetime:
                 for name in names:
                     args[name] = int(match.group(name))
                 break
-        if not match_flag:
-            try:
-                result =  dateparser.parse(time_str, 
-                languages = ['zh', 'en'],
-                settings = {"PREFER_DAY_OF_MONTH":"first"} )
-                if result is not None:
-                    args['year'], args['month'], args['day'] = result.year, result.month, result.day
-                    match_flag = True
-                    print "dateparser", args, time_str
-            except Exception, e:
-                pass
-                # print "\nException", e
-                # print "\n dataparser error ", time_str
+        # if not match_flag:
+        #     try:
+        #         result =  dateparser.parse(time_str, 
+        #         languages = ['zh', 'en'],
+        #         settings = {"PREFER_DAY_OF_MONTH":"first"} )
+        #         if result is not None:
+        #             args['year'], args['month'], args['day'] = result.year, result.month, result.day
+        #             match_flag = True
+        #             print "dateparser", args, time_str
+        #     except Exception, e:
+        #         pass
+        #         # print "\nException", e
+        #         # print "\n dataparser error ", time_str
         if match_flag:
             return BaikeDatetime(**args)
         else:
