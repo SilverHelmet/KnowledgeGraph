@@ -55,6 +55,22 @@ def extend_name_onece(fb_entity_info, name_map):
         new_entity_info[e] = (str_values, time_values)
     return new_entity_info
 
+def load_processed_entity_info(in_path, total):
+    Print("load processed entity info from [%s]" %in_path)
+    info = {}
+    for line in tqdm(file(in_path), total = total):
+        p = line.split('\t')
+        key = p[0]
+        str_values = json.loads(p[1])
+        time_values = []
+        for str_value in str_values:
+            time_value = FBDatetime.parse_fb_datetime(str_value)
+            if time_value is not None:
+                time_values.append(time_value)
+        info[key] = (str_values, time_values)
+    return info
+
+
 def find_match(baike_date, fb_time_values):
     for fb_date in fb_time_values:
         if map_time(fb_date, baike_date):
@@ -120,18 +136,21 @@ if __name__ == "__main__":
     baike_name_attrs = load_attrs()
     print "baike_entitiy_info", len(baike_entity_info)
 
-    fb_entity_info_path = os.path.join(result_dir, '360/mapping/classify/mapped_fb_entity_info.json')
-    fb_entity_info = load_json_map(fb_entity_info_path, total = 6282988)
+
+    # fb_entity_info_path = os.path.join(result_dir, '360/mapping/classify/mapped_fb_entity_info.json')
+    # fb_entity_info = load_json_map(fb_entity_info_path, total = 6282988)
 
 
-    name_files = [os.path.join(result_dir, 'freebase/entity_name.json'),
-            os.path.join(result_dir, 'freebase/entity_alias.json')]
-    totals = [39345270, 2197095]
-    name_map = load_name_attr(name_files, totals)
+    # name_files = [os.path.join(result_dir, 'freebase/entity_name.json'),
+    #         os.path.join(result_dir, 'freebase/entity_alias.json')]
+    # totals = [39345270, 2197095]
+    # name_map = load_name_attr(name_files, totals)
 
-    fb_entity_info = extend_name_onece(fb_entity_info, name_map)
+    # fb_entity_info = extend_name_onece(fb_entity_info, name_map)
 
-    del  name_map
+    # del  name_map
+
+    fb_entity_info = load_processed_entity_info(os.path.join(out_dir, 'mapped_fb_entity_info_processed.json'), total = 6282988)
 
     out_path = os.path.join(out_dir, 'map_scores.json')
     outf = file(out_path, 'w')
