@@ -28,8 +28,6 @@ if __name__ == "__main__":
                 token_str = " ".join(words)
                 outf.write("%s\t%s\n" %(fb_uri, token_str))
                 continue
-            else:
-                print des[:-4]
     outf.close()
     print "hit cnt = %d" %(hit_cnt)
 
