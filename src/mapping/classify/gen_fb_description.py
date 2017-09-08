@@ -21,7 +21,7 @@ if __name__ == "__main__":
         hit_cnt += 1
         des_list = json.loads(p[1])
         for des in des_list:
-            if des[-4:] == '"@zh':
+            if des[-4:] == u'"@zh':
                 des = des[1:-4]
                 words = jieba.cut(des)
                 words = [word for word in words if word.strip() != ""]
