@@ -3,6 +3,7 @@ from ...IOUtil import result_dir
 from tqdm import tqdm
 import os
 import json
+import jieba
 
 if __name__ == "__main__":
     mapping_file = os.path.join(result_dir, '360/360_mapping.json')
