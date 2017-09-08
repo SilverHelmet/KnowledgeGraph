@@ -1,6 +1,8 @@
 from .gen_fb_property import load_mapping_pairs
 from ...IOUtil import result_dir
 from tqdm import tqdm
+import os
+import json
 
 if __name__ == "__main__":
     mapping_file = os.path.join(result_dir, '360/360_mapping.json')
