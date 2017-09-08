@@ -16,7 +16,7 @@ if __name__ == "__main__":
         baike_url = p[0]
         summary = json.loads(p[1])['summary']
         words = jieba.cut(summary)
-        words = [for word in words if word.strip() != ""]
+        words = [word for word in words if word.strip() != ""]
         token_str = " ".join(words)
         outf.write("%s\t%s\n" %(baike_url, token_str))
     outf.close()
