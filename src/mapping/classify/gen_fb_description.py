@@ -19,9 +19,9 @@ if __name__ == "__main__":
         if not fb_uri in fb_entities:
             continue
         hit_cnt += 1
-        des_list = json.loads(p[1])
+        des_list = json.loads(p[1])['fb:common.topic.description']
         for des in des_list:
-            if des[-4:] == u'"@zh':
+            if des[-4:] == '"@zh':
                 des = des[1:-4]
                 words = jieba.cut(des)
                 words = [word for word in words if word.strip() != ""]
