@@ -11,7 +11,7 @@ if __name__ == "__main__":
     fb_entities = set(fb_entities)
 
     des_path = os.path.join(result_dir, 'freebase/entity_description.json')
-    outf = os.path.join(out_dir, 'fb_description.token')
+    outf = file(os.path.join(out_dir, 'fb_description.token'), 'w')
     hit_cnt = 0
     for line in tqdm(file(des_path), total = 6426977):
         p = line.split('\t')
@@ -19,6 +19,7 @@ if __name__ == "__main__":
         if not fb_uri in fb_entities:
             continue
         hit_cnt += 1
+        print "hit"
         des_list = json.loads(p[1])
         for des in des_list:
             if des[-4:] == "@zh":
