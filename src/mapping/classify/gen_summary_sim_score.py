@@ -27,6 +27,6 @@ if __name__ == "__main__":
     fb_summary_path = os.path.join(base_dir, 'fb_description.token')
     stopwords = load_stopwords()
 
-    # baike_summary_map = load_summary(baike_summary_path, stopwords, total = 1129345)
+    baike_summary_map = load_summary(baike_summary_path, stopwords, total = 1129345)
     fb_summary_map = load_summary(fb_summary_path, stopwords, total = 181418)
 
