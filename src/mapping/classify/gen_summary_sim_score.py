@@ -9,7 +9,7 @@ def load_summary(path, stopwords, total):
     Print('load summary from [%s]' %(path))
     summary_map = {}
     for line in tqdm(file(path), total = total):
-        p = line.strip().split('\t')
+        p = line.rstrip('\n').split('\t')
         key = p[0]
         words = p[1].decode('utf-8').split(" ")
         words_set = set()
