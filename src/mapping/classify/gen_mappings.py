@@ -1,6 +1,7 @@
 from .gen_fb_property import load_mapping_pairs
 from ...IOUtil import  result_dir
 import json
+import os
 
 mapping_file = os.path.join(result_dir, '360/360_mapping.json')
 baike2fb_map, baike_entities, fb_entities = load_mapping_pairs(mapping_file)
