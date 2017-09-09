@@ -14,7 +14,7 @@ if __name__ == "__main__":
         p = line.split('\t')
         fb_uri = p[0].decode('utf-8')
         if fb_uri in fb_entities:
-        outf.write(line)
+            outf.write(line)
     outf.close()
 
 
