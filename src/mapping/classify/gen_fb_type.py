@@ -16,5 +16,6 @@ if __name__ == "__main__":
         if fb_uri in fb_entities:
             outf.write(line)
     outf.close()
+    print "hit cnt = %d" %hit_cnt
 
 
