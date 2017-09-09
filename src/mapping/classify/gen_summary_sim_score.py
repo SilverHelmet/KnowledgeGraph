@@ -33,7 +33,7 @@ if __name__ == "__main__":
     mapping_file = os.path.join(result_dir, '360/360_mapping.json')
     baike2fb_map, baike_entities, fb_entities = load_mapping_pairs(mapping_file)
 
-    outf = file(os.path.join(base_dir, 'summary_sim_score.tsv'))
+    outf = file(os.path.join(base_dir, 'summary_sim_score.tsv'), 'w')
     for baike_url in baike2fb_map:
         for fb_uri in baike2fb_map[baike_url]:
             baike_words = baike_summary_map.get(baike_url, set())
