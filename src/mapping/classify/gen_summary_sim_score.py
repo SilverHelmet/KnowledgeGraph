@@ -38,8 +38,10 @@ if __name__ == "__main__":
         for fb_uri in baike2fb_map[baike_url]:
             baike_words = baike_summary_map.get(baike_url, set())
             nb_baike_words = len(baike_words)
+
             fb_words = fb_summary_map.get(fb_uri, set())
             nb_fb_words = len(fb_words)
+            
             out = [baike_url, fb_uri]
             nb_match = len(fb_words.intersection(baike_words))
             out = [baike_url, fb_uri, nb_match, nb_baike_words, nb_fb_words]
