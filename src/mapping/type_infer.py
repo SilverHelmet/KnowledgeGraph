@@ -11,11 +11,17 @@ class Mapping:
         hit, total = prob.split('/')
         self.hit = int(hit)
         self.total = int(total)
+
+    def prob(self):
+        return (self.hit + 0.0) / (self.total + 3)
+
+    def fb_type(self):
+        return get_type(self.fb_prop)
     
     def __str__(self):
         return ' '.join([self.fb_prop, '%d/%d' %(self.hit, self.total)])
 
-class TypeInfe:
+class TypeInfer:
     def __init__(self, path = os.path.join(result_dir, '360/mapping/predicates_map.json')):
         self.baikeattr2fb_type = self.init(path)
 
@@ -38,9 +44,22 @@ class TypeInfe:
 
         return baikeattr2fb_type
 
-    def infer_type(self, baike_attrs):
+    def infer(self, baike_attrs):
         prob_map = {}
         for attr in baike_attrs:
+            if not attr in self.baikeattr2fb_type:
+                continue
+            mappings = self.baikeattr2fb_type[attr]
+            for mapping in mappings:
+                fb_type = mapping.fb_type()
+                prob = mapping.prob()
+                if not fb_type in prob_map:
+                    prob_map[fb_type] = prob
+                else:
+                    prob_map[fb_type] += prob
+        return prob_map
+
+
 
 
 
@@ -48,4 +67,7 @@ class TypeInfe:
                 
 
 if __name__ == "__main__":
-
+    type_infer = TypeInfer()
+    attr = [u'民族', u'影视作品', u'音乐作品']
+    res = type_infer.infer(attr)
+    print res
