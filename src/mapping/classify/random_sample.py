@@ -41,12 +41,12 @@ if __name__ == "__main__":
     for key in fb_cnt.keys()[:10]:
         print "test", key, type(key)
 
-    for bk in baike_urls:
-        print bk, baike_cnt[bk]
+    # for bk in baike_urls:
+    #     print bk, baike_cnt[bk]
 
 
-    print ""
-    print ""
+    # print ""
+    # print ""
 
 
     for fb in fb_uris:
