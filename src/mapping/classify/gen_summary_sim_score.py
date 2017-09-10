@@ -12,11 +12,11 @@ def load_summary(path, stopwords, total):
         p = line.rstrip('\n').split('\t')
         key = p[0]
         words = p[1].decode('utf-8').split(" ")
-        words_set = set()
+        words_list = []
         for word in words:
             if not word in stopwords:
-                words_set.add(word)
-        summary_map[key] = words_set
+                words_list.append(word)
+        summary_map[key] = words_list
     return summary_map
 
 
@@ -35,15 +35,18 @@ if __name__ == "__main__":
 
     outf = file(os.path.join(base_dir, 'summary_sim_score.tsv'), 'w')
     for baike_url in baike2fb_map:
+        baike_words = set(baike_summary_map.get(baike_url, []))
         for fb_uri in baike2fb_map[baike_url]:
-            baike_words = baike_summary_map.get(baike_url, set())
             nb_baike_words = len(baike_words)
 
-            fb_words = fb_summary_map.get(fb_uri, set())
+            fb_words = fb_summary_map.get(fb_uri, [])
             nb_fb_words = len(fb_words)
             
-            out = [baike_url, fb_uri]
-            nb_match = len(fb_words.intersection(baike_words))
+            nb_match = 0
+            for word in fb_words:
+                if word in baike_words:
+                    nb_match += 1
+            
             out = [baike_url, fb_uri, nb_match, nb_baike_words, nb_fb_words]
             out = map(str, out)
             outf.write("%s\n" %"\t".join(out))
