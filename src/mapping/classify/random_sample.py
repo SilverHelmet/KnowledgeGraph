@@ -7,7 +7,9 @@ def count_occur(mapping_path):
     Print("count occur from [%s]" %mapping_path)
     baike_cnt = {}
     fb_cnt = {}
-    for line in tqdm(file(mapping_path), total = 1129601)[:100]:
+    for idx, line in enumerate(tqdm(file(mapping_path), total = 1129601)):
+        if index >= 100:
+            break
         p = line.split('\t')
         baike_url = p[0]
         obj = [w.encode('utf-8') for w in json.loads(p[1])]
