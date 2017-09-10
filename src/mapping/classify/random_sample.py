@@ -36,7 +36,7 @@ if __name__ == "__main__":
     mapping_path = os.path.join(base_dir, 'mappings.txt')
     baike_cnt, fb_cnt = count_occur(mapping_path)
 
-        print key in fb_cnt.keys()[:10]:
+    for key in fb_cnt.keys()[:10]:
         print "test", key
 
     for bk in baike_urls:
