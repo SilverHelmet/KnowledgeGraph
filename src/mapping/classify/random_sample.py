@@ -8,7 +8,7 @@ def count_occur(mapping_path):
     baike_cnt = {}
     fb_cnt = {}
     for idx, line in enumerate(tqdm(file(mapping_path), total = 1129601)):
-        if index >= 100:
+        if idx >= 100:
             break
         p = line.split('\t')
         baike_url = p[0]
