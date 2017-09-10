@@ -35,7 +35,9 @@ if __name__ == "__main__":
 
     outf = file(os.path.join(base_dir, 'summary_sim_score.tsv'), 'w')
     for baike_url in baike2fb_map:
-        baike_words = set(baike_summary_map.get(baike_url, []))
+        nb_baike_words = len(baike_words)
+        baike_words = baike_summary_map.get(baike_url, [])
+        baike_words = set(baike_words)
         for fb_uri in baike2fb_map[baike_url]:
             nb_baike_words = len(baike_words)
 
