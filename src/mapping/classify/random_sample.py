@@ -8,6 +8,7 @@ def count_occur(mapping_path):
     Print("count occur from [%s]" %mapping_path)
     baike_cnt = {}
     fb_cnt = {}
+    multi_fb = set()
     for line in tqdm(file(mapping_path), total = 1129601):
         p = line.split('\t')
         baike_url = p[0]
@@ -17,12 +18,17 @@ def count_occur(mapping_path):
             if not fb_uri in fb_cnt:
                 fb_cnt[fb_uri] =0
             fb_cnt[fb_uri] +=1
-    return baike_cnt, fb_cnt
+        if len(obj) > 1:
+            for fb_uri in obj:
+                multi_fb.add(fb_uri)
+    return baike_cnt, fb_cnt, multi_fb
 
-def random_sample(cnt_map, rest, test_fn):
+def random_sample(cnt_map, rest, test_fn, error = None):
+    if error is None:
+        error = set()
     pool = []
     for key in cnt_map:
-        if test_fn(cnt_map[key]):
+        if test_fn(cnt_map[key]) and not key in error:
             pool.append(key)
     sample_indices = np.random.permutation(len(pool))[:rest]
     samples = set()
@@ -73,13 +79,13 @@ if __name__ == "__main__":
 
     base_dir = os.path.join(result_dir, '360/mapping/classify')
     mapping_path = os.path.join(base_dir, 'mappings.txt')
-    baike_cnt, fb_cnt = count_occur(mapping_path)
+    baike_cnt, fb_cnt, multi_fb = count_occur(mapping_path)
 
     baike_small = random_sample(baike_cnt, small_rest, lambda x: x >=2 and x <= 5)
     print len(baike_small)
     baike_big = random_sample(baike_cnt, big_rest, lambda x: x >= 6 and x <= 20)
     print len(baike_big)
-    fb_big = random_sample(fb_cnt, fb2baike_big_rest, lambda x: x >= 3 and x <= 10)
+    fb_big = random_sample(fb_cnt, fb2baike_big_rest, lambda x: x >= 3 and x <= 10, multi_fb)
 
     baike_urls.update(baike_small)
     baike_urls.update(baike_big)
