@@ -91,6 +91,7 @@ if __name__ == "__main__":
     cnt = 0
     cnt += len(baike_urls)
     for fb in fb_cnt:
+        print fb_cnt[fb]
         cnt += fb_cnt[fb]
     
     print "cnt is %d" %cnt
