@@ -39,7 +39,7 @@ if __name__ == "__main__":
     baike_cnt, fb_cnt = count_occur(mapping_path)
 
     for key in fb_cnt.keys()[:10]:
-        print "test", key
+        print "test", key, type(key)
 
     for bk in baike_urls:
         print bk, baike_cnt[bk]
