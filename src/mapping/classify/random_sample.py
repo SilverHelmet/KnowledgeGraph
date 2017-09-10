@@ -76,7 +76,9 @@ if __name__ == "__main__":
     baike_cnt, fb_cnt = count_occur(mapping_path)
 
     baike_small = random_sample(baike_cnt, small_rest, lambda x: x >=2 and x <= 5)
+    print len(baike_small)
     baike_big = random_sample(baike_cnt, big_rest, lambda x: x >= 6 and x <= 20)
+    print len(baike_big)
     fb_big = random_sample(fb_cnt, fb2baike_big_rest, lambda x: x >= 3)
 
     baike_urls.update(baike_small)
