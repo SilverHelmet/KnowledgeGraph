@@ -46,7 +46,7 @@ def generate_sample(baike_urls, fb_uris, out_path, mapping_path):
         if baike_url in baike_urls:
             outf.write(line)
         else:
-            obj = [w for w in json.loads(p[1])]
+            obj = [w.encode('utf-8') for w in json.loads(p[1])]
             add_cnt = 0
             for fb in obj:
                 if fb in fb_lines:
@@ -81,7 +81,10 @@ if __name__ == "__main__":
 
     baike_urls.update(baike_small)
     baike_urls.update(baike_big)
+    
     fb_uris.update(fb_big)
+    print len(baike_urls)
+    print len(fb_uris)
 
     cnt = 0
     cnt += len(baike_urls)
