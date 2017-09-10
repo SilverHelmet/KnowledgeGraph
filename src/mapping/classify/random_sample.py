@@ -1,6 +1,7 @@
 from ...IOUtil import result_dir, Print
 import json
 from tqdm import tqdm
+import os
 
 def count_occur(mapping_path):
     Print("count occur from [%s]" %mapping_path)
