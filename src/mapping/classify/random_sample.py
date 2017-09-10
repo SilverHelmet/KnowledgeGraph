@@ -27,7 +27,7 @@ if __name__ == "__main__":
     'baike.so.com/doc/1287918-1361771.html',
     'baike.so.com/doc/5807317-6020118.html',
     'baike.so.com/doc/6773200-6988367.html'])
-    fb_uris = set(['fb:m.02hrt7', 'fb:m.022fj_', 'fb:m.022fj'])
+    fb_uris = set(['fb:m.02hrt7', 'fb:m.022fj_', 'fb:m.022fj', 'fb:m.023m6pg'])
 
 
     small_rest = 40
