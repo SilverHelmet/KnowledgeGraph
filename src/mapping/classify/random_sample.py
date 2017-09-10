@@ -44,5 +44,7 @@ if __name__ == "__main__":
     print ""
     print ""
 
+    print key in fb_cnt.keys()[:10]:
+        print "test", key
     for fb in fb_uris:
         print fb, fb_cnt[fb]
