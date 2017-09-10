@@ -25,7 +25,7 @@ def random_sample(cnt_map, rest, test_fn):
         if test_fn(cnt_map[key]):
             pool.append(key)
     sample_indices = np.random.permutation(len(pool))[:rest]
-    samples = set(0)
+    samples = set()
     for idx in sample_indices:
         samples.add(pool[idx])
     return samples
