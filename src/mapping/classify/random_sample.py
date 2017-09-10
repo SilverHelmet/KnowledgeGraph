@@ -7,13 +7,12 @@ def count_occur(mapping_path):
     Print("count occur from [%s]" %mapping_path)
     baike_cnt = {}
     fb_cnt = {}
-    for line in tqdm(file(mapping_path), total = 1129601):
+    for line in tqdm(file(mapping_path), total = 1129601)[:100]:
         p = line.split('\t')
         baike_url = p[0]
         obj = [w.encode('utf-8') for w in json.loads(p[1])]
         baike_cnt[baike_url] = len(obj)
         for fb_uri in obj:
-            assert type(fb_uri) == str
             if not fb_uri in fb_cnt:
                 fb_cnt[fb_uri] =0
             fb_cnt[fb_uri] +=1
@@ -37,6 +36,9 @@ if __name__ == "__main__":
     mapping_path = os.path.join(base_dir, 'mappings.txt')
     baike_cnt, fb_cnt = count_occur(mapping_path)
 
+        print key in fb_cnt.keys()[:10]:
+        print "test", key
+
     for bk in baike_urls:
         print bk, baike_cnt[bk]
 
@@ -44,7 +46,6 @@ if __name__ == "__main__":
     print ""
     print ""
 
-    print key in fb_cnt.keys()[:10]:
-        print "test", key
+
     for fb in fb_uris:
         print fb, fb_cnt[fb]
