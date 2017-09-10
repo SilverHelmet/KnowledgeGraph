@@ -80,6 +80,7 @@ if __name__ == "__main__":
     base_dir = os.path.join(result_dir, '360/mapping/classify')
     mapping_path = os.path.join(base_dir, 'mappings.txt')
     baike_cnt, fb_cnt, multi_fb = count_occur(mapping_path)
+    print ('multi fb'), len(multi_fb)
 
     baike_small = random_sample(baike_cnt, small_rest, lambda x: x >=2 and x <= 5)
     print len(baike_small)
