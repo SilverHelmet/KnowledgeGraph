@@ -34,7 +34,7 @@ if __name__ == "__main__":
     fb2baike_big_rest = 20
 
     base_dir = os.path.join(result_dir, '360/mapping/classify')
-    mapping_path = os.path.join(base_dir, 'mapping.txt')
+    mapping_path = os.path.join(base_dir, 'mappings.txt')
     baike_cnt, fb_cnt = count_occur(mapping_path)
 
     for bk in baike_urls:
