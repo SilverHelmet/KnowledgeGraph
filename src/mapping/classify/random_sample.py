@@ -19,6 +19,19 @@ def count_occur(mapping_path):
             fb_cnt[fb_uri] +=1
     return baike_cnt, fb_cnt
 
+def random_sample(cnt_map, rest, test_fn):
+    pool = []
+    for key in cnt_map:
+        if test_fn(cnt_map[key]):
+            pool.append(key)
+    sample_indices = np.random.permutation(len(pool))[:rest]
+    samples = set(0)
+    for idx in sample_indices:
+        samples.add(pool[idx])
+    return samples
+
+
+
 def generate_sample(baike_urls, fb_uris, out_path, mapping_path):
     Print('generate sample')
     fb_lines = {}
@@ -77,7 +90,6 @@ if __name__ == "__main__":
     
     print "cnt is %d" %cnt
 
-    
     out_path = os.path.join(base_dir, 'train_data/train_data.json')
     generate_sample(baike_urls, fb_uris, out_path, mapping_path)
     
