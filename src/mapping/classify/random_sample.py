@@ -13,6 +13,7 @@ def count_occur(mapping_path):
         obj = [w.encode('utf-8') for w in json.loads(p[1])]
         baike_cnt[baike_url] = len(obj)
         for fb_uri in obj:
+            assert type(fb_uri) == str
             if not fb_uri in fb_cnt:
                 fb_cnt[fb_uri] =0
             fb_cnt[fb_uri] +=1
@@ -21,8 +22,7 @@ def count_occur(mapping_path):
 
 
 if __name__ == "__main__":
-    baike_urls = set(['baike.so.com/doc/6115884-10499234.html', 
-    'baike.so.com/doc/10066508-10591843.html', 
+    baike_urls = set(['baike.so.com/doc/10066508-10591843.html', 
     'baike.so.com/doc/1287918-1361771.html',
     'baike.so.com/doc/5807317-6020118.html',
     'baike.so.com/doc/6773200-6988367.html'])
