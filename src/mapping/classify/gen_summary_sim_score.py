@@ -53,12 +53,12 @@ if __name__ == "__main__":
     for baike_url in baike2fb_map:
         baike_words = baike_summary_map.get(baike_url, [])
         nb_baike_words = len(baike_words)
-        baike_words, baike_length = gen_word_cnt(baike_word)
+        baike_words = gen_word_cnt(baike_words)
         for fb_uri in baike2fb_map[baike_url]:
         
             fb_words = fb_summary_map.get(fb_uri, [])
             nb_fb_words = len(fb_words)
-            fb_words, fb_length = gen_word_cnt(fb_words)
+            fb_words = gen_word_cnt(fb_words)
             
             match_cos_score = 0
             for word in baike_words:
