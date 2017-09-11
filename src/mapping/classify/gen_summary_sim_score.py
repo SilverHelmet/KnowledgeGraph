@@ -37,16 +37,16 @@ if __name__ == "__main__":
     for baike_url in baike2fb_map:
         baike_words = baike_summary_map.get(baike_url, [])
         nb_baike_words = len(baike_words)
-        baike_words = set(baike_words)
         for fb_uri in baike2fb_map[baike_url]:
             nb_baike_words = len(baike_words)
 
             fb_words = fb_summary_map.get(fb_uri, [])
             nb_fb_words = len(fb_words)
+            fb_words = set(fb_words)
             
             nb_match = 0
-            for word in fb_words:
-                if word in baike_words:
+            for word in baike_words
+                if word in fb_words
                     nb_match += 1
             
             out = [baike_url, fb_uri, nb_match, nb_baike_words, nb_fb_words]
