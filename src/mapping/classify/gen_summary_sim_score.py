@@ -50,7 +50,8 @@ if __name__ == "__main__":
     baike2fb_map, baike_entities, fb_entities = load_mapping_pairs(mapping_file)
 
     outf = file(os.path.join(base_dir, 'summary_sim_score.tsv'), 'w')
-    for baike_url in baike2fb_map:
+    Print("calc summary sim score")
+    for baike_url in tqdm(baike2fb_map, total = len(baike2fb_map)):
         baike_words = baike_summary_map.get(baike_url, [])
         nb_baike_words = len(baike_words)
         baike_words = gen_word_cnt(baike_words)
