@@ -45,8 +45,8 @@ if __name__ == "__main__":
             fb_words = set(fb_words)
             
             nb_match = 0
-            for word in baike_words
-                if word in fb_words
+            for word in baike_words:
+                if word in fb_words:
                     nb_match += 1
             
             out = [baike_url, fb_uri, nb_match, nb_baike_words, nb_fb_words]
