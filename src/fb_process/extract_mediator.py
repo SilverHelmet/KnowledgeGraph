@@ -7,16 +7,15 @@ from ..schema.schema import Schema
 def parse_mediator_entities(property_path, total = 283388281):
     schema = Schema()
     schema.init()
-    med_entities = []
+    med_entities = set()
     for line in tqdm(file(property_path), total = total):
         p = line.strip().split('\t')
         prop = p[1]
         value = p[2]
         value_type = schema.expected_type(prop)
         if schema.is_mediator(value_type):
-            med_entities.append(value)
+            med_entities.add(value)
 
-    med_entities = set(med_entities)
     print "size = %d" %len(med_entities)
     return med_entities
 
