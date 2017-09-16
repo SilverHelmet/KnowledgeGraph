@@ -83,6 +83,7 @@ if __name__ == "__main__":
         func = filter_property_ttl
     elif mode == "property_mediator_ttl":
         predicates = schema.load_mediator_predicates()
+        assert "fb:music.recording.releases" in predicates
         entities = set(load_file(os.path.join(result_dir, 'freebase/mediator_entities.txt')))
         func = filter_property_ttl
 
