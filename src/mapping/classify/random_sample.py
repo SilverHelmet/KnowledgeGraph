@@ -87,7 +87,7 @@ if __name__ == "__main__":
     baike_big = random_sample(baike_cnt, big_rest, lambda x: x >= 6 and x <= 20)
     print len(baike_big)
     fb_big = random_sample(fb_cnt, fb2baike_big_rest, lambda x: x >= 3 and x <= 10, multi_fb)
-
+    
     baike_urls.update(baike_small)
     baike_urls.update(baike_big)
     

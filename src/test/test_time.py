@@ -11,3 +11,9 @@ for time_str in time_strs:
     print result
 
 import datetime
+
+def test(x1, x2):
+    print x1
+    print x2
+
+test(**(1, 2))
