@@ -60,9 +60,7 @@ if __name__ == "__main__":
     print "baike2fb_map", len(baike2fb_map)
     print "baike_entities", len(baike_entities)
     print "fb_entities", len(fb_entities)
-    name_files = [os.path.join(result_dir, 'freebase/entity_name.json'),
-            os.path.join(result_dir, 'freebase/entity_alias.json')]
-    totals = [39345270, 2197095]
+
 
     mediator_ttl_map = load_ttl2map(os.path.join(result_dir, 'freebase/mediator_med_property.ttl'), total = None, entities = None)
     print "mediator_ttl_mapl", len(mediator_ttl_map)
