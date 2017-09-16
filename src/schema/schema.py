@@ -85,6 +85,9 @@ def load_type_attrs():
     for line in file(os.path.join(doc_dir, 'final_type_attrs.json'), 'r'):
         key, obj = line.split('\t')
         attrs_map[key] = json.loads(obj)
+    for line in file(os.path.join(doc_dir, 'human_add_type_attr.json'), 'r'):
+        key, obj = line.split('\t')
+        attrs_map[key] = json.loads(obj)
     return attrs_map
 
 def load_predicates():
@@ -145,8 +148,6 @@ if __name__ == "__main__":
 
     schema = Schema()
     schema.init()
-    ex_type = schema.expected_type('fb:organization.organization.phone_number')
-    print ex_type
-    print schema.type_attrs[ex_type]
-    print schema.is_mediator(ex_type)
+    print schema.is_mediator("fb:music.release")
+
     
