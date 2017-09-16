@@ -32,7 +32,7 @@ def make_key(baike_url, fb_uri):
     return baike_url + " # " + fb_uri
     
 def load_infobox_score(pairs = None): 
-    filepath = os.path.join(result_dir, '360/mapping/classify/map_score.json')
+    filepath = os.path.join(result_dir, '360/mapping/classify/map_scores.json')
     total = 26578184
     if pairs is not None:
         load_keys = set([make_key(*pair)for pair in pairs])
