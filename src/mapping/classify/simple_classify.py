@@ -30,6 +30,9 @@ def load_train_data(filepath, entities):
 
 def make_key(baike_url, fb_uri):
     return baike_url + " # " + fb_uri
+
+def unmake_key(key):
+    return key.split(' # ')
     
 def load_infobox_score(pairs = None): 
     filepath = os.path.join(result_dir, '360/mapping/classify/map_scores.json')
@@ -113,10 +116,19 @@ class SimpleClassifer:
         clf.summary_scores = json.loads(lines[2])
         return clf
 
+def find_map(pairs, score_map):
+    keys = sorted(score_map.keys(), key = lambda x:score_map[x], reverse = True)
+    for key in keys:
+        baike_url, fb_uri = unmake_key(key)
+
+
+
+
 def test(infobox_cof, summary_cof, clf, pairs):
     clf.set_cof(infobox_cof, summary_cof)
     score_map = clf.calc_score(pairs)
-    
+    maps = find_map(pairs, score_map)
+
     
 
 
@@ -125,12 +137,13 @@ if __name__ == "__main__":
     true_pairs, entities = load_ground_truth(os.path.join(base_dir, 'train_data/ground_truth.txt'))
     train_pairs = load_train_data(os.path.join(base_dir, 'train_data/train_data.json'), entities = entities)
 
-    # clf = SimpleClassifer(1, 1)
-    # clf.load_score(train_pairs)
+    clf = SimpleClassifer(1, 1)
+    clf.load_score(train_pairs)
+    clf.save(os.path.join(base_dir, 'SimpleClf.json'))
 
-    clf = SimpleClassifer.load_from_file(os.path.join(base_dir, 'SimpleClf.json'))
+    # clf = SimpleClassifer.load_from_file(os.path.join(base_dir, 'SimpleClf.json'))
 
-    score_map = clf.calc_score(train_pairs)
+    # score_map = clf.calc_score(train_pairs)
 
 
 
