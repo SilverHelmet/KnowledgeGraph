@@ -113,17 +113,26 @@ class SimpleClassifer:
         clf.summary_scores = json.loads(lines[2])
         return clf
 
+def test(infobox_cof, summary_cof, clf, pairs):
+    clf.set_cof(infobox_cof, summary_cof)
+    score_map = clf.calc_score(pairs)
+    
+    
+
+
 if __name__ == "__main__":
     base_dir = os.path.join(result_dir, '360/mapping/classify')
     true_pairs, entities = load_ground_truth(os.path.join(base_dir, 'train_data/ground_truth.txt'))
     train_pairs = load_train_data(os.path.join(base_dir, 'train_data/train_data.json'), entities = entities)
 
-    clf = SimpleClassifer(1, 1)
-    clf.load_score(train_pairs)
-    score_map = clf.calc_score(train_pairs)
-
-    clf.save(os.path.join(base_dir, 'SimpleClf.json'))
+    # clf = SimpleClassifer(1, 1)
+    # clf.load_score(train_pairs)
 
     clf = SimpleClassifer.load_from_file(os.path.join(base_dir, 'SimpleClf.json'))
+
+    score_map = clf.calc_score(train_pairs)
+
+
+
 
     
