@@ -150,6 +150,8 @@ if __name__ == "__main__":
 
     schema = Schema()
     schema.init()
+    predicates = load_mediator_predicates()
+    print 'fb:music.release.album' in  predicates
     # print schema.is_mediator("fb:music.release")
     # print schema.type_attrs['fb:music.release']
     # for key in  schema.type_attrs['fb:music.recording']:
