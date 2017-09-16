@@ -62,7 +62,7 @@ def load_summary_score(pairs = None):
         fb_uri = p[1]
         key = make_key(baike_url, fb_uri)
         score = float(p[2])
-        if (pairs is None or key in load_keys) and score >= 0:
+        if (pairs is None or key in load_keys) and score > 0:
             score_map[key] = score
     return score_map
 
@@ -85,9 +85,33 @@ class SimpleClassifer:
         score_map = {}
         for pair in pairs:
             key = make_key(*pair)
-            score = self.infobox_cof * self.infobox_scores[key] + self.summary_cof * self.summary_scores[key]
+            score = self.infobox_cof * self.infobox_scores.get(key, 0) + self.summary_cof * self.summary_scores.get(key, 0)
             score_map[key] = score
         return score_map
+
+    def save(self, filepath):
+        outf = file(filepath, 'w')
+        obj = {
+            'infobox_cof': self.infobox_cof,
+            'summary_cof': self.summary_cof,
+        }
+
+        outf.write(json.dumps(obj) + '\n')
+        outf.write(json.dumps(self.infobox_scores) + '\n')
+        outf.write(json.dumps(self.summary_scores) + '\n')
+        outf.close()
+
+    @staticmethod
+    def load_from_file(filepath):
+        inf = file(filepath, 'r')
+        lines = inf.readlines()
+        inf.close()
+        obj = json.loads(lines[0])
+        infobox_cof, summary_cof = obj['infobox_cof'], obj['summary_cof']
+        clf = SimpleClassifer(infobox_cof, summary_cof)
+        clf.infobox_scores = json.loads(lines[1])
+        clf.summary_scores = json.loads(lines[2])
+        return clf
 
 if __name__ == "__main__":
     base_dir = os.path.join(result_dir, '360/mapping/classify')
@@ -97,6 +121,9 @@ if __name__ == "__main__":
     clf = SimpleClassifer(1, 1)
     clf.load_score(train_pairs)
     score_map = clf.calc_score(train_pairs)
-    print len(score_map)
+
+    clf.save(os.path.join(base_dir, 'SimpleClf.json'))
+
+    clf = SimpleClassifer.load_from_file(os.path.join(base_dir, 'SimpleClf.json'))
 
     
