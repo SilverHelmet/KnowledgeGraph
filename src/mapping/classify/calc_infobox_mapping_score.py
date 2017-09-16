@@ -17,9 +17,9 @@ def ignore_baike_name_attr(baike_entity_info, baike_name_attrs, url):
     baike_info = baike_entity_info[url]
     names = set()
     if 'ename' in baike_info:
-        names.add(baike_info['ename'])
+        names.update(baike_info['ename'])
     if 'title' in baike_info:
-        names.add(baike_info['title'])
+        names.update(baike_info['title'])
 
     for name in baike_name_attrs:
         if name in baike_info:
