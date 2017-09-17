@@ -34,6 +34,7 @@ def load_mapping_pairs(filepath, total = 4483846):
     return baike2fb, baike_entities, list(fb_entities)
 
 def load_ext_write_entity_info(fb_property_path, mediator_ttl_map, out_path, total = None, entities = None):
+    Print("read property from [%s], write to [%s]" %(fb_property_path, out_path))
     schema = Schema()
     schema.init()
     # entity_info = {}
