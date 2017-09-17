@@ -4,9 +4,34 @@ from ..IOUtil import result_dir, Print
 import json
 from ..mapping.name_mapping import del_space
 import HTMLParser
+import re
 
 delimeters = [u';', u'；', u'、', u'，']
 html_parser = HTMLParser.HTMLParser()
+bracket_pattern = re.compile(ur'（.*）|\(.*\)')
+
+
+def unfold_bracket(value):
+    global bracket_pattern
+    match = bracket_pattern.search(value)
+    if match:
+        st, ed  = match.span(0)
+        v1 = value[:st] + value[ed:]
+        v2 = value[st+1:ed-1]
+        return [v1, v2]
+    else:
+        return [value]
+
+def del_book_bracket(value):
+    if value.startswith(u'《') and value.endswith(u'》'):
+        return value[1:-1]
+    elif value.startswith(u'<<') and value.endswith(u'>>'):
+        return value[2:-2]
+    else:
+        return value
+    
+
+
 def unfold(text):
     global delimeters, html_parser
     text = html_parser.unescape(text)
@@ -16,8 +41,16 @@ def unfold(text):
             max_sep = sep
     values = text.split(max_sep)
     values = [del_space(x) for x in values]
-    values = [x for x in values if x ]
+
+    values_2 = []
+    for value in values:
+        values_2.extend(unfold_bracket(value))
+    values = values_2
+
+    values = [del_book_bracket(x) for x in values]
+    values = [x.strip() for x in values if x.strip()]
     return values
+
         
     
 
@@ -45,6 +78,7 @@ def process(inpath, outpath):
             obj['info'] = new_info
         
         outf.write('%s\t%s\n' %(baike_key, json.dumps(obj, ensure_ascii = False)))
+    outf.close()
             
 
         
