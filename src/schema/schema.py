@@ -24,6 +24,7 @@ class Schema:
                 assert fb_property not in reverse_map and reverse_fb_prop not in reverse_map
                 reverse_map[fb_property] = reverse_fb_prop
                 reverse_map[reverse_fb_prop] = fb_property
+        return reverse_map
 
     def is_mediator_prop(self, fb_property):
         expected_type = self.expected_type(fb_property)

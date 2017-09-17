@@ -46,7 +46,7 @@ def load_ext_write_entity_info(fb_property_path, mediator_ttl_map, out_path, tot
             continue
         ttls = json.loads(p[1])
         ttls = extend_fb_ttls(ttls, fb_uri, mediator_ttl_map, schema)
-        outf.write("%s\t%s\n" %(key, json.dumps(ttls, ensure_ascii = True)))
+        outf.write("%s\t%s\n" %(fb_uri, json.dumps(ttls, ensure_ascii = True)))
         # entity_info[fb_uri] = ttls
     outf.close()
     # return entity_info
@@ -66,7 +66,7 @@ if __name__ == "__main__":
     print "fb_entities", len(fb_entities)
 
 
-    mediator_ttl_map = load_ttl2map(os.path.join(result_dir, 'freebase/mediator_med_property.ttl'), total = None, entities = None)
+    mediator_ttl_map = load_ttl2map(os.path.join(result_dir, 'freebase/mediator_med_property.ttl'), total = 65827997, entities = None)
     print "mediator_ttl_mapl", len(mediator_ttl_map)
 
     fb_property_path = os.path.join(result_dir, 'freebase/entity_property.json')
