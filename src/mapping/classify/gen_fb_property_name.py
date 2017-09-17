@@ -10,11 +10,13 @@ def process_value(fb_str):
         fb_str = fb_str[1:-1]
     return fb_str
 
-def add_property_name_all(fb_entity_info, name_map, out_path):
-    Print("add fb property name, write to [%s]" %out_path)
+def add_property_name_all(in_path, total, name_map, out_path):
+    Print("add fb property name, read from [%s] write to [%s]" %(in_path, out_path))
     outf = file(out_path, 'w')
-    for fb_e in tqdm(fb_entity_info, total = len(fb_entity_info)):
-        fb_info = fb_entity_info[fb_e]
+    for line in tqdm(file(in_path), total = total):
+        p = line.split('\t')
+        fb_e = p[0].deocde('utf-8')
+        fb_info = json.loads(p[1])
         str_names = set()
         for name, value in fb_info:
             if value in name_map:
@@ -32,7 +34,7 @@ if __name__ == "__main__":
     in_path = os.path.join(out_dir, 'mapped_fb_entity_info.json')
     out_path = os.path.join(out_dir, 'mapped_fb_entity_info_processed.json')
 
-    fb_entity_info = load_json_map(in_path)
+    
     
     name_files = [os.path.join(result_dir, 'freebase/entity_name.json'),
         os.path.join(result_dir, 'freebase/entity_alias.json')]
@@ -40,5 +42,5 @@ if __name__ == "__main__":
     name_map = load_name_attr(name_files, totals)
 
     
-
-    add_property_name_all(fb_entity_info, name_map, out_path)
+    # fb_entity_info = load_json_map(in_path)
+    add_property_name_all(in_path, 6282988, name_map, out_path)
