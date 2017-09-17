@@ -48,7 +48,7 @@ def unfold(text):
         values_2.extend(unfold_bracket(value))
     values = values_2
 
-    values = [del_book_bracket(x) for x in values]
+    # values = [del_book_bracket(x) for x in values]
     values = [x.strip() for x in values if x.strip()]
     return values
 
