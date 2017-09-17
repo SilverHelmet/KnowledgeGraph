@@ -33,10 +33,11 @@ def load_mapping_pairs(filepath, total = 4483846):
     
     return baike2fb, baike_entities, list(fb_entities)
 
-def load_and_ext_entity_info(fb_property_path, mediator_ttl_map, total = None, entities = None):
+def load_ext_write_entity_info(fb_property_path, mediator_ttl_map, out_path, total = None, entities = None):
     schema = Schema()
     schema.init()
-    entity_info = {}
+    # entity_info = {}
+    outf = file(out_path, 'w')
     for line in tqdm(file(fb_property_path), total = total):
         p = line.split('\t')
         fb_uri = p[0]
@@ -44,8 +45,10 @@ def load_and_ext_entity_info(fb_property_path, mediator_ttl_map, total = None, e
             continue
         ttls = json.loads(p[1])
         ttls = extend_fb_ttls(ttls, fb_uri, mediator_ttl_map, schema)
-        entity_info[fb_uri] = ttls
-    return entity_info
+        outf.write("%s\t%s\n" %(key, json.dumps(ttls, ensure_ascii = True)))
+        # entity_info[fb_uri] = ttls
+    outf.close()
+    # return entity_info
     
 
 
@@ -66,9 +69,10 @@ if __name__ == "__main__":
     print "mediator_ttl_mapl", len(mediator_ttl_map)
 
     fb_property_path = os.path.join(result_dir, 'freebase/entity_property.json')
-    fb_entity_info = load_and_ext_entity_info(fb_property_path, mediator_ttl_map, total = 53574900, entities = set(fb_entities))
     out_path = os.path.join(out_dir, 'mapped_fb_entity_info.json')
-    write_json_map(out_path, fb_entity_info, sort = True)
+    load_ext_write_entity_info(fb_property_path, mediator_ttl_map, out_path = out_path, total = 53574900, entities = set(fb_entities))
+    
+    # write_json_map(out_path, fb_entity_info, sort = True)
 
 
 
