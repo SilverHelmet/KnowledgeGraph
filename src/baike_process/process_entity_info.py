@@ -59,9 +59,7 @@ def process(inpath, outpath, total = None):
     if total is None:
         total = nb_lines_of(inpath)
     outf = file(outpath, 'w')
-    for cnt, line in tqdm(file(inpath), total = total):
-        if cnt % 100000 == 0:
-            Print("process cnt = %d" %cnt)
+    for line in tqdm(file(inpath), total = total):
         baike_key, obj = line.split('\t')
         obj = json.loads(obj)
         if 'ename' in obj:
@@ -92,4 +90,4 @@ if __name__ == "__main__":
 
     inpath = os.path.join(result_dir, '360/360_entity_info.json')
     outpath = os.path.join(result_dir, '360/360_entity_info_processed.json')
-    process(inpath, outpath, 360_entity_info.json)
+    process(inpath, outpath, 21710208)
