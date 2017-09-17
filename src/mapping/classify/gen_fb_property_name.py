@@ -15,7 +15,7 @@ def add_property_name_all(in_path, total, name_map, out_path):
     outf = file(out_path, 'w')
     for line in tqdm(file(in_path), total = total):
         p = line.split('\t')
-        fb_e = p[0].deocde('utf-8')
+        fb_e = p[0].decode('utf-8')
         fb_info = json.loads(p[1])
         str_names = set()
         for name, value in fb_info:
