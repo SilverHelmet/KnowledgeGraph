@@ -23,7 +23,7 @@ def ignore_baike_name_attr(baike_entity_info, baike_name_attrs, url):
 
     for name in baike_name_attrs:
         if name in baike_info:
-            baike_info.pop(name)
+            names.update(baike_info[name])
 
     o_name_attr = set()
     for name in baike_info:
@@ -194,7 +194,7 @@ if __name__ == "__main__":
     outf.close()
 
     Print("other name attr count")
-    for o_name in o_name_cnt:
+    for o_name in sorted(o_name_cnt.keys(), key = lambda x: o_name_cnt[x], reverse = True):
         print o_name, o_name_cnt[o_name]
     # outf = file(out_path, 'w')
     # for map_obj in map_scores:

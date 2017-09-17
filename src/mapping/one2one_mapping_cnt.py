@@ -1,3 +1,4 @@
+# DEPRECATED
 import sys
 import json
 from ..IOUtil import base_dir, load_file, Print, result_dir
@@ -15,7 +16,7 @@ def attr_level(attr):
      0: none
      1: infobox
      2: multi_infobox
-     3 ename, title
+     3: ename, title
      4: multi_ename(title)
     '''
     
