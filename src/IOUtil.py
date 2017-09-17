@@ -89,6 +89,8 @@ def write_dict_cnt(dict_cnt, outpath):
 
 def load_ttl2map(filepath, total = None, entities = None):
     Print('load ttl from %s' %filepath)
+    if total is None:
+        total = nb_lines_of(filepath)
     if total:
         generator = tqdm(file(filepath), total = total)
     else:

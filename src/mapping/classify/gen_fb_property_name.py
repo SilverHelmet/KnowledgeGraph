@@ -8,6 +8,8 @@ import os
 def process_value(fb_str):
     if fb_str.startswith('"') and fb_str.endswith('"'):
         fb_str = fb_str[1:-1]
+    elif fb_str[0] == '"' and fb_str[-4:] in['"@en', '"@zh']:
+        fb_str = fb_str[1:-4]
     return fb_str
 
 def add_property_name_all(in_path, total, name_map, out_path):
