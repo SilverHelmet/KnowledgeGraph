@@ -1,10 +1,11 @@
 #encoding:utf-8
 import os
-from ..IOUtil import result_dir, Print
+from ..IOUtil import result_dir, Print, nb_lines_of
 import json
 from ..mapping.name_mapping import del_space
 import HTMLParser
 import re
+from tqdm import tqdm
 
 delimeters = [u';', u'；', u'、', u'，']
 html_parser = HTMLParser.HTMLParser()
@@ -54,9 +55,11 @@ def unfold(text):
         
     
 
-def process(inpath, outpath):
+def process(inpath, outpath, total = None):
+    if total is None:
+        total = nb_lines_of(inpath)
     outf = file(outpath, 'w')
-    for cnt, line in enumerate(file(inpath), start =1):
+    for cnt, line in tqdm(file(inpath), total = total):
         if cnt % 100000 == 0:
             Print("process cnt = %d" %cnt)
         baike_key, obj = line.split('\t')
@@ -89,4 +92,4 @@ if __name__ == "__main__":
 
     inpath = os.path.join(result_dir, '360/360_entity_info.json')
     outpath = os.path.join(result_dir, '360/360_entity_info_processed.json')
-    process(inpath, outpath)
+    process(inpath, outpath, 360_entity_info.json)
