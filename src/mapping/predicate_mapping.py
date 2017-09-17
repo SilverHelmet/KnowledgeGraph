@@ -108,15 +108,24 @@ def map_value(fb_value, baike_value):
 
 def extend_fb_ttls(fb_ttls, fb_uri, mediator_ttl_map, schema):
     new_fb_ttls = []
-    for p1, value1 in fb_ttls:
-        expected_type = schema.expected_type(p1)
-        if schema.is_mediator(expected_type):
-            for p2, value2 in mediator_ttl_map.get(value1, []):
-                if value2 != fb_uri and schema.schema_type(p2) == expected_type:
-                    p = '%s^%s' %(p1, p2)
-                    new_fb_ttls.append((p, value2))
-        else:
-            new_fb_ttls.append((p1, value1))
+    visited_entities = set([fb_uri])
+    stop_extend = False
+    while not stop_extend:
+        for p1, value1 in fb_ttls:
+            value1_type = schema.expected_type(p1)
+            stop_extend = True
+            if schema.is_mediator(value1_type):
+                for p2, value2 in mediator_ttl_map.get(value1, []):
+                    if schema.schema_type(p2) == value1_type and  value2 not in visited_entities:
+                        p = '%s^%s' %(p1, p2)
+                        new_fb_ttls.append((p, value2))
+                        visited_entities.add(value2)
+                        value2_type = schema.expected_type(p2)
+                        if schema.is_mediator(value2_type):
+                            stop_extend = False
+            else:
+                new_fb_ttls.append((p1, value1))
+        fb_ttls = new_fb_ttls
     return new_fb_ttls
 
 def do_predicate_mapping(outpath, mediator_ttl_map, name_map, fb2baike, baike_entity_info, fb_property_path, total):

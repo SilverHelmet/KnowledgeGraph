@@ -40,10 +40,10 @@ class Schema:
         return self.reverse_prop_map.get(fb_property, None)
 
     def expected_type(self, fb_property):
-        return self.property_attrs[fb_property]['fb:type.property.expected_type']
+        return self.property_attrs[fb_property.split("^")[-1]]['fb:type.property.expected_type']
     
     def schema_type(self, fb_property):
-        return self.property_attrs[fb_property]['fb:type.property.schema']
+        return self.property_attrs[fb_property.split("^")[0]]['fb:type.property.schema']
 
 def get_bool(value):
     if value == "1":
@@ -152,7 +152,8 @@ if __name__ == "__main__":
     schema = Schema()
     schema.init()
     predicates = load_mediator_predicates()
-    print 'fb:music.release.album' in  predicates
+    print  schema.expected_type("fb:music.recording.tracks^fb:music.release_track.release")
+    # print 'fb:music.release.album' in  predicates
     # print schema.is_mediator("fb:music.release")
     # print schema.type_attrs['fb:music.release']
     # for key in  schema.type_attrs['fb:music.recording']:
