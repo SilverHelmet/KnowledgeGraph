@@ -107,10 +107,14 @@ def map_value(fb_value, baike_value):
  
 
 def extend_fb_ttls(fb_ttls, fb_uri, mediator_ttl_map, schema):
-    new_fb_ttls = []
     visited_entities = set([fb_uri])
+    for p1, value1 in fb_ttls:
+        visited_entities.add(value1)
     stop_extend = False
+    extend_cnt = 0
     while not stop_extend:
+        extend_cnt += 1
+        new_fb_ttls = []
         stop_extend = True
         for p1, value1 in fb_ttls:
             value1_type = schema.expected_type(p1)
@@ -125,8 +129,11 @@ def extend_fb_ttls(fb_ttls, fb_uri, mediator_ttl_map, schema):
                             stop_extend = False
             else:
                 new_fb_ttls.append((p1, value1))
+        if extend_cnt > 5:
+            print "error uri", fb_uri
+        assert extend_cnt <= 5
         fb_ttls = new_fb_ttls
-    return new_fb_ttls
+    return new_fb_ttls, extend_cnt
 
 def do_predicate_mapping(outpath, mediator_ttl_map, name_map, fb2baike, baike_entity_info, fb_property_path, total):
     schema = Schema()
@@ -140,7 +147,7 @@ def do_predicate_mapping(outpath, mediator_ttl_map, name_map, fb2baike, baike_en
             continue
         baike_url = fb2baike[fb_uri]
         fb_ttls = json.loads(p[1])
-        fb_ttls = extend_fb_ttls(fb_ttls, fb_uri, mediator_ttl_map, schema)
+        fb_ttls, _ = extend_fb_ttls(fb_ttls, fb_uri, mediator_ttl_map, schema)
         baike_attr = baike_entity_info[baike_url]
 
         for name, value in fb_ttls:
@@ -181,3 +188,4 @@ if __name__ == "__main__":
     fb_property_path = os.path.join(result_dir, 'freebase/entity_property.json')
     outpath = os.path.join(result_dir, '360/mapping/info_predicate_mapping.tsv')
     do_predicate_mapping(outpath, mediator_ttl_map, name_map, fb2baike, baike_entity_info, fb_property_path, total = 53574900)
+

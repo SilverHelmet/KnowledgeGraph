@@ -33,7 +33,9 @@ def load_mapping_pairs(filepath, total = 4483846):
     
     return baike2fb, baike_entities, list(fb_entities)
 
+
 def load_ext_write_entity_info(fb_property_path, mediator_ttl_map, out_path, total = None, entities = None):
+    max_ext_cnt = 0
     Print("read property from [%s], write to [%s]" %(fb_property_path, out_path))
     schema = Schema()
     schema.init()
@@ -45,10 +47,12 @@ def load_ext_write_entity_info(fb_property_path, mediator_ttl_map, out_path, tot
         if entities is not None and fb_uri not in entities:
             continue
         ttls = json.loads(p[1])
-        ttls = extend_fb_ttls(ttls, fb_uri, mediator_ttl_map, schema)
+        ttls, ext_cnt = extend_fb_ttls(ttls, fb_uri, mediator_ttl_map, schema)
+        max_ext_cnt = max(max_ext_cnt, ext_cnt)
         outf.write("%s\t%s\n" %(fb_uri, json.dumps(ttls, ensure_ascii = True)))
         # entity_info[fb_uri] = ttls
     outf.close()
+    Print("max extend cnt = %d" %max_ext_cnt)
     # return entity_info
     
 
@@ -66,7 +70,7 @@ if __name__ == "__main__":
     print "fb_entities", len(fb_entities)
 
 
-    mediator_ttl_map = load_ttl2map(os.path.join(result_dir, 'freebase/mediator_med_property.ttl'), total = None, entities = None)
+    mediator_ttl_map = load_ttl2map(os.path.join(result_dir, 'freebase/mediator_med_property.ttl'), total = 71350023, entities = None)
     print "mediator_ttl_mapl", len(mediator_ttl_map)
 
     fb_property_path = os.path.join(result_dir, 'freebase/entity_property.json')
