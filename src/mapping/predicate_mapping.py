@@ -110,7 +110,7 @@ def extend_fb_ttls(fb_ttls, fb_uri, mediator_ttl_map, schema):
     visited_entities = set([fb_uri])
     new_fb_ttls = []
     for p1, value1 in fb_ttls:
-        if not schema.is_mediator_prop(p1):
+        if not schema.is_mediator(schema.schema_type(p1)):
             new_fb_ttls.append((p1, value1))
             visited_entities.add(value1)
     fb_ttls = new_fb_ttls

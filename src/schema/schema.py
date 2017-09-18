@@ -152,6 +152,8 @@ if __name__ == "__main__":
     schema = Schema()
     schema.init()
     predicates = load_mediator_predicates()
+    print schema.is_mediator(schema.schema_type("fb:music.release_track.recording"))
+    print schema.expected_type('fb:music.release_track.recording')
     # print  schema.expected_type("fb:music.recording.tracks^fb:music.release_track.release")
     # print schema.is_mediator("fb:book.book_edition")
     # print 'fb:music.release.album' in  predicates
