@@ -10,6 +10,7 @@ from ..one2one_mapping_cnt import load_attrs
 from ..predicate_mapping import map_time
 from ..fb_date import FBDatetime, BaikeDatetime
 from ..name_mapping import del_space
+from ...baike_process.process_entity_info import del_book_bracket
 
 o_name_cnt = {}
 def ignore_baike_name_attr(baike_entity_info, baike_name_attrs, url):
@@ -124,7 +125,7 @@ def calc_infobox_mapping_score(baike2fb_map, baike_entity_info, fb_entity_info, 
 
                 for baike_value in baike_values:
                     nb_baike_info += 1
-                    if baike_value in fb_str_values:
+                    if del_book_brakcet(baike_value) in fb_str_values:
                         match = True
                     else:
                         if not baike_value in str2date_cache:
