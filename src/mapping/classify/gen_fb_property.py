@@ -35,7 +35,7 @@ def load_mapping_pairs(filepath, total = 4483846):
 
 
 def load_ext_write_entity_info(fb_property_path, mediator_ttl_map, out_path, total = None, entities = None):
-    max_ext_cnt = 0
+
     Print("read property from [%s], write to [%s]" %(fb_property_path, out_path))
     schema = Schema()
     schema.init()
@@ -47,12 +47,12 @@ def load_ext_write_entity_info(fb_property_path, mediator_ttl_map, out_path, tot
         if entities is not None and fb_uri not in entities:
             continue
         ttls = json.loads(p[1])
-        ttls, ext_cnt = extend_fb_ttls(ttls, fb_uri, mediator_ttl_map, schema)
+        ttls = extend_fb_ttls(ttls, fb_uri, mediator_ttl_map, schema)
         max_ext_cnt = max(max_ext_cnt, ext_cnt)
         outf.write("%s\t%s\n" %(fb_uri, json.dumps(ttls, ensure_ascii = True)))
         # entity_info[fb_uri] = ttls
     outf.close()
-    Print("max extend cnt = %d" %max_ext_cnt)
+
     # return entity_info
     
 

@@ -130,9 +130,9 @@ def extend_fb_ttls(fb_ttls, fb_uri, mediator_ttl_map, schema):
             else:
                 new_fb_ttls.append((p1, value1))
         fb_ttls = new_fb_ttls
-        if extract_cnt >= 2:
+        if extend_cnt >= 2:
             break
-    return new_fb_ttls, extend_cnt
+    return new_fb_ttls
 
 def do_predicate_mapping(outpath, mediator_ttl_map, name_map, fb2baike, baike_entity_info, fb_property_path, total):
     schema = Schema()
