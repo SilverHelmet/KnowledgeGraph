@@ -132,6 +132,11 @@ def extend_fb_ttls(fb_ttls, fb_uri, mediator_ttl_map, schema):
         fb_ttls = new_fb_ttls
         if extend_cnt >= 2:
             break
+    new_fb_ttls = []
+    for p, v in fb_ttls:
+        if not schema.is_mediator_prop(p) and p.split("^")[-1] != u'fb:music.release_track.track_number':
+            new_fb_ttls.append((p, v))
+
     return new_fb_ttls
 
 def do_predicate_mapping(outpath, mediator_ttl_map, name_map, fb2baike, baike_entity_info, fb_property_path, total):
