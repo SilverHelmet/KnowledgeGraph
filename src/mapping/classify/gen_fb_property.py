@@ -48,7 +48,6 @@ def load_ext_write_entity_info(fb_property_path, mediator_ttl_map, out_path, tot
             continue
         ttls = json.loads(p[1])
         ttls = extend_fb_ttls(ttls, fb_uri, mediator_ttl_map, schema)
-        max_ext_cnt = max(max_ext_cnt, ext_cnt)
         outf.write("%s\t%s\n" %(fb_uri, json.dumps(ttls, ensure_ascii = True)))
         # entity_info[fb_uri] = ttls
     outf.close()
