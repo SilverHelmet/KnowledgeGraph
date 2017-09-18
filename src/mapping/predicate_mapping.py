@@ -111,9 +111,9 @@ def extend_fb_ttls(fb_ttls, fb_uri, mediator_ttl_map, schema):
     visited_entities = set([fb_uri])
     stop_extend = False
     while not stop_extend:
+        stop_extend = True
         for p1, value1 in fb_ttls:
             value1_type = schema.expected_type(p1)
-            stop_extend = True
             if schema.is_mediator(value1_type):
                 for p2, value2 in mediator_ttl_map.get(value1, []):
                     if schema.schema_type(p2) == value1_type and  value2 not in visited_entities:
