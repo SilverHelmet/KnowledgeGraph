@@ -125,7 +125,7 @@ def calc_infobox_mapping_score(baike2fb_map, baike_entity_info, fb_entity_info, 
 
                 for baike_value in baike_values:
                     nb_baike_info += 1
-                    if del_book_brakcet(baike_value) in fb_str_values:
+                    if del_book_bracket(baike_value) in fb_str_values:
                         match = True
                     else:
                         if not baike_value in str2date_cache:
