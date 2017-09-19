@@ -39,8 +39,8 @@ if __name__ == "__main__":
     for bk_url, fb_uri in one2one_mapping_pairs:
         key = make_key(bk_url, fb_uri)
         score = score_map[key]
-        if score > 0.1:
-            good_mapping_pairs.append((bk_url, fb_uri, score))
+        # if score > 0.1:
+        good_mapping_pairs.append((bk_url, fb_uri, score))
 
     Print("#good mapping pairs = %d" %len(good_mapping_pairs))
 
