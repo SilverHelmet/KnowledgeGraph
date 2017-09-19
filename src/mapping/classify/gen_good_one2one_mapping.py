@@ -28,7 +28,7 @@ if __name__ == "__main__":
         fb_uri = baike2fb[bk_url][0]
         if fb_cnt[fb_uri] != 1:
             continue
-        one2one_mapping_pairs.append(bk_url, fb_uri)
+        one2one_mapping_pairs.append((bk_url, fb_uri))
     Print("#one2one mapping pairs = %d" %len(one2one_mapping_pairs))
 
     clf = SimpleClassifer(1, 1)
