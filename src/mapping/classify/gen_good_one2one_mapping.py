@@ -47,7 +47,7 @@ if __name__ == "__main__":
     out_path = os.path.join(result_dir, '360/mapping/classify/good_one2one_mappings.txt')
     outf = file(out, 'w')
     for bk_url, fb_uri, score in good_mapping_pairs:
-        outf.write("%s\t%s\t%f\n", %(bk_url, fb_uri, score))
+        outf.write("%s\t%s\t%f\n" %(bk_url, fb_uri, score))
     outf.close()
 
 
