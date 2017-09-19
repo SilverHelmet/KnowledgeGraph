@@ -208,7 +208,7 @@ def load_exact_mappings(filepath, threshold = 0.1):
 if __name__ == "__main__":
     # exact_mapping_file = os.path.join(result_dir, "360/mapping/exact_mapping.tsv")
     # fb2baike = load_exact_map(exact_mapping_file)
-    fb2bakie, baike_entities, score_map = load_exact_mappings(os.path.jion(resut_dir, '360/mapping/classify/good_one2one_mappings.txt'))
+    fb2bakie, baike_entities, score_map = load_exact_mappings(os.path.join(resut_dir, '360/mapping/classify/good_one2one_mappings.txt'))
 
 
     name_files = [os.path.join(result_dir, 'freebase/entity_name.json'),
