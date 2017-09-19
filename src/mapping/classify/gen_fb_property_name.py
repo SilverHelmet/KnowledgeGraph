@@ -4,13 +4,7 @@ from tqdm import tqdm
 from ...IOUtil import Print, result_dir, load_json_map
 import json
 import os
-
-def process_fb_value(fb_str):
-    if fb_str.startswith('"') and fb_str.endswith('"'):
-        fb_str = fb_str[1:-1]
-    elif fb_str[0] == '"' and fb_str[-4:] in['"@en', '"@zh']:
-        fb_str = fb_str[1:-4]
-    return fb_str
+from ...fb_process.process_fb_result import process_fb_value
 
 def add_property_name_all(in_path, total, name_map, out_path):
     Print("add fb property name, read from [%s] write to [%s]" %(in_path, out_path))

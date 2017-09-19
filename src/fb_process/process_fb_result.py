@@ -4,6 +4,13 @@ import sys
 
 fb_prefix = "http://rdf.freebase.com/ns/"
 
+def process_fb_value(fb_str):
+    if fb_str.startswith('"') and fb_str.endswith('"'):
+        fb_str = fb_str[1:-1]
+    elif fb_str[0] == '"' and fb_str[-4:] in['"@en', '"@zh']:
+        fb_str = fb_str[1:-4]
+    return fb_str
+
 def get_domain(uri):
     global fb_prefix
     uri = uri[1:-1]

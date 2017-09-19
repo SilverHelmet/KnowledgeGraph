@@ -9,7 +9,7 @@ from ..schema.schema import Schema
 from .one2one_mapping_cnt import load_attrs
 from .classify.simple_classify import make_key
 from .classify.calc_infobox_mapping_score import ignore_baike_name_attr
-from .classify.gen_fb_property_name import process_fb_value
+from ..fb_process.process_fb_result import process_fb_value
 from ..baike_process.process_entity_info import del_book_bracket
 
 def extract_name(value):
