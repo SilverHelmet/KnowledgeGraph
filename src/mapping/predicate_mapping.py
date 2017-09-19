@@ -7,6 +7,10 @@ from .fb_date import FBDatetime, BaikeDatetime
 from .name_mapping import del_space
 from ..schema.schema import Schema
 from .one2one_mapping_cnt import load_attrs
+from .classify.util import load_mappings
+from .classify.gen_fb_property_name import process_fb_value
+from .classify.calc_infobox_mapping_score import ignore_baike_name_attr
+from ..baike_process.process_entity_info import del_book_bracket
 
 def extract_name(value):
     suffix = value[-4:]
@@ -85,22 +89,31 @@ def map_time(fb_date, baike_date):
     return fb_date.day == baike_date.day
 
 def map_str(fb_str, baike_str):
-    if fb_str.startswith('"') and fb_str.endswith('"'):
-        fb_str = fb_str[1:-1]
+    fb_str = process_fb_value(fb_str)
+    baike_value = del_book_bracket(baike_value)
+
     longer = max(len(fb_str), len(baike_str))
     shorter = min(len(fb_str), len(baike_str))
     if shorter * 1.5 < longer:
         return False
     return fb_str.find(baike_str) != -1 or baike_str.find(fb_str) != -1
 
-def map_value(fb_value, baike_value):
-    fb_value = del_space(fb_value)
-    baike_value = del_space(baike_value)
+def map_value(fb_value, baike_value, cache):
+    # fb_value = del_space(fb_value).strip()
+    # baike_value = del_space(baike_value).strip()
+    
     if len(fb_value) == 0 or len(baike_value) == 0:
         return False
+    fb_key = 'fb##' + fb_value
+    bk_key = 'bk##' + baike_value
+    if not fb_key in cache:
+        cache[fb_key] = FBDatetime.parse_fb_datetime(fb_value)
+    fb_date = cache[fb_key]
     fb_date = FBDatetime.parse_fb_datetime(fb_value)
     if fb_date is not None:
-        baike_date = BaikeDatetime.parse(baike_value)
+        if not bk_key in cache:
+            cache[bk_key] = BaikeDatetime.parse(baike_value)
+        baike_date = cache[bk_key]
         return map_time(fb_date, baike_date)
     else:
         return map_str(fb_value, baike_value)
@@ -144,7 +157,8 @@ def extend_fb_ttls(fb_ttls, fb_uri, mediator_ttl_map, schema):
 
     return new_fb_ttls
 
-def do_predicate_mapping(outpath, mediator_ttl_map, name_map, fb2baike, baike_entity_info, fb_property_path, total):
+def do_predicate_mapping(outpath, name_map, fb2baike, baike_entity_info, fb_property_path, total):
+    baike_name_attrs = load_attrs()
     schema = Schema()
     schema.init()
     Print("do predicate mapping %s, write to %s" %(fb_property_path, outpath))
@@ -156,9 +170,10 @@ def do_predicate_mapping(outpath, mediator_ttl_map, name_map, fb2baike, baike_en
             continue
         baike_url = fb2baike[fb_uri]
         fb_ttls = json.loads(p[1])
-        fb_ttls, _ = extend_fb_ttls(fb_ttls, fb_uri, mediator_ttl_map, schema)
-        baike_attr = baike_entity_info[baike_url]
-
+        # fb_ttls, _ = extend_fb_ttls(fb_ttls, fb_uri, mediator_ttl_map, schema)
+        # baike_attr = baike_entity_info[baike_url]
+        baike_info = ignore_baike_name_attr(baike_entity_info, baike_name_attrs, baike_url)
+        cache = {}
         for name, value in fb_ttls:
             if value in name_map:
                 values = name_map[value]
@@ -168,33 +183,36 @@ def do_predicate_mapping(outpath, mediator_ttl_map, name_map, fb2baike, baike_en
             for fb_value_name in values:
                 for baike_info_name in baike_attr:
                     baike_values = baike_attr[baike_info_name]
-                    match = False
                     for baike_value in baike_values:
-                        if map_value(fb_value_name, baike_value):
-                            match = True
-                            break
-                    if match:
-                        outf.write("{}\t{}\t{}\t{}\t{}\n".format(fb_uri, baike_url, name, baike_info_name, fb_value_name))
+                        if map_value(fb_value_name, baike_value, cache):
+                            outf.write("{}\t{}\t{}\t{}\t{}\n".format(fb_uri, baike_url, name, baike_info_name, fb_value_name, baike_value))
+                        
         
     outf.close()
 
 
 if __name__ == "__main__":
-    exact_mapping_file = os.path.join(result_dir, "360/mapping/exact_mapping.tsv")
+    # exact_mapping_file = os.path.join(result_dir, "360/mapping/exact_mapping.tsv")
+    fb2baike = load_exact_map(exact_mapping_file)
+    exact_mappings = load_mappings()
+    fb2baike = {}
+    baike_entities = set()
+    for bk, fb in exact_mappings:
+        baike_entities.add(bk)
+        fb2baike[fb] = bk
+
     name_files = [os.path.join(result_dir, 'freebase/entity_name.json'),
                 os.path.join(result_dir, 'freebase/entity_alias.json')]
     totals = [39345270, 2197095]
 
     name_map = load_name_attr(name_files, totals)
-    mediator_ttl_map = load_ttl2map(os.path.join(result_dir, 'freebase/mediator_med_property.ttl'), total = 50413655)
+    # mediator_ttl_map = load_ttl2map(os.path.join(result_dir, 'freebase/mediator_med_property.ttl'), total = 50413655)
 
     baike_entity_info_path = os.path.join(result_dir, '360/360_entity_info_processed.json')
-    baike_entity_info = load_baike_info(baike_entity_info_path, total = 21710208, entities = None)
+    baike_entity_info = load_baike_info(baike_entity_info_path, total = 21710208, entities = baike_entities)
     
 
-    fb2baike = load_exact_map(exact_mapping_file)
-
-    fb_property_path = os.path.join(result_dir, 'freebase/entity_property.json')
-    outpath = os.path.join(result_dir, '360/mapping/info_predicate_mapping.tsv')
-    do_predicate_mapping(outpath, mediator_ttl_map, name_map, fb2baike, baike_entity_info, fb_property_path, total = 53574900)
+    fb_property_path = os.path.join(result_dir, '360/mapping/classify/mapped_fb_entity_info.json')
+    outpath = os.path.join(result_dir, '360/mapping/one2one_info_predicate_mapping.tsv')
+    do_predicate_mapping(outpath, name_map, fb2baike, baike_entity_info, fb_property_path, total = 6282988)
 
