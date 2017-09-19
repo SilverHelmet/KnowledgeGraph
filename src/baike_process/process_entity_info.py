@@ -81,7 +81,7 @@ def process(inpath, outpath, total = None):
     outf.close()
             
 def ignore_baike_name_attr(baike_entity_info, baike_name_attrs, url):
-    global o_name_cnt
+    # global o_name_cnt
     baike_info = baike_entity_info[url]
     names = set()
     if 'ename' in baike_info:
@@ -100,9 +100,9 @@ def ignore_baike_name_attr(baike_entity_info, baike_name_attrs, url):
                 o_name_attr.add(name)
 
     for o_name in o_name_attr:
-        if not o_name in o_name_cnt:
-            o_name_cnt[o_name] = 0
-        o_name_cnt[o_name] += 1
+        # if not o_name in o_name_cnt:
+        #     o_name_cnt[o_name] = 0
+        # o_name_cnt[o_name] += 1
         baike_info.pop(o_name)
 
     return baike_info

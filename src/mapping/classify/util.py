@@ -16,6 +16,8 @@ def load_mappings(with_score = False):
         baike2fb[baike_url] = fb_uris
     return baike2fb
 
+def load_
+
 
 
 if __name__ == "__main__":

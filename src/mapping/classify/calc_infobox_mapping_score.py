@@ -12,8 +12,6 @@ from ..fb_date import FBDatetime, BaikeDatetime
 from ..name_mapping import del_space
 from ...baike_process.process_entity_info import del_book_bracket, ignore_baike_name_attr
 
-o_name_cnt = {}
-
 def extend_name(fb_info, name_map):
     value_names = []
     for name, value in fb_info:
