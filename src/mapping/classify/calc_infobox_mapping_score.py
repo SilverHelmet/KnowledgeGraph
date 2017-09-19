@@ -166,9 +166,9 @@ if __name__ == "__main__":
     calc_infobox_mapping_score(baike2fb_map, baike_entity_info, fb_entity_info, baike_name_attrs, outf)
     outf.close()
 
-    Print("other name attr count")
-    for o_name in sorted(o_name_cnt.keys(), key = lambda x: o_name_cnt[x], reverse = True):
-        print o_name, o_name_cnt[o_name]
+    # Print("other name attr count")
+    # for o_name in sorted(o_name_cnt.keys(), key = lambda x: o_name_cnt[x], reverse = True):
+    #     print o_name, o_name_cnt[o_name]
     # outf = file(out_path, 'w')
     # for map_obj in map_scores:
     #     outf.write(json.dumps(map_obj) + '\n')
