@@ -7,7 +7,7 @@ from .fb_date import FBDatetime, BaikeDatetime
 from .name_mapping import del_space
 from ..schema.schema import Schema
 from .one2one_mapping_cnt import load_attrs
-from .classify.util import load_mappings
+from .classify.simple_classify import make_key
 from .classify.gen_fb_property_name import process_fb_value
 from .classify.calc_infobox_mapping_score import ignore_baike_name_attr
 from ..baike_process.process_entity_info import del_book_bracket
@@ -157,7 +157,7 @@ def extend_fb_ttls(fb_ttls, fb_uri, mediator_ttl_map, schema):
 
     return new_fb_ttls
 
-def do_predicate_mapping(outpath, name_map, fb2baike, baike_entity_info, fb_property_path, total):
+def do_predicate_mapping(outpath, name_map, fb2baike, baike_entity_info, fb_property_path, score_map, total):
     baike_name_attrs = load_attrs()
     schema = Schema()
     schema.init()
@@ -169,6 +169,7 @@ def do_predicate_mapping(outpath, name_map, fb2baike, baike_entity_info, fb_prop
         if not fb_uri in fb2baike:
             continue
         baike_url = fb2baike[fb_uri]
+        score = score_map[make_key(baike_url, fb_uri)]
         fb_ttls = json.loads(p[1])
         # fb_ttls, _ = extend_fb_ttls(fb_ttls, fb_uri, mediator_ttl_map, schema)
         # baike_attr = baike_entity_info[baike_url]
@@ -185,21 +186,31 @@ def do_predicate_mapping(outpath, name_map, fb2baike, baike_entity_info, fb_prop
                     baike_values = baike_attr[baike_info_name]
                     for baike_value in baike_values:
                         if map_value(fb_value_name, baike_value, cache):
-                            outf.write("{}\t{}\t{}\t{}\t{}\n".format(fb_uri, baike_url, name, baike_info_name, fb_value_name, baike_value))
+                            outf.write("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\n".format(fb_uri, baike_url, name, baike_info_name, fb_value_name, baike_value, score))
                         
         
     outf.close()
 
+def load_exact_mappings(filepath, threshold = 0.1):
+    fb2bk = {}
+    bk_es = set()
+    score_map = {}
+    for line in file(filepath):
+        bk, fb, score = line.strip().split('\t')
+        score = float(score)
+        if score > 0.1:
+            fb2bk[fb] = bk
+            bk_es.add(bk)
+            score_map[make_key(bk, fb)] = score
+    return fb2bk, bk_es, score_map
+
+
 
 if __name__ == "__main__":
     # exact_mapping_file = os.path.join(result_dir, "360/mapping/exact_mapping.tsv")
-    fb2baike = load_exact_map(exact_mapping_file)
-    exact_mappings = load_mappings()
-    fb2baike = {}
-    baike_entities = set()
-    for bk, fb in exact_mappings:
-        baike_entities.add(bk)
-        fb2baike[fb] = bk
+    # fb2baike = load_exact_map(exact_mapping_file)
+    fb2bakie, baike_entities, score_map = load_exact_mappings(os.path.jion(resut_dir, '360/mapping/classify/good_one2one_mappings.txt'))
+
 
     name_files = [os.path.join(result_dir, 'freebase/entity_name.json'),
                 os.path.join(result_dir, 'freebase/entity_alias.json')]
@@ -210,9 +221,10 @@ if __name__ == "__main__":
 
     baike_entity_info_path = os.path.join(result_dir, '360/360_entity_info_processed.json')
     baike_entity_info = load_baike_info(baike_entity_info_path, total = 21710208, entities = baike_entities)
+    Print("#baike entity info = %d" %len(baike_entity_info))
     
 
     fb_property_path = os.path.join(result_dir, '360/mapping/classify/mapped_fb_entity_info.json')
     outpath = os.path.join(result_dir, '360/mapping/one2one_info_predicate_mapping.tsv')
-    do_predicate_mapping(outpath, name_map, fb2baike, baike_entity_info, fb_property_path, total = 6282988)
+    do_predicate_mapping(outpath, name_map, fb2baike, baike_entity_info, fb_property_path, score_map, total = 6282988)
 
