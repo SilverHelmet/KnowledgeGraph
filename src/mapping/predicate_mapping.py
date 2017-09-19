@@ -181,8 +181,8 @@ def do_predicate_mapping(outpath, name_map, fb2baike, baike_entity_info, fb_prop
                 values = [value]
             
             for fb_value_name in values:
-                for baike_info_name in baike_attr:
-                    baike_values = baike_attr[baike_info_name]
+                for baike_info_name in baike_info:
+                    baike_values = baike_info[baike_info_name]
                     for baike_value in baike_values:
                         if map_value(fb_value_name, baike_value, cache):
                             outf.write("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\n".format(fb_uri, baike_url, name, baike_info_name, fb_value_name, baike_value, score))
