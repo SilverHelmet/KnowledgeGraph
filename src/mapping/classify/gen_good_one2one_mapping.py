@@ -32,8 +32,8 @@ if __name__ == "__main__":
     Print("#one2one mapping pairs = %d" %len(one2one_mapping_pairs))
 
     clf = SimpleClassifer(1, 1)
-    clf.load_score(good_mapping_pairs)
-    score_map = clf.calc_score(good_mapping_pairs)
+    clf.load_score(one2one_mapping_pairs)
+    score_map = clf.calc_score(one2one_mapping_pairs)
 
     good_mapping_pairs = []
     for bk_url, fb_uri in one2one_mapping_pairs:
