@@ -10,35 +10,9 @@ from ..one2one_mapping_cnt import load_attrs
 from ..predicate_mapping import map_time
 from ..fb_date import FBDatetime, BaikeDatetime
 from ..name_mapping import del_space
-from ...baike_process.process_entity_info import del_book_bracket
+from ...baike_process.process_entity_info import del_book_bracket, ignore_baike_name_attr
 
 o_name_cnt = {}
-def ignore_baike_name_attr(baike_entity_info, baike_name_attrs, url):
-    global o_name_cnt
-    baike_info = baike_entity_info[url]
-    names = set()
-    if 'ename' in baike_info:
-        names.update(baike_info['ename'])
-    if 'title' in baike_info:
-        names.update(baike_info['title'])
-
-    for name in baike_name_attrs:
-        if name in baike_info:
-            names.update(baike_info[name])
-
-    o_name_attr = set()
-    for name in baike_info:
-        for value in baike_info[name]:
-            if value in names:
-                o_name_attr.add(name)
-
-    for o_name in o_name_attr:
-        if not o_name in o_name_cnt:
-            o_name_cnt[o_name] = 0
-        o_name_cnt[o_name] += 1
-        baike_info.pop(o_name)
-
-    return baike_info
 
 def extend_name(fb_info, name_map):
     value_names = []

@@ -30,7 +30,6 @@ def del_book_bracket(value):
         return value[2:-2]
     else:
         return value
-    
 
 
 def unfold(text):
@@ -81,7 +80,32 @@ def process(inpath, outpath, total = None):
         outf.write('%s\t%s\n' %(baike_key, json.dumps(obj, ensure_ascii = False)))
     outf.close()
             
+def ignore_baike_name_attr(baike_entity_info, baike_name_attrs, url):
+    global o_name_cnt
+    baike_info = baike_entity_info[url]
+    names = set()
+    if 'ename' in baike_info:
+        names.update(baike_info['ename'])
+    if 'title' in baike_info:
+        names.update(baike_info['title'])
 
+    for name in baike_name_attrs:
+        if name in baike_info:
+            names.update(baike_info[name])
+
+    o_name_attr = set()
+    for name in baike_info:
+        for value in baike_info[name]:
+            if value in names:
+                o_name_attr.add(name)
+
+    for o_name in o_name_attr:
+        if not o_name in o_name_cnt:
+            o_name_cnt[o_name] = 0
+        o_name_cnt[o_name] += 1
+        baike_info.pop(o_name)
+
+    return baike_info
         
 
 if __name__ == "__main__":
