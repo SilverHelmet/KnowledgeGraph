@@ -6,7 +6,7 @@ if __name__ == "__main__":
     baike2fb = load_mappings()
     baike_urls =set(baike2fb.keys())
     baike2cls = load_baike_entity_class(baike_urls = baike_urls)
-    Print('load class %d/%d' %(len(baike2cls, len(baike_urls))))
+    Print('load class %d/%d' %(len(baike2cls), len(baike_urls)))
     values = set(baike2cls.values())
     for value in values:
         print value
