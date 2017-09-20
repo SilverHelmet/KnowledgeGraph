@@ -89,7 +89,7 @@ def map_time(fb_date, baike_date):
 
 def map_str(fb_str, baike_str):
     fb_str = process_fb_value(fb_str)
-    baike_value = del_book_bracket(baike_value)
+    baike_str = del_book_bracket(baike_str)
 
     longer = max(len(fb_str), len(baike_str))
     shorter = min(len(fb_str), len(baike_str))
