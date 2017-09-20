@@ -26,7 +26,7 @@ def load_baike_entity_class(filepath = None, baike_urls = None):
         assert url.startswith('http://')
         url = url[7:]
         if baike_urls is None or url in baike_urls:
-            bk2cls[url] = cls
+            bk2cls[url] = cls.split(" ")
     return bk2cls
 
 
