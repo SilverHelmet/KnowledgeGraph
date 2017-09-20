@@ -35,13 +35,13 @@ class MappingResult:
 
 
 if __name__ == "__main__":
-    predict_map_result_path = os.path.join(result_dir, '360/mapping/info_predicate_mapping.tsv')
+    predict_map_result_path = os.path.join(result_dir, '360/mapping/one2one_info_predicate_mapping.tsv')
     map_result = MappingResult()
     for line in file(predict_map_result_path):
-        fb_uri, baike_url, fb_property, baike_info, fb_value = line.strip().split("\t")
+        fb_uri, baike_url, fb_property, baike_info, fb_value, baike_value, score = line.strip().split("\t")
         map_result.add(baike_info, fb_property)
 
-    outf = file(os.path.join(result_dir, '360/mapping/predicates_map.json'), 'w')
+    outf = file(os.path.join(result_dir, '360/mapping/one2one_predicates_map.json'), 'w')
     for key in map_result.sorted_keys():
         outf.write("%s\t%s\n" %(key, json.dumps(map_result.baike2fb[key].top_k(20)) ) )
     outf.close()
