@@ -21,7 +21,7 @@ def load_baike_entity_class(filepath = None, baike_urls = None, simple = False):
     bk2cls = {}
     for line in tqdm(file(filepath), total = nb_lines_of(filepath)):
         if simple:
-            name, cls = line.strip().split('\t')
+            url, cls = line.strip().split('\t')
         else:
             name, popular, url, cls, small_cl = line.strip().split('\t')
         if cls == "NO_TYPE":
