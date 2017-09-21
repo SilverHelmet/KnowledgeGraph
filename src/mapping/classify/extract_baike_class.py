@@ -21,4 +21,4 @@ if __name__ == "__main__":
         outf.write('%s\t%s\n' %(baike_url, " ".join(baike2cls[baike_url])))
     outf.close()
 
-    
+        
