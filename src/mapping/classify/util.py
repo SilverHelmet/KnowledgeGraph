@@ -26,7 +26,7 @@ def load_baike_entity_class(filepath = None, baike_urls = None, simple = False):
             name, popular, url, cls, small_cl = line.strip().split('\t')
         if cls == "NO_TYPE":
             continue
-        if url.startswith('http://')
+        if url.startswith('http://'):
             url = url[7:]
         if baike_urls is None or url in baike_urls:
             bk2cls[url] = cls.split(" ")

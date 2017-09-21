@@ -61,7 +61,7 @@ if __name__ == "__main__":
 
 
     baike_cls_path = os.path.join(classify_dir, 'baike_cls.tsv')
-    bk_cls = load_baike_entity_class(filepath = baike_cls_path, baike_urls = bk_urls)
+    bk_cls = load_baike_entity_class(filepath = baike_cls_path, baike_urls = bk_urls, simple = True)
 
     fb_type = load_fb_type(fb_uris = fb_uris)
 
