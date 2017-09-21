@@ -40,11 +40,12 @@ def gen_baike_cls_to_fb(mappings, baike_cls_map, fb_type_map):
     for bk_url, fb_uri in mappings:
         if not bk_url in baike_cls_map:
             continue
-        bk_cls = baike_cls_map[bk_url]
-        if not bk_cls in baike_class_cnts:
-            baike_class_cnts[bk_cls] = BaikeClassCount(bk_cls)
-        count = baike_class_cnts[bk_cls]
-        count.add(fb_type_map[fb_uri])
+        bk_clses = baike_cls_map[bk_url]
+        for bk_cls in bk_clses:
+            if not bk_cls in baike_class_cnts:
+                baike_class_cnts[bk_cls] = BaikeClassCount(bk_cls)
+            count = baike_class_cnts[bk_cls]
+            count.add(fb_type_map[fb_uri])
     return baike_class_cnts
 
 if __name__ == "__main__":
