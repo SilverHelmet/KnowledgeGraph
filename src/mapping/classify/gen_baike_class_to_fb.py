@@ -17,7 +17,7 @@ class BaikeClassCount:
             self.fb_type_cnt[fb_type] += 1
     
     def to_obj(self, topk = 5):
-        top_types = sorted(self.fb_type_cnt.keys(), lambda x: self.fb_type_cnt[x], reverse = True)[:topk]
+        top_types = sorted(self.fb_type_cnt.keys(), key = lambda x: self.fb_type_cnt[x], reverse = True)[:topk]
         fb_type_cnt = {}
         for fb_type in top_types:
             fb_type_cnt[fb_type] = self.fb_type_cnt[fb_type]
