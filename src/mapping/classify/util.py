@@ -32,7 +32,7 @@ def load_baike_entity_class(filepath = None, baike_urls = None):
 def load_mappings_witd_score(filepath, threshold = 0.1):
     Print('load mappings from [%s] with score' %filepath)
     mappings = []
-    for line in tdqm(file(filepath), total = nb_lines_of(filepath)):
+    for line in tqdm(file(filepath), total = nb_lines_of(filepath)):
         bk_url, fb_uri, score = line.split('\t')
         if float(score) > threshold:
             mappings.append((bk_url, fb_uri))
