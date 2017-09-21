@@ -1,7 +1,7 @@
 from .util import load_baike_entity_class, load_mappings_witd_score, load_baike_entity_class, load_fb_type
 from ...IOUtil import classify_dir, Print
 import os
-
+import json
 
 class BaikeClassCount:
     def __init__(self, baike_class):
