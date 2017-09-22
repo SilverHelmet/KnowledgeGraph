@@ -106,7 +106,7 @@ def calc_type_infer_score(pairs):
                 if x in fb_types:
                     error =  False
             if error:
-                score -= 0.5
+                score -= 0.3
         
         for fb_type in fb_types:
             if type_probs.get(fb_type, 0) > max_prob:
