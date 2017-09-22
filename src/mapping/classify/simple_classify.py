@@ -95,17 +95,19 @@ def calc_type_infer_score(pairs):
         type_probs = type_infer.infer(baike_info, baike_cls)
         fb_types = fb_type_map[fb_uri]
         score = 0
-        max_prob = 0
-        max_prob_type = None
+        decided_inferred_types = []
         for inferred_type in type_probs:
             prob = type_probs[inferred_type]
-            if prob > max_prob:
-                max_prob = prob
-                max_prob_type = inferred_type
-            if prob >= 0.8:
-                print baike_url, inferred_type, prob
-        if max_prob >= 0.8 and not max_prob_type not in fb_types:
-            score -= 0.5
+            if prob > 0.8
+                decided_inferred_types.append(inferred_type)
+        if len(decided_inferred_types) > 0:
+            error = True
+            for x in decided_inferred_types:
+                if x in fb_types:
+                    error =  False
+            if error:
+                score -= 0.5
+        
         for fb_type in fb_types:
             if type_probs.get(fb_type, 0) > max_prob:
                 max_prob = type_probs[fb_type]
