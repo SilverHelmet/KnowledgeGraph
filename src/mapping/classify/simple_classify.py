@@ -102,6 +102,8 @@ def calc_type_infer_score(pairs):
             if prob > max_prob:
                 max_prob = prob
                 max_prob_type = inferred_type
+            if prob >= 0.8:
+                print baike_url, inferred_type, prob
         if max_prob >= 0.8 and not max_prob_type not in fb_types:
             score -= 0.5
         for fb_type in fb_types:
