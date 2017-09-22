@@ -101,17 +101,21 @@ def calc_type_infer_score(pairs):
             if prob > 0.8:
                 decided_inferred_types.append(inferred_type)
         if len(decided_inferred_types) > 0:
-            error = True
+            error_cnt = 0
             for x in decided_inferred_types:
                 if x in fb_types:
-                    error =  False
-            if error:
+                    error_cnt += 1
+            if error_cnt == 1:
                 score -= 0.3
+            if error_cnt == 2:
+                score -= 1.5
+            if error >= 3:
+                score -= 5
         max_prob = 0
         for fb_type in fb_types:
             if type_probs.get(fb_type, 0) > max_prob:
                 max_prob = type_probs[fb_type]
-        score += 0.05 * max_prob
+        score += 0.01 * max_prob
         score_map[make_key(baike_url, fb_uri)] = score
     return score_map
         
@@ -133,10 +137,16 @@ class SimpleClassifer:
         self.summary_cof = summary_cof
 
     def calc_score(self, pairs):
+        Print('calc score for %d pairs' %len(pairs))
         score_map = {}
-        for pair in pairs:
+        for pair in tqdm(pairs, total = len(pairs)):
             key = make_key(*pair)
-            score = self.infobox_cof * self.infobox_scores.get(key, 0) + self.summary_cof * self.summary_scores.get(key, 0)
+            summary_score = self.summary_scores.get(key, 0)
+            if summary_score > 0.5:
+                summary_score *= 10
+            score = self.infobox_cof * self.infobox_scores.get(key, 0) + self.summary_cof * summary_score
+            if self.type_infer:
+                score += self.type_infer_scores[key]
             score_map[key] = score
         return score_map
 
@@ -177,8 +187,8 @@ def find_map(pairs, score_map):
     for key in keys:
         baike_url, fb_uri = unmake_key(key)
         score = score_map[key]
-        if score < 0.1:
-            break
+        # if score < 0.1:
+        #     break
         if baike_url in mapped_urls or fb_uri in mapped_urls:
             continue
         mapped_urls.add(baike_url)
@@ -208,14 +218,14 @@ if __name__ == "__main__":
     true_pairs, entities = load_ground_truth(os.path.join(base_dir, 'train_data/ground_truth.txt'))
     train_pairs = load_train_data(os.path.join(base_dir, 'train_data/train_data.json'), entities = entities)
 
-    clf = SimpleClassifer(1, 1, True)
-    clf.load_score(train_pairs)
-    clf.save(os.path.join(base_dir, 'SimpleClf.json'))
+    # clf = SimpleClassifer(1, 1, True)
+    # clf.load_score(train_pairs)
+    # clf.save(os.path.join(base_dir, 'SimpleClf.json'))
 
-    # clf = SimpleClassifer.load_from_file(os.path.join(base_dir, 'SimpleClf.json'))
+    clf = SimpleClassifer.load_from_file(os.path.join(base_dir, 'SimpleClf.json'))
 
-    # score_map = clf.calc_score(train_pairs)
-    # test(clf, train_pairs, true_pairs)
+    score_map = clf.calc_score(train_pairs)
+    test(clf, train_pairs, true_pairs)
 
 
 
