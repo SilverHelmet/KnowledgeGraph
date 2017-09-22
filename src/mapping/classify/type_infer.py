@@ -74,6 +74,8 @@ class BKClassTypeInfer:
 
     def infer(self, baike_clses, prob):
         for cls in baike_clses:
+            if cls not in self.baike_cls_cnt_map:
+                continue
             cls_cnt = self.baike_cls_cnt_map[cls]
             cls_prob = cls_cnt.fb_type_prob
             for fb_type in cls_prob:
