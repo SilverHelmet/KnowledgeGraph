@@ -182,7 +182,9 @@ class SimpleClassifer:
         return clf
 
 def find_map(pairs, score_map):
+    Print('sorting')
     keys = sorted(score_map.keys(), key = lambda x:score_map[x], reverse = True)
+    Print('sorting finished')
     mapped_urls = set()
     mapped_uris = set()
     mapped_pairs = []
