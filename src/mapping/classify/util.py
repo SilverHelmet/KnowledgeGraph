@@ -18,6 +18,7 @@ def load_mappings():
 def load_baike_entity_class(filepath = None, baike_urls = None, simple = False):
     if filepath is None:
         filepath = os.path.join(data_dir, 'entityHypernym_v16_all_ex_darts.txt')
+    Print("load baike entity class from [%s]" %filepath)
     bk2cls = {}
     for line in tqdm(file(filepath), total = nb_lines_of(filepath)):
         if simple:
@@ -54,6 +55,21 @@ def load_fb_type(filepath = None, fb_uris = None):
         types = json.loads(types)['fb:type.object.type']
         fb_types[fb_uri] = types
     return fb_types
+
+def load_baike_attr_names(filepath, total, baike_urls = None):
+    Print("load baike attr's name from %s" %filepath)
+    info_map = {}
+    
+    for line in tqdm(file(filepath), total = total):
+        p = line.split('\t')
+        key = p[0].decode('utf-8')
+        if entities is not None and key not in entities:
+            continue
+        obj = json.loads(p[1])
+        info = obj.get('info', {})
+        names = info.keys()
+        info_map[key] = names
+    return info_map
 
 
 

@@ -64,6 +64,8 @@ def load_baike_info(filepath, total, entities = None):
         info_map[key] = attr
     return info_map
 
+
+
 def load_exact_map(exact_map_path, total = 558541):
     fb2baike = {}
     Print("load exact map %s" %exact_map_path)

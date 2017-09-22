@@ -2,7 +2,8 @@ from ...IOUtil import result_dir, Print, classify_dir
 import json
 import os
 from tqdm import tqdm
-from .util import load_baike_entity_class, load_fb_type
+from .util import load_baike_entity_class, load_fb_type, load_baike_attr_names
+from .type_infer import TypeInfer
 
 def load_ground_truth(filepath):
     ground_truth = []
@@ -74,16 +75,39 @@ def calc_type_infer_score(pairs):
     baike_urls =  set()
     fb_uris = set()
     for bk, fb in pairs:
-        baike_urls.append(bk)
-        fb_uris.append(fb)
+        baike_urls.add(bk)
+        fb_uris.add(fb)
     
-    baike_cls_map = load_baike_entity_class(filepath = os.path.join(classify_dir, 'baike_cls.tsv'), baike_urls = baike_urls)
+    baike_cls_map = load_baike_entity_class(filepath = os.path.join(classify_dir, 'baike_cls.tsv'), baike_urls = baike_urls, simple = True)
+    baike_info_map = load_baike_attr_names(filepath = os.path.join(result_dir, '360/360_entity_info_processed.json'),
+                                         total = 21710208, baike_urls = baike_urls)
+
     fb_type_map = load_fb_type(filepath = os.path.join(classify_dir, 'fb_entity_type.json'), fb_uris = fb_uris)
 
-    baike_url_type_infer = 
+    infobox_path = os.path.join(result_dir, '360/mapping/one2one_predicates_map.json')
+    baike_cls_path = os.path.join(classify_dir, 'baike_cls2fb_type.json')
+    type_infer = TypeInfer(infobox_path = infobox_path, baike_cls_path = baike_cls_path)
 
+    score_map = {}
+    for baike_url, fb_uri in pairs:
+        baike_cls = baike_cls_map.get(baike_url, [])
+        baike_info = baike_info_map.get(baike_url, [])
+        type_probs = type_infer.infer(baike_info, baike_cls)
+        fb_types = fb_type_map[fb_uri]
+        score = 0
+        for inferred_type in type_probs:
+            prob = type_probs[inferred_type]
 
-
+            if prob >=  0.8 and not inferred_type in fb_types:
+                score -= 0.5
+        max_prob = 0
+        for fb_type in fb_types:
+            if type_probs.get(fb_type, 0) > max_prob:
+                max_prob = type_probs[fb_type]
+        score += 0.05 * max_prob
+        score_map[make_key(baike_url, fb_uri)] = score
+    return score_map
+        
 class SimpleClassifer:
     def __init__(self, infobox_cof, summary_cof, type_infer = False):
         self.infobox_cof = infobox_cof
@@ -91,10 +115,11 @@ class SimpleClassifer:
         self.type_infer = type_infer
     
     def load_score(self, pairs = None):
-        self.infobox_scores = load_infobox_score(pairs)
-        self.summary_scores = load_summary_score(pairs)
         if self.type_infer:
             self.type_infer_scores = calc_type_infer_score(pairs)
+        self.infobox_scores = load_infobox_score(pairs)
+        self.summary_scores = load_summary_score(pairs)
+        
 
     def set_cof(self, infobox_cof, summary_cof):
         self.infobox_cof = infobox_cof
@@ -113,11 +138,14 @@ class SimpleClassifer:
         obj = {
             'infobox_cof': self.infobox_cof,
             'summary_cof': self.summary_cof,
+            'type_infer': self.type_infer
         }
 
         outf.write(json.dumps(obj) + '\n')
         outf.write(json.dumps(self.infobox_scores) + '\n')
         outf.write(json.dumps(self.summary_scores) + '\n')
+        if self.type_infer:
+            outf.write(json.dumps(self.type_infer_scores) + '\n')
         outf.close()
 
     @staticmethod
@@ -126,10 +154,12 @@ class SimpleClassifer:
         lines = inf.readlines()
         inf.close()
         obj = json.loads(lines[0])
-        infobox_cof, summary_cof = obj['infobox_cof'], obj['summary_cof']
-        clf = SimpleClassifer(infobox_cof, summary_cof)
+        infobox_cof, summary_cof, type_infer = obj['infobox_cof'], obj['summary_cof'], obj['type_infer']
+        clf = SimpleClassifer(infobox_cof, summary_cof, type_infer)
         clf.infobox_scores = json.loads(lines[1])
         clf.summary_scores = json.loads(lines[2])
+        if type_infer:
+            clf.type_infer_scores = json.loads(lines[3])
         return clf
 
 def find_map(pairs, score_map):
@@ -169,14 +199,14 @@ if __name__ == "__main__":
     true_pairs, entities = load_ground_truth(os.path.join(base_dir, 'train_data/ground_truth.txt'))
     train_pairs = load_train_data(os.path.join(base_dir, 'train_data/train_data.json'), entities = entities)
 
-    # clf = SimpleClassifer(1, 1)
-    # clf.load_score(train_pairs)
-    # clf.save(os.path.join(base_dir, 'SimpleClf.json'))
+    clf = SimpleClassifer(1, 1)
+    clf.load_score(train_pairs)
+    clf.save(os.path.join(base_dir, 'SimpleClf.json'))
 
-    clf = SimpleClassifer.load_from_file(os.path.join(base_dir, 'SimpleClf.json'))
+    # clf = SimpleClassifer.load_from_file(os.path.join(base_dir, 'SimpleClf.json'))
 
-    score_map = clf.calc_score(train_pairs)
-    test(clf, train_pairs, true_pairs)
+    # score_map = clf.calc_score(train_pairs)
+    # test(clf, train_pairs, true_pairs)
 
 
 

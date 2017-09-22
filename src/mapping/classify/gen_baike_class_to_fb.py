@@ -31,7 +31,7 @@ class BaikeClassCount:
     def calc_prob(self):
         self.fb_type_prob = {}
         for fb_type in self.fb_type_cnt:
-            self.fb_type_prob[fb_type] = (self.fb_type_cnt[fb_type] + 0.0) / self.count
+            self.fb_type_prob[fb_type] = (self.fb_type_cnt[fb_type] + 0.0) / (self.count + 10)
 
     @staticmethod
     def load_from_obj(obj):

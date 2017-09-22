@@ -1,10 +1,9 @@
 #encoding:utf-8
 import os
-from ..IOUtil import result_dir, Print
-from .one2one_mapping_cnt import load_attrs as load_name_attr
-from ..fb_process.extract_util import get_type
+from ...IOUtil import result_dir, Print, classify_dir
+from ...fb_process.extract_util import get_type
 import json
-from .classify.gen_baike_class_to_fb import BaikeClassCount
+from .gen_baike_class_to_fb import BaikeClassCount
 
 class Mapping:
     def __init__(self, pair):
@@ -44,8 +43,7 @@ class InfoboxTypeInfer:
 
         return baikeattr2fb_type
 
-    def infer(self, baike_attrs):
-        prob_map = {}
+    def infer(self, baike_attrs, prob_map):
         for attr in baike_attrs:
             if not attr in self.baikeattr2fb_type:
                 continue
@@ -74,19 +72,37 @@ class BKClassTypeInfer:
             baike_cls_cnt_map[baike_cls] = baike_cls_cnt
         return baike_cls_cnt_map
 
-    def infer(self, baike_clses):
-        prob = {}
+    def infer(self, baike_clses, prob):
         for cls in baike_clses:
             cls_cnt = self.baike_cls_cnt_map[cls]
-            for fb_type in cls_cnt:
+            cls_prob = cls_cnt.fb_type_prob
+            for fb_type in cls_prob:
                 if not fb_type in prob:
-                    fb_type[prob] + 
+                    prob[fb_type] = 0
+                prob[fb_type] += cls_prob[fb_type]
+        return prob
+
+class TypeInfer:
+    def __init__(self, infobox_path, baike_cls_path):
+        self.infobox_type_infer = InfoboxTypeInfer(path = infobox_path)
+        self.baike_cls_infer = BKClassTypeInfer(path = baike_cls_path)
+    
+    def infer(self, info, baike_clses):
+        prob = {}
+        self.infobox_type_infer.infer(info, prob)
+        self.baike_cls_infer.infer(baike_clses, prob)
+        return prob
 
 
 
 
 if __name__ == "__main__":
-    type_infer = InfoboxTypeInfer(path = os.path.join(result_dir, '360/mapping/predicates_map.json'))
-    attr = [u'民族', u'影视作品', u'音乐作品']
-    res = type_infer.infer(attr)
+    # type_infer = InfoboxTypeInfer(path = os.path.join(result_dir, '360/mapping/predicates_map.json'))
+    infobox_path = os.path.join(result_dir, '360/mapping/one2one_predicates_map.json')
+    baike_cls_path = os.path.join(classify_dir, 'baike_cls2fb_type.json')
+    type_infer = TypeInfer(infobox_path = infobox_path, baike_cls_path = baike_cls_path)
+    info = [u'民族', u'影视作品', u'音乐作品']
+    clses = [u'prod:art:music']
+    # clses = []
+    res = type_infer.infer(info, clses)
     print res
