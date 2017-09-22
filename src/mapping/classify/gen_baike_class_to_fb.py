@@ -78,7 +78,7 @@ if __name__ == "__main__":
     out_path = os.path.join(classify_dir, 'baike_cls2fb_type.json')
     outf = file(out_path, 'w')
     for key in sorted(baike_class_cnts.keys()):
-        outf.write("%s\n" %(json.dumps(baike_class_cnts[key].to_obj(topk = 10))))
+        outf.write("%s\n" %(json.dumps(baike_class_cnts[key].to_obj(topk = 5))))
     outf.close()
 
     
