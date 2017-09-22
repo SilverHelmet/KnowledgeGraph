@@ -109,7 +109,7 @@ def calc_type_infer_score(pairs):
                 score -= 0.3
             if error_cnt == 2:
                 score -= 1.5
-            if error >= 3:
+            if error_cnt >= 3:
                 score -= 5
         max_prob = 0
         for fb_type in fb_types:
