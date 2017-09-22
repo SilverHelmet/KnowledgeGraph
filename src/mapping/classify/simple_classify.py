@@ -107,7 +107,7 @@ def calc_type_infer_score(pairs):
                     error =  False
             if error:
                 score -= 0.3
-        
+        max_prob = 0
         for fb_type in fb_types:
             if type_probs.get(fb_type, 0) > max_prob:
                 max_prob = type_probs[fb_type]
@@ -177,6 +177,8 @@ def find_map(pairs, score_map):
     for key in keys:
         baike_url, fb_uri = unmake_key(key)
         score = score_map[key]
+        if score < 0.1:
+            break
         if baike_url in mapped_urls or fb_uri in mapped_urls:
             continue
         mapped_urls.add(baike_url)
