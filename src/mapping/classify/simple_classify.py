@@ -199,7 +199,7 @@ if __name__ == "__main__":
     true_pairs, entities = load_ground_truth(os.path.join(base_dir, 'train_data/ground_truth.txt'))
     train_pairs = load_train_data(os.path.join(base_dir, 'train_data/train_data.json'), entities = entities)
 
-    clf = SimpleClassifer(1, 1)
+    clf = SimpleClassifer(1, 1, True)
     clf.load_score(train_pairs)
     clf.save(os.path.join(base_dir, 'SimpleClf.json'))
 
