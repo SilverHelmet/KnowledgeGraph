@@ -26,7 +26,7 @@ def load_train_data(filepath, entities):
         baike_url = p[0]
         fb_uris = json.loads(p[1])
         for fb_uri in fb_uris:
-            if baike_url in entities or fb_uri in entities:
+            if entities is None or baike_url in entities or fb_uri in entities:
                 pairs.append((baike_url, fb_uri))
     return pairs
 
@@ -224,14 +224,16 @@ def match(clf, pairs, out_path):
     outf.close()
 
 if __name__ == "__main__":
-    base_dir = os.path.join(result_dir, '360/mapping/classify')
-    true_pairs, entities = load_ground_truth(os.path.join(base_dir, 'train_data/ground_truth.txt'))
-    train_pairs = load_train_data(os.path.join(base_dir, 'train_data/train_data.json'), entities = entities)
+    # base_dir = os.path.join(result_dir, '360/mapping/classify')
+    # true_pairs, entities = load_ground_truth(os.path.join(base_dir, 'train_data/ground_truth.txt'))
+    # train_pairs = load_train_data(os.path.join(base_dir, 'train_data/train_data.json'), entities = entities)
 
     # clf = SimpleClassifer(1, 1, True)
     # clf.load_score(train_pairs)
     # clf.save(os.path.join(base_dir, 'SimpleClf.json'))
 
+
+    train_pairs = load_train_data(os.path.join(classify_dir, 'mappings.txt')， entities = None)
     clf = SimpleClassifer.load_from_file(os.path.join(base_dir, 'SimpleClf.json'))
     
     match(clf, train_pairs, os.path.join(classify_dir, 'classify_result.tsv'))
