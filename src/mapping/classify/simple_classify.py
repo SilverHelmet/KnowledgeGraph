@@ -98,7 +98,7 @@ def calc_type_infer_score(pairs):
         decided_inferred_types = []
         for inferred_type in type_probs:
             prob = type_probs[inferred_type]
-            if prob > 0.8
+            if prob > 0.8:
                 decided_inferred_types.append(inferred_type)
         if len(decided_inferred_types) > 0:
             error = True
