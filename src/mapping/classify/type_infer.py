@@ -102,7 +102,8 @@ if __name__ == "__main__":
     baike_cls_path = os.path.join(classify_dir, 'baike_cls2fb_type.json')
     type_infer = TypeInfer(infobox_path = infobox_path, baike_cls_path = baike_cls_path)
     info = [u'民族', u'影视作品', u'音乐作品']
-    clses = [u'prod:art:music']
-    # clses = []
+    info = [u"时间", u"专辑", u"风格", u"公司"]
+    # clses = [u'prod:art:music']
+    clses = []
     res = type_infer.infer(info, clses)
     print res

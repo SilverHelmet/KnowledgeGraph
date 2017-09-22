@@ -191,7 +191,8 @@ def find_map(pairs, score_map):
         score = score_map[key]
         # if score < 0.1:
         #     break
-        if baike_url in mapped_urls or fb_uri in mapped_urls:
+        
+        if baike_url in mapped_urls or fb_uri in mapped_uris:
             continue
         mapped_urls.add(baike_url)
         mapped_uris.add(fb_uri)
@@ -213,19 +214,28 @@ def test(clf, pairs, true_pairs):
             print right, baike_url, fb_uri, true_map[baike_url], score
         # print unmake_key(key), score
     
+def match(clf, pairs, out_path):
+    score_map = clf.calc_score(pairs)
+    maps = find_map(pairs, score_map)
+    outf = file(out_path, 'w')
+    for key, score in maps:
+        baike_url, fb_uri = unmake_key(key)
+        outf.write('%s\t%s\t%f\n' %(baike_url, fb_uri, score))
+    outf.close()
 
-    
 if __name__ == "__main__":
     base_dir = os.path.join(result_dir, '360/mapping/classify')
     true_pairs, entities = load_ground_truth(os.path.join(base_dir, 'train_data/ground_truth.txt'))
     train_pairs = load_train_data(os.path.join(base_dir, 'train_data/train_data.json'), entities = entities)
 
-    clf = SimpleClassifer(1, 1, True)
-    clf.load_score(train_pairs)
-    clf.save(os.path.join(base_dir, 'SimpleClf.json'))
+    # clf = SimpleClassifer(1, 1, True)
+    # clf.load_score(train_pairs)
+    # clf.save(os.path.join(base_dir, 'SimpleClf.json'))
 
-    # clf = SimpleClassifer.load_from_file(os.path.join(base_dir, 'SimpleClf.json'))
-
+    clf = SimpleClassifer.load_from_file(os.path.join(base_dir, 'SimpleClf.json'))
+    
+    match(clf, train_pairs, os.path.join(classify_dir, 'classify_result.tsv'))
+    clf.save(os.path.join(base_dir, 'FullClf.json'))
     # score_map = clf.calc_score(train_pairs)
     # test(clf, train_pairs, true_pairs)
 
