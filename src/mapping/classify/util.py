@@ -63,7 +63,7 @@ def load_baike_attr_names(filepath, total, baike_urls = None):
     for line in tqdm(file(filepath), total = total):
         p = line.split('\t')
         key = p[0].decode('utf-8')
-        if entities is not None and key not in entities:
+        if baike_urls is not None and key not in baike_urls:
             continue
         obj = json.loads(p[1])
         info = obj.get('info', {})
