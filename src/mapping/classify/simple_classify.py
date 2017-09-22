@@ -20,6 +20,7 @@ def load_ground_truth(filepath):
     return ground_truth, es
 
 def load_train_data(filepath, entities):
+    Print('load data from [%s]' %filepath)
     pairs = []
     for line in file(filepath):
         p = line.split('\t')
@@ -236,7 +237,8 @@ if __name__ == "__main__":
 
 
     train_pairs = load_train_data(os.path.join(classify_dir, 'mappings.txt'), entities = None)
-    clf = SimpleClassifer.load_from_file(os.path.join(base_dir, 'SimpleClf.json'))
+    clf = SimpleClassifer(1, 1, True)
+    clf.load_score(train_pairs)
     
     match(clf, train_pairs, os.path.join(classify_dir, 'classify_result.tsv'))
     clf.save(os.path.join(base_dir, 'FullClf.json'))
