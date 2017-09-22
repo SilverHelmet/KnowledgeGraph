@@ -235,7 +235,7 @@ if __name__ == "__main__":
     # clf.save(os.path.join(base_dir, 'SimpleClf.json'))
 
 
-    train_pairs = load_train_data(os.path.join(classify_dir, 'mappings.txt')， entities = None)
+    train_pairs = load_train_data(os.path.join(classify_dir, 'mappings.txt'), entities = None)
     clf = SimpleClassifer.load_from_file(os.path.join(base_dir, 'SimpleClf.json'))
     
     match(clf, train_pairs, os.path.join(classify_dir, 'classify_result.tsv'))
