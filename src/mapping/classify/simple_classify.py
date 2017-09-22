@@ -105,11 +105,13 @@ def calc_type_infer_score(pairs):
             for x in decided_inferred_types:
                 if not x in fb_types:
                     error_cnt += 1
+            if error_cnt == len(decided_inferred_types) and error_cnt >= 2:
+                score -= error_cnt
             if error_cnt == 2:
                 score -= 0.3
-            if error_cnt == 3:
+            elif error_cnt == 3:
                 score -= 1.5
-            if error_cnt >= 4:
+            elif error_cnt >= 4:
                 score -= 5
         max_prob = 0
         for fb_type in fb_types:
@@ -218,14 +220,14 @@ if __name__ == "__main__":
     true_pairs, entities = load_ground_truth(os.path.join(base_dir, 'train_data/ground_truth.txt'))
     train_pairs = load_train_data(os.path.join(base_dir, 'train_data/train_data.json'), entities = entities)
 
-    clf = SimpleClassifer(1, 1, True)
-    clf.load_score(train_pairs)
-    clf.save(os.path.join(base_dir, 'SimpleClf.json'))
+    # clf = SimpleClassifer(1, 1, True)
+    # clf.load_score(train_pairs)
+    # clf.save(os.path.join(base_dir, 'SimpleClf.json'))
 
-    # clf = SimpleClassifer.load_from_file(os.path.join(base_dir, 'SimpleClf.json'))
+    clf = SimpleClassifer.load_from_file(os.path.join(base_dir, 'SimpleClf.json'))
 
-    # score_map = clf.calc_score(train_pairs)
-    # test(clf, train_pairs, true_pairs)
+    score_map = clf.calc_score(train_pairs)
+    test(clf, train_pairs, true_pairs)
 
 
 
