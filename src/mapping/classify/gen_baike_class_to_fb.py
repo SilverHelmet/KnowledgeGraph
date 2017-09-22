@@ -10,6 +10,8 @@ class BaikeClassCount:
         self.count = 0
     
     def add(self, fb_types):
+        if "fb:book.written_work" in fb_types:
+            assert "fb:book.book" in fb_types
         self.count += 1
         for fb_type in fb_types:
             if not fb_type in self.fb_type_cnt:
@@ -28,12 +30,19 @@ class BaikeClassCount:
         }
         return obj
 
+    def calc_prob(self):
+        self.fb_type_prob = {}
+        for fb_type in self.fb_type_cnt:
+            self.fb_type_prob[fb_type] = (self.fb_type_cnt[fb_type] + 0.0) / self.count
+
     @staticmethod
     def load_from_obj(obj):
         cls = BaikeClassCount(obj['baike_cls'])
         cls.count = obj['count']
         cls.fb_type_cnt = obj['fb_type_cnt']
         return cls
+
+
 
 def gen_baike_cls_to_fb(mappings, baike_cls_map, fb_type_map):
     baike_class_cnts = {}

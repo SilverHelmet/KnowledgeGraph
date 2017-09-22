@@ -1,7 +1,8 @@
-from ...IOUtil import result_dir, Print
+from ...IOUtil import result_dir, Print, classify_dir
 import json
 import os
 from tqdm import tqdm
+from .util import load_baike_entity_class, load_fb_type
 
 def load_ground_truth(filepath):
     ground_truth = []
@@ -69,6 +70,19 @@ def load_summary_score(pairs = None):
             score_map[key] = score
     return score_map
 
+def calc_type_infer_score(pairs):
+    baike_urls =  set()
+    fb_uris = set()
+    for bk, fb in pairs:
+        baike_urls.append(bk)
+        fb_uris.append(fb)
+    
+    baike_cls_map = load_baike_entity_class(filepath = os.path.join(classify_dir, 'baike_cls.tsv'), baike_urls = baike_urls)
+    fb_type_map = load_fb_type(filepath = os.path.join(classify_dir, 'fb_entity_type.json'), fb_uris = fb_uris)
+
+    baike_url_type_infer = 
+
+
 
 class SimpleClassifer:
     def __init__(self, infobox_cof, summary_cof, type_infer = False):
@@ -79,6 +93,8 @@ class SimpleClassifer:
     def load_score(self, pairs = None):
         self.infobox_scores = load_infobox_score(pairs)
         self.summary_scores = load_summary_score(pairs)
+        if self.type_infer:
+            self.type_infer_scores = calc_type_infer_score(pairs)
 
     def set_cof(self, infobox_cof, summary_cof):
         self.infobox_cof = infobox_cof
