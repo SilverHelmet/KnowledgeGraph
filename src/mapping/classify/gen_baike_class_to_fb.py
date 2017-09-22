@@ -10,8 +10,6 @@ class BaikeClassCount:
         self.count = 0
     
     def add(self, fb_types):
-        if "fb:book.written_work" in fb_types:
-            assert "fb:book.book" in fb_types
         self.count += 1
         for fb_type in fb_types:
             if not fb_type in self.fb_type_cnt:
@@ -55,6 +53,9 @@ def gen_baike_cls_to_fb(mappings, baike_cls_map, fb_type_map):
                 baike_class_cnts[bk_cls] = BaikeClassCount(bk_cls)
             count = baike_class_cnts[bk_cls]
             count.add(fb_type_map[fb_uri])
+            fb_types = fb_type_map[fb_uri]
+            if 'fb:book.written_work' in fb_types and "fb:book.book" not in fb_types:
+                print bk_url
     return baike_class_cnts
 
 if __name__ == "__main__":
