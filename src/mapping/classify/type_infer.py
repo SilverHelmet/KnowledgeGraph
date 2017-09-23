@@ -148,7 +148,7 @@ def infer_type():
     cls_hit = 0
     schema = Schema()
     schema.init()
-
+    Print("type infer")
     for line in tqdm(file(baike_info_path), total = total):
         p = line.split('\t')
         baike_url = p[0].decode('utf-8')
