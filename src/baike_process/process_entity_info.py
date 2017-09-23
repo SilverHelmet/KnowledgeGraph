@@ -7,7 +7,7 @@ import HTMLParser
 import re
 from tqdm import tqdm
 
-delimeters = [u';', u'；', u'、', u'，']
+delimeters = [u';', u'；', u'、', u'，', u',']
 html_parser = HTMLParser.HTMLParser()
 bracket_pattern = re.compile(ur'（.*）|\(.*\)')
 
@@ -39,6 +39,8 @@ def unfold(text):
     for sep in delimeters:
         if len(text.split(sep)) > len(text.split(max_sep)):
             max_sep = sep
+    if max_sep == u',':
+        print 'unfold', stext
     values = text.split(max_sep)
     values = [del_space(x) for x in values]
 
