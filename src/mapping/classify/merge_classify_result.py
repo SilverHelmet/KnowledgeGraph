@@ -33,6 +33,7 @@ if __name__ == "__main__":
     bk_cls_map = load_baike_entity_class(os.path.join(classify_dir, 'baike_cls.tsv'), baike_urls = bk_urls, simple = True)
     fb_type_map = load_fb_type(filepath = os.path.join(classify_dir, 'fb_entity_type.json'), fb_uris = fb_uris) 
     print fb_type_map.get(u'fb:m.0j0_tg6', [])
+    print fb_type_map.get('fb:m.0j0_tg6', [])
     bk_info_map = load_baike_attr_names(filepath = os.path.join(result_dir, '360/360_entity_info_processed.json'),
                                          total = 21710208, baike_urls = bk_urls)
 
