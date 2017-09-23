@@ -48,7 +48,7 @@ if __name__ == "__main__":
         top_types = topk_key(type_probs, 2)
         for top_type in top_types:
             if top_type in fb_types:
-                outf.write("%s\t%s\n" %(bk_url, fb_uris))
+                outf.write("%s\t%s\t%s\n" %(bk_url, fb_uris, top_type))
                 extra_mappings += 1
                 break
     print "#extra mappings = %d" %extra_mappings
