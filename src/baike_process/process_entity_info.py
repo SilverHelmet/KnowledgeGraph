@@ -10,8 +10,8 @@ from tqdm import tqdm
 delimeters = [u';', u'；', u'、', u'，', u',']
 html_parser = HTMLParser.HTMLParser()
 bracket_pattern = re.compile(ur'（.*）|\(.*\)')
-
-
+digits = set([u'0', u'1', u'2', u'3', u'4', u'5', u'6', u'7', u'8', u'9'])
+text = u'2,627,000'
 def unfold_bracket(value):
     global bracket_pattern
     match = bracket_pattern.search(value)
@@ -31,12 +31,23 @@ def del_book_bracket(value):
     else:
         return value
 
+def not_digit(text, pos):
+    global digits
+    if pos < 0 or pos >= len(text):
+        return True
+    return not text[pos] in digits
 
 def unfold(text):
     global delimeters, html_parser
     text = html_parser.unescape(text)
     max_sep = delimeters[0]
-    for sep in delimeters:
+    pos = text.find(u',')
+    if pos != -1 and not_digit(text, pos-1) and not_digit(text, pos+1):
+        candidate = delimeters
+    else:
+        candidate = delimiters[:-1]
+
+    for sep in candidate:
         if len(text.split(sep)) > len(text.split(max_sep)):
             max_sep = sep
     if max_sep == u',':
