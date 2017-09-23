@@ -135,12 +135,12 @@ def infer_type():
     fb_type_map = load_fb_type(fb_uris = set(bk2fb_map.values()) )
     
 
-    predicates_map_path = os.path.join(result_dir, '360/mapping/one2one_predicates_map.json')
-    baike_cls2tpe_path = os.path.join(classify_dir, 'baike_cls2fb_type.json')
+    predicates_map_path = os.path.join(result_dir, '360/mapping/final_predicates_map.json')
+    baike_cls2tpe_path = os.path.join(classify_dir, 'final_baike_cls2fb_type.json')
     type_infer = TypeInfer(infobox_path = predicates_map_path, baike_cls_path = baike_cls2tpe_path)
     
     
-    out_path = os.path.join(rel_ext_dir, 'baike_type.tsv')
+    out_path = os.path.join(rel_ext_dir, 'baike_static_info.tsv')
     outf = file(out_path, 'w')
     
     baike_info_path = os.path.join(result_dir, '360/360_entity_info.json')
@@ -152,10 +152,14 @@ def infer_type():
     for line in tqdm(file(baike_info_path), total = total):
         p = line.split('\t')
         baike_url = p[0].decode('utf-8')
+        obj = json.loads(p[1])
+        names = obj.get('info', {}).keys()
+        nb_names = len(names)
+
         if baike_url in bk2fb_map:
             fb_uri = bk2fb_map[baike_url]
             fb_types = fb_type_map[fb_uri]
-            outf.write('%s\t%s\t%s\n' %(baike_url, fb_uri, json.dumps(fb_types)))
+            outf.write('%s\t%s\t%d\t%s\n' %(baike_url, fb_uri, nb_names, json.dumps(fb_types)))
             continue
 
         obj = json.loads(p[1])
@@ -167,7 +171,7 @@ def infer_type():
             clses = []
         type_probs = type_infer.infer(names, clses) 
         inffered_types = decide_type(type_probs, schema)
-        outf.write('%s\t%s\t%s\n' %(baike_url, "None", json.dumps(inffered_types)))
+        outf.write('%s\t%s\t%d\t%s\n' %(baike_url, "None", nb_names, json.dumps(inffered_types)))
 
     
     outf.close()
