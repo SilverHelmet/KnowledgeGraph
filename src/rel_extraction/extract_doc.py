@@ -25,11 +25,11 @@ if __name__ == "__main__":
     baike_urls = set()
     for line in file(mapping_path):
         baike_urls.add(line.split('\t')[0].decode('utf-8'))
-    
+    Print("#baike_urls is %d" %len(baike_urls))
     out_path = os.path.join(rel_ext_dir, 'baike_doc.json')
     outf = file(out_path, 'w')
     hit = 0
     for filepath in glob.glob('data/360/*finish'):
-        extract_doc(filepath, outf)
+        extract_doc(filepath, outf, baike_urls)
     outf.close()
     
