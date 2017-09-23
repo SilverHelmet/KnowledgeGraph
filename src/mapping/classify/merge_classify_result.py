@@ -22,13 +22,14 @@ if __name__ == "__main__":
     fb_uris = set()
     for line in file(one2one_map_path):
         bk_url, fb_uri, score = line.decode('utf-8').split('\t')
+        if fb_uri != u'fb:m.0j136fs':
+            continue
         score = float(score)
         if bk_url in bk2fb:
             continue
         one2one_mappings.append((bk_url, fb_uri))
         bk_urls.add(bk_url)
         fb_uris.add(fb_uri)
-    one2one_mappings = [('baike.so.com/doc/10261154-10786494.html', 'fb:m.0j136fs')]
     print "#candidate mappings = %d" %len(one2one_mappings)
     bk_cls_map = load_baike_entity_class(os.path.join(classify_dir, 'baike_cls.tsv'), baike_urls = bk_urls, simple = True)
     fb_type_map = load_fb_type(filepath = os.path.join(classify_dir, 'fb_entity_type.json'), fb_uris = fb_uris) 
