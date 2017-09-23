@@ -98,11 +98,8 @@ class TypeInfer:
 def topk_key(key_map, k):
     keys = sorted(key_map.keys(), key = lambda x: key_map[x], reverse = True)[:k]
     return keys
-    
 
-
-if __name__ == "__main__":
-    # type_infer = InfoboxTypeInfer(path = os.path.join(result_dir, '360/mapping/predicates_map.json'))
+def test():
     infobox_path = os.path.join(result_dir, '360/mapping/one2one_predicates_map.json')
     baike_cls_path = os.path.join(classify_dir, 'baike_cls2fb_type.json')
     type_infer = TypeInfer(infobox_path = infobox_path, baike_cls_path = baike_cls_path)
@@ -114,3 +111,9 @@ if __name__ == "__main__":
     res = type_infer.infer(info, clses)
     print res
     print topk_key(res, 2)
+    
+def 
+
+if __name__ == "__main__":
+    
+
