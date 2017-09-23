@@ -13,7 +13,7 @@ def extract_doc(filepath, doc, baike_urls):
         url = strip_url(p[0])
         if not url in baike_urls:
             continue
-        docs = parse_text
+        docs = parse_text(url, p[1])
         outf.write("%s\t%s\n" %(url, json.dumps(docs, ensure_ascii = False)))
         hit += 1
 
