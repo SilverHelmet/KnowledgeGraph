@@ -20,7 +20,7 @@ def extract_doc(filepath, doc, baike_urls):
     Print("hit = %d" %hit)
         
 
-if __name__ == "__main__"
+if __name__ == "__main__":
     mapping_path = os.path.join(rel_ext_dir, 'mapping_result.tsv')
     baike_urls = set()
     for line in file(mapping_path):
