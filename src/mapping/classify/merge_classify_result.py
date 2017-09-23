@@ -4,7 +4,7 @@ from .type_infer import TypeInfer, topk_key
 import os
 
 if __name__ == "__main__":
-    classify_result_path = os.path.join(classify_dir, 'classify_resultt.tsv')
+    classify_result_path = os.path.join(classify_dir, 'classify_result.tsv')
     outf = file(os.path.join(classify_dir, 'mapping_result.tsv'), 'w')
     bk2fb = {}
     for line in file(classify_result_path):
