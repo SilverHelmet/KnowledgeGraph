@@ -41,6 +41,7 @@ if __name__ == "__main__":
     type_infer = TypeInfer(infobox_path = infobox_path, baike_cls_path = baike_cls_path)
 
     extra_mappings = 0
+
     for bk_url, fb_uris in one2one_mappings:
         bk_clses = bk_cls_map.get(bk_url, [])
         bk_info = bk_info_map.get(bk_url, [])
@@ -48,9 +49,7 @@ if __name__ == "__main__":
 
         type_probs = type_infer.infer(bk_info, bk_clses)
         top_types = topk_key(type_probs, 2)
-        if fb_uri == u'fb:m.0j136fs':
-            print top_types
-            print fb_types
+        print bk_url, fb_uris, top_types, fb_types
         for top_type in top_types:
             if top_type in fb_types:
                 outf.write("%s\t%s\t%s\n" %(bk_url, fb_uris, top_type))
