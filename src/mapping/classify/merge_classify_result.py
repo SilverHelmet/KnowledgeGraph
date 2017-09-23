@@ -22,8 +22,6 @@ if __name__ == "__main__":
     fb_uris = set()
     for line in file(one2one_map_path):
         bk_url, fb_uri, score = line.decode('utf-8').split('\t')
-        if fb_uri != u'fb:m.0j136fs':
-            continue
         score = float(score)
         if bk_url in bk2fb:
             continue
