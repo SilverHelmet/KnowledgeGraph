@@ -76,13 +76,4 @@ if __name__ == "__main__":
     fb_property_path = os.path.join(result_dir, 'freebase/entity_property.json')
     out_path = os.path.join(out_dir, 'mapped_fb_entity_info.json')
     load_ext_write_entity_info(fb_property_path, mediator_ttl_map, out_path = out_path, total = 53574900, entities = set(fb_entities))
-    
-    # write_json_map(out_path, fb_entity_info, sort = True)
 
-
-
-
-
-    # baike_entity_info_path = os.path.join(result_dir, '360/360_entity_info_processed.json')
-    # baike_entity_info = load_baike_info(baike_entity_info_path, total = 21710208, entities = baike_entities)
-    # print "baike_entitiy_info", len(baike_entity_info)
