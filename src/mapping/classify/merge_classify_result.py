@@ -16,7 +16,6 @@ if __name__ == "__main__":
         outf.write('%s\t%s\n' %(bk_url, fb_uri))
 
     one2one_map_path = os.path.join(classify_dir, 'good_one2one_mappings.txt')
-
     one2one_mappings = []
     bk_urls = set()
     fb_uris = set()
@@ -47,11 +46,15 @@ if __name__ == "__main__":
         type_probs = type_infer.infer(bk_info, bk_clses)
         top_types = topk_key(type_probs, 2)
         
+        match = False
         for top_type in top_types:
             if top_type in fb_types:
                 outf.write("%s\t%s\n" %(bk_url, fb_uri))
                 extra_mappings += 1
+                match =True
                 break
+        if not match:
+            print bk_url, fb_uri, top_types, fb_types
     print "#extra mappings = %d" %extra_mappings
     outf.close()
 
