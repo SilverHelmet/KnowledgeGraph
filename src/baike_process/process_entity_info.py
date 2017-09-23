@@ -50,8 +50,6 @@ def unfold(text):
     for sep in candidate:
         if len(text.split(sep)) > len(text.split(max_sep)):
             max_sep = sep
-    if max_sep == u',':
-        print 'unfold', text
     values = text.split(max_sep)
     values = [del_space(x) for x in values]
 
