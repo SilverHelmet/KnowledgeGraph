@@ -1,4 +1,4 @@
-python -u -m src.baike_process.process_entity_info >& log/process_entity_info.log 
+# python -u -m src.baike_process.process_entity_info >& log/process_entity_info.log 
 python -u -m src.mapping.classify.calc_infobox_mapping_score >& log/calc_mapping_score.log
 
 # gen predicate mapping
