@@ -3,7 +3,7 @@
 
 # gen predicate mapping
 # python -u -m src.mapping.classify.gen_good_one2one_mapping >& log/gen_good_one2one.log
-python -u -m src.mapping.classify.gen_baike_class_to_fb
+# python -u -m src.mapping.classify.gen_baike_class_to_fb
 # python -u -m src.mapping.predicate_mapping >& log/predicate_mapping.log
 # python -m src.mapping.collect_predicate_mapping_result
 
@@ -16,6 +16,6 @@ python -u -m src.mapping.classify.gen_baike_class_to_fb
 mapping_result='result/360/mapping/classify/mapping_result.tsv'
 predicate_out='result/360/mapping/final_info_predicate_mapping.tsv'
 predicate_collect_out='result/360/mapping/final_predicates_map.json'
-python -u -m src.mapping.classify.gen_baike_class_to_fb $mapping_result  'result/360/mapping/classify/final_baike_cls2fb_type.json'
+# python -u -m src.mapping.classify.gen_baike_class_to_fb $mapping_result  'result/360/mapping/classify/final_baike_cls2fb_type.json'
 python -u -m src.mapping.predicate_mapping $mapping_result $predicate_out >& log/final_predicate_mapping.log
 python -u -m src.mapping.collect_predicate_mapping_result $predicate_out $predicate_collect_out 

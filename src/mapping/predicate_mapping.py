@@ -240,7 +240,7 @@ if __name__ == "__main__":
 
     fb_property_path = os.path.join(result_dir, '360/mapping/classify/mapped_fb_entity_info.json')
     if len(sys.argv) >= 3:
-        out_path = sys.argv[2]
+        outpath = sys.argv[2]
     else:
         outpath = os.path.join(result_dir, '360/mapping/one2one_info_predicate_mapping.tsv')
     do_predicate_mapping(outpath, name_map, fb2baike, baike_entity_info, fb_property_path, score_map, total = 6282988)

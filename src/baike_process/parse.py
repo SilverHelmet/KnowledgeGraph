@@ -5,7 +5,7 @@ import json
 import os
 import re
 import sys
-
+from bs4 import BeautifulSoup
 from ..IOUtil import result_dir
 
 html_parser = HTMLParser.HTMLParser()
@@ -128,10 +128,13 @@ def test():
     obj = json.loads(base64.b64decode(content))
     # print obj['content']
     content = obj['content']['content']
-    key = '4'
-    print content[key].keys()
-    print content[key]['section_title']
-    print content[key]['section_content']
+    key = '3'
+    # t = BeautifulSoup(content[key]['section_content'], 'lxml')
+    # print '-' * 50
+    # p_list = t.find_all('p')
+    # for p_obj in p_list:
+    #     print p_obj.get_text()
+
     # print html_unescape(content['1']['section_content'])
 
 if __name__ == "__main__":
