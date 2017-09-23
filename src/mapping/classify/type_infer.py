@@ -95,7 +95,10 @@ class TypeInfer:
         self.baike_cls_infer.infer(baike_clses, prob)
         return prob
 
-
+def topk_key(key_map, k):
+    keys = sorted(key_map.keys(), key = lambda x: key_map[x], reverse = True)[:k]
+    return keys
+    
 
 
 if __name__ == "__main__":

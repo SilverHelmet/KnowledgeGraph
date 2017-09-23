@@ -228,8 +228,11 @@ def match(clf, pairs, out_path):
 
 if __name__ == "__main__":
     # base_dir = os.path.join(result_dir, '360/mapping/classify')
-    # true_pairs, entities = load_ground_truth(os.path.join(base_dir, 'train_data/ground_truth.txt'))
-    # train_pairs = load_train_data(os.path.join(base_dir, 'train_data/train_data.json'), entities = entities)
+    true_pairs, entities = load_ground_truth(os.path.join(classify_dir, 'train_data/ground_truth.txt'))
+    train_pairs = load_train_data(os.path.join(classify_dir, 'train_data/train_data.json'), entities = entities)
+    clf = SimpleClassifer.load_from_file(os.path.join(classify_dir, 'SimpleClf.json'))
+    score_map = clf.calc_score(train_pairs)
+    test(clf, train_pairs, true_pairs)
 
     # clf = SimpleClassifer(1, 1, True)
     # clf.load_score(train_pairs)
@@ -239,11 +242,9 @@ if __name__ == "__main__":
     train_pairs = load_train_data(os.path.join(classify_dir, 'mappings.txt'), entities = None)
     clf = SimpleClassifer(1, 1, True)
     clf.load_score(train_pairs)
-    
     match(clf, train_pairs, os.path.join(classify_dir, 'classify_result.tsv'))
-    clf.save(os.path.join(classify_dir, 'FullClf.json'))
-    # score_map = clf.calc_score(train_pairs)
-    # test(clf, train_pairs, true_pairs)
+    # clf.save(os.path.join(classify_dir, 'FullClf.json'))
+   
 
 
 
