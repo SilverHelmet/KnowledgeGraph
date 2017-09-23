@@ -149,7 +149,7 @@ def infer_type():
     schema = Schema()
     schema.init()
 
-    for line in tqdm(file(baike_info_path)):
+    for line in tqdm(file(baike_info_path), total = total):
         p = line.split('\t')
         baike_url = p[0].decode('utf-8')
         if baike_url in bk2fb_map:
