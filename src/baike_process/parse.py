@@ -137,6 +137,8 @@ def parse_text(url, b64_content):
         return ret
 
     content = obj.get('content', {}).get("content", {})
+    if not type(content) is dict:
+        print url
     for key in content:
         chapter = content[key]
         chapter_content = chapter.get('section_content', [])
