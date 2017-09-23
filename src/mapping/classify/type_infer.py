@@ -130,7 +130,7 @@ def decide_type(type_probs, schema):
     
 
 def infer_type():
-    bk2fb_map = load_match_result(filepath = os.path.join(rel_ext_dir, 'match_result.tsv'))
+    bk2fb_map = load_match_result(filepath = os.path.join(rel_ext_dir, 'mapping_result.tsv'))
     baike_cls_map = load_baike_entity_class()
     fb_type_map = load_fb_type(fb_uris = set(bk2fb_map.values()) )
     
