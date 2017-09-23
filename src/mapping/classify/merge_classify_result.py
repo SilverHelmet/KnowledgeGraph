@@ -49,7 +49,7 @@ if __name__ == "__main__":
         
         for top_type in top_types:
             if top_type in fb_types:
-                outf.write("%s\t%s\t%s\n" %(bk_url, fb_uri, top_type))
+                outf.write("%s\t%s\n" %(bk_url, fb_uri))
                 extra_mappings += 1
                 break
     print "#extra mappings = %d" %extra_mappings
