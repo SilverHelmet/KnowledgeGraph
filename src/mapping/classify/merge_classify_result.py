@@ -32,7 +32,6 @@ if __name__ == "__main__":
     fb_type_map = load_fb_type(filepath = os.path.join(classify_dir, 'fb_entity_type.json'), fb_uris = fb_uris) 
     bk_info_map = load_baike_attr_names(filepath = os.path.join(result_dir, '360/360_entity_info_processed.json'),
                                          total = 21710208, baike_urls = bk_urls)
-    bk_info_map = {}
 
     infobox_path = os.path.join(result_dir, '360/mapping/one2one_predicates_map.json')
     baike_cls_path = os.path.join(classify_dir, 'baike_cls2fb_type.json')
