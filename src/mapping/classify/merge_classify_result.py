@@ -45,10 +45,12 @@ if __name__ == "__main__":
         bk_clses = bk_cls_map.get(bk_url, [])
         bk_info = bk_info_map.get(bk_url, [])
         fb_types = fb_type_map.get(fb_uri, [])
-        if fb_uri == u'fb:m.0j136fs':
-            print fb_types
+
         type_probs = type_infer.infer(bk_info, bk_clses)
         top_types = topk_key(type_probs, 2)
+        if fb_uri == u'fb:m.0j136fs':
+            print top_types
+            print fb_types
         for top_type in top_types:
             if top_type in fb_types:
                 outf.write("%s\t%s\t%s\n" %(bk_url, fb_uris, top_type))
