@@ -45,6 +45,25 @@ class Schema:
     def schema_type(self, fb_property):
         return self.property_attrs[fb_property.split("^")[0]]['fb:type.property.schema']
 
+    def complement_type(self, fb_types):
+        while True:
+            new_types = set(fb_types)
+            for fb_type in fb_types:
+                if not fb_type in self.type_attrs:
+                    continue
+                child_types = self.type_attrs[fb_type].get('fb:freebase.type_hints.included_types', [])
+                for child_type in child_types:
+                    if child_type != "fb:common.topic":
+                        new_types.add(child_type)
+                    
+            if len(new_types) == len(fb_types):
+                return list(new_types)
+            else:
+                fb_types = new_types
+
+
+
+
 def get_bool(value):
     if value == "1":
         return True
@@ -151,9 +170,10 @@ if __name__ == "__main__":
 
     schema = Schema()
     schema.init()
-    predicates = load_mediator_predicates()
-    print schema.is_mediator(schema.schema_type("fb:music.release_track.recording"))
-    print schema.expected_type('fb:music.release_track.recording')
+    # print schema.complement_type(['fb:book.book', 'fb:biology.taxon_with_sequenced_genome'])
+    # predicates = load_mediator_predicates()
+    # print schema.is_mediator(schema.schema_type("fb:music.release_track.recording"))
+    # print schema.expected_type('fb:music.release_track.recording')
     # print  schema.expected_type("fb:music.recording.tracks^fb:music.release_track.release")
     # print schema.is_mediator("fb:book.book_edition")
     # print 'fb:music.release.album' in  predicates

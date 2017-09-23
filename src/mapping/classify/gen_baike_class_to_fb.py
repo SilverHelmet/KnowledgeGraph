@@ -2,6 +2,7 @@ from .util import load_baike_entity_class, load_mappings_witd_score, load_baike_
 from ...IOUtil import classify_dir, Print
 import os
 import json
+import sys
 
 class BaikeClassCount:
     def __init__(self, baike_class):
@@ -58,7 +59,10 @@ def gen_baike_cls_to_fb(mappings, baike_cls_map, fb_type_map):
 
 if __name__ == "__main__":
 
-    good_mapping_path = os.path.join(classify_dir, 'good_one2one_mappings.txt')
+    if len(sys.argv) >= 2:
+        good_mapping_path = sys.argv[1]
+    else:
+        good_mapping_path = os.path.join(classify_dir, 'good_one2one_mappings.txt')
     good_mappings = load_mappings_witd_score(good_mapping_path)
 
     bk_urls = set()

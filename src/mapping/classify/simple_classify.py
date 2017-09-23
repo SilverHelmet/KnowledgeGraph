@@ -90,7 +90,8 @@ def calc_type_infer_score(pairs):
     type_infer = TypeInfer(infobox_path = infobox_path, baike_cls_path = baike_cls_path)
 
     score_map = {}
-    for baike_url, fb_uri in pairs:
+    Print("calc type infer score")
+    for baike_url, fb_uri in tqdm(pairs, total = len(pairs)):
         baike_cls = baike_cls_map.get(baike_url, [])
         baike_info = baike_info_map.get(baike_url, [])
         type_probs = type_infer.infer(baike_info, baike_cls)

@@ -3,10 +3,14 @@ from ...IOUtil import result_dir, Print, data_dir, nb_lines_of, classify_dir
 from tqdm import tqdm
 import json
 
-def load_mappings():
-    mapping_path = os.path.join(result_dir, '360/mapping/classify/mappings.txt')
+def load_mappings(mapping_path = None):
+    if mapping_path is None:
+        mapping_path = os.path.join(result_dir, '360/mapping/classify/mappings.txt')
+        total = 1129601
+    else:
+        total = nb_lines_of(mapping_path)
     Print('load mappings from [%s]' %mapping_path)
-    total = 1129601
+    
     baike2fb = {}
     for line in tqdm(file(mapping_path), total = total):
         p = line.split('\t')
@@ -42,6 +46,17 @@ def load_mappings_witd_score(filepath, threshold = 0.1):
         if float(score) > threshold:
             mappings.append((bk_url, fb_uri))
     return mappings
+
+def load_match_result(filepath = None):
+    if filepath is None:
+        filepath = os.path.join(classify_dir, 'mapping_result.tsv')
+    bk2fb = {}
+    for line in tqdm(file(filepath), total = nb_lines_of(filepath)):
+        bk_url, fb_uri = line.strip().decode('utf-8').split('\t')
+        bk2fb[bk_url] = fb_uri
+    return bk2fb
+
+
 
 def load_fb_type(filepath = None, fb_uris = None):
     if filepath is None:

@@ -1,9 +1,12 @@
 #encoding:utf-8
 import os
-from ...IOUtil import result_dir, Print, classify_dir
+from .util import load_match_result, load_baike_entity_class, load_fb_type
+from ...IOUtil import result_dir, Print, classify_dir, rel_ext_dir
 from ...fb_process.extract_util import get_type
 import json
 from .gen_baike_class_to_fb import BaikeClassCount
+from tqdm import tqdm
+from ...schema.schema import Schema
 
 class Mapping:
     def __init__(self, pair):
@@ -112,8 +115,67 @@ def test():
     print res
     print topk_key(res, 2)
     
+def decide_type(type_probs, schema):
+    if len(type_probs) == 0:
+        return []
+    types = []
+    for fb_type in type_probs:
+        if type_probs[fb_type] >= 0.8:
+            types.append(fb_type)
+    if len(types) == 0:
+        types = topk_key(type_probs, 1)
+    types = schema.complement_type(types)
+    return types
+    
+    
+
+def infer_type():
+    bk2fb_map = load_match_result(filepath = os.path.join(rel_ext_dir, 'match_result.tsv'))
+    baike_cls_map = load_baike_entity_class()
+    fb_type_map = load_fb_type(fb_uris = set(bk2fb_map.values()) )
+    
+
+    predicates_map_path = os.path.join(result_dir, '360/mapping/one2one_predicates_map.json')
+    baike_cls2tpe_path = os.path.join(classify_dir, 'baike_cls2fb_type.json')
+    type_infer = TypeInfer(infobox_path = predicates_map_path, baike_cls_path = baike_cls2tpe_path)
+    
+    
+    out_path = os.path.join(rel_ext_dir, 'baike_type.tsv')
+    outf = file(out_path, 'w')
+    
+    baike_info_path = os.path.join(result_dir, '360/360_entity_info.json')
+    total = 21710208
+    cls_hit = 0
+    schema = Schema()
+    schema.init()
+
+    for line in tqdm(file(baike_info_path)):
+        p = line.split('\t')
+        baike_url = p[0].decode('utf-8')
+        if baike_url in bk2fb_map:
+            fb_uri = bk2fb_map[baike_url]
+            fb_types = fb_type_map[fb_uri]
+            outf.write('%s\t%s\t%s\n' %(baike_url, fb_uri, json.dumps(fb_types)))
+            continue
+
+        obj = json.loads(p[1])
+        names = obj.get('info', {}).keys()
+        if baike_url in baike_cls_map:
+            cls_hit += 1
+            clses = baike_cls_map[baike_url]
+        else:
+            clses = []
+        type_probs = type_infer.infer(names, clses) 
+        inffered_types = decide_type(type_probs, schema)
+        outf.write('%s\t%s\t%s\n' %(baike_url, "None", json.dumps(inffered_types)))
+
+    
+    outf.close()
+    Print('baike classes hit = %d' %cls_hit)
+    
 
 
 if __name__ == "__main__":
-    pass
+    
+    infer_type()
 
