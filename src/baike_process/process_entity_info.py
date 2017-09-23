@@ -45,7 +45,7 @@ def unfold(text):
     if pos != -1 and not_digit(text, pos-1) and not_digit(text, pos+1):
         candidate = delimeters
     else:
-        candidate = delimiters[:-1]
+        candidate = delimeters[:-1]
 
     for sep in candidate:
         if len(text.split(sep)) > len(text.split(max_sep)):
