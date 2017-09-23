@@ -120,7 +120,14 @@ def parse(filepath, outf):
 
 def parse_text_from_html(html):
     ps = []
-    t = BeautifulSoup(html, 'lxml')
+    try:
+         t = BeautifulSoup(html, 'lxml')
+    except Exception, e:
+        print 'error at parse_text_from_html'
+        print html
+        return []
+
+   
     p_list = t.find_all('p')
     for p_obj in p_list:
         text = html_unescape(p_obj.get_text()).strip()
@@ -143,7 +150,7 @@ def parse_text(url, b64_content):
         chapter = content[key]
         chapter_content = chapter.get('section_content', [])
         if type(chapter_content) == list:
-            print "section", 
+            print "section",  url
             for section in chapter_content:
                 section_content = section.get('sub_section_content', '')
                 ret.extend(parse_text_from_html(section_content))
