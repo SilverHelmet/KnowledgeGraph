@@ -42,8 +42,13 @@ def load_mappings_witd_score(filepath, threshold = 0.1):
     Print('load mappings from [%s] with score' %filepath)
     mappings = []
     for line in tqdm(file(filepath), total = nb_lines_of(filepath)):
-        bk_url, fb_uri, score = line.split('\t')
-        if float(score) > threshold:
+        p = line.strip().split('\t')
+        if len(p) == 3:
+            bk_url, fb_uri, score = p
+            if float(score) > threshold:
+                mappings.append((bk_url, fb_uri))
+        else:
+            bk_url, fb_uri = p
             mappings.append((bk_url, fb_uri))
     return mappings
 

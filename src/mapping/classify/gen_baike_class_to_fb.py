@@ -59,7 +59,7 @@ def gen_baike_cls_to_fb(mappings, baike_cls_map, fb_type_map):
 
 if __name__ == "__main__":
 
-    if len(sys.argv) >= 2:
+    if len(sys.argv) >= 3:
         good_mapping_path = sys.argv[1]
     else:
         good_mapping_path = os.path.join(classify_dir, 'good_one2one_mappings.txt')
@@ -79,7 +79,11 @@ if __name__ == "__main__":
 
     baike_class_cnts = gen_baike_cls_to_fb(good_mappings, bk_cls, fb_type)
 
-    out_path = os.path.join(classify_dir, 'baike_cls2fb_type.json')
+    if len(sys.argv) >= 3:
+        out_path = sys.argv[2]
+    else:
+        out_path = os.path.join(classify_dir, 'baike_cls2fb_type.json')
+    Print("write baik_cls2fb_type to [%s]" %out_path)
     outf = file(out_path, 'w')
     for key in sorted(baike_class_cnts.keys()):
         outf.write("%s\n" %(json.dumps(baike_class_cnts[key].to_obj(topk = 5))))

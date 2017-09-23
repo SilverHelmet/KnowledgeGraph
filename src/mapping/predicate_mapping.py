@@ -193,13 +193,22 @@ def do_predicate_mapping(outpath, name_map, fb2baike, baike_entity_info, fb_prop
     outf.close()
 
 def load_exact_mappings(filepath, threshold = 0.1):
+    Print("load exact mapping from [%s]" %filepath)
     fb2bk = {}
     bk_es = set()
     score_map = {}
     for line in file(filepath):
-        bk, fb, score = line.strip().split('\t')
-        score = float(score)
-        if score > 0.1:
+        p = line.strip().split('\t')
+        if len(p) == 3:
+            bk, fb, score = p
+            score = float(score)
+            if score > 0.1:
+                fb2bk[fb] = bk
+                bk_es.add(bk)
+                score_map[make_key(bk, fb)] = score
+        else:
+            bk, fb = p
+            score = 1
             fb2bk[fb] = bk
             bk_es.add(bk)
             score_map[make_key(bk, fb)] = score
@@ -210,7 +219,11 @@ def load_exact_mappings(filepath, threshold = 0.1):
 if __name__ == "__main__":
     # exact_mapping_file = os.path.join(result_dir, "360/mapping/exact_mapping.tsv")
     # fb2baike = load_exact_map(exact_mapping_file)
-    fb2baike, baike_entities, score_map = load_exact_mappings(os.path.join(result_dir, '360/mapping/classify/good_one2one_mappings.txt'))
+    if len(sys.argv) >= 3:
+        mapping_path = sys.argv[1]
+    else:
+        mapping_path = os.path.join(result_dir, '360/mapping/classify/good_one2one_mappings.txt')
+    fb2baike, baike_entities, score_map = load_exact_mappings(mapping_path)
 
 
     name_files = [os.path.join(result_dir, 'freebase/entity_name.json'),
@@ -226,6 +239,9 @@ if __name__ == "__main__":
     
 
     fb_property_path = os.path.join(result_dir, '360/mapping/classify/mapped_fb_entity_info.json')
-    outpath = os.path.join(result_dir, '360/mapping/one2one_info_predicate_mapping.tsv')
+    if len(sys.argv) >= 3:
+        out_path = sys.argv[2]
+    else:
+        outpath = os.path.join(result_dir, '360/mapping/one2one_info_predicate_mapping.tsv')
     do_predicate_mapping(outpath, name_map, fb2baike, baike_entity_info, fb_property_path, score_map, total = 6282988)
 
