@@ -150,7 +150,7 @@ def parse_text(url, b64_content):
         chapter = content[key]
         chapter_content = chapter.get('section_content', [])
         if type(chapter_content) == list:
-            print "section",  url
+            # print "section",  url
             for section in chapter_content:
                 section_content = section.get('sub_section_content', '')
                 ret.extend(parse_text_from_html(section_content))
