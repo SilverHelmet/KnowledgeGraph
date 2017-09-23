@@ -241,7 +241,7 @@ if __name__ == "__main__":
     clf.load_score(train_pairs)
     
     match(clf, train_pairs, os.path.join(classify_dir, 'classify_result.tsv'))
-    clf.save(os.path.join(base_dir, 'FullClf.json'))
+    clf.save(os.path.join(classify_dir, 'FullClf.json'))
     # score_map = clf.calc_score(train_pairs)
     # test(clf, train_pairs, true_pairs)
 
