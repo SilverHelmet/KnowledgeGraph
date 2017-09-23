@@ -48,10 +48,12 @@ if __name__ == "__main__":
     for bk_url, fb_uris in one2one_mappings:
         bk_clses = bk_cls_map.get(bk_url, [])
         bk_info = bk_info_map.get(bk_url, [])
+        print '----', fb_type_map
         fb_types = fb_type_map.get(fb_uri, [])
 
         type_probs = type_infer.infer(bk_info, bk_clses)
         top_types = topk_key(type_probs, 2)
+        
         print bk_url, fb_uris
         print bk_clses
         print bk_info
