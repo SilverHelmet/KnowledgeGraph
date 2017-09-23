@@ -29,6 +29,7 @@ if __name__ == "__main__":
         bk_urls.add(bk_url)
         fb_uris.add(fb_uri)
 
+    print "#candidate mappings = %d" %len(one2one_mappings)
     bk_cls_map = load_baike_entity_class(os.path.join(classify_dir, 'baike_cls.tsv'), baike_urls = bk_urls, simple = True)
     fb_type_map = load_fb_type(filepath = os.path.join(classify_dir, 'fb_entity_type.json'), fb_uris = fb_uris) 
     bk_info_map = load_baike_attr_names(filepath = os.path.join(result_dir, '360/360_entity_info_processed.json'),
@@ -39,7 +40,7 @@ if __name__ == "__main__":
     type_infer = TypeInfer(infobox_path = infobox_path, baike_cls_path = baike_cls_path)
 
     extra_mappings = 0
-    for bk_url, fb_uris in mappings:
+    for bk_url, fb_uris in one2one_mappings:
         bk_clses = bk_cls_map.get(bk_url, [])
         bk_info = bk_info_map.get(bk_url, [])
         fb_types = fb_type_map.get(fb_uri, [])
