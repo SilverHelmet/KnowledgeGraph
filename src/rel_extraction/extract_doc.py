@@ -9,7 +9,7 @@ def extract_doc(filepath, doc, baike_urls):
     Print('extract doc from [%s]' %os.path.basename(filepath))
     hit = 0
     for line in tqdm(file(filepath), total = nb_lines_of(filepath)):
-        p = line.split('\t')
+        p = line.strip().split('\t')
         url = strip_url(p[0])
         if not url in baike_urls:
             continue
