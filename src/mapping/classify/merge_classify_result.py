@@ -30,13 +30,10 @@ if __name__ == "__main__":
         one2one_mappings.append((bk_url, fb_uri))
         bk_urls.add(bk_url)
         fb_uris.add(fb_uri)
-    print "#candidate mappings = %d" %len(one2one_mappings)
     bk_cls_map = load_baike_entity_class(os.path.join(classify_dir, 'baike_cls.tsv'), baike_urls = bk_urls, simple = True)
     fb_type_map = load_fb_type(filepath = os.path.join(classify_dir, 'fb_entity_type.json'), fb_uris = fb_uris) 
-    print fb_type_map
-    print fb_type_map['fb:m.0j136fs']
-    # bk_info_map = load_baike_attr_names(filepath = os.path.join(result_dir, '360/360_entity_info_processed.json'),
-    #                                      total = 21710208, baike_urls = bk_urls)
+    bk_info_map = load_baike_attr_names(filepath = os.path.join(result_dir, '360/360_entity_info_processed.json'),
+                                         total = 21710208, baike_urls = bk_urls)
     bk_info_map = {}
 
     infobox_path = os.path.join(result_dir, '360/mapping/one2one_predicates_map.json')
@@ -45,20 +42,14 @@ if __name__ == "__main__":
 
     extra_mappings = 0
 
-    for bk_url, fb_uris in one2one_mappings:
+    for bk_url, fb_uri in one2one_mappings:
         bk_clses = bk_cls_map.get(bk_url, [])
         bk_info = bk_info_map.get(bk_url, [])
-        print '----', fb_type_map
         fb_types = fb_type_map.get(fb_uri, [])
 
         type_probs = type_infer.infer(bk_info, bk_clses)
         top_types = topk_key(type_probs, 2)
         
-        print bk_url, fb_uris
-        print bk_clses
-        print bk_info
-        print fb_types
-        print type_probs, top_types
         for top_type in top_types:
             if top_type in fb_types:
                 outf.write("%s\t%s\t%s\n" %(bk_url, fb_uris, top_type))
