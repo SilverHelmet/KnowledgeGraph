@@ -5,7 +5,7 @@ import os
 
 if __name__ == "__main__":
     classify_result_path = os.path.join(classify_dir, 'classify_resultt.tsv')
-    outf = file(os.path.jion(classify_dir, 'mapping_result.tsv') 'w')
+    outf = file(os.path.join(classify_dir, 'mapping_result.tsv'), 'w')
     bk2fb = {}
     for line in file(classify_result_path):
         bk_url, fb_uri, score = line.decode('utf-8').split('\t')
