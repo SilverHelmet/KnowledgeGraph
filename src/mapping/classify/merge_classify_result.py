@@ -1,4 +1,4 @@
-from ...IOUtil import classify_dir
+from ...IOUtil import classify_dir, result_dir
 from .util import load_baike_entity_class, load_fb_type, load_baike_attr_names
 from .type_infer import TypeInfer, topk_key
 import os
