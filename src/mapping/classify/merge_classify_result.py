@@ -49,7 +49,6 @@ if __name__ == "__main__":
 
         type_probs = type_infer.infer(bk_info, bk_clses)
         top_types = topk_key(type_probs, 2)
-        print bk_url, fb_uris, top_types, fb_types
         for top_type in top_types:
             if top_type in fb_types:
                 outf.write("%s\t%s\t%s\n" %(bk_url, fb_uris, top_type))
