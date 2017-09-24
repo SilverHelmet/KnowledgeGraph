@@ -111,7 +111,12 @@ def test():
         print x
 
 def gen_dataset_from_baike():
-    pass
+    sample_path = os.path.join(rel_ext_dir, 'random_baike_urls.txt')
+    bk_urls = set()
+    for line in file(sample_path):
+        bk_urls.add(line.strip().decode('utf-8'))
+
+    
 
 
 if __name__ == "__main__":

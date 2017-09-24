@@ -1,6 +1,6 @@
 import numpy as np
 from .util import load_mappings
-from ..IOUtil import rel_ext_dir
+from ..IOUtil import rel_ext_dir, nb_lines_of
 import os
 
 if __name__ == "__main__":
@@ -18,6 +18,16 @@ if __name__ == "__main__":
     outf = file(os.path.join(rel_ext_dir, 'random_baike_urls.txt'), 'w')
     for bk_url in sorted(random_pool):
         outf.write(bk_url + '\n')
+    outf.close()
+
+    Print('extract docs')
+    doc_path = os.path.join(rel_ext_dir, 'baike_doc.json')
+    outf = file(os.path.join(rel_ext_dir, 'sample_baike_doc.json'), 'w')
+    for line in tqdm(file(doc_path), total = nb_lines_of(doc_path)):
+        p = line.split('\t')
+        bk_url = p[0].decode('utf-8')
+        if bk_url in random_pool:
+            outf.write(line)
     outf.close()
 
 
