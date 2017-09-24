@@ -1,17 +1,15 @@
 #encoding: utf-8
 import jieba
 import jieba.posseg as pseg
-from ..IOUtil import rel_ext_dir, Print, cache_dir
+from ..IOUtil import rel_ext_dir, Print, cache_dir, Print, nb_lines_of
 import os
 from parse_baike_entity import parse_sentence, split_sentences
 from .dataset import DatasetFinder
 from ..mapping.fb_date import FBDatetime
 from ..mapping.predicate_mapping import map_time
 import numpy as np
-
-Print('time')
-jieba.load_userdict(os.path.join(rel_ext_dir, 'trimmed_baike_dict.txt'))
-Print('time')
+from tqdm import tqdm 
+import json
 
 class Case:
     def __init__(self, st1, ed1, st2, ed2, rel):
@@ -82,12 +80,12 @@ def gen_dataset(sentence, finder):
                 case = Case(obj1_st, obj1_ed, obj2_st, obj2_ed, 'none')
                 none_cases.append(case)
     if len(cases) > 0:
-        return cases
+        return cases, words
     elif len(none_cases) > 0:
         x = np.random.randint(low = 0, high = len(none_cases))
-        return none_cases[x:x+1]
+        return none_cases[x:x+1], words
     else:
-        return []
+        return [], None
 
 def test():
     x = u"《星之卡比老鼠进攻》是欧洲游戏制造商Nintendo公司于2006-11-02制作的一款动作游戏。游戏故事讲述的是，玩家控制的卡比和3只小老鼠，当然还有他们的团长之间的故事，玩家的目标是和呐喊团争夺一个神秘宝盒。"
@@ -111,12 +109,40 @@ def test():
         print x
 
 def gen_dataset_from_baike():
-    sample_path = os.path.join(rel_ext_dir, 'random_baike_urls.txt')
-    bk_urls = set()
-    for line in file(sample_path):
-        bk_urls.add(line.strip().decode('utf-8'))
+    doc_path = os.path.join(rel_ext_dir, 'sample_baike_doc.json')
+    out_path = os.path.join(rel_ext_dir, 'data/raw_dataset.txt')
 
-    
+    name2fb_path = os.path.join(cache_dir, 'DatasetFinder.name2fb.cache')
+    fb_ttls_path = os.path.join(cache_dir, 'DatasetFinder.fb_ttls.cache')
+    finder = DatasetFinder.load_from_cache(name2fb_path, fb_ttls_path)
+
+
+    Print('load userdict')
+    jieba.load_userdict(os.path.join(rel_ext_dir, 'trimmed_baike_dict.txt'))
+
+    Print('gen dataset from [%s]' %doc_path)
+    outf = file(out_path, 'w')
+    for line in tqdm(file(doc_path), total = nb_lines_of(doc_path)):
+        p = line.split('\t')
+        baike_url = p[0].decode('utf-8')
+        paragraphs = json.loads(p[1])
+        for paragraph in paragraphs:
+            sentences = split_sentences(paragraph)
+            for sentence in sentences:
+                cases, words = gen_dataset(sentence, finder)
+                if len(cases) > 0:
+                    out_obj = {
+                        'words': "#".join(words),
+                        'cases': map(str, cases),
+                    }
+                    outf.write("%s\t%s\n" %(baike_url, json.dumps(out_obj, ensure_ascii = False)))
+    outf.close()
+
+
+
+
+
+
 
 
 if __name__ == "__main__":
