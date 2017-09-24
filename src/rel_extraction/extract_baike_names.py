@@ -1,4 +1,4 @@
-from ..IOUtil import rel_ext_dir, Print
+from ..IOUtil import rel_ext_dir, Print, result_dir
 from ..mapping.predicate_mapping import load_name_attr
 from util import load_mappings
 import json
