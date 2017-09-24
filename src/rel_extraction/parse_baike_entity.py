@@ -63,6 +63,7 @@ def parse_line(text):
         words.append(word)
         flags.append(flag)
     time_objs = TimeParser.parse(words, flags)
+    entity_objs = TimeParser.parse(words, )
     for st, ed, baike_time in time_objs:
         print st, ed, baike_time
 
