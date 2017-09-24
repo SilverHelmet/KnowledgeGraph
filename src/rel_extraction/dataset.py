@@ -5,7 +5,7 @@ import os
 from tqdm import tqdm
 
 class DatasetFinder:
-    def __init__(self, bk_urls = None):
+    def __init__(self):
         self.name2fb_map = self.load_name2fb()
         fb_uris = set()
         for key in self.name2fb_map:
@@ -33,7 +33,7 @@ class DatasetFinder:
         Print("generate name -> freebase")
         bk2fb = load_mappings()
         bk_urls = set(bk2fb.keys())
-        name2bk_map = self.load_name2bk(self, bk_urls)
+        name2bk_map = self.load_name2bk(bk_urls)
         name2fb_map = {}
         for name in name2bk_map:
             fbs = [bk2fb[bk_url] for bk_url in name2bk_map[name]]
