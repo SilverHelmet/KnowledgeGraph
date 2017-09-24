@@ -1,3 +1,4 @@
+#encoding: utf-8
 import os
 from .util import load_bk_entity_pop, load_name2baike
 from ..IOUtil import rel_ext_dir, Print
@@ -11,7 +12,12 @@ if __name__ == "__main__":
     out_path = os.path.join(rel_ext_dir, 'baike_dict.txt')
     outf = file(out_path, 'w')
     Print('write dict to %s' %out_path)
+    year_pattern = re.compile(ur'(公元前|公元)?\d{1,4}年$')
+
     for name in tqdm(keys, total = len(keys)):
+        if year_pattern.match(name):
+            print 'year name', name
+            continue
         bks = name2bk[name]
         pop = 0
         for bk_url in bks:
