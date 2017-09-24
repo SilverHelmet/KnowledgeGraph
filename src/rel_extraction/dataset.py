@@ -35,7 +35,7 @@ class DatasetFinder:
                 if not name in name2bk_map:
                     name2bk_map[name] = []
                 name2bk_map[name].append(bk_url)
-        Print("name2baike size = %d, #hit = %d" %len(name2bk_map, hit))
+        Print("name2baike size = %d, #hit = %d" %len((name2bk_map), hit) )
         return name2bk_map
 
     def load_name2fb(self):
