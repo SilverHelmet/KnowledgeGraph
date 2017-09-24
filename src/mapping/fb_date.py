@@ -70,11 +70,15 @@ class FBDatetime:
     def __str__(self):
         return "%d-%d-%d %d:%d:%d.%d" %(self.year, self.month, self.day, self.hour, self.minute, self.second, self.msec)
 
+def year_month_checker(args):
+    return args['year'] > 12
+
 class BaikeDatetime:
-    date_p = re.compile(r'(?P<year>-?\d{1,4})(-|年|\.)(?P<month>\d{1,2})(-|月|\.)(?P<day>\d{1,2})(日)?$')
-    year_p = re.compile(r'(?P<year>-?\d{1,4})年$')
-    year_p_2 = re.compile(r'(?P<year>\d{4,4})$')
-    yearmonth_p = re.compile(r'(?P<year>-?\d{1,4})(-|年|\.)(?P<month>\d{1,2})(月)?$')
+    date_p = re.compile(ur'(?P<year>-?\d{1,4})(-|年|\.)(?P<month>\d{1,2})(-|月|\.)(?P<day>\d{1,2})(日)?$')
+    year_p = re.compile(ur'(?P<year>-?\d{1,4})年$')
+    year_p_2 = re.compile(ur'(?P<year>\d{4,4})$')
+    yearmonth_p = re.compile(ur'(?P<year>-?\d{1,4})(-|年|\.)(?P<month>\d{1,2})(月)?$')
+    yearmonth_p_2 = re.compile(ur'(?P<year>-?\d{2,4})(-|年|\.)(?P<month>\d{1,2})(月)?$')
     def __init__(self, year, month = 0, day = 0):
         self.year = year
         self.month = month
@@ -85,8 +89,8 @@ class BaikeDatetime:
 
     @staticmethod
     def parse(time_str, strict = False):
-        if type(time_str) is unicode:
-            time_str = time_str.encode('utf-8')
+        if type(time_str) is str:
+            time_str = time_str.decode('utf-8')
         args = {}
         if not strict:
             patterns = [BaikeDatetime.date_p, BaikeDatetime.year_p, BaikeDatetime.year_p_2, BaikeDatetime.yearmonth_p]
@@ -94,20 +98,27 @@ class BaikeDatetime:
                             ['year'],
                             ['year'],
                             ['year', 'month']]
+            checkers = [None, None, None, None]
         else:
-            patterns = [BaikeDatetime.date_p, BaikeDatetime.year_p, BaikeDatetime.yearmonth_p]
+            patterns = [BaikeDatetime.date_p, BaikeDatetime.year_p, BaikeDatetime.yearmonth_p_2]
             pattern_names = [['year', 'month', 'day'],
                             ['year'],
                             ['year', 'month']]
+            checkers =[None,
+                None,
+               year_month_checker] 
 
         match_flag = False
-        for pattern, names in zip(patterns, pattern_names):
+        for pattern, names, checker in zip(patterns, pattern_names, checkers):
             match = pattern.match(time_str)
             if match:
                 match_flag = True
                 for name in names:
                     args[name] = int(match.group(name))
-                break
+                if checker is None or checker(args):
+                    break
+                else:
+                    return None
         # if not match_flag:
         #     try:
         #         result =  dateparser.parse(time_str, 
@@ -130,20 +141,20 @@ class BaikeDatetime:
 
 
 if __name__ == "__main__":
-    values = ['"2009-09-24"^^<http://www.w3.org/2001/XMLSchema#date>',
-         '"-2001"^^<http://www.w3.org/2001/XMLSchema#gYear>', 
-         '"-2006-02"^^<http://www.w3.org/2001/XMLSchema#gYearMonth>', 
-         '"1975-05-15T22:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>', 
-         '"-0269-07"^^<http://www.w3.org/2001/XMLSchema#gYear>']
-    for value in values:
-        d = FBDatetime.parse_fb_datetime(value)
-        print d
+    # values = ['"2009-09-24"^^<http://www.w3.org/2001/XMLSchema#date>',
+    #      '"-2001"^^<http://www.w3.org/2001/XMLSchema#gYear>', 
+    #      '"-2006-02"^^<http://www.w3.org/2001/XMLSchema#gYearMonth>', 
+    #      '"1975-05-15T22:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>', 
+    #      '"-0269-07"^^<http://www.w3.org/2001/XMLSchema#gYear>']
+    # for value in values:
+    #     d = FBDatetime.parse_fb_datetime(value)
+    #     print d
 
-    values = ['2003年8月26日', '2003年8', '2003', '2003年8月', '2003年', '203-8', u'1916年', '公元前485年10月',u'1972.6.23']
-    values = ['2003', '2003年']
+    # values = [u'2003年8月26日', u'2003年8', '2003', u'2003年8月', u'2003年', '203-8', u'1916年', u'公元前485年10月',u'1972.6.23', u'12.9']
+    values = [u'12.9']
     for value in values:
         print "str", value
-        d = BaikeDatetime.parse(value)
+        d = BaikeDatetime.parse(value, strict = True)
         print "time", d
 
     

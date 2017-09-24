@@ -4,6 +4,7 @@ from .util import load_bk_entity_pop, load_name2baike
 from ..IOUtil import rel_ext_dir, Print
 from tqdm import tqdm
 import re
+from ..mapping.fb_date import BaikeDatetime
 
 if __name__ == "__main__":
     pop_map = load_bk_entity_pop()
@@ -16,7 +17,10 @@ if __name__ == "__main__":
 
     for name in tqdm(keys, total = len(keys)):
         if year_pattern.match(name):
-            print 'year name', name
+            print 'time name', name
+            continue
+        if BaikeDatetime.parse(name) is not None:
+            print 'time name', name
             continue
         bks = name2bk[name]
         pop = 0

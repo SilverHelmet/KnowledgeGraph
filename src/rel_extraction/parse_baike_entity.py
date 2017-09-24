@@ -24,38 +24,36 @@ def split_lines(text):
 class TimeParser:
     time_flags = set([u't', u'm', u'x'])
 
-    def cehck_flags(self, flags, st, ed):
+    @staticmethod
+    def check_flags(flags, st, ed):
         for idx in range(st, ed):
-            if flags[idx] not in TimeParse.time_flags:
+            if flags[idx] not in TimeParser.time_flags:
                 return False
         return True
 
-    def parse(self, words, flags):
+    @staticmethod
+    def parse(words, flags):
         st = 0
         length = len(words)
         rets = []
         while st < length:
+
             if flags[st] not in TimeParser.time_flags:
                 st += 1
                 continue
 
             ed = length
             while st < ed:
-                if self.check_flags(flags, st, ed):
+                if TimeParser.check_flags(flags, st, ed):
                     text = "".join(words[st:ed])
-                    time_obj = BaikeDatetime.parse(text)
+                    time_obj = BaikeDatetime.parse(text, strict = True)
                     if time_obj is not None:
                         rets.append((st, ed, time_obj))
                         st = ed
                         break
+                ed -= 1
             st += 1
         return rets
-
-     
-
-            
-
-
 
 def parse_line(text):        
     ret = pseg.cut(text)
@@ -64,7 +62,7 @@ def parse_line(text):
     for word, flag in ret:
         words.append(word)
         flags.append(flag)
-    time_objs = parse_time(words, flags)
+    time_objs = TimeParser.parse(words, flags)
     for st, ed, baike_time in time_objs:
         print st, ed, baike_time
 
@@ -75,3 +73,4 @@ def parse_line(text):
 if __name__ == "__main__":
     s = u'刘德华出生于1993年11月29日'
     parse_line(s)
+    # print BaikeDatetime.parse(u'1993年11月29日', strict = True)
