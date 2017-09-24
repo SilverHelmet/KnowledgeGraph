@@ -66,7 +66,10 @@ class DatasetFinder:
 
 if __name__ == "__main__":
     finder = DatasetFinder()
-
+    fb_uris = finder.name2fb_map[u'刘德华']
+    print fb_uris
+    for fb_uri in fb_uris:
+        print fb_uri, finder.fb_ttls_map[fb_uri]
         
                 
 
