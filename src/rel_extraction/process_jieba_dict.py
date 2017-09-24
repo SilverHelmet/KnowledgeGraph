@@ -8,7 +8,7 @@ from tqdm import tqdm
 if __name__ == "__main__":
     dict_path = os.path.join(rel_ext_dir, 'baike_dict.txt')
     processed_path = os.path.join(rel_ext_dir, 'trimmed_baike_dict.txt')
-    re_eng = re.compile("^[a-zA-Z]+$")
+    re_eng = re.compile(r"^[a-zA-Z]+$")
     re_digit = re.compile(r'^[0-9=-+!?]+$')
 
     outf = file(processed_path, 'w')
