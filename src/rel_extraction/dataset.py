@@ -25,7 +25,7 @@ class DatasetFinder:
             for idx in range(1, len(p)):
                 name = p[idx]
                 if not name in name2bk_map:
-                    name2bk_map[name] = {}
+                    name2bk_map[name] = []
                 name2bk_map[name].append(bk_url)
         return name2bk_map
 
