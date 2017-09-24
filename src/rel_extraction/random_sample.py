@@ -13,6 +13,7 @@ if __name__ == "__main__":
         random_pool.add(bk_urls[idx])
     random_pool.add('baike.so.com/doc/4785734-5001726.html')
     random_pool.add('baike.so.com/doc/5382393-5618748.html')
+    random_pool.add('baike.so.com/doc/1287918-1361771.html')
 
     outf = file(os.path.join(rel_ext_dir, 'random_baike_urls.txt'), 'w')
     for bk_url in sorted(random_pool):
