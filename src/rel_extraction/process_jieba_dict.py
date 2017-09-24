@@ -16,8 +16,10 @@ if __name__ == "__main__":
         if re_eng.match(word):
             outf.write(line)
             continue
-        words = pseg.cut(word)
-        words = [x[0] for x in words]
+        ret = pseg.cut(word)
+        words = []
+        for word, flag in ret:
+            words.append(word)
         if len(words) != 1:
             outf.write(line)
     outf.close()
