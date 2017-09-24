@@ -1,3 +1,4 @@
+#encoding:utf-8
 from ..IOUtil import result_dir, rel_ext_dir, classify_dir, Print, cache_dir
 from .util import load_mappings
 from ..mapping.fb_date import FBDatetime
@@ -18,17 +19,23 @@ class DatasetFinder:
         name2baike_path = os.path.join(rel_ext_dir, 'baike_names.tsv')
         name2bk_map = {}
         Print("gen name2baike map from [%s] with #bk_urls is %d" %(name2baike_path, len(bk_urls)) )
+        hit = 0
         for line in tqdm(file(name2baike_path), total = 21710208):
             p = line.strip().decode('utf-8').split('\t')
             bk_url = p[0]
+            
             if not bk_url in bk_urls:
                 continue
+            if bk_url == 'baike.so.com/doc/1287918-1361771.html':
+                print '\nnames', " ".join(p[1:])
+
+            hit += 1
             for idx in range(1, len(p)):
                 name = p[idx]
                 if not name in name2bk_map:
                     name2bk_map[name] = []
                 name2bk_map[name].append(bk_url)
-        Print("name2baike size = %d" %len(name2bk_map))
+        Print("name2baike size = %d, #hit = %d" %len(name2bk_map, hit))
         return name2bk_map
 
     def load_name2fb(self):
