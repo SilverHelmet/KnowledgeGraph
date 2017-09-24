@@ -1,8 +1,9 @@
-from ..IOUtil import result_dir, rel_ext_dir, classify_dir, Print
+from ..IOUtil import result_dir, rel_ext_dir, classify_dir, Print, cache_dir
 from .util import load_mappings
 from ..mapping.fb_date import FBDatetime
 import os
 from tqdm import tqdm
+import json
 
 class DatasetFinder:
     def __init__(self):
@@ -64,13 +65,26 @@ class DatasetFinder:
             fb_ttls_map[fb_uri] = (entity_ttls, time_ttls)
         return fb_ttls_map 
 
+    def save(self, name2fb_path, fb_ttls_path):
+        outf = file(name2fb_path, 'w')
+        json.dump(self.name2fb_map, outf)
+        outf.close()
+
+        outf = file(fb_ttls_path, 'w')
+        json.dump(self.fb_ttls_map, outf)
+        outf.close()
+
 if __name__ == "__main__":
     finder = DatasetFinder()
     fb_uris = finder.name2fb_map[u'刘德华']
     print fb_uris
     for fb_uri in fb_uris:
         print fb_uri, finder.fb_ttls_map[fb_uri]
-        
+
+    name2fb_path = os.path.join(cache_dir, 'DatasetFinder.name2fb.cache')
+    fb_ttls_path = os.path.join(cache_dir, 'DatasetFinder.fb_ttls.cache')
+    finder.save(name2fb_path, fb_ttls_path)
+
                 
 
 

@@ -116,6 +116,7 @@ def nb_lines_of(filepath):
         
 base_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 result_dir = os.path.join(base_dir, 'result')
+cache_dir = os.path.join(result_dir, 'cache')
 classify_dir = os.path.join(result_dir, '360/mapping/classify')
 rel_ext_dir = os.path.join(result_dir, 'rel_extraction')
 freebase_rel_dir = os.path.join(result_dir, 'freebase_rel')
