@@ -5,7 +5,7 @@ from ..IOUtil import rel_ext_dir, Print
 from tqdm import tqdm
 import re
 from ..mapping.fb_date import BaikeDatetime
-
+from ..baike_process.parse import html_unescape
 if __name__ == "__main__":
     pop_map = load_bk_entity_pop()
     name2bk = load_name2baike()

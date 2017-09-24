@@ -1,5 +1,6 @@
 from ..IOUtil import rel_ext_dir, Print, result_dir
 from ..mapping.predicate_mapping import load_name_attr
+from ..baike_process.parse import html_unescape
 from util import load_mappings
 import json
 import os
@@ -35,7 +36,7 @@ def load_and_write_baike_name(bk_name_map, out_path):
         obj = json.loads(p[1])
         names.append(obj['ename'])
         names.append(obj['title'])
-        names = [x.replace('\n',"").strip() for x in names]
+        names = [html_unescape(x.replace('\n',"")).strip() for x in names]
         names = list(set(names))
 
         outf.write("%s\t%s\n" %(bk_url, "\t".join(names)))
