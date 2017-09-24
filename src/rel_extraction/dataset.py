@@ -39,7 +39,8 @@ class DatasetFinder:
 
     def load_name2fb(self):
         Print("generate name -> freebase")
-        bk2fb = load_mappings(filepath = os.path.join(rel_ext_dir, 'sample_mappings.tsv'))
+        # filepath = os.path.join(rel_ext_dir, 'sample_mappings.tsv')
+        bk2fb = load_mappings()
         bk_urls = set(bk2fb.keys())
         name2bk_map = self.load_name2bk(bk_urls)
         name2fb_map = {}
