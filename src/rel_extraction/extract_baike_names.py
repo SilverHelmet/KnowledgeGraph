@@ -5,7 +5,7 @@ import json
 
 def load_mapping_names(bk2fb):
     fb_uris = set(bk2fb.values())
-    Print('#fb uris is %d' len(fb_uris))
+    Print('#fb uris is %d' %len(fb_uris))
     name_files = [os.path.join(result_dir, 'freebase/entity_name.json'),
                 os.path.join(result_dir, 'freebase/entity_alias.json')]
     totals = [39345270, 2197095]
