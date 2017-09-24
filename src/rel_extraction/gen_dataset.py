@@ -5,7 +5,7 @@ from ..IOUtil import rel_ext_dir, Print
 import os
 Print('time')
 
-jieba.load_userdict(os.path.join(rel_ext_dir, 'baike_dict.txt'))
+# jieba.load_userdict(os.path.join(rel_ext_dir, 'baike_dict.txt'))
 Print('time')
 
 if __name__ == "__main__":
