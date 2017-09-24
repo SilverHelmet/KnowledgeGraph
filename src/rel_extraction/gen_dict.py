@@ -19,7 +19,7 @@ if __name__ == "__main__":
         if year_pattern.match(name):
             print 'time name', name
             continue
-        if BaikeDatetime.parse(name) is not None:
+        if BaikeDatetime.parse(name, strict = True) is not None:
             print 'time name', name
             continue
         bks = name2bk[name]
