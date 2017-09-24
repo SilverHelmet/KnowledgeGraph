@@ -2,7 +2,7 @@ import jieba
 import jieba.posseg as pseg
 from ..IOUtil import rel_ext_dir, nb_lines_of
 import os
-import res
+import re
 from tqdm import tqdm
 
 if __name__ == "__main__":
