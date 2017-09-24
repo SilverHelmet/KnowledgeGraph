@@ -21,6 +21,7 @@ words = pseg.cut(u'《星之卡比老鼠进攻》')
 for word, flag in words:
     print('%s %s' % (word, flag))
 
-words = jieba.cut(u'《星之卡比老鼠进攻》')
-print " ".join(words)
+print len(jieba.cut(u'《星之卡比老鼠进攻》'))
+# words = jieba.cut(u'《星之卡比老鼠进攻》')
+# print " ".join(words)
 

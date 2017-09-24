@@ -13,14 +13,10 @@ if __name__ == "__main__":
     outf = file(processed_path, 'w')
     for line in tqdm(file(dict_path), total = nb_lines_of(dict_path)):
         word, freq, tag = line.strip().decode('utf-8').split(' ')
-        words = []
-        flags = []
-        for word, flag in ret:
-            words.append(word)
-            flags.append(flag)
+        words = [x for x in jieba.cut(word)]
         if len(words) != 1:
             outf.write(line)
-        elif flags[0] == 'eng':
+        elif re_eng.match(word):
             outf.write(line)
     outf.close()
 
