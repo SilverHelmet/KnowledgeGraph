@@ -71,8 +71,6 @@ def parse_line(text):
     words = []
     flags = []
     for word, flag in ret:
-        if word.strip() == "":
-            continue
         words.append(word.strip())
         flags.append(flag)
     time_objs = TimeParser.parse(words, flags)

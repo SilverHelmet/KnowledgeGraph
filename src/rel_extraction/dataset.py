@@ -1,9 +1,10 @@
-from ..IOUtil import result_dir, rel_ext_dir
-from .util import load_mappings()
+from ..IOUtil import result_dir, rel_ext_dir, classify_dir
+from .util import load_mappings
+from ..mapping.fb_date import FBDatetime
 import os
 from tqdm import tqdm
 
-class Dataset:
+class DatasetFinder:
     def __init__(self, bk_urls = None):
         self.name2fb_map = self.load_name2fb()
         fb_uris = set()
@@ -41,6 +42,31 @@ class Dataset:
         return name2fb_map
 
     def load_fb_ttls(self, fb_uris):
+        filepath = os.path.join(classify_dir, 'mapped_fb_entity_info.json')
+        Print('load fb ttls from [%s]' %filepath)
+
+        fb_ttls_map = {}
+        for line in tqdm(file(filepath), total = 6282988):
+            p = line.split('\t')
+            fb_uri = p[0].decode('utf-8')
+            if fb_uri not in fb_uris:
+                continue
+            ttls = json.loads(p[1])
+            entity_ttls = []
+            time_ttls = []
+            for prop, value in ttls:
+                if value.startswith('fb:m'):
+                    entity_ttls.append((prop, value))
+                else:
+                    time_obj = FBDatetime.parse_fb_datetime(value)
+                    if time_obj:
+                        time_ttls.append((prop, value))
+            fb_ttls_map[fb_uri] = (entity_ttls, time_ttls)
+        return fb_ttls_map 
+
+if __name__ == "__main__":
+    finder = DatasetFinder()
+
         
                 
 
