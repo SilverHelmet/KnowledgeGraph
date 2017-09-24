@@ -66,14 +66,14 @@ class EntityParser:
             idx += 1
         return ret
 
-
-
 def parse_line(text):        
     ret = pseg.cut(text)
     words = []
     flags = []
     for word, flag in ret:
-        words.append(word)
+        if word.strip() == "":
+            continue
+        words.append(word.strip())
         flags.append(flag)
     time_objs = TimeParser.parse(words, flags)
     entity_objs = EntityParser.parse(words, flags)
