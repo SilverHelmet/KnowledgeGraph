@@ -22,7 +22,7 @@ if __name__ == "__main__":
         pop = 0
         for bk_url in bks:
             pop = max(pop, pop_map.get(bk_url, 0))
-        ouf.write('%s %d baike' %(name, pop))
+        outf.write('%s %d baike' %(name, pop))
     outf.close()
 
 

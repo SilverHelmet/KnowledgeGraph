@@ -1,5 +1,6 @@
 #encoding: utf-8
 import jieba.posseg as pseg
+from ..mapping.fb_date import BaikeDatetime
 
 end_puncs = set([u'。', u'？',u'?', u'!', u'！', u';', u'；'])
 def split_lines(text):
@@ -17,16 +18,60 @@ def split_lines(text):
         lines.append(text[st:])
     return lines
 
-def parse_time(words):
-    for word, 
+
+
+
+class TimeParser:
+    time_flags = set([u't', u'm', u'x'])
+
+    def cehck_flags(self, flags, st, ed):
+        for idx in range(st, ed):
+            if flags[idx] not in TimeParse.time_flags:
+                return False
+        return True
+
+    def parse(self, words, flags):
+        st = 0
+        length = len(words)
+        rets = []
+        while st < length:
+            if flags[st] not in TimeParser.time_flags:
+                st += 1
+                continue
+
+            ed = length
+            while st < ed:
+                if self.check_flags(flags, st, ed):
+                    text = "".join(words[st:ed])
+                    time_obj = BaikeDatetime.parse(text)
+                    if time_obj is not None:
+                        rets.append((st, ed, time_obj))
+                        st = ed
+                        break
+            st += 1
+        return rets
+
+     
+
+            
+
+
 
 def parse_line(text):        
-    words = pseg.cut(text)
-    time_span = parse_time(words)
+    ret = pseg.cut(text)
+    words = []
+    flags = []
+    for word, flag in ret:
+        words.append(word)
+        flags.append(flag)
+    time_objs = parse_time(words, flags)
+    for st, ed, baike_time in time_objs:
+        print st, ed, baike_time
 
 
-def parse_entity():
+# def parse_entity():
 
 
 if __name__ == "__main__":
-    s = '刘德华出生于1993年11月29日'
+    s = u'刘德华出生于1993年11月29日'
+    parse_line(s)
