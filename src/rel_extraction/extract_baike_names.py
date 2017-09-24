@@ -20,7 +20,7 @@ def load_mapping_names(bk2fb):
         fb_uri = bk2fb[bk_url]
         names = fb_name_map.get(fb_uri, [])
         if len(names) > 0:
-            bk_name_map[bk_url] = fb_uri
+            bk_name_map[bk_url] = names
     return bk_name_map
 
 def load_and_write_baike_name(bk_name_map, out_path):
