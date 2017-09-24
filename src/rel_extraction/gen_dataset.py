@@ -88,7 +88,7 @@ def gen_dataset(sentence, finder):
         return cases
     elif len(none_cases) > 0:
         x = np.random.randint(low = 0, high = len(none_cases))
-        return none_cases[x:x+1
+        return none_cases[x:x+1]
     else:
         return []
 
@@ -112,6 +112,10 @@ def test():
     print '-' * 50
     for x in gen_dataset(sentences[1], finder):
         print x
+
+def gen_dataset_from_baike():
+    sample_path = 
+
 
 if __name__ == "__main__":
     test()
