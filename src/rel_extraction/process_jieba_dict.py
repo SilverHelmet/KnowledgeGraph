@@ -9,7 +9,7 @@ if __name__ == "__main__":
     dict_path = os.path.join(rel_ext_dir, 'baike_dict.txt')
     processed_path = os.path.join(rel_ext_dir, 'trimmed_baike_dict.txt')
     re_eng = re.compile(r"^[a-zA-Z]+$")
-    re_digit = re.compile(r'^[0-9=-+!?]+$')
+    re_digit = re.compile(r'^[0-9+-=!?]+$')
 
     outf = file(processed_path, 'w')
     for line in tqdm(file(dict_path), total = nb_lines_of(dict_path)):
