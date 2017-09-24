@@ -46,7 +46,7 @@ class TimeParser:
                     text = "".join(words[st:ed])
                     time_obj = BaikeDatetime.parse(text, strict = True)
                     if time_obj is not None:
-                        rets.append((st, ed, time_obj))
+                        rets.append((st, ed, time_obj, 'time'))
                         st = ed
                         break
                 ed -= 1
@@ -54,7 +54,7 @@ class TimeParser:
         return rets
 
 class EntityParser:
-    entity_flags = set(['baike'])
+    entity_flags = set(['baike', 'ns', 'nt', 'nr', 'nz', 'nrt'])
 
     @staticmethod
     def parse(words, flags):
@@ -62,24 +62,16 @@ class EntityParser:
         idx = 0
         for word, flag in zip(words, flags):
             if flag in EntityParser.entity_flags:
-                ret.append((idx, word))
+                ret.append((idx, idx+1, word, 'baike'))
             idx += 1
         return ret
 
-def parse_line(text):        
-    ret = pseg.cut(text)
-    words = []
-    flags = []
-    for word, flag in ret:
-        words.append(word.strip())
-        flags.append(flag)
-    time_objs = TimeParser.parse(words, flags)
-    entity_objs = EntityParser.parse(words, flags)
-    for st, ed, baike_time in time_objs:
-        print st, ed, baike_time
+def parse_sentence(words, flags):        
+    objs = []
+    objs.extend(TimeParser.parse(words, flags))
+    objs.extend(EntityParser.parse(words, flags))
+    return objs
 
-    for idx, word in entity_objs:
-        print idx, word
 
 
 # def parse_entity():

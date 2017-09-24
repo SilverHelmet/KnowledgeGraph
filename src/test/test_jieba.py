@@ -16,7 +16,7 @@ s = u'29 Amphitrite, 刘德华出生于1993年11月29日, 1883.3'
 # re_userdict = re.compile('^(.+?)( [0-9]+)?( [a-z]+)?$', re.U)
 # for x in re_userdict.match('29 Amphitrite 5 baike').groups():
 #     print x
-s = u'92021黄瓜'
+s = u'中华人民共和国'
 words = pseg.cut(s)
 for word, flag in words:
     print('%s %s' % (word, flag))
