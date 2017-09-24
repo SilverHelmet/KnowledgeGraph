@@ -84,7 +84,7 @@ class BaikeDatetime:
         return "%d-%d-%d" %(self.year, self.month, self.day)
 
     @staticmethod
-    def parse(time_str， strict = False):
+    def parse(time_str, strict = False):
         if type(time_str) is unicode:
             time_str = time_str.encode('utf-8')
         args = {}
