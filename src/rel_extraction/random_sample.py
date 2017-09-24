@@ -1,6 +1,6 @@
 import numpy as np
 from .util import load_mappings
-from ..IOUtil import rel_ext_dir, nb_lines_of
+from ..IOUtil import rel_ext_dir, nb_lines_of, Print
 import os
 
 if __name__ == "__main__":
