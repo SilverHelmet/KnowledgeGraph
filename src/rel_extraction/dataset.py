@@ -28,12 +28,14 @@ class DatasetFinder:
                 if not name in name2bk_map:
                     name2bk_map[name] = []
                 name2bk_map[name].append(bk_url)
+        Print("name2baike size = %d" %len(name2bk_map))
         return name2bk_map
 
     def load_name2fb(self):
         Print("generate name -> freebase")
         bk2fb = load_mappings()
         bk_urls = set(bk2fb.keys())
+        print u'baike.so.com/doc/1287918-1361771.html' in bk_urls
         name2bk_map = self.load_name2bk(bk_urls)
         print name2bk_map[u'刘德华']
         name2fb_map = {}
