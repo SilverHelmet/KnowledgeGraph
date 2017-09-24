@@ -7,12 +7,13 @@ from tqdm import tqdm
 import json
 
 class DatasetFinder:
-    def __init__(self):
-        self.name2fb_map = self.load_name2fb()
-        fb_uris = set()
-        for key in self.name2fb_map:
-            fb_uris.update(self.name2fb_map[key])
-        self.fb_ttls_map = self.load_fb_ttls(fb_uris)
+    def __init__(self, load = True):
+        if load:
+            self.name2fb_map = self.load_name2fb()
+            fb_uris = set()
+            for key in self.name2fb_map:
+                fb_uris.update(self.name2fb_map[key])
+            self.fb_ttls_map = self.load_fb_ttls(fb_uris)
 
     
     def load_name2bk(self, bk_urls):
@@ -80,16 +81,34 @@ class DatasetFinder:
         json.dump(self.fb_ttls_map, outf)
         outf.close()
 
+    @staticmethod
+    def load_from_cache(name2fb_path, fb_ttls_path):
+        obj = DatasetFinder(load = False)
+        Print("load DatasetFinder from cache")
+        inf = file(name2fb_path)
+        obj.name2fb_map = json.load(inf)
+        inf.close()
+
+        inf = file(fb_ttls_path)
+        obj.fb_ttls_map = json.load(inf)
+        inf.close()
+        Print("load finished")
+
+
 if __name__ == "__main__":
-    finder = DatasetFinder()
-    fb_uris = finder.name2fb_map[u'刘德华']
-    print fb_uris
-    for fb_uri in fb_uris:
-        print fb_uri, finder.fb_ttls_map[fb_uri]
+    # finder = DatasetFinder()
+    # fb_uris = finder.name2fb_map[u'刘德华']
+    # print fb_uris
+    # for fb_uri in fb_uris:
+    #     print fb_uri, finder.fb_ttls_map[fb_uri]
 
     name2fb_path = os.path.join(cache_dir, 'DatasetFinder.name2fb.cache')
     fb_ttls_path = os.path.join(cache_dir, 'DatasetFinder.fb_ttls.cache')
-    finder.save(name2fb_path, fb_ttls_path)
+    # finder.save(name2fb_path, fb_ttls_path)
+
+    finder = DatasetFinder.load_from_cache(name2fb_path, fb_ttls_path)
+    fb_uris = finder.name2fb_map[u'刘德华']
+    print fb_uris
 
                 
 
