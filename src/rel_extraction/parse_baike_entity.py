@@ -4,7 +4,7 @@ import jieba.posseg as pseg
 from ..mapping.fb_date import BaikeDatetime
 
 end_puncs = set([u'。', u'？',u'?', u'!', u'！', u';', u'；'])
-def split_lines(text):
+def split_sentences(text):
     global end_puncs
     lines = []
     st = 0
