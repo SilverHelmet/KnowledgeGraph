@@ -17,7 +17,7 @@ class DatasetFinder:
         name2baike_path = os.path.join(rel_ext_dir, 'baike_names.tsv')
         name2bk_map = {}
         Print("gen name2baike map from [%s]" %name2baike_path)
-        for line in tqdm(file(filepath), total = 21710208):
+        for line in tqdm(file(name2baike_path), total = 21710208):
             p = line.strip().decode('utf-8').split('\t')
             bk_url = p[0]
             if bk_urls is not None and not bk_url in bk_urls:
