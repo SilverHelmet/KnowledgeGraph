@@ -3,7 +3,7 @@ import jieba
 import jieba.posseg as pseg
 from ..mapping.fb_date import BaikeDatetime
 from ..baike_process.parse import html_unescape
-jieba.load_userdict('result/test/dict.txt')
+
 jieba.initialize()
 import re
 
@@ -16,12 +16,15 @@ s = u'29 Amphitrite, 刘德华出生于1993年11月29日, 1883.3'
 # re_userdict = re.compile('^(.+?)( [0-9]+)?( [a-z]+)?$', re.U)
 # for x in re_userdict.match('29 Amphitrite 5 baike').groups():
 #     print x
-
-words = pseg.cut(u'《星之卡比老鼠进攻》')
+s = u'92021黄瓜'
+words = pseg.cut(s)
 for word, flag in words:
     print('%s %s' % (word, flag))
+jieba.load_userdict('result/test/dict.txt')
 
-print len(jieba.cut(u'《星之卡比老鼠进攻》'))
+words = pseg.cut(s)
+for word, flag in words:
+    print('%s %s' % (word, flag))
 # words = jieba.cut(u'《星之卡比老鼠进攻》')
 # print " ".join(words)
 

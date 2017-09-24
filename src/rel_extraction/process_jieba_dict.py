@@ -16,10 +16,11 @@ if __name__ == "__main__":
         word, freq, tag = line.strip().decode('utf-8').split(' ')
         if re_digit.match(word):
             continue
+        freq = int(freq) + 1
         words = [x for x in jieba.cut(word)]
         if len(words) != 1:
-            outf.write(line)
+            outf.write('%s %d %s\n' %(word, freq, tag))
         elif re_eng.match(word):
-            outf.write(line)
+            outf.write('%s %d %s\n' %(word, freq, tag))
     outf.close()
 
