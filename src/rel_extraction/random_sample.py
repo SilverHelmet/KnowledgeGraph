@@ -2,6 +2,7 @@ import numpy as np
 from .util import load_mappings
 from ..IOUtil import rel_ext_dir, nb_lines_of, Print
 import os
+from tqdm import tqdm
 
 if __name__ == "__main__":
     bk2fb = load_mappings()
