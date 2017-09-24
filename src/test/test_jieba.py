@@ -17,7 +17,10 @@ s = u'29 Amphitrite, 刘德华出生于1993年11月29日, 1883.3'
 # for x in re_userdict.match('29 Amphitrite 5 baike').groups():
 #     print x
 
-words = pseg.cut(s)
+words = pseg.cut(u'《星之卡比老鼠进攻》')
 for word, flag in words:
     print('%s %s' % (word, flag))
+
+words = jieba.cut(u'《星之卡比老鼠进攻》')
+print " ".join(words)
 

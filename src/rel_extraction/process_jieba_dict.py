@@ -13,14 +13,14 @@ if __name__ == "__main__":
     outf = file(processed_path, 'w')
     for line in tqdm(file(dict_path), total = nb_lines_of(dict_path)):
         word, freq, tag = line.strip().decode('utf-8').split(' ')
-        if re_eng.match(word):
-            outf.write(line)
-            continue
-        ret = pseg.cut(word)
         words = []
+        flags = []
         for word, flag in ret:
             words.append(word)
+            flags.append(flag)
         if len(words) != 1:
+            outf.write(line)
+        elif flags[0] == 'eng':
             outf.write(line)
     outf.close()
 
