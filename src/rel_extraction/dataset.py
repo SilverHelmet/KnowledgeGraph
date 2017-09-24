@@ -93,6 +93,7 @@ class DatasetFinder:
         obj.fb_ttls_map = json.load(inf)
         inf.close()
         Print("load finished")
+        return obj
 
 
 if __name__ == "__main__":
