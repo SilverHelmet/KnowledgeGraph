@@ -16,12 +16,16 @@ if __name__ == "__main__":
     year_pattern = re.compile(ur'(公元前|公元)?\d{1,4}年$')
 
     for name in tqdm(keys, total = len(keys)):
+        name = name.strip()
+        if name == "":
+            continue
         if year_pattern.match(name):
             print 'time name', name
             continue
         if BaikeDatetime.parse(name, strict = True) is not None:
             print 'time name', name
             continue
+        
         bks = name2bk[name]
         pop = 0
         for bk_url in bks:
