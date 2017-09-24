@@ -35,6 +35,7 @@ class DatasetFinder:
         bk2fb = load_mappings()
         bk_urls = set(bk2fb.keys())
         name2bk_map = self.load_name2bk(bk_urls)
+        print name2bk_map[u'刘德华']
         name2fb_map = {}
         for name in name2bk_map:
             fbs = [bk2fb[bk_url] for bk_url in name2bk_map[name]]
