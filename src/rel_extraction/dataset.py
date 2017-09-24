@@ -17,11 +17,11 @@ class DatasetFinder:
     def load_name2bk(self, bk_urls):
         name2baike_path = os.path.join(rel_ext_dir, 'baike_names.tsv')
         name2bk_map = {}
-        Print("gen name2baike map from [%s]" %name2baike_path)
+        Print("gen name2baike map from [%s] with #bk_urls is " %(name2baike_path, len(bk_urls)))z
         for line in tqdm(file(name2baike_path), total = 21710208):
             p = line.strip().decode('utf-8').split('\t')
             bk_url = p[0]
-            if bk_urls is not None and not bk_url in bk_urls:
+            if not bk_url in bk_urls:
                 continue
             for idx in range(1, len(p)):
                 name = p[idx]
@@ -35,7 +35,6 @@ class DatasetFinder:
         Print("generate name -> freebase")
         bk2fb = load_mappings()
         bk_urls = set(bk2fb.keys())
-        print u'baike.so.com/doc/1287918-1361771.html' in bk_urls
         name2bk_map = self.load_name2bk(bk_urls)
         print name2bk_map[u'刘德华']
         name2fb_map = {}
