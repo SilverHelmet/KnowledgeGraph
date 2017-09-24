@@ -1,4 +1,5 @@
 from ..IOUtil import rel_ext_dir, Print 
+import os
 
 def load_mappings(filepath = None):
     if filepath is None:
