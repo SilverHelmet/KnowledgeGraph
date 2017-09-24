@@ -84,15 +84,21 @@ class BaikeDatetime:
         return "%d-%d-%d" %(self.year, self.month, self.day)
 
     @staticmethod
-    def parse(time_str):
+    def parse(time_str， strict = False):
         if type(time_str) is unicode:
             time_str = time_str.encode('utf-8')
         args = {}
-        patterns = [BaikeDatetime.date_p, BaikeDatetime.year_p, BaikeDatetime.year_p_2, BaikeDatetime.yearmonth_p]
-        pattern_names = [['year', 'month', 'day'],
-                        ['year'],
-                        ['year'],
-                        ['year', 'month']]
+        if not strict:
+            patterns = [BaikeDatetime.date_p, BaikeDatetime.year_p, BaikeDatetime.year_p_2, BaikeDatetime.yearmonth_p]
+            pattern_names = [['year', 'month', 'day'],
+                            ['year'],
+                            ['year'],
+                            ['year', 'month']]
+        else:
+            patterns = [BaikeDatetime.date_p, BaikeDatetime.year_p, BaikeDatetime.yearmonth_p]
+            pattern_names = [['year', 'month', 'day'],
+                            ['year'],
+                            ['year', 'month']]
 
         match_flag = False
         for pattern, names in zip(patterns, pattern_names):
