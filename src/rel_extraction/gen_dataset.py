@@ -146,7 +146,7 @@ def gen_dataset_from_baike():
 
 
 if __name__ == "__main__":
-    test()
+    gen_dataset_from_baike()
     # jieba.add_word
     # jieba.initialize()
 
