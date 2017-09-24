@@ -73,10 +73,6 @@ def parse_sentence(words, flags):
     return objs
 
 
-
-# def parse_entity():
-
-jieba.load_userdict('result/test/dict.txt')
 if __name__ == "__main__":
     s = u'刘德华出生于1993年11月29日。'
     parse_line(s)
