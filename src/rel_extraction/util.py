@@ -31,7 +31,7 @@ def load_bk_entity_pop(filepath = None):
 
 def load_name2baike(filepath = None):
     if filepath is None:
-        filepath = os.path.jion(rel_ext_dir, 'baike_names.tsv')
+        filepath = os.path.join(rel_ext_dir, 'baike_names.tsv')
         total = None
     else:
         total = nb_lines_of(filepath)
