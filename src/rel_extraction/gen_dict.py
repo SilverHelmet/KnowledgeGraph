@@ -19,6 +19,8 @@ if __name__ == "__main__":
         name = name.strip()
         if name == "":
             continue
+        if name.find(" ") != -1:
+            continue
         if year_pattern.match(name):
             print 'time name', name
             continue
