@@ -1,5 +1,5 @@
 import jieba
-from jieba.posseg import pseg
+import jieba.posseg as pseg
 from ..IOUtil import rel_ext_dir, nb_lines_of
 import os
 import res
