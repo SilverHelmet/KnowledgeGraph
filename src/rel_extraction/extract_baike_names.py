@@ -3,6 +3,7 @@ from ..mapping.predicate_mapping import load_name_attr
 from util import load_mappings
 import json
 import os
+from tqdm import tqdm
 
 def load_mapping_names(bk2fb):
     fb_uris = set(bk2fb.values())

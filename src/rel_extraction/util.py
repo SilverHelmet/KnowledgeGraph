@@ -1,5 +1,7 @@
-from ..IOUtil import rel_ext_dir, Print 
+from ..IOUtil import rel_ext_dir, Print, nb_lines_of
 import os
+import json
+from tqdm import tqdm
 
 def load_mappings(filepath = None):
     if filepath is None:
@@ -10,5 +12,18 @@ def load_mappings(filepath = None):
         bk_url, fb_uri = line.strip().decode('utf-8'). split('\t')
         bk2fb[bk_url] = fb_uri
     return bk2fb
+
+def load_entity_pop(filepath = None):
+    if filepath is None:
+        filepath = os.path.join(rel_ext_dir, 'baike_static_info.tsv')
+        total = 21710208
+    else:
+        total = nb_lines_of(filepath)
+    Print('load entity popularity from [%s]'  %filepath)
+    
+    for line in tqdm(file(filepath), total = total):
+        p = line.strip().decode('utf-8').split('\t')
+        bk_url = p[0]
+        
 
 
