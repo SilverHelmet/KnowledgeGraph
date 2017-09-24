@@ -1,4 +1,4 @@
-from ..IOUtil import result_dir, rel_ext_dir, classify_dir
+from ..IOUtil import result_dir, rel_ext_dir, classify_dir, Print
 from .util import load_mappings
 from ..mapping.fb_date import FBDatetime
 import os
