@@ -13,8 +13,8 @@ s = '看过刘德华的《陆上行舟》，或许会感叹其作品的超凡脱
 s = u'刘德华出生于1993年11月29日, 1883.3'
 s = u'29 Amphitrite'
 print s.find(' ')
-print html_unescape(u'&quot;身份之争&quot;')
-words = pseg.cut(s)
-for word, flag in words:
-    print('%s %s' % (word, flag))
+print html_unescape(html_unescape('&amp;quot;恐龙&amp;quot;的新生:传统企业转型的八种商业模式'))
+# words = pseg.cut(s)
+# for word, flag in words:
+#     print('%s %s' % (word, flag))
 

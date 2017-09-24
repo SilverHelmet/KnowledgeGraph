@@ -38,9 +38,16 @@ def parse_id_from_url(url):
 
 def html_unescape(html_str):
     global html_parser
+
     if html_str:
-        html_str = html_parser.unescape(html_str)
-    return html_str
+        while True:
+            new_html_str = html_parser.unescape(html_str)
+            if new_html_str == html_str:
+                return html_str
+            else:
+                html_str = new_html_str
+    else:
+        return html_str
 
 def parse_ename(obj):
     global html_parser
