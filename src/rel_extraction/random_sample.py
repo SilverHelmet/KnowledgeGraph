@@ -6,8 +6,8 @@ import os
 if __name__ == "__main__":
     bk2fb = load_mappings()
     bk_urls = bk2fb.keys()
-    
-    permutation = np.random.permutations(len(bk_urls))[:10000]
+
+    permutation = np.random.permutation(len(bk_urls))[:10000]
     random_pool = set()
     for idx in permutation:
         random_pool.add(bk_urls[idx])
