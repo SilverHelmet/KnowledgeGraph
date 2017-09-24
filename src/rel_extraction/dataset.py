@@ -39,7 +39,7 @@ class DatasetFinder:
 
     def load_name2fb(self):
         Print("generate name -> freebase")
-        bk2fb = load_mappings()
+        bk2fb = load_mappings(filepath = os.path.join(rel_ext_dir, 'sample_mappings.tsv'))
         bk_urls = set(bk2fb.keys())
         name2bk_map = self.load_name2bk(bk_urls)
         name2fb_map = {}
@@ -97,19 +97,19 @@ class DatasetFinder:
 
 
 if __name__ == "__main__":
-    # finder = DatasetFinder()
+    finder = DatasetFinder()
     # fb_uris = finder.name2fb_map[u'刘德华']
     # print fb_uris
     # for fb_uri in fb_uris:
     #     print fb_uri, finder.fb_ttls_map[fb_uri]
 
-    name2fb_path = os.path.join(cache_dir, 'DatasetFinder.name2fb.cache')
-    fb_ttls_path = os.path.join(cache_dir, 'DatasetFinder.fb_ttls.cache')
-    # finder.save(name2fb_path, fb_ttls_path)
+    name2fb_path = os.path.join(cache_dir, 'DatasetFinder.name2fb.sample.cache')
+    fb_ttls_path = os.path.join(cache_dir, 'DatasetFinder.fb_ttls.sample.cache')
+    finder.save(name2fb_path, fb_ttls_path)
 
-    finder = DatasetFinder.load_from_cache(name2fb_path, fb_ttls_path)
-    fb_uris = finder.name2fb_map[u'刘德华']
-    print fb_uris
+    # finder = DatasetFinder.load_from_cache(name2fb_path, fb_ttls_path)
+    # fb_uris = finder.name2fb_map[u'刘德华']
+    # print fb_uris
 
                 
 
