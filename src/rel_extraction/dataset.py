@@ -98,14 +98,16 @@ class DatasetFinder:
 
 if __name__ == "__main__":
     finder = DatasetFinder()
-    # fb_uris = finder.name2fb_map[u'刘德华']
-    # print fb_uris
-    # for fb_uri in fb_uris:
-    #     print fb_uri, finder.fb_ttls_map[fb_uri]
+    
 
     name2fb_path = os.path.join(cache_dir, 'DatasetFinder.name2fb.sample.cache')
     fb_ttls_path = os.path.join(cache_dir, 'DatasetFinder.fb_ttls.sample.cache')
     finder.save(name2fb_path, fb_ttls_path)
+
+    fb_uris = finder.name2fb_map[u'星之卡比老鼠进攻']
+    print fb_uris
+    for fb_uri in fb_uris:
+        print fb_uri, finder.fb_ttls_map[fb_uri]
 
     # finder = DatasetFinder.load_from_cache(name2fb_path, fb_ttls_path)
     # fb_uris = finder.name2fb_map[u'刘德华']
