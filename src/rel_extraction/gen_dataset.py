@@ -94,6 +94,7 @@ def gen_dataset(sentence, finder):
 
 def test():
     x = u"《星之卡比老鼠进攻》是欧洲游戏制造商Nintendo公司于2006-11-02制作的一款动作游戏。游戏故事讲述的是，玩家控制的卡比和3只小老鼠，当然还有他们的团长之间的故事，玩家的目标是和呐喊团争夺一个神秘宝盒。"
+    x = u'刘德华制作了星之卡比老鼠进攻。'
     sentences = split_sentences(x)
     # jieba.add_word(u'星之卡比老鼠进攻', 5, 'baike')
     # jieba.add_word(u'Nintendo', 5, 'baike')
