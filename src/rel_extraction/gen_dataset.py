@@ -54,9 +54,6 @@ def try_get_rel(obj1, obj2, obj2_type, finder, cache):
     return None
 
 
-
-
-
 def gen_dataset(sentence, finder):
     ret = pseg.cut(sentence)
     words = []
@@ -114,7 +111,7 @@ def test():
         print x
 
 def gen_dataset_from_baike():
-    sample_path = 
+    pass
 
 
 if __name__ == "__main__":
