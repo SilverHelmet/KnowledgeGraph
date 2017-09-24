@@ -17,7 +17,7 @@ class DatasetFinder:
     def load_name2bk(self, bk_urls):
         name2baike_path = os.path.join(rel_ext_dir, 'baike_names.tsv')
         name2bk_map = {}
-        Print("gen name2baike map from [%s] with #bk_urls is " %(name2baike_path, len(bk_urls)))
+        Print("gen name2baike map from [%s] with #bk_urls is %d" %(name2baike_path, len(bk_urls)) )
         for line in tqdm(file(name2baike_path), total = 21710208):
             p = line.strip().decode('utf-8').split('\t')
             bk_url = p[0]
