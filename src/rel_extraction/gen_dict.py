@@ -2,6 +2,7 @@ import os
 from .util import load_bk_entity_pop, load_name2baike
 from ..IOUtil import rel_ext_dir, Print
 from tqdm import tqdm
+import re
 
 if __name__ == "__main__":
     pop_map = load_bk_entity_pop()

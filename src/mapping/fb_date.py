@@ -90,9 +90,10 @@ class BaikeDatetime:
         args = {}
         patterns = [BaikeDatetime.date_p, BaikeDatetime.year_p, BaikeDatetime.year_p_2, BaikeDatetime.yearmonth_p]
         pattern_names = [['year', 'month', 'day'],
-                         ['year'],
-                         ['year'],
-                         ['year', 'month']]
+                        ['year'],
+                        ['year'],
+                        ['year', 'month']]
+
         match_flag = False
         for pattern, names in zip(patterns, pattern_names):
             match = pattern.match(time_str)

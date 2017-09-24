@@ -35,7 +35,9 @@ def load_and_write_baike_name(bk_name_map, out_path):
         obj = json.loads(p[1])
         names.append(obj['ename'])
         names.append(obj['title'])
+        names = [x.strip() for x in names]
         names = list(set(names))
+
         outf.write("%s\t%s\n" %(bk_url, "\t".join(names)))
     outf.close()
 
