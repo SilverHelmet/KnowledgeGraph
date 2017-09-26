@@ -152,19 +152,25 @@ def parse_text(url, b64_content):
         print "error url", url
         return ret
 
+    ret = []
+    summary = parse_summary(obj)
+    if summary:
+        ret.append(('summary', summary))
     content = obj.get('content', {}).get("content", {})
     if type(content) is unicode:
-        content = {'1': {'section_content': content}}
+        content = {'1': {'section_content': content, 'section_title': "faked title"}}
     for key in content:
         chapter = content[key]
         chapter_content = chapter.get('section_content', [])
+        chapter_title = chapter['section_title']
         if type(chapter_content) == list:
             # print "section",  url
             for section in chapter_content:
                 section_content = section.get('sub_section_content', '')
-                ret.extend(parse_text_from_html(section_content, url))
+                title = chapter_title + "_" + section_content['sub_section_title']
+                ret.extend((title, parse_text_from_html(section_content, url)))
         else:
-            ret.extend(parse_text_from_html(chapter_content, url))
+            ret.extend((chapter_title, parse_text_from_html(chapter_content, url)))
     return ret
 
 def test():

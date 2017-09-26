@@ -167,19 +167,10 @@ if __name__ == "__main__":
     # print "fb:location.country.calling_code" in pres
     # print "fb:book.book_subject.works" in pres 
     # print "fb:education.education.student" in pres
-
+    keys = set()
     schema = Schema()
     schema.init()
-    # print schema.complement_type(['fb:book.book', 'fb:biology.taxon_with_sequenced_genome'])
-    # predicates = load_mediator_predicates()
-    # print schema.is_mediator(schema.schema_type("fb:music.release_track.recording"))
-    # print schema.expected_type('fb:music.release_track.recording')
-    # print  schema.expected_type("fb:music.recording.tracks^fb:music.release_track.release")
-    # print schema.is_mediator("fb:book.book_edition")
-    # print 'fb:music.release.album' in  predicates
-    # print schema.is_mediator("fb:music.release")
-    # print schema.type_attrs['fb:music.release']
-    # for key in  schema.type_attrs['fb:music.recording']:
-        # print key, schema.type_attrs['fb:music.'][key]
+    for fb_type in schema.property_attrs:
+        keys.update(schema.property_attrs[fb_type].keys())
+    print list(keys)
 
-    
