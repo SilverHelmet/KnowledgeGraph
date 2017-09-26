@@ -9,4 +9,4 @@ if __name__ == "__main__":
         if p[0] != baike_url:
             continue
         for title, content in json.loads(p[1]):
-            print title, contents
+            print title, content
