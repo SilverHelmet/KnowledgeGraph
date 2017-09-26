@@ -175,7 +175,8 @@ def parse_text(url, b64_content):
                     ret[title] = texts
         else:
             texts = parse_text_from_html(chapter_content, url)
-            ret.extend[chapter_content] = texts
+            if len(texts) > 0:
+                ret[chapter_title] = texts
     return ret
 
 # def test():
