@@ -170,7 +170,7 @@ def parse_text(url, b64_content):
                 if section_content == "":
                     continue
                 title = chapter_title + "_" + section['sub_section_title']
-                texts = (parse_text_from_html(section_content, url)
+                texts = parse_text_from_html(section_content, url)
                 if len(texts) > 0:
                     ret[title] = texts
         else:
