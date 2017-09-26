@@ -144,6 +144,9 @@ def parse_text_from_html(html, url):
             ps.append(text)
     return ps
 
+def del_space(text):
+    return text.replace(u'\xa0', '').replace(u'\u200b', '').strip()
+
 def parse_text(url, b64_content):
     ret = []
     try:
@@ -170,13 +173,15 @@ def parse_text(url, b64_content):
                 if section_content == "":
                     continue
                 title = chapter_title + "_" + section['sub_section_title']
+                title = del_space(title)
                 texts = parse_text_from_html(section_content, url)
                 if len(texts) > 0:
                     ret[title] = texts
         else:
             texts = parse_text_from_html(chapter_content, url)
+            
             if len(texts) > 0:
-                ret[chapter_title] = texts
+                ret[del_space(chapter_title)] = texts
     return ret
 
 # def test():
@@ -215,8 +220,7 @@ def parse_text(url, b64_content):
     # print html_unescape(content['1']['section_content'])
 
 if __name__ == "__main__":
-    print json.loads(s)
-    # test()
+    pass
     # out_path = os.path.join(result_dir, '360/360_entity_info.json')
     # if not os.path.exists(os.path.dirname(out_path)):
     #     os.mkdir(os.path.dirname(out_path))
