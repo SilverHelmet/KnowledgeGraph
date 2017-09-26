@@ -167,33 +167,33 @@ def parse_text(url, b64_content):
             # print "section",  url
             for section in chapter_content:
                 section_content = section.get('sub_section_content', '')
-                title = chapter_title + "_" + section_content['sub_section_title']
+                title = chapter_title + "_" + section['sub_section_title']
                 ret.extend((title, parse_text_from_html(section_content, url)))
         else:
             ret.extend((chapter_title, parse_text_from_html(chapter_content, url)))
     return ret
 
-def test():
+# def test():
 
-    # url = 'http://baike.so.com/doc/3946206-4141203.html'
-    content = ''
-    obj = json.loads(base64.b64decode(content))
-    # print obj['content']
-    content = obj.get('content', {}).get("content", {})
-    if type(content) is unicode:
-        content = {'1': {'section_content': content}}
-    ret = []
-    for key in content:
-        chapter = content[key]
-        chapter_content = chapter.get('section_content', [])
-        if type(chapter_content) == list:
-            for section in chapter_content:
-                section_content = section.get('sub_section_content', '')
-                ret.extend(parse_text_from_html(section_content))
-        else:
-            print chapter_content
-            ret.extend(parse_text_from_html(chapter_content))
-    print len(ret)
+#     url = 'http://baike.so.com/doc/3946206-4141203.html'
+#     content = ''
+#     obj = json.loads(base64.b64decode(content))
+#     # print obj['content']
+#     content = obj.get('content', {}).get("content", {})
+#     if type(content) is unicode:
+#         content = {'1': {'section_content': content}}
+#     ret = []
+#     for key in content:
+#         chapter = content[key]
+#         chapter_content = chapter.get('section_content', [])
+#         if type(chapter_content) == list:
+#             for section in chapter_content:
+#                 section_content = section.get('sub_section_content', '')
+#                 ret.extend(parse_text_from_html(section_content))
+#         else:
+#             print chapter_content
+#             ret.extend(parse_text_from_html(chapter_content))
+#     print len(ret)
             
         
     
