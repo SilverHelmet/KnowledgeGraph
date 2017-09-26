@@ -167,6 +167,8 @@ def parse_text(url, b64_content):
             # print "section",  url
             for section in chapter_content:
                 section_content = section.get('sub_section_content', '')
+                if section_content == "":
+                    continue
                 title = chapter_title + "_" + section['sub_section_title']
                 ret.extend((title, parse_text_from_html(section_content, url)))
         else:
