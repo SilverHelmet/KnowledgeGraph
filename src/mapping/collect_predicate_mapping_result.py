@@ -29,6 +29,8 @@ class MappingResult:
         assert type(baike_info) == unicode
         baike_info = baike_info.strip().strip(u':')
         baike_info = baike_info.strip(u'：').strip()
+        if baike_info.find(u'：') != -1:
+            print baike_info
         if not baike_info in self.baike2fb:
             self.baike2fb[baike_info] = Prob(baike_info)
         self.baike2fb[baike_info].add(fb_property)
