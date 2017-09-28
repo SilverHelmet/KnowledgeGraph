@@ -26,6 +26,8 @@ class MappingResult:
         self.baike2fb = {}
 
     def add(self, baike_info, fb_property):
+        baike_info = baike_info.strip(u':')
+        baike_info = baike_info.strip(u'：')
         if not baike_info in self.baike2fb:
             self.baike2fb[baike_info] = Prob(baike_info)
         self.baike2fb[baike_info].add(fb_property)
@@ -42,7 +44,7 @@ if __name__ == "__main__":
         predict_map_result_path = os.path.join(result_dir, '360/mapping/one2one_info_predicate_mapping.tsv')
     map_result = MappingResult()
     for line in file(predict_map_result_path):
-        fb_uri, baike_url, fb_property, baike_info, fb_value, baike_value, score = line.strip().split("\t")
+        fb_uri, baike_url, fb_property, baike_info, fb_value, baike_value, score = line.strip().decode('utf-8').split("\t")
         map_result.add(baike_info, fb_property)
 
     if len(sys.argv) >= 3:

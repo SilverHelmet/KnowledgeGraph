@@ -220,13 +220,12 @@ def parse_text(url, b64_content):
     # print html_unescape(content['1']['section_content'])
 
 if __name__ == "__main__":
-    pass
-    # out_path = os.path.join(result_dir, '360/360_entity_info.json')
-    # if not os.path.exists(os.path.dirname(out_path)):
-    #     os.mkdir(os.path.dirname(out_path))
-    # outf = file(out_path, 'w')
-    # for filepath in glob.glob('data/360/*finish'):
-    #     parse(filepath, outf)
-    # outf.close()
+    out_path = os.path.join(result_dir, '360/360_entity_info.json')
+    if not os.path.exists(os.path.dirname(out_path)):
+        os.mkdir(os.path.dirname(out_path))
+    outf = file(out_path, 'w')
+    for filepath in glob.glob('data/360/*finish'):
+        parse(filepath, outf)
+    outf.close()
 
     

@@ -46,8 +46,8 @@ class Mapping:
             
 
 if __name__ == "__main__":
-    inpath = os.path.join(result_dir, '360/mapping/predicates_map.json')
-    outpath = os.path.join(result_dir, '360/mapping/predicates_map.txt')
+    inpath = os.path.join(result_dir, '360/mapping/final_predicates_map.json')
+    outpath = os.path.join(result_dir, '360/mapping/final_predicates_map.txt')
 
     mappings = {}
     for line in file(inpath):
