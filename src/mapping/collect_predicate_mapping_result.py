@@ -53,7 +53,6 @@ if __name__ == "__main__":
     else:
         out_path = os.path.join(result_dir, '360/mapping/one2one_predicates_map.json')
     Print("read from %s, write to %s" %(predict_map_result_path, out_path))
-    )
     outf = file(out_path, 'w')
     for key in map_result.sorted_keys():
         outf.write("%s\t%s\n" %(key, json.dumps(map_result.baike2fb[key].top_k(20)) ) )
