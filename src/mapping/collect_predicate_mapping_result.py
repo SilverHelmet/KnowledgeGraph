@@ -1,4 +1,4 @@
-from ..IOUtil import result_dir
+from ..IOUtil import result_dir, Print
 import os
 import json
 import sys
