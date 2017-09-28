@@ -26,6 +26,7 @@ class MappingResult:
         self.baike2fb = {}
 
     def add(self, baike_info, fb_property):
+        assert type(baike_info) == unicode
         baike_info = baike_info.strip().strip(u':')
         baike_info = baike_info.strip(u'：').strip()
         if not baike_info in self.baike2fb:
