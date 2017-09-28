@@ -29,8 +29,6 @@ class MappingResult:
         assert type(baike_info) == unicode
         baike_info = baike_info.strip().strip(u':')
         baike_info = baike_info.strip(u'：').strip()
-        if baike_info.find(u'：') != -1:
-            print baike_info
         if not baike_info in self.baike2fb:
             self.baike2fb[baike_info] = Prob(baike_info)
         self.baike2fb[baike_info].add(fb_property)
@@ -54,6 +52,8 @@ if __name__ == "__main__":
         out_path = sys.argv[2]
     else:
         out_path = os.path.join(result_dir, '360/mapping/one2one_predicates_map.json')
+    Print("read from %s, write to %s" %(predict_map_result_path, out_path))
+    )
     outf = file(out_path, 'w')
     for key in map_result.sorted_keys():
         outf.write("%s\t%s\n" %(key, json.dumps(map_result.baike2fb[key].top_k(20)) ) )
