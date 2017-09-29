@@ -16,14 +16,23 @@ class Mapping:
         self.maps.append((name, count, total))
         self.count += count
 
-    def check_filter(self, threshold = 0.05, min_count = 3, k  = 15):
+    def check_filter(self, threshold = 0.05, min_count = 3, k  = 5):
         maps = []
         for name, count, total in self.maps:
             if count / (total + 0.0) < threshold or count < min_count:
                 continue
             else:
                 maps.append((name, count, total))
-        self.maps = sorted(maps, key = lambda x: x[1] / (x[2] + 0.0), reverse = True)[:k]
+        maps = sorted(maps, key = lambda x: x[1], reverse = True)
+        good_names = set(map(lambda x: x[0], maps[:k]))
+        good_names.update(map(lambda x: x[0],sorted(maps, key = lambda x: x[1] / (x[2] + 0.0), reverse = True)[:k]))
+        self.maps = []
+        for name, count, total in maps:
+            if name in good_names:
+                self.maps.append((name, count, total))
+
+            
+        
         self.count = 0
         for _, count, total in self.maps:
             self.count += count
@@ -38,7 +47,8 @@ class Mapping:
     
     def __str__(self):
         map_out = "\t".join(["%s %d/%d" %(name, count, total) for name , count, total in self.maps])
-        out = "%s\t%s\t%s" %(self.concept, self.name, map_out)
+        # out = "%s\t%s\t%s" %(self.concept, self.name, map_out)
+        out = "%s\t%s" %(self.concept, map_out)
         # map_out = "\t".join(["%s" %(name) for name , count, total in self.maps])
         # out = "%s\t%s\t%s" %(self.concept, self.name, map_out)
         return out
