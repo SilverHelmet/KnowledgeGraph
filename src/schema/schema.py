@@ -61,6 +61,10 @@ class Schema:
             else:
                 fb_types = new_types
 
+    def check_spo(self, subj_types, prob, obj_types):
+        subj_type = self.schema_type(prob)
+        obj_type = self.expected_type(prob)
+        return subj_type in subj_types and obj_type in obj_types
 
 
 

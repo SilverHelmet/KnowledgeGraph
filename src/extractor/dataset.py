@@ -1,21 +1,22 @@
 #encoding:utf-8
 from ..IOUtil import result_dir, rel_ext_dir, classify_dir, Print, cache_dir
-from .util import load_mappings
+from ..rel_extraction.util import load_mappings
 from ..mapping.fb_date import FBDatetime
 import os
 from tqdm import tqdm
 import json
 
-def load_name2bk(bk_urls):
+def load_name2bk(bk_urls = None):
     name2baike_path = os.path.join(rel_ext_dir, 'baike_names.tsv')
     name2bk_map = {}
-    Print("gen name2baike map from [%s] with #bk_urls is %d" %(name2baike_path, len(bk_urls)) )
+    size = 'total' if bk_urls is None else len(bk_urls)
+    Print("gen name2baike map from [%s] with #bk_urls is %s" %(name2baike_path, size) )
     hit = 0
     for line in tqdm(file(name2baike_path), total = 21710208):
         p = line.strip().decode('utf-8').split('\t')
         bk_url = p[0]
         
-        if not bk_url in bk_urls:
+        if bk_urls and not bk_url in bk_urls:
             continue
         hit += 1
 
