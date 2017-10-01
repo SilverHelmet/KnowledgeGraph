@@ -1,8 +1,9 @@
 # data
-data
-docs
-result
-log
+/data
+/docs
+/result
+/log
+/lib
 
 # database
 vdb
