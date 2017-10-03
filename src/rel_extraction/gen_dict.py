@@ -36,7 +36,7 @@ def vertical_domain(types):
 
 
 if __name__ == "__main__":
-    pop_map = load_bk_entity_pop()
+    # pop_map = load_bk_entity_pop()
     name2bk = load_name2baike()
     
     keys = sorted(name2bk)
@@ -80,14 +80,15 @@ if __name__ == "__main__":
 
         
             
-        pop = 0
+        # pop = 0
         valid = False
         for bk_url in bks:
-            pop = max(pop, pop_map.get(bk_url, 0))
+            # pop = max(pop, pop_map.get(bk_url, 0))
             if valid_func(bk_type_map[bk_url]):
                 valid = True
         if valid:
-            outf.write('%s %d baike\n' %(name, pop * 2 + 1))
+            outf.write('%s\n' %(name))
+            # outf.write('%s %d baike\n' %(name, pop * 2 + 1))
     outf.close()
 
 
