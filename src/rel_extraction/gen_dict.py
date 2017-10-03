@@ -8,6 +8,9 @@ from tqdm import tqdm
 import re
 from ..mapping.fb_date import BaikeDatetime
 from ..baike_process.parse import html_unescape
+import syss
+from ..fb_process.extract_util import get_domain
+from ..rel_extraction.util import load_bk_types
 
 def has_punc_eng(name):
     for _, flag in pseg.cut(name):
@@ -16,6 +19,20 @@ def has_punc_eng(name):
         if flag == "eng":
             return True
     return False
+
+valid_domains = set(['fb:film', 'fb:tv', 'fb:soccer', 'fb:sports', 'fb:astronomy', 'fb:music', 'fb:book'])
+def vertical_domain(types):
+    global valid_domains
+    for fb_type in types:
+        if get_domain(fb_type) in valid_domains:
+            return True
+        else:
+            return False
+
+
+        
+
+
 
 
 if __name__ == "__main__":
@@ -29,6 +46,17 @@ if __name__ == "__main__":
     year_pattern = re.compile(ur'(公元前|公元)?\d{1,4}年$')
     re_digit = re.compile(r'^[0-9+\-=!?]+$')
     re_eng = re.compile(r"^[a-zA-Z]+$")
+
+    valid_func = None
+    if len(sys.argv >=  2) and sys.argv[1] == "vertical":
+        valid_func = vertical_domain
+        out_paht = os.path.join(rel_ext_dir, 'baike_dict_vertical_domain.txt')
+        Print('use valid_func: valic_domains')
+        bk_type_map = load_bk_types()
+        
+        
+
+
     for name in tqdm(keys, total = len(keys)):
         name = name.strip()
         if name == "":
@@ -47,12 +75,19 @@ if __name__ == "__main__":
             continue
         if has_punc_eng(name):
             continue
-        
+
         bks = name2bk[name]
+
+        
+            
         pop = 0
+        valid = False
         for bk_url in bks:
             pop = max(pop, pop_map.get(bk_url, 0))
-        outf.write('%s %d baike\n' %(name, pop * 2 + 1))
+            if valid_func(bk_type_map[bk_url]):
+                valid = True
+        if valid:
+            outf.write('%s %d baike\n' %(name, pop * 2 + 1))
     outf.close()
 
 
