@@ -8,7 +8,7 @@ from tqdm import tqdm
 import re
 from ..mapping.fb_date import BaikeDatetime
 from ..baike_process.parse import html_unescape
-import syss
+import sys
 from ..fb_process.extract_util import get_domain
 from ..rel_extraction.util import load_bk_types
 
