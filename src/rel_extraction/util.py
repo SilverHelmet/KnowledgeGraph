@@ -48,11 +48,12 @@ def load_bk_types(filepath = None):
 def load_name2baike(filepath = None):
     if filepath is None:
         filepath = os.path.join(rel_ext_dir, 'baike_names.tsv')
-        total = None
+        total = nb_lines_of(filepath)
     else:
         total = nb_lines_of(filepath)
     name2bk = {}
-    for line in file(filepath):
+    Print('load name -> baike from %s' %filepath)
+    for line in tqdm(file(filepath), total = total):
         p = line.strip().decode('utf-8').split('\t')
         bk_url = p[0]
         names = p[1:]
