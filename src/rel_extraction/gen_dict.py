@@ -42,7 +42,6 @@ if __name__ == "__main__":
     keys = sorted(name2bk)
     out_path = os.path.join(rel_ext_dir, 'baike_dict.txt')
     outf = file(out_path, 'w')
-    Print('write dict to %s' %out_path)
     year_pattern = re.compile(ur'(公元前|公元)?\d{1,4}年$')
     re_digit = re.compile(r'^[0-9+\-=!?]+$')
     re_eng = re.compile(r"^[a-zA-Z]+$")
@@ -56,7 +55,7 @@ if __name__ == "__main__":
         
         
 
-
+    Print('write dict to %s' %out_path)
     for name in tqdm(keys, total = len(keys)):
         name = name.strip()
         if name == "":
