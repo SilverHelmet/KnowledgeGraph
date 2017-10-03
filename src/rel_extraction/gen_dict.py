@@ -41,7 +41,7 @@ if __name__ == "__main__":
     
     keys = sorted(name2bk)
     out_path = os.path.join(rel_ext_dir, 'baike_dict.txt')
-    outf = file(out_path, 'w')
+    
     year_pattern = re.compile(ur'(公元前|公元)?\d{1,4}年$')
     re_digit = re.compile(r'^[0-9+\-=!?]+$')
     re_eng = re.compile(r"^[a-zA-Z]+$")
@@ -54,7 +54,7 @@ if __name__ == "__main__":
         bk_type_map = load_bk_types()
         
         
-
+    outf = file(out_path, 'w')
     Print('write dict to %s' %out_path)
     for name in tqdm(keys, total = len(keys)):
         name = name.strip()
@@ -67,6 +67,7 @@ if __name__ == "__main__":
             continue
         if re_digit.match(name):
             print "digit name", name
+            continue
         if BaikeDatetime.parse(name, strict = True) is not None:
             print 'time name', name
             continue
