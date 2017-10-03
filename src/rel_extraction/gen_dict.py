@@ -47,7 +47,7 @@ if __name__ == "__main__":
     re_eng = re.compile(r"^[a-zA-Z]+$")
 
     valid_func = None
-    if len(sys.argv >=  2) and sys.argv[1] == "vertical":
+    if len(sys.argv) >=  2 and sys.argv[1] == "vertical":
         valid_func = vertical_domain
         out_paht = os.path.join(rel_ext_dir, 'baike_dict_vertical_domain.txt')
         Print('use valid_func: valic_domains')
