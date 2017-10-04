@@ -24,6 +24,7 @@ valid_domains = set(['fb:film', 'fb:tv', 'fb:soccer', 'fb:sports', 'fb:astronomy
 def is_vertical_domain(types):
     global valid_domains
     for fb_type in types:
+        print get_domain(fb_type)
         if get_domain(fb_type) in valid_domains:
             return True
         else:
