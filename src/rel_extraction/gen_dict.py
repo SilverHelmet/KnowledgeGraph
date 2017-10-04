@@ -82,6 +82,7 @@ if __name__ == "__main__":
         valid = False
         for bk_url in bks:
             # pop = max(pop, pop_map.get(bk_url, 0))
+            print bk_url, valid_func(bk_type_map[bk_url])
             if valid_func is None or valid_func(bk_type_map[bk_url]):
                 valid = True
 
