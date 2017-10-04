@@ -38,8 +38,8 @@ def is_vertical_domain(types):
 
 if __name__ == "__main__":
     # pop_map = load_bk_entity_pop()
-    name2bk = load_name2baike(os.path.join(rel_ext_dir, 'baike_names.tsv.sample'))
-
+    # name2bk = load_name2baike(os.path.join(rel_ext_dir, 'baike_names.tsv.sample'))
+    name2bk = load_name2baike()
     
     keys = sorted(name2bk)
     out_path = os.path.join(rel_ext_dir, 'baike_dict.txt')
@@ -53,7 +53,8 @@ if __name__ == "__main__":
         valid_func = is_vertical_domain
         out_path = os.path.join(rel_ext_dir, 'baike_dict_vertical_domain.txt')
         Print('use valid_func: valic_domains')
-        bk_type_map = load_bk_types(os.path.join(rel_ext_dir, 'baike_static_info.tsv.sample'))
+        # bk_type_map = load_bk_types(os.path.join(rel_ext_dir, 'baike_static_info.tsv.sample'))
+        bk_type_map = load_bk_types()
         
         
     outf = file(out_path, 'w')
