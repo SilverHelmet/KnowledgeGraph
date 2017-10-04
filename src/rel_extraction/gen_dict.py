@@ -26,6 +26,7 @@ def is_vertical_domain(types):
     for fb_type in types:
         print get_domain(fb_type)
         if get_domain(fb_type) in valid_domains:
+            print 'return true'
             return True
         else:
             return False
@@ -82,7 +83,7 @@ if __name__ == "__main__":
         valid = False
         for bk_url in bks:
             # pop = max(pop, pop_map.get(bk_url, 0))
-            print bk_url, bk_type_map[bk_url], valid_func(bk_type_map[bk_url])
+            # print bk_url, bk_type_map[bk_url], valid_func(bk_type_map[bk_url])
             if valid_func is None or valid_func(bk_type_map[bk_url]):
                 valid = True
 
