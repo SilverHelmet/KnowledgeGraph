@@ -24,6 +24,7 @@ valid_domains = set(['fb:film', 'fb:tv', 'fb:soccer', 'fb:sports', 'fb:astronomy
 def vertical_domain(types):
     global valid_domains
     for fb_type in types:
+        print fb_type
         if get_domain(fb_type) in valid_domains:
             return True
         else:
@@ -50,7 +51,7 @@ if __name__ == "__main__":
     valid_func = None
     if len(sys.argv) >= 2 and sys.argv[1] == "vertical":
         valid_func = vertical_domain
-        out_paht = os.path.join(rel_ext_dir, 'baike_dict_vertical_domain.txt')
+        out_path = os.path.join(rel_ext_dir, 'baike_dict_vertical_domain.txt')
         Print('use valid_func: valic_domains')
         bk_type_map = load_bk_types(os.path.join(rel_ext_dir, 'baike_static_info.tsv.sample'))
         
@@ -83,9 +84,10 @@ if __name__ == "__main__":
             # pop = max(pop, pop_map.get(bk_url, 0))
             if valid_func is None or valid_func(bk_type_map[bk_url]):
                 valid = True
+
         if BaikeDatetime.parse(name, strict = True) is not None:
-            print 'time name', name
             continue
+
         if valid:
             outf.write('%s\n' %(name))
             # outf.write('%s %d baike\n' %(name, pop * 2 + 1))
