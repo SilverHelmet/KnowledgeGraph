@@ -90,6 +90,8 @@ def load_labeled_data(filepath):
 
 def process_labeled_data(ignore_miss):
     datas_map = {}
+    nb_data = 0
+    nb_kl = 0
     for filepath in glob.glob(data_dir + '/标注数据/*xlsx'):
         print 'load %s' %filepath
 
@@ -102,13 +104,17 @@ def process_labeled_data(ignore_miss):
                     new_datas.append(data)
             datas = new_datas
 
+        nb_data += len(datas)
+        for data in datas:
+            nb_kl += len(data.knowledges)
+
         name = os.path.basename(filepath).split(".")[0]
         datas_map[name] = datas
-    return datas_map
+    return datas_map, nb_data, nb_kl
     
 if __name__ == "__main__":
-    datas_map = process_labeled_data(ignore_miss = True)
-
+    datas_map, nb_data, nb_kl = process_labeled_data(ignore_miss = True)
+    print "#data = %d, #labeled kl = %d" %(nb_data, nb_kl)
     extractor = SimpleExtractor()
 
     for baike_name in datas_map:
