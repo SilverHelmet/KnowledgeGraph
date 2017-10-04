@@ -33,11 +33,12 @@ def vertical_domain(types):
         
 
 
-
+ 
 
 if __name__ == "__main__":
     # pop_map = load_bk_entity_pop()
-    name2bk = load_name2baike()
+    name2bk = load_name2baike(os.path.join(rel_ext_dir, 'baike_names.tsv.sample'))
+
     
     keys = sorted(name2bk)
     out_path = os.path.join(rel_ext_dir, 'baike_dict.txt')
@@ -51,7 +52,7 @@ if __name__ == "__main__":
         valid_func = vertical_domain
         out_paht = os.path.join(rel_ext_dir, 'baike_dict_vertical_domain.txt')
         Print('use valid_func: valic_domains')
-        bk_type_map = load_bk_types()
+        bk_type_map = load_bk_types(os.path.join(rel_ext_dir, 'baike_static_info.tsv.sample'))
         
         
     outf = file(out_path, 'w')
@@ -63,19 +64,15 @@ if __name__ == "__main__":
         if name.find(" ") != -1:
             continue
         if year_pattern.match(name):
-            print 'time name', name
+            # print 'time name', name
             continue
         if re_digit.match(name):
-            print "digit name", name
-            continue
-        if BaikeDatetime.parse(name, strict = True) is not None:
-            print 'time name', name
+            # print "digit name", name
             continue
         if re_eng.match(name):
             continue
         if has_punc_eng(name):
             continue
-
         bks = name2bk[name]
 
         
@@ -86,6 +83,9 @@ if __name__ == "__main__":
             # pop = max(pop, pop_map.get(bk_url, 0))
             if valid_func(bk_type_map[bk_url]):
                 valid = True
+        if BaikeDatetime.parse(name, strict = True) is not None:
+            print 'time name', name
+            continue
         if valid:
             outf.write('%s\n' %(name))
             # outf.write('%s %d baike\n' %(name, pop * 2 + 1))

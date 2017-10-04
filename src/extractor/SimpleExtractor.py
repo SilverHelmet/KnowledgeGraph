@@ -64,9 +64,6 @@ class SimpleExtractor:
                 baike_entities.append(BaikeEntity(str_entity, bk_url, self.baike_pop_map[bk_url]))
         return baike_entities
 
-    def parse_time_entity(self, words, flags):
-
-
     def parse_str_relatiaons(self, words, flags):
         global rel_flags
         st = 0
