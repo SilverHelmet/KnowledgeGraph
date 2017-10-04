@@ -22,7 +22,7 @@ def has_punc_eng(name):
 def get_domain(fb_type):
     return fb_type.split('.')[0]
 
-valid_domains = set(['fb:film', 'fb:tv', 'fb:soccer', 'fb:sports', 'fb:astronomy', 'fb:music', 'fb:book'])
+valid_domains = set(['fb:film', 'fb:tv', 'fb:soccer', 'fb:sports', 'fb:astronomy', 'fb:music', 'fb:book', 'fb:award'])
 def is_vertical_domain(types):
     global valid_domains
     for fb_type in types:
