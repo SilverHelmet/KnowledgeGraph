@@ -121,10 +121,12 @@ if __name__ == "__main__":
         datas = datas_map[baike_name]
         for data in datas:
             sentence = data.sentence
-            kl = extractor.parse_sentence(sentence)
+            kls = extractor.parse_sentence(sentence)
             print sentence
             if kl:
-                print kl
+                print '\t', kls[0]
+                for kl in data.knowledges:
+                    print '\t\t', kl
 
 
 

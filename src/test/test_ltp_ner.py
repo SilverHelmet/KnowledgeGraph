@@ -1,6 +1,6 @@
 #encoding: utf-8
 import glob
-from ..IOUtil import data_dir
+from ..IOUtil import data_dir, rel_ext_dir
 import os
 from pyltp import NamedEntityRecognizer, Postagger, Segmentor
 
@@ -45,7 +45,8 @@ class Estimator():
     def __init__(self):
         self.segmentor = Segmentor()
         base_dir = 'lib/ltp_data_v3.4.0'
-        self.segmentor.load(os.path.join(base_dir, 'cws.model'))
+        # self.segmentor.load(os.path.join(base_dir, 'cws.model'))
+        self.segmentor.load_with_lexicon(os.path.join(base_dir, 'cws.model'), os.path.join(rel_ext_dir, 'baike_dict_vertical_domain.txt'))
 
         self.postagger = Postagger()
         self.postagger.load(os.path.join(base_dir, 'pos.model'))
@@ -95,6 +96,9 @@ class Estimator():
             self.estimation.miss += 1
             if self.check_include(entity, ner_entity_names):
                 self.estimation.miss_partial += 1
+                print sentence
+                print '\t%s' %(entity)
+                print "\t".join(ner_entity_names)
                 continue
 
             st, ed = self.find_pos(words, entity)
@@ -205,4 +209,7 @@ def read_data():
 
 
 if __name__ == "__main__":
-    data = read_data()
+    # data = read_data()
+    est = Estimator()
+    print " ".join(est.segmentor.segment('《生活大爆炸》是一出美国情景喜剧，此剧由华纳兄弟电视公司和查克·洛尔制片公司共同制作。'))
+    
