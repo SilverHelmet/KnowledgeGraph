@@ -26,7 +26,7 @@ s = "刘德华（Andy Lau），1961年9月出生于中国香港，中国知名�
 s = '半径：3.5m'
 s = '2004年，刘德华先与导演张艺谋合作武侠片《远古谜团》，而后又与导演冯小刚合作《天下无贼》，在票房上获得不错的成绩。'
 s = '《新媒体》，美国电影，J.J. Adler导演，Chris Stack、约翰·罗斯曼、BethAnn Bonner主演。'
-s = '刘德华, 中国知名演员、歌手、词作人、制片人、电影人'
+# s = '刘德华, 中国知名演员、歌手、词作人、制片人、电影人'
 # s = '刘德华特别爱读《冰果》'
 # s = "《冰与火之歌》是由美国作家乔治所著的小说系列。"
 # s = '刘德华1990年凭专辑《可不可以》走红歌坛，演唱过《忘情水》、《中国人》、《冰雨》等歌曲。'
@@ -38,7 +38,10 @@ base_dir = 'lib/ltp_data_v3.4.0'
 segmentor_model = os.path.join(base_dir, 'cws.model')
 # segmentor.load(segmentor_model)
 segmentor.load_with_lexicon(segmentor_model, os.path.join(base_dir, 'dict/segmentor_dict.txt'))
+
 words = segmentor.segment(s)
+words = ['《','新','媒体','》','，','美国','电影','，','J.J. Adler','导演','，','Chris Stack','、',
+'约翰·罗斯曼','、','BethAnn Bonner','主演','。']
 print " # ".join(words)
 segmentor.release()
 
