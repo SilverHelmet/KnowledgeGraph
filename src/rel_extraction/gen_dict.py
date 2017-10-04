@@ -87,7 +87,7 @@ if __name__ == "__main__":
 
         if BaikeDatetime.parse(name, strict = True) is not None:
             continue
-
+        print valid
         if valid:
             outf.write('%s\n' %(name))
             # outf.write('%s %d baike\n' %(name, pop * 2 + 1))
