@@ -76,12 +76,12 @@ if __name__ == "__main__":
         bks = name2bk[name]
 
         
-            
+        print name
         # pop = 0
         valid = False
         for bk_url in bks:
             # pop = max(pop, pop_map.get(bk_url, 0))
-            if valid_func(bk_type_map[bk_url]):
+            if valid_func is None or valid_func(bk_type_map[bk_url]):
                 valid = True
         if BaikeDatetime.parse(name, strict = True) is not None:
             print 'time name', name
