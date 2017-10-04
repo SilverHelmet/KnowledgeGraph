@@ -116,7 +116,6 @@ class SimpleExtractor:
                     spos.append(SPO(e1, fb_rel, e2, score, 'entity'))
         return spos
 
-    def parse_time_relations(self, words, flags, baike_entities, time_entities, fb_relations):
 
 
     def parse_sentence(self, sentence):
@@ -130,7 +129,7 @@ class SimpleExtractor:
         str_entites = self.parse_str_entity(words, flags)
         baike_entities = self.link_to_baike(words, flags, str_entites)
 
-        time_entities = self.parse_time_entity(words, flags)
+        # time_entities = self.parse_time_entity(words, flags)
 
         str_relations = self.parse_str_relatiaons(words, flags)
         fb_relations = self.link_to_fb_prop(words, flags, str_relations)
@@ -139,10 +138,13 @@ class SimpleExtractor:
         spos = []
         spos.extend(self.parse_entity_relations(words, flags, baike_entities, fb_relations))
         
+        if len(spos) == 0:
+            return None
        
         spos.sort(reverse = True)
-
-        return spos[:3]
+        spo = spos[0]
+        knowledge = Knowledge.from_spo(spo, words)
+        return [knowledge]
 
 
         
@@ -153,7 +155,7 @@ class SimpleExtractor:
 if __name__ == "__main__":
     jieba.add_word("投奔怒海", freq = 5, tag = "baike")
     s = u'刘德华出生于1966年，是知名演员、歌手。'
-
+    s = u'刘德华，1999年，参演电影了《投奔怒海》'
     res = pseg.cut(s)
     words = []
     flags = []
@@ -162,9 +164,10 @@ if __name__ == "__main__":
         flags.append(flag)
 
     extractor = SimpleExtractor()
-    spos = extractor.parse_sentence(s)
-    for spo in spos:
-        print spo
-        print "".join(words[spo.rel.st:spo.rel.ed])
+    knowledges = extractor.parse_sentence(s)
+    for kl in knowledges:
+        print kl
+
+    
         
     

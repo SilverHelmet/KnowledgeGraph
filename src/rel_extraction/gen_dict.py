@@ -30,12 +30,6 @@ def is_vertical_domain(types):
             return True
     return False
 
-
-        
-
-
- 
-
 if __name__ == "__main__":
     # pop_map = load_bk_entity_pop()
     # name2bk = load_name2baike(os.path.join(rel_ext_dir, 'baike_names.tsv.sample'))
