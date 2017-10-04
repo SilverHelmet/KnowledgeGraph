@@ -9,7 +9,6 @@ import re
 from ..mapping.fb_date import BaikeDatetime
 from ..baike_process.parse import html_unescape
 import sys
-from ..fb_process.extract_util import get_domain
 from ..rel_extraction.util import load_bk_types
 
 def has_punc_eng(name):
@@ -20,16 +19,16 @@ def has_punc_eng(name):
             return True
     return False
 
+def get_domain(fb_type):
+    return fb_type.split('.')[0]
+
 valid_domains = set(['fb:film', 'fb:tv', 'fb:soccer', 'fb:sports', 'fb:astronomy', 'fb:music', 'fb:book'])
 def is_vertical_domain(types):
     global valid_domains
     for fb_type in types:
-        print get_domain(fb_type)
         if get_domain(fb_type) in valid_domains:
-            print 'return true'
             return True
-        else:
-            return False
+    return False
 
 
         
@@ -77,8 +76,6 @@ if __name__ == "__main__":
             continue
         bks = name2bk[name]
 
-        
-        print name
         # pop = 0
         valid = False
         for bk_url in bks:
@@ -89,7 +86,6 @@ if __name__ == "__main__":
 
         if BaikeDatetime.parse(name, strict = True) is not None:
             continue
-        print valid
         if valid:
             outf.write('%s\n' %(name))
             # outf.write('%s %d baike\n' %(name, pop * 2 + 1))
