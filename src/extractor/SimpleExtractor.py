@@ -61,6 +61,7 @@ class SimpleExtractor:
             name = "".join(words[st:ed])
             baike_urls = self.name2baike.get(name, [])
             for bk_url in baike_urls:
+                print "".join(words[str_entity.st:str_entity.ed]), bk_url
                 baike_entities.append(BaikeEntity(str_entity, bk_url, self.baike_pop_map[bk_url]))
         return baike_entities
 
@@ -135,9 +136,9 @@ class SimpleExtractor:
         fb_relations = self.link_to_fb_prop(words, flags, str_relations)
 
 
+
         spos = []
         spos.extend(self.parse_entity_relations(words, flags, baike_entities, fb_relations))
-        
         if len(spos) == 0:
             return None
        
@@ -153,20 +154,24 @@ class SimpleExtractor:
 
 
 if __name__ == "__main__":
-    jieba.add_word("投奔怒海", freq = 5, tag = "baike")
+    jieba.add_word('投奔怒海', 5, 'nz')
+    # jieba.add_word('投奔怒海', 5, 'nz')
     s = u'刘德华出生于1966年，是知名演员、歌手。'
     s = u'刘德华，1999年，参演电影了《投奔怒海》'
+    s = u'《青花瓷》是方文山作词，周杰伦作曲并演唱的歌曲，收录于2007年11月2日周杰伦制作发行音乐专辑《我很忙》中。'
+
+    extractor = SimpleExtractor()
     res = pseg.cut(s)
     words = []
     flags = []
     for word, flag in res:
         words.append(word)
         flags.append(flag)
+        print "%s:%s" %(word, flag),
 
-    extractor = SimpleExtractor()
-    knowledges = extractor.parse_sentence(s)
-    for kl in knowledges:
-        print kl
+    # knowledges = extractor.parse_sentence(s)
+    # for kl in knowledges:
+    #     print kl
 
     
         

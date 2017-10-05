@@ -46,7 +46,7 @@ class Estimator():
         self.segmentor = Segmentor()
         base_dir = 'lib/ltp_data_v3.4.0'
         # self.segmentor.load(os.path.join(base_dir, 'cws.model'))
-        self.segmentor.load_with_lexicon(os.path.join(base_dir, 'cws.model'), os.path.join(rel_ext_dir, 'baike_dict_vertical_domain.txt'))
+        # self.segmentor.load_with_lexicon(os.path.join(base_dir, 'cws.model'), os.path.join(rel_ext_dir, 'baike_dict_vertical_domain.txt'))
 
         self.postagger = Postagger()
         self.postagger.load(os.path.join(base_dir, 'pos.model'))
@@ -211,5 +211,6 @@ def read_data():
 if __name__ == "__main__":
     # data = read_data()
     est = Estimator()
-    print " ".join(est.segmentor.segment('《生活大爆炸》是一出美国情景喜剧，此剧由华纳兄弟电视公司和查克·洛尔制片公司共同制作。'))
-    
+    s = '美国作家乔治马丁'
+    words = est.segmentor.segment(s)
+    print " ".join(words)
