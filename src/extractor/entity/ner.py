@@ -7,8 +7,8 @@ from ltp import LTP,LTPResult
 
 class NamedEntityReg:
 
-	def __init__(self):
-		self.__ltp = LTP("../../../../LTP/ltp_data_v3.4.0")
+	def __init__(self,ltp_base):
+		self.__ltp = LTP(ltp_base)
 
 	def recognize(self,sentence,ltp_result,page_info):
 		words = ltp_result.words
@@ -124,7 +124,7 @@ class NamedEntityReg:
 
 
 if __name__ == "__main__":
-	ner=NamedEntityReg()
+	ner=NamedEntityReg("../../../../LTP/ltp_data_v3.4.0")
 	while(True):
 		text=raw_input("please input text :")
 		print "\n"
