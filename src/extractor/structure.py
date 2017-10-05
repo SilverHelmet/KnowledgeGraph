@@ -41,3 +41,36 @@ class SPO:
 
     def __str__(self):
         return "%s\t%s\t%s\t%f" %(self.e1.baike_url, self.rel.fb_prop, self.e2.baike_url, self.score)
+
+class Knowledge:
+    def __init__(self, subj, prop, obj, subj_url, prop_uri, obj_url, score = 0 ):
+        self.subj = subj
+        self.prop = prop
+        self.obj = obj
+        
+        self.subj_url = subj_url
+        self.prop_uri = prop_uri
+        self.obj_url = obj_url
+
+        self.score = score
+
+    def __str__(self):
+        return "%s\t%s %s\t%s" %(self.subj, self.prop, self.prop_uri, self.obj)
+
+    @staticmethod
+    def from_spo(spo, words):
+        args = ["".join(words[spo.e1.st:spo.e1.ed]),  "".join(words[spo.rel.st:spo.rel.ed]), 
+            "".join(words[spo.e2.st:spo.e2.ed]), spo.e1.baike_url,
+            spo.rel.fb_prop, spo.e2.baike_url, spo.score]
+        kl = Knowledge(*args)
+        return kl
+    
+
+class ChapterInfo:
+    def __init__(self,baike_url, ename, chapt_title):
+        self.baike_url = baike_url
+        self.chapt_title = chapt_title
+        self.ename = ename
+
+
+

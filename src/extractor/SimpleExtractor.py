@@ -61,11 +61,9 @@ class SimpleExtractor:
             name = "".join(words[st:ed])
             baike_urls = self.name2baike.get(name, [])
             for bk_url in baike_urls:
+                print "".join(words[str_entity.st:str_entity.ed]), bk_url
                 baike_entities.append(BaikeEntity(str_entity, bk_url, self.baike_pop_map[bk_url]))
         return baike_entities
-
-    def parse_time_entity(self, words, flags):
-
 
     def parse_str_relatiaons(self, words, flags):
         global rel_flags
@@ -119,7 +117,6 @@ class SimpleExtractor:
                     spos.append(SPO(e1, fb_rel, e2, score, 'entity'))
         return spos
 
-    def parse_time_relations(self, words, flags, baike_entities, time_entities, fb_relations):
 
 
     def parse_sentence(self, sentence):
@@ -133,19 +130,22 @@ class SimpleExtractor:
         str_entites = self.parse_str_entity(words, flags)
         baike_entities = self.link_to_baike(words, flags, str_entites)
 
-        time_entities = self.parse_time_entity(words, flags)
+        # time_entities = self.parse_time_entity(words, flags)
 
         str_relations = self.parse_str_relatiaons(words, flags)
         fb_relations = self.link_to_fb_prop(words, flags, str_relations)
 
 
+
         spos = []
         spos.extend(self.parse_entity_relations(words, flags, baike_entities, fb_relations))
-        
+        if len(spos) == 0:
+            return None
        
         spos.sort(reverse = True)
-
-        return spos[:3]
+        spo = spos[0]
+        knowledge = Knowledge.from_spo(spo, words)
+        return [knowledge]
 
 
         
@@ -154,20 +154,25 @@ class SimpleExtractor:
 
 
 if __name__ == "__main__":
-    jieba.add_word("投奔怒海", freq = 5, tag = "baike")
+    jieba.add_word('投奔怒海', 5, 'nz')
+    # jieba.add_word('投奔怒海', 5, 'nz')
     s = u'刘德华出生于1966年，是知名演员、歌手。'
+    s = u'刘德华，1999年，参演电影了《投奔怒海》'
+    s = u'《青花瓷》是方文山作词，周杰伦作曲并演唱的歌曲，收录于2007年11月2日周杰伦制作发行音乐专辑《我很忙》中。'
 
+    extractor = SimpleExtractor()
     res = pseg.cut(s)
     words = []
     flags = []
     for word, flag in res:
         words.append(word)
         flags.append(flag)
+        print "%s:%s" %(word, flag),
 
-    extractor = SimpleExtractor()
-    spos = extractor.parse_sentence(s)
-    for spo in spos:
-        print spo
-        print "".join(words[spo.rel.st:spo.rel.ed])
+    # knowledges = extractor.parse_sentence(s)
+    # for kl in knowledges:
+    #     print kl
+
+    
         
     

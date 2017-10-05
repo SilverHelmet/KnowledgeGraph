@@ -9,7 +9,6 @@ import re
 from ..mapping.fb_date import BaikeDatetime
 from ..baike_process.parse import html_unescape
 import sys
-from ..fb_process.extract_util import get_domain
 from ..rel_extraction.util import load_bk_types
 
 def has_punc_eng(name):
@@ -20,23 +19,20 @@ def has_punc_eng(name):
             return True
     return False
 
-valid_domains = set(['fb:film', 'fb:tv', 'fb:soccer', 'fb:sports', 'fb:astronomy', 'fb:music', 'fb:book'])
-def vertical_domain(types):
+def get_domain(fb_type):
+    return fb_type.split('.')[0]
+
+valid_domains = set(['fb:film', 'fb:tv', 'fb:soccer', 'fb:sports', 'fb:astronomy', 'fb:music', 'fb:book', 'fb:award'])
+def is_vertical_domain(types):
     global valid_domains
     for fb_type in types:
         if get_domain(fb_type) in valid_domains:
             return True
-        else:
-            return False
-
-
-        
-
-
-
+    return False
 
 if __name__ == "__main__":
     # pop_map = load_bk_entity_pop()
+    # name2bk = load_name2baike(os.path.join(rel_ext_dir, 'baike_names.tsv.sample'))
     name2bk = load_name2baike()
     
     keys = sorted(name2bk)
@@ -48,9 +44,10 @@ if __name__ == "__main__":
 
     valid_func = None
     if len(sys.argv) >= 2 and sys.argv[1] == "vertical":
-        valid_func = vertical_domain
-        out_paht = os.path.join(rel_ext_dir, 'baike_dict_vertical_domain.txt')
+        valid_func = is_vertical_domain
+        out_path = os.path.join(rel_ext_dir, 'baike_dict_vertical_domain.txt')
         Print('use valid_func: valic_domains')
+        # bk_type_map = load_bk_types(os.path.join(rel_ext_dir, 'baike_static_info.tsv.sample'))
         bk_type_map = load_bk_types()
         
         
@@ -63,29 +60,27 @@ if __name__ == "__main__":
         if name.find(" ") != -1:
             continue
         if year_pattern.match(name):
-            print 'time name', name
+            # print 'time name', name
             continue
         if re_digit.match(name):
-            print "digit name", name
-            continue
-        if BaikeDatetime.parse(name, strict = True) is not None:
-            print 'time name', name
+            # print "digit name", name
             continue
         if re_eng.match(name):
             continue
         if has_punc_eng(name):
             continue
-
         bks = name2bk[name]
 
-        
-            
         # pop = 0
         valid = False
         for bk_url in bks:
             # pop = max(pop, pop_map.get(bk_url, 0))
-            if valid_func(bk_type_map[bk_url]):
+            # print bk_url, bk_type_map[bk_url], valid_func(bk_type_map[bk_url])
+            if valid_func is None or valid_func(bk_type_map[bk_url]):
                 valid = True
+
+        if BaikeDatetime.parse(name, strict = True) is not None:
+            continue
         if valid:
             outf.write('%s\n' %(name))
             # outf.write('%s %d baike\n' %(name, pop * 2 + 1))
