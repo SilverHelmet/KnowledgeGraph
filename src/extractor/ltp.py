@@ -4,8 +4,15 @@ import os
 class LTPResult:
     def __init__(self, words, tags, ner_tags, arcs, sentence):
         self.words = words
+        self.length = len(words)
+
+        for arc in arcs:
+            arc.head -= 1
+            if arc.head == -1:
+                arc.head = self.length
+
         self.tags = tags
-        self.ner_tags =ner_tags
+        self.ner_tags = ner_tags
         self.arcs = arcs
         self.sentence = sentence
         self.words_st = self.find_pos()
@@ -54,18 +61,33 @@ class LTP:
         tags = self.tagger.postag(words)
         ner_tags = self.nertagger.recognize(words, tags)
         arcs = self.parser.parse(words, tags)
-        for arc in arcs:
-            arc.head -= 1
-
         result = LTPResult(words, tags, ner_tags, arcs, sentence)
         return result
         
 if __name__ == "__main__":
     sentence = '《新媒体》，美国电影，J.J. Adler导演'
+    # LTP参数就是模型的位置
     ltp = LTP('lib/ltp_data_v3.4.0')
     ltp_result = ltp.parse(sentence)
     for word, postag, nertag in zip(ltp_result.words, ltp_result.tags, ltp_result.ner_tags):
-        print "%s %s %s" %(word, postag, nertag)
+        print "%s %s %s" %(word, postag, nertag), 
+
+    print '\n'
+    print '-' * 50
+
+    for idx, arc in enumerate(ltp_result.arcs):
+        head = arc.head
+        rel = arc.relation
+
+        son_word = ltp_result.words[idx]
+        if head == ltp_result.length:
+            head_word = 'root'
+        else:
+            head_word = ltp_result.words[head]
+        print "%s - %s : %s" %(son_word, head_word, rel)
+
+
+    print '-' * 50 
 
     print ltp_result.text(0, 4)
     print ltp_result.text(8, 11)
