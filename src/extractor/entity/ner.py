@@ -1,30 +1,22 @@
 # -*- coding: utf-8 -*-
 
-from pyltp import Segmentor
-from pyltp import Postagger
-from pyltp import NamedEntityRecognizer
-from pyltp import Parser
 import sys
+import uniout 
 sys.path.append("..")
-import ltp
+from ltp import LTP,LTPResult
 
 class NamedEntityReg:
 
 	def __init__(self):
+		self.__ltp = LTP("../../../../LTP/ltp_data_v3.4.0")
 
-		self.__ltp = LTP("lib/ltp_data_v3.4.0")
-
-	def recognize(self,sentence,LTPResult,page_info):
-		words = self.segment(sentence)
-		postag = self.postag(words)
+	def recognize(self,sentence,ltp_result,page_info):
+		words = ltp_result.words
+		postag = ltp_result.tags
 		new_words,new_postag = self.__optimize_segment(words,postag)
-
-		raw_entitys = list(self.__recognizer.recognize(new_words,new_postag))
-
-		new_raw_entitys = list(self.__ltp.nertagger.recognize(words,postag))
-		print("原实体：",raw_entitys,"\n","新实体",new_raw_entitys,"\n")
-		optimize_entitys = self.__optimize_entitys(postag,raw_entitys)
-		return raw_entitys,self.__entity_tuples(optimize_entitys)
+		raw_entitys = list(self.__ltp.nertagger.recognize(new_words,new_postag))
+		optimize_entitys = self.__optimize_entitys(new_postag,raw_entitys)
+		return self.__entity_tuples(optimize_entitys)
 
 	def segment(self,sentence):
 		words = self.__ltp.segmentor.segment(sentence)
@@ -35,10 +27,7 @@ class NamedEntityReg:
 
 
 	def release(self):
-		self.__segmenter.release()
-		self.__postagger.release()
-		self.__recognizer.release()
-		self.__parser.release()
+		return ""
 
 	def __entity_tuples(self,entitys):
 		tuples = []
@@ -135,23 +124,20 @@ class NamedEntityReg:
 
 
 if __name__ == "__main__":
-	ner=NamedEntityReg(SEG_PATH,POS_PATH,REG_PATH,PARSER_PATH)
+	ner=NamedEntityReg()
 	while(True):
-		text=input("please input text :")
-		print("\n")
+		text=raw_input("please input text :")
+		print "\n"
 		if text == "exit":
 			break
-		print("\n")
+		
 		words=ner.segment(text)
-		print (words,"\n")
 		postag=ner.postag(words)
-		print(postag,"\n")
-		raw_entitys , entitys = ner.recognize(text,"","")
-		print(raw_entitys,"\n")
-		print(entitys,"\n")
-		print("\n")
-		print("\n")
+
+		ltp_resoult = LTPResult(words,postag,"","","")
+		entitys = ner.recognize(text,ltp_resoult,"")
+		print entitys,"\n"
 
 	ner.release()
-	
+
 	
