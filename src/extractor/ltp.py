@@ -1,3 +1,4 @@
+#encoding:utf-8
 from pyltp import Segmentor, Postagger, Parser, NamedEntityRecognizer
 import os
 
