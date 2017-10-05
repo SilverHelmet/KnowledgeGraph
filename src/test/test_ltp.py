@@ -35,6 +35,7 @@ s = '经过多年时间，任天堂已成为全球最大的电玩游戏机制造
 # s = '美国作家乔治马丁'
 # s = '星云奖获得者乔治马丁来了'
 s = '《生活大爆炸》是一出美国情景喜剧，此剧由华纳兄弟电视公司和查克·洛尔制片公司共同制作。'
+
 segmentor = Segmentor()
 base_dir = 'lib/ltp_data_v3.4.0'
 segmentor_model = os.path.join(base_dir, 'cws.model')

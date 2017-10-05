@@ -123,7 +123,7 @@ if __name__ == "__main__":
             sentence = data.sentence
             kls = extractor.parse_sentence(sentence)
             print sentence
-            if kl:
+            if kls:
                 print '\t', kls[0]
                 for kl in data.knowledges:
                     print '\t\t', kl
