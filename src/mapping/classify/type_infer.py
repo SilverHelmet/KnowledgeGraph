@@ -175,8 +175,15 @@ def load_extra_type(fb_prop_path, total):
         if "fb:music.composition" in fb_types:
             if "fb:music.recording" not in fb_types and "fb:music.album" not in fb_types:
                 extra_types = find_music_type(json.loads(obj))
+                if "fb:music.recording" not in extra_types:
+                    extra_types.append('fb:music.recording')
+            else:
+                if "fb:music.recording" not in extra_types:
+                    extra_types.append('fb:music.recording')
         elif "fb:music.album" in fb_types or "fb:music.recording" in fb_types:
             extra_types = ['fb:music.composition']
+            if "fb:music.recording" not in extra_types:
+                extra_types.append('fb:music.recording')
         if len(extra_types) > 0:
             extra_type_map[fb_uri] = extra_types
     return extra_type_map
@@ -266,7 +273,7 @@ def test():
 
 
 if __name__ == "__main__":
-    # load_and_write_extra_types()
+    load_and_write_extra_types()
     infer_type()
 
     #debug
