@@ -10,7 +10,7 @@ if __name__ == "__main__":
     for line in file(classify_result_path):
         bk_url, fb_uri, score = line.decode('utf-8').split('\t')
         score = float(score)
-        if score < 0.1:
+        if score < 0.01:
             continue
         bk2fb[bk_url] = fb_uri
         outf.write('%s\t%s\n' %(bk_url, fb_uri))
@@ -44,6 +44,7 @@ if __name__ == "__main__":
         fb_types = fb_type_map.get(fb_uri, [])
 
         type_probs = type_infer.infer(bk_info, bk_clses)
+        # type_infer.choose_one_music_type(type_probs, 0.8)
         top_types = topk_key(type_probs, 2)
         
         match = False
@@ -57,4 +58,5 @@ if __name__ == "__main__":
             print bk_url, fb_uri, top_types, fb_types
     print "#extra mappings = %d" %extra_mappings
     outf.close()
+
 

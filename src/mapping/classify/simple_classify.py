@@ -78,7 +78,9 @@ def calc_type_infer_score(pairs):
     for bk, fb in pairs:
         baike_urls.add(bk)
         fb_uris.add(fb)
-    
+
+    # debug_outf = file(os.path.join(result_dir, 'debug.txt'), 'w')
+
     baike_cls_map = load_baike_entity_class(filepath = os.path.join(classify_dir, 'baike_cls.tsv'), baike_urls = baike_urls, simple = True)
     baike_info_map = load_baike_attr_names(filepath = os.path.join(result_dir, '360/360_entity_info_processed.json'),
                                          total = 21710208, baike_urls = baike_urls)
@@ -95,6 +97,7 @@ def calc_type_infer_score(pairs):
         baike_cls = baike_cls_map.get(baike_url, [])
         baike_info = baike_info_map.get(baike_url, [])
         type_probs = type_infer.infer(baike_info, baike_cls)
+        type_infer.choose_one_music_type(type_probs, 0.8)
         fb_types = fb_type_map[fb_uri]
         score = 0
         decided_inferred_types = []
@@ -107,8 +110,11 @@ def calc_type_infer_score(pairs):
             for x in decided_inferred_types:
                 if not x in fb_types:
                     error_cnt += 1
+                
             if error_cnt == len(decided_inferred_types) and error_cnt >= 2:
                 score -= error_cnt
+            if error_cnt == 1:
+                score -= 0.1
             if error_cnt == 2:
                 score -= 0.3
             elif error_cnt == 3:
@@ -116,11 +122,15 @@ def calc_type_infer_score(pairs):
             elif error_cnt >= 4:
                 score -= 5
         max_prob = 0
+        # debug_outf.write('%s %s %f\n' %(baike_url, fb_uri, score))
         for fb_type in fb_types:
             if type_probs.get(fb_type, 0) > max_prob:
                 max_prob = type_probs[fb_type]
         score += min(0.02 * max_prob, 0.2)
         score_map[make_key(baike_url, fb_uri)] = score
+
+    # debug_outf.close()
+
     return score_map
         
 class SimpleClassifer:
@@ -150,7 +160,11 @@ class SimpleClassifer:
                 summary_score *= 10
             score = self.infobox_cof * self.infobox_scores.get(key, 0) + self.summary_cof * summary_score
             if self.type_infer:
-                score += self.type_infer_scores[key]
+                infer_score = self.type_infer_scores[key]
+                if infer_score < 0 and summary_score > 0.3:
+                    infer_score = 0        
+
+                score += infer_score
             score_map[key] = score
         return score_map
 
