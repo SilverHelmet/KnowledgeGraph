@@ -1,10 +1,11 @@
+# process 360 entity infobox
 # python -u -m src.baike_process.process_entity_info >& log/process_entity_info.log 
 # python -u -m src.mapping.classify.calc_infobox_mapping_score >& log/calc_mapping_score.log
 
 # gen predicate mapping
 # python -u -m src.mapping.classify.gen_good_one2one_mapping >& log/gen_good_one2one.log
-# python -u -m src.mapping.classify.gen_baike_class_to_fb
-# python -u -m src.mapping.predicate_mapping >& log/predicate_mapping.log
+python -u -m src.mapping.classify.gen_baike_class_to_fb
+python -u -m src.mapping.predicate_mapping >& log/predicate_mapping.log
 # python -m src.mapping.collect_predicate_mapping_result
 
 

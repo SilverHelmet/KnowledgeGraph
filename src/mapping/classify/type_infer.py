@@ -130,7 +130,8 @@ class TypeInfer:
                 if other_key in type_probs:
                     type_probs.pop(other_key)
         elif recording_prob >= threshold or album_prob >= threshold:
-            type_probs.pop(other_key)
+            if other_key in type_probs:
+                type_probs.pop(other_key)
             type_probs['fb:music.composition'] = threshold + 0.01
 
 
@@ -142,18 +143,7 @@ class TypeInfer:
 def topk_key(key_map, k):
     keys = sorted(key_map.keys(), key = lambda x: key_map[x], reverse = True)[:k]
     return keys
-
-def test():
-    infobox_path = os.path.join(result_dir, '360/mapping/one2one_predicates_map.json')
-    baike_cls_path = os.path.join(classify_dir, 'baike_cls2fb_type.json')
-    type_infer = TypeInfer(infobox_path = infobox_path, baike_cls_path = baike_cls_path)
-    info = [u'民族', u'影视作品', u'音乐作品']
-    info = [u"时间", u"专辑", u"风格", u"公司"]
-    info = [u'职业']
-    # clses = [u'prod:art:music']
-    clses = [u'person']
-    res = type_infer.infer(info, clses)
-    
+  
 def decide_type(type_probs, schema):
     if len(type_probs) == 0:
         return []
@@ -264,24 +254,28 @@ def load_and_write_extra_types():
     extra_type_map = load_extra_type(fb_prop_path, total)
     write_json_map(os.path.join(classify_dir, 'extra_type.json'), extra_type_map, sort = True)
 
+def test():
+    infobox_path = os.path.join(result_dir, '360/mapping/final_predicates_map.json')
+    baike_cls_path = os.path.join(classify_dir, 'final_baike_cls2fb_type.json')
+    type_infer = TypeInfer(infobox_path = infobox_path, baike_cls_path = baike_cls_path)
+
+    baike_cls = ['prod:art:filmtv']
+    baike_info = [u'唱片公司', u'所属专辑', u'发行时间', u'歌曲原唱', u'谱曲', u'编曲', u'填词', u'音乐风格', u'版本', u'歌曲语言', u'歌曲时长']
+    type_probs = type_infer.infer(baike_info, baike_cls)
+    # type_infer.choose_one_music_type(type_probs, 0.8)
+    decided_inferred_types = []
+    for inferred_type in type_probs:
+        prob = type_probs[inferred_type]
+        if prob > 0.8:
+            print inferred_type, prob
+            decided_inferred_types.append(inferred_type)
+    print " ".join(decided_inferred_types)
+  
+
 
 if __name__ == "__main__":
     # load_and_write_extra_types()
     infer_type()
 
-    # debug
-    # infobox_path = os.path.join(result_dir, '360/mapping/final_predicates_map.json')
-    # baike_cls_path = os.path.join(classify_dir, 'final_baike_cls2fb_type.json')
-    # type_infer = TypeInfer(infobox_path = infobox_path, baike_cls_path = baike_cls_path)
-
-    # baike_cls = ['prod:art:filmtv']
-    # baike_info = [u'唱片公司', u'所属专辑', u'发行时间', u'歌曲原唱', u'谱曲', u'编曲', u'填词', u'音乐风格', u'版本', u'歌曲语言', u'歌曲时长']
-    # type_probs = type_infer.infer(baike_info, baike_cls)
-    # # type_infer.choose_one_music_type(type_probs, 0.8)
-    # decided_inferred_types = []
-    # for inferred_type in type_probs:
-    #     prob = type_probs[inferred_type]
-    #     if prob > 0.8:
-    #         print inferred_type, prob
-    #         decided_inferred_types.append(inferred_type)
-    # print " ".join(decided_inferred_types)
+    #debug
+    # test()
