@@ -15,7 +15,7 @@ if __name__ == "__main__":
 
     
     outf = file(os.path.join(rel_ext_dir, 'vertical_domain_baike_names.tsv'), 'w')
-    dict_outf = file(os.path.join(rel_ext_dir), 'vertical_domain_baike_dict.txt', 'w')
+    dict_outf = file(os.path.join(rel_ext_dir, 'vertical_domain_baike_dict.txt'), 'w')
     fb_type_map = load_bk_types()
     names = set()
     for line in tqdm(file(os.path.join(rel_ext_dir, 'baike_names.tsv')), total  = 21710208):
