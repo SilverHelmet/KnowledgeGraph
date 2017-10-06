@@ -23,3 +23,10 @@ python -u -m src.mapping.collect_predicate_mapping_result $predicate_out $predic
 
 #type infer
 python -u -m src.mapping.classify.type_infer >& log/type_infer.log
+
+
+# extract mapped baike doc
+python -u -m src.rel_extraction.extract_doc >& log/extract_docs.log 
+
+# extract vertical domain baike name
+python -u -m src.rel_extraction.gen_dict vertical >& log/gen_vertical_dict.log
