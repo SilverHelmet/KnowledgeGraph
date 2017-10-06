@@ -202,7 +202,7 @@ def load_exact_mappings(filepath, threshold = 0.1):
         if len(p) == 3:
             bk, fb, score = p
             score = float(score)
-            if score > 0.1:
+            if score > threshold:
                 fb2bk[fb] = bk
                 bk_es.add(bk)
                 score_map[make_key(bk, fb)] = score
@@ -223,7 +223,7 @@ if __name__ == "__main__":
         mapping_path = sys.argv[1]
     else:
         mapping_path = os.path.join(result_dir, '360/mapping/classify/good_one2one_mappings.txt')
-    fb2baike, baike_entities, score_map = load_exact_mappings(mapping_path)
+    fb2baike, baike_entities, score_map = load_exact_mappings(mapping_path, 0.01)
 
 
     name_files = [os.path.join(result_dir, 'freebase/entity_name.json'),

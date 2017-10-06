@@ -10,7 +10,7 @@ if __name__ == "__main__":
     for line in file(classify_result_path):
         bk_url, fb_uri, score = line.decode('utf-8').split('\t')
         score = float(score)
-        if score < 0.1:
+        if score < 0.01:
             continue
         bk2fb[bk_url] = fb_uri
         outf.write('%s\t%s\n' %(bk_url, fb_uri))
