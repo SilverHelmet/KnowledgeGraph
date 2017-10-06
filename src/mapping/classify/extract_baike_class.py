@@ -6,7 +6,7 @@ if __name__ == "__main__":
     baike2fb = load_mappings()
     baike_urls =set(baike2fb.keys())
     baike_class_path =  os.path.join(data_dir, '360_final_type_url.json')
-    baike2cls = load_baike_entity_class(filepath = filepath, baike_urls = baike_urls, simple = True)
+    baike2cls = load_baike_entity_class(filepath = baike_class_path, baike_urls = baike_urls, simple = True)
     Print('load class %d/%d' %(len(baike2cls), len(baike_urls)))
     values = set()
     for cls_list in baike2cls.values():
