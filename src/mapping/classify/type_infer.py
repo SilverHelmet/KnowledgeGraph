@@ -1,7 +1,7 @@
 #encoding:utf-8
 import os
 from .util import load_match_result, load_baike_entity_class, load_fb_type
-from ...IOUtil import result_dir, Print, classify_dir, rel_ext_dir, write_json_map
+from ...IOUtil import result_dir, Print, classify_dir, rel_ext_dir, write_json_map, load_json_map
 from ...fb_process.extract_util import get_type
 import json
 from .gen_baike_class_to_fb import BaikeClassCount
@@ -115,6 +115,26 @@ class TypeInfer:
 
     def choose_music_type(self, type_probs, threshold):
         composition_prob = type_probs.get('fb:music.composition', 0)
+        recording_prob = type_probs.get("fb:music.recoding", 0)
+        album_prob = type_probs.get("fb:music.album", 0)
+
+        if recording_prob > album_prob:
+            max_key = 'fb:music.recoding'
+            other_key = 'fb:music.album'
+        else:
+            max_key = 'fb:music.album'
+            other_key = 'fb:music.recoding'
+        
+        if composition_prob >= threshold:    
+            if type_probs.get(max_key, 0) >= threshold:
+                if other_key in type_probs:
+                    type_probs.pop(other_key)
+        elif recording_prob >= threshold or album_prob >= threshold:
+            type_probs.pop(other_key)
+            type_probs['fb:music.composition'] = threshold + 0.01
+
+
+
 
 
 
@@ -187,12 +207,12 @@ def infer_type():
 
 
 
-    
-
     predicates_map_path = os.path.join(result_dir, '360/mapping/final_predicates_map.json')
     baike_cls2tpe_path = os.path.join(classify_dir, 'final_baike_cls2fb_type.json')
     type_infer = TypeInfer(infobox_path = predicates_map_path, baike_cls_path = baike_cls2tpe_path)
     
+    extra_type_path = os.path.join(classify_dir, 'extra_type.json')
+    extra_type_map = load_json_map(extra_type_path)
     
     out_path = os.path.join(rel_ext_dir, 'baike_static_info.tsv')
     outf = file(out_path, 'w')
@@ -213,6 +233,12 @@ def infer_type():
         if baike_url in bk2fb_map:
             fb_uri = bk2fb_map[baike_url]
             fb_types = fb_type_map[fb_uri]
+            if fb_uri in extra_type_map:
+                extra_types = extra_type_map[fb_uri]
+                for ext_type in extra_types:
+                    if not ext_type in fb_types:
+                        fb_types.append(ext_type)
+            fb_types = list(set(fb_types))
             outf.write('%s\t%s\t%d\t%s\n' %(baike_url, fb_uri, nb_names, json.dumps(fb_types)))
             continue
 
@@ -224,6 +250,7 @@ def infer_type():
         else:
             clses = []
         type_probs = type_infer.infer(names, clses) 
+        type_infer.choose_music_type(type_probs, 0.8)
         inffered_types = decide_type(type_probs, schema)
         outf.write('%s\t%s\t%d\t%s\n' %(baike_url, "None", nb_names, json.dumps(inffered_types)))
 
@@ -239,9 +266,8 @@ def load_and_write_extra_types():
 
 
 if __name__ == "__main__":
-    load_and_write_extra_types()
-
-    # infer_type()
+    # load_and_write_extra_types()
+    infer_type()
 
     # debug
     # infobox_path = os.path.join(result_dir, '360/mapping/final_predicates_map.json')
