@@ -10,6 +10,7 @@ import json
 import uniout
 
 ENTITY_PATH=IOUtil.base_dir+"/src/extractor/entity"
+MY_FOLDER=IOUtil.base_dir+"/test_file"
 
 class NamedEntityReg:
 
@@ -185,12 +186,12 @@ def test_multi(ner):
 		print ner_tags,"\n"
 
 def test_write_file(ner):
-	stanford_result_raw = load_stanford_result(ENTITY_PATH+"/lsx-lhr.line.out.txt")
-	text_lines = load_text(ENTITY_PATH+"/lsx-lhr.line.txt")
+	stanford_result_raw = load_stanford_result(MY_FOLDER+"/lsx-lhr.line.out.txt")
+	text_lines = load_text(MY_FOLDER+"/lsx-lhr.line.txt")
 
-	fw_ltp = open(ENTITY_PATH+"/ltp_result.txt","w")
-	fw_ltp_raw_en = open(ENTITY_PATH+"/ltp_raw_entitys.txt","w")
-	fw_stf = open(ENTITY_PATH+"/stf_result.txt","w")
+	fw_ltp = open(MY_FOLDER+"/ltp_result.txt","w")
+	fw_ltp_raw_en = open(MY_FOLDER+"/ltp_raw_entitys.txt","w")
+	fw_stf = open(MY_FOLDER+"/stf_result.txt","w")
 
 	stanford_result = extract_stanford_result(stanford_result_raw,text_lines)
 	for index in range(len(text_lines)):
