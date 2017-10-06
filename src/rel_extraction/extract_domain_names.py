@@ -34,7 +34,7 @@ if __name__ == "__main__":
 
     for name in sorted(names):
         dict_outf.write("%s\n" %(name))
-    dict_outf.cloes()
+    dict_outf.close()
 
 
 
