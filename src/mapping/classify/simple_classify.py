@@ -97,6 +97,7 @@ def calc_type_infer_score(pairs):
         baike_cls = baike_cls_map.get(baike_url, [])
         baike_info = baike_info_map.get(baike_url, [])
         type_probs = type_infer.infer(baike_info, baike_cls)
+        type_infer.choose_one_music_type(type_probs)
         fb_types = fb_type_map[fb_uri]
         score = 0
         decided_inferred_types = []
