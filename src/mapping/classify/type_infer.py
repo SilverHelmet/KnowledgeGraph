@@ -113,6 +113,10 @@ class TypeInfer:
             if type_probs[max_key] >= threshold:
                 type_probs.pop(other_key)
 
+    def choose_music_type(self, type_probs, threshold):
+        composition_prob = type_probs.get('fb:music.composition', 0)
+        
+
 
 
 def topk_key(key_map, k):
@@ -195,21 +199,21 @@ def infer_type():
 
 
 if __name__ == "__main__":
-    infer_type()
+    # infer_type()
 
     # debug
-    # infobox_path = os.path.join(result_dir, '360/mapping/one2one_predicates_map.json')
-    # baike_cls_path = os.path.join(classify_dir, 'baike_cls2fb_type.json')
-    # type_infer = TypeInfer(infobox_path = infobox_path, baike_cls_path = baike_cls_path)
+    infobox_path = os.path.join(result_dir, '360/mapping/final_predicates_map.json')
+    baike_cls_path = os.path.join(classify_dir, 'final_baike_cls2fb_type.json')
+    type_infer = TypeInfer(infobox_path = infobox_path, baike_cls_path = baike_cls_path)
 
-    # baike_cls = ['prod:art:filmtv']
-    # baike_info = [u'唱片公司', u'所属专辑', u'发行时间', u'歌曲原唱', u'谱曲', u'编曲', u'填词', u'音乐风格', u'版本', u'歌曲语言', u'歌曲时长']
-    # type_probs = type_infer.infer(baike_info, baike_cls)
+    baike_cls = ['prod:art:filmtv']
+    baike_info = [u'唱片公司', u'所属专辑', u'发行时间', u'歌曲原唱', u'谱曲', u'编曲', u'填词', u'音乐风格', u'版本', u'歌曲语言', u'歌曲时长']
+    type_probs = type_infer.infer(baike_info, baike_cls)
     # type_infer.choose_one_music_type(type_probs, 0.8)
-    # decided_inferred_types = []
-    # for inferred_type in type_probs:
-    #     prob = type_probs[inferred_type]
-    #     if prob > 0.8:
-    #         print inferred_type, prob
-    #         decided_inferred_types.append(inferred_type)
-    # print " ".join(decided_inferred_types)
+    decided_inferred_types = []
+    for inferred_type in type_probs:
+        prob = type_probs[inferred_type]
+        if prob > 0.8:
+            print inferred_type, prob
+            decided_inferred_types.append(inferred_type)
+    print " ".join(decided_inferred_types)
