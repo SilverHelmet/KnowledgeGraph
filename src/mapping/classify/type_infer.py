@@ -74,6 +74,13 @@ class BKClassTypeInfer:
             baike_cls_cnt_map[baike_cls] = baike_cls_cnt
         return baike_cls_cnt_map
 
+    def add_map(self, baike_cls, fb_type):
+        baike_cls_cnt = BaikeClassCount(baike_cls)
+        baike_cls_cnt.fb_type_cnt = {'fb_type': 10000}
+        baike_cls_cnt.count = 10000
+        self.baike_cls_cnt_map[baike_cls] = baike_cls_cnt
+
+
     def infer(self, baike_clses, prob):
         for cls in baike_clses:
             if cls not in self.baike_cls_cnt_map:
@@ -90,6 +97,8 @@ class TypeInfer:
     def __init__(self, infobox_path, baike_cls_path):
         self.infobox_type_infer = InfoboxTypeInfer(path = infobox_path)
         self.baike_cls_infer = BKClassTypeInfer(path = baike_cls_path)
+        self.baike_cls_infer.add_map('type_person', 'fb:people.person')
+
     
     def infer(self, info, baike_clses):
         prob = {}
