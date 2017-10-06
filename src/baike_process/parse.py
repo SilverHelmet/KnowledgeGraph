@@ -90,6 +90,8 @@ def parse_line(line):
 def strip_url(url):
     if url.startswith("http://"):
         url = url[len('http://'):]
+    elif url.startswith("https://"):
+        url = url[len('https://'):]
     return url
 
 def check_valid(attr):
