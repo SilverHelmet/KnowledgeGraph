@@ -1,7 +1,7 @@
 #encoding:utf-8
 import os
 from .util import load_match_result, load_baike_entity_class, load_fb_type
-from ...IOUtil import result_dir, Print, classify_dir, rel_ext_dir
+from ...IOUtil import result_dir, Print, classify_dir, rel_ext_dir, write_json_map
 from ...fb_process.extract_util import get_type
 import json
 from .gen_baike_class_to_fb import BaikeClassCount
@@ -115,7 +115,7 @@ class TypeInfer:
 
     def choose_music_type(self, type_probs, threshold):
         composition_prob = type_probs.get('fb:music.composition', 0)
-        
+
 
 
 
@@ -145,13 +145,48 @@ def decide_type(type_probs, schema):
         types = topk_key(type_probs, 1)
     types = schema.complement_type(types)
     return types
+
+def find_music_type(props):
+    is_album = False
+    for prop, value in props:
+        if prop == 'fb:music.composition.recordings':
+            return ['fb:music.recording']
+        if prop == 'fb:music.composition.recorded_as_album':
+            is_album = True
+    if is_album:
+        return ['fb:music.album']
+    else:
+        return []
+            
+        
     
-    
+def load_extra_type(fb_prop_path, total):
+    extra_type_map = {}
+    fb_type_map = load_fb_type()
+    Print('load music extra type')
+    for line in tqdm(file(fb_prop_path), total = total):
+        fb_uri, obj = line.split('\t')
+        fb_uri = fb_uri.decode('utf-8')
+
+        fb_types = fb_type_map[fb_uri]
+        extra_types = []
+        if "fb:music.composition" in fb_types:
+            if "fb:music.recording" not in fb_types and "fb:music.album" not in fb_types:
+                extra_types = find_music_type(json.loads(obj))
+        elif "fb:music.album" in fb_types or "fb:music.recording" in fb_types:
+            extra_types = ['fb:music.composition']
+        if len(extra_types) > 0:
+            extra_type_map[fb_uri] = extra_types
+    return extra_type_map
 
 def infer_type():
+
     bk2fb_map = load_match_result(filepath = os.path.join(rel_ext_dir, 'mapping_result.tsv'))
     baike_cls_map = load_baike_entity_class()
     fb_type_map = load_fb_type(fb_uris = set(bk2fb_map.values()) )
+
+
+
     
 
     predicates_map_path = os.path.join(result_dir, '360/mapping/final_predicates_map.json')
@@ -199,21 +234,26 @@ def infer_type():
 
 
 if __name__ == "__main__":
+    fb_prop_path = os.path.join(classify_dir, 'mapped_fb_entity_info.json')
+    total = 6282988
+    extra_type_map = load_extra_type(fb_prop_path, total)
+    write_json_map(os.path.join(classify_dir, 'extra_type.json'), extra_type_map, sort = True)
+
     # infer_type()
 
     # debug
-    infobox_path = os.path.join(result_dir, '360/mapping/final_predicates_map.json')
-    baike_cls_path = os.path.join(classify_dir, 'final_baike_cls2fb_type.json')
-    type_infer = TypeInfer(infobox_path = infobox_path, baike_cls_path = baike_cls_path)
+    # infobox_path = os.path.join(result_dir, '360/mapping/final_predicates_map.json')
+    # baike_cls_path = os.path.join(classify_dir, 'final_baike_cls2fb_type.json')
+    # type_infer = TypeInfer(infobox_path = infobox_path, baike_cls_path = baike_cls_path)
 
-    baike_cls = ['prod:art:filmtv']
-    baike_info = [u'唱片公司', u'所属专辑', u'发行时间', u'歌曲原唱', u'谱曲', u'编曲', u'填词', u'音乐风格', u'版本', u'歌曲语言', u'歌曲时长']
-    type_probs = type_infer.infer(baike_info, baike_cls)
-    # type_infer.choose_one_music_type(type_probs, 0.8)
-    decided_inferred_types = []
-    for inferred_type in type_probs:
-        prob = type_probs[inferred_type]
-        if prob > 0.8:
-            print inferred_type, prob
-            decided_inferred_types.append(inferred_type)
-    print " ".join(decided_inferred_types)
+    # baike_cls = ['prod:art:filmtv']
+    # baike_info = [u'唱片公司', u'所属专辑', u'发行时间', u'歌曲原唱', u'谱曲', u'编曲', u'填词', u'音乐风格', u'版本', u'歌曲语言', u'歌曲时长']
+    # type_probs = type_infer.infer(baike_info, baike_cls)
+    # # type_infer.choose_one_music_type(type_probs, 0.8)
+    # decided_inferred_types = []
+    # for inferred_type in type_probs:
+    #     prob = type_probs[inferred_type]
+    #     if prob > 0.8:
+    #         print inferred_type, prob
+    #         decided_inferred_types.append(inferred_type)
+    # print " ".join(decided_inferred_types)
