@@ -39,7 +39,6 @@ class InfoboxTypeInfer:
             mappings = []
             for index, pair_str in enumerate(mapping_pairs, start = 1):
                 mapping = Mapping(pair_str)
-
                 if (index <= 2 or mapping.hit >= 50) and mapping.hit >= 3:
                     mappings.append(mapping)
             baikeattr2fb_type[baikeattr] = mappings
@@ -96,7 +95,26 @@ class TypeInfer:
         prob = {}
         self.infobox_type_infer.infer(info, prob)
         self.baike_cls_infer.infer(baike_clses, prob)
+        self.process_music_type(prob)
         return prob
+
+    def process_music_type(self, type_probs):
+        types = set(type_probs.keys())
+        if "fb:music.composition" in type_probs and type_probs['fb:music.composition'] >= 0.8:
+            if "fb:music.recording" in type_probs:
+                type_probs.pop('fb:music.recording')
+            if "fb:music.album" in type_probs:
+                type_probs.pop("fb:music.album")
+        elif "fb:music.album" in type_probs and "fb:music.recording" in type_probs:
+            max_key = "fb:music.album"
+            other_key = "fb:music.recording"
+            if type_probs['fb:music.recording'] > type_probs[max_key]:
+                max_key = 'fb:music.recording'
+                other_key = 'fb:music.album'
+            if type_probs[max_key] > 0.8:
+                type_probs.pop(other_key)
+
+
 
 def topk_key(key_map, k):
     keys = sorted(key_map.keys(), key = lambda x: key_map[x], reverse = True)[:k]
@@ -112,8 +130,6 @@ def test():
     # clses = [u'prod:art:music']
     clses = [u'person']
     res = type_infer.infer(info, clses)
-    print res
-    print topk_key(res, 2)
     
 def decide_type(type_probs, schema):
     if len(type_probs) == 0:
@@ -194,5 +210,6 @@ if __name__ == "__main__":
     # for inferred_type in type_probs:
     #     prob = type_probs[inferred_type]
     #     if prob > 0.8:
+    #         print inferred_type, prob
     #         decided_inferred_types.append(inferred_type)
     # print " ".join(decided_inferred_types)

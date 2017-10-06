@@ -79,7 +79,7 @@ def calc_type_infer_score(pairs):
         baike_urls.add(bk)
         fb_uris.add(fb)
 
-    debug_outf = file(os.path.join(result_dir, 'debug.txt'), 'w')
+    # debug_outf = file(os.path.join(result_dir, 'debug.txt'), 'w')
 
     baike_cls_map = load_baike_entity_class(filepath = os.path.join(classify_dir, 'baike_cls.tsv'), baike_urls = baike_urls, simple = True)
     baike_info_map = load_baike_attr_names(filepath = os.path.join(result_dir, '360/360_entity_info_processed.json'),
@@ -118,14 +118,14 @@ def calc_type_infer_score(pairs):
             elif error_cnt >= 4:
                 score -= 5
         max_prob = 0
-        debug_outf.write('%s %s %f\n' %(baike_url, fb_uri, score))
+        # debug_outf.write('%s %s %f\n' %(baike_url, fb_uri, score))
         for fb_type in fb_types:
             if type_probs.get(fb_type, 0) > max_prob:
                 max_prob = type_probs[fb_type]
         score += min(0.02 * max_prob, 0.2)
         score_map[make_key(baike_url, fb_uri)] = score
 
-    debug_outf.close()
+    # debug_outf.close()
 
     return score_map
         
@@ -156,7 +156,11 @@ class SimpleClassifer:
                 summary_score *= 10
             score = self.infobox_cof * self.infobox_scores.get(key, 0) + self.summary_cof * summary_score
             if self.type_infer:
-                score += self.type_infer_scores[key]
+                infer_score = type_infer_scores[key]
+                if infer_score < 0 and summary_score > 0.3:
+                    infer_score = 0        
+
+                score += infer_score
             score_map[key] = score
         return score_map
 
