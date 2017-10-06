@@ -3,6 +3,7 @@ from .util import load_bk_types
 from .gen_dict import get_domain
 import os
 import json
+from tqdm import tqdm
 
 if __name__ == "__main__":
     domains = set()
@@ -15,7 +16,7 @@ if __name__ == "__main__":
     
     outf = file(os.path.join(rel_ext_dir, 'vertical_domain_baike_names.tsv'), 'w')
     fb_type_map = load_bk_types()
-    for line in os.path.join(rel_ext_dir, 'baike_names.tsv'):
+    for line in tqdm(file(os.path.join(rel_ext_dir, 'baike_names.tsv')), total  = 21710208):
         p = line.rstrip('\n').decode('utf-8').split('\t')
         baike_url = p[0]
         types = fb_type_map[baike_url]
