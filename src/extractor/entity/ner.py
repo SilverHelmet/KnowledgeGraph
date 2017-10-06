@@ -18,8 +18,8 @@ class NamedEntityReg:
 		self.__ltp = LTP(ltp_base)
 
 	def recognize(self,sentence,ltp_result,page_info,stanford_result):
-		#new_ltp_result=copy.deepcopy(ltp_result)
-		new_ltp_result=ltp_result
+		new_ltp_result=copy.deepcopy(ltp_result)
+		#new_ltp_result=ltp_result
 		new_ltp_result.ner_tags=list(self.__ltp.nertagger.recognize(new_ltp_result.words,new_ltp_result.tags))
 		self.__optimize_entitys(new_ltp_result)
 		return self.__entity_tuples(new_ltp_result.ner_tags)
