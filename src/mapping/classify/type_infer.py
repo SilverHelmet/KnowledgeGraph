@@ -134,12 +134,6 @@ class TypeInfer:
                 type_probs.pop(other_key)
             type_probs['fb:music.composition'] = threshold + 0.01
 
-
-
-
-
-
-
 def topk_key(key_map, k):
     keys = sorted(key_map.keys(), key = lambda x: key_map[x], reverse = True)[:k]
     return keys
@@ -168,8 +162,6 @@ def find_music_type(props):
     else:
         return []
             
-        
-    
 def load_extra_type(fb_prop_path, total):
     extra_type_map = {}
     fb_type_map = load_fb_type()
