@@ -6,17 +6,19 @@ class LTPResult:
     def __init__(self, words, tags, ner_tags, arcs, sentence):
         self.words = words
         self.length = len(words)
-
-        for arc in arcs:
-            arc.head -= 1
-            if arc.head == -1:
-                arc.head = self.length
-
+        
         self.tags = tags
         self.ner_tags = ner_tags
+
+        if arcs is not None:
+            for arc in arcs:
+                arc.head -= 1
+                if arc.head == -1:
+                    arc.head = self.length
         self.arcs = arcs
         self.sentence = sentence
-        self.words_st = self.find_pos()
+        if self.sentence is not None and self.words is not None:
+            self.words_st = self.find_pos()
         
         
     def find_pos(self):
