@@ -110,8 +110,11 @@ def calc_type_infer_score(pairs):
             for x in decided_inferred_types:
                 if not x in fb_types:
                     error_cnt += 1
+                
             if error_cnt == len(decided_inferred_types) and error_cnt >= 2:
                 score -= error_cnt
+            if error_cnt == 1:
+                score -= 0.1
             if error_cnt == 2:
                 score -= 0.3
             elif error_cnt == 3:
