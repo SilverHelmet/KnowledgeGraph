@@ -18,8 +18,8 @@ class NamedEntityReg:
 		self.__ltp = LTP(ltp_base)
 
 	def recognize(self,sentence,ltp_result,page_info,stanford_result):
-		new_ltp_result=copy.deepcopy(ltp_result)
-		#new_ltp_result=ltp_result
+		#new_ltp_result=copy.deepcopy(ltp_result)
+		new_ltp_result=ltp_result
 		new_ltp_result.ner_tags=list(self.__ltp.nertagger.recognize(new_ltp_result.words,new_ltp_result.tags))
 		self.__optimize_entitys(new_ltp_result)
 		return self.__entity_tuples(new_ltp_result.ner_tags)
@@ -89,7 +89,7 @@ class NamedEntityReg:
 	"""
 	对于《》中的词，做强制分词, 同时看做是nz词性,看作实体(如果本来没有识别)
 	"""
-	def __optimize_segment(self,ltp_result):
+	def __optimize_segment_v2(self,ltp_result):
 		index = 0
 		first = -1
 		while index < len(ltp_result.words):
@@ -110,6 +110,38 @@ class NamedEntityReg:
 				index = first + 2
 				first = -1
 			index += 1
+
+	def __optimize_segment(self,ltp_result):
+		new_words = []
+		new_postag = []
+		new_entitys = []
+		index = 0
+		first = -1
+		while index < len(ltp_result.words):
+			word = ltp_result.words[index]
+			pos = ltp_result.tags[index]
+			en = ltp_result.ner_tags[index]
+			if word == "《":
+				first = index
+			elif word == "》" and first != -1:
+				last = index
+				word = ltp_result.text(first + 1,last)
+				pos = "nz"
+				en = "S-Nb"
+				while first < last - 1:
+					new_words.pop()
+					new_postag.pop()
+					new_entitys.pop()
+					last -= 1
+				first = -1
+				index -= 1
+			new_words.append(word)
+			new_postag.append(pos)
+			new_entitys.append(en)
+			index += 1
+		ltp_result.words = new_words
+		ltp_result.tags = new_postag
+		ltp_result.ner_tags = new_entitys
 
 
 def extract_stanford_result(stanford_result,sentences):
@@ -173,7 +205,7 @@ def test_multi(ner):
 		words=ner.segment(text)
 		postag=ner.postag(words)
 
-		ltp_result = LTPResult(words,postag,"","","")
+		ltp_result = LTPResult(words,postag,"","",text)
 		entitys = ner.recognize(text,ltp_result,"","")
 		print entitys,"\n"
 
