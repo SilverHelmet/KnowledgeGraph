@@ -114,7 +114,7 @@ def calc_type_infer_score(pairs):
             if error_cnt == len(decided_inferred_types) and error_cnt >= 2:
                 score -= error_cnt
             if error_cnt == 1:
-                score -= 0.05
+                score -= 0.1
             if error_cnt == 2:
                 score -= 0.3
             elif error_cnt == 3:
