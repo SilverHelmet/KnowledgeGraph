@@ -192,7 +192,7 @@ def do_predicate_mapping(outpath, name_map, fb2baike, baike_entity_info, fb_prop
         
     outf.close()
 
-def load_exact_mappings(filepath, threshold = 0.1):
+def load_exact_mappings(filepath, threshold):
     Print("load exact mapping from [%s]" %filepath)
     fb2bk = {}
     bk_es = set()

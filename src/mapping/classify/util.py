@@ -38,7 +38,7 @@ def load_baike_entity_class(filepath = None, baike_urls = None, simple = False):
     return bk2cls
 
 
-def load_mappings_witd_score(filepath, threshold = 0.1):
+def load_mappings_witd_score(filepath, threshold):
     Print('load mappings from [%s] with score' %filepath)
     mappings = []
     for line in tqdm(file(filepath), total = nb_lines_of(filepath)):

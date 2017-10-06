@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import sys
+<<<<<<< HEAD
 from ..ltp import LTP,LTPResult
 from ... import IOUtil
 import copy
@@ -11,18 +12,24 @@ import chardet
 import uniout
 
 ENTITY_PATH=IOUtil.base_dir+"/src/extractor/entity"
+=======
+import uniout 
+sys.path.append("..")
+from ltp import LTP,LTPResult
+>>>>>>> f7d9bbef2a64be02ab09551f150d06b383afe1c2
 
 class NamedEntityReg:
 
 	def __init__(self,ltp_base):
 		self.__ltp = LTP(ltp_base)
 
-	def recognize(self,sentence,ltp_result,page_info,stanford_result):
-		#new_ltp_result=copy.deepcopy(ltp_result)
-		new_ltp_result=ltp_result
-		new_ltp_result.ner_tags=list(self.__ltp.nertagger.recognize(new_ltp_result.words,new_ltp_result.tags))
-		self.__optimize_entitys(new_ltp_result)
-		return self.__entity_tuples(new_ltp_result.ner_tags)
+	def recognize(self,sentence,ltp_result,page_info):
+		words = ltp_result.words
+		postag = ltp_result.tags
+		new_words,new_postag = self.__optimize_segment(words,postag)
+		raw_entitys = list(self.__ltp.nertagger.recognize(new_words,new_postag))
+		optimize_entitys = self.__optimize_entitys(new_postag,raw_entitys)
+		return self.__entity_tuples(optimize_entitys)
 
 	def segment(self,sentence):
 		words = self.__ltp.segmentor.segment(sentence)
@@ -50,9 +57,9 @@ class NamedEntityReg:
 			index += 1
 		return tuples
 
-	def __optimize_entitys(self,ltp_result):
-		self.__optimize_segment(ltp_result)
-		ltp_result.ner_tags = self.__pos_nh_to_ner_nh(ltp_result.tags,ltp_result.ner_tags)
+	def __optimize_entitys(self,postag,raw_entitys):
+		new_entitys = self.__pos_nh_to_ner_nh(postag,raw_entitys)
+		return new_entitys
 
 
 	"""
@@ -81,35 +88,38 @@ class NamedEntityReg:
 				while index < len(postag) and postag[index] == "nh":
 					t.append(index)
 					index += 1
-				t.append(index)	
+				t.append(index)				
 				L.append(t)
 			index += 1
 		return L
 
 	"""
-	对于《》中的词，做强制分词, 同时看做是nz词性,看作实体(如果本来没有识别)
+	对于《》中的词，做强制分词, 同时看做是nz词性(如果本来没有识别)
+	返回新的分词、新词性列表
 	"""
-	def __optimize_segment(self,ltp_result):
+	def __optimize_segment(self,words,postag):
+		new_words = list(words)
+		new_postag = list(postag)
 		index = 0
 		first = -1
-		while index < len(ltp_result.words):
-			if ltp_result.words[index] == "《":
+		while index < len(new_words):
+			if new_words[index] == "《":
 				first = index
-			elif ltp_result.words[index] == "》" and first != -1:
+			elif new_words[index] == "》" and first != -1 and index - first > 2:
 				last = index
+				work_name = ""
 				index = first + 1
 				while index < last:
-					ltp_result.tags[index]="nz"
-					ltp_result.ner_tags[index]="I-Nb" # Nb代表文学作品
-					index += 1
-				if last - first == 2:
-					ltp_result.ner_tags[first+1]="S-Nb"	
-				elif last - first > 2:
-					ltp_result.ner_tags[first+1]="B-Nb"
-					ltp_result.ner_tags[last-1]="E-Nb"
+					work_name += new_words[index]
+					new_words.pop(index)
+					new_postag.pop(index)
+					last -= 1
+				new_words.insert(first + 1,work_name)
+				new_postag.insert(first + 1,"nz")
 				index = first + 2
 				first = -1
 			index += 1
+<<<<<<< HEAD
 
 
 def extract_stanford_result(stanford_result,sentences):
@@ -148,21 +158,19 @@ def get_text(words,sentence,start,end):
 		index2 = sentence.find(words[end],index1) + len(words[end])
 	return sentence[0 : 2 ]
 """
+=======
+		return new_words,new_postag
 
-def load_stanford_result(file_name):
-	stanford_result = []
-	with open(file_name,"r") as f:
-		for line in f.readlines():
-			stanford_result.append(json.loads(line))
-	return stanford_result
 
-def load_text(file_name):
-	text_lines = []
-	with open(file_name,"r") as f:
-		text_lines = copy.deepcopy(f.readlines())
-	return text_lines
 
-def test_multi(ner):
+
+
+>>>>>>> f7d9bbef2a64be02ab09551f150d06b383afe1c2
+
+
+
+if __name__ == "__main__":
+	ner=NamedEntityReg("../../../../LTP/ltp_data_v3.4.0")
 	while(True):
 		text=raw_input("please input text :")
 		print "\n"
@@ -172,10 +180,11 @@ def test_multi(ner):
 		words=ner.segment(text)
 		postag=ner.postag(words)
 
-		ltp_result = LTPResult(words,postag,"","","")
-		entitys = ner.recognize(text,ltp_result,"","")
+		ltp_resoult = LTPResult(words,postag,"","","")
+		entitys = ner.recognize(text,ltp_resoult,"")
 		print entitys,"\n"
 
+<<<<<<< HEAD
 		words=ltp_result.words
 		tags=ltp_result.tags
 		ner_tags=ltp_result.ner_tags
@@ -228,6 +237,8 @@ if __name__ == "__main__":
 
 	test_write_file(ner)
 
+=======
+>>>>>>> f7d9bbef2a64be02ab09551f150d06b383afe1c2
 	ner.release()
 
 	

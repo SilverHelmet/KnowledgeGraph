@@ -32,7 +32,7 @@ class BaikeClassCount:
     def calc_prob(self):
         self.fb_type_prob = {}
         for fb_type in self.fb_type_cnt:
-            self.fb_type_prob[fb_type] = (self.fb_type_cnt[fb_type] + 0.0) / (self.count + 10)
+            self.fb_type_prob[fb_type] = (self.fb_type_cnt[fb_type] + 0.0) / (self.count + 100)
 
     @staticmethod
     def load_from_obj(obj):
@@ -63,7 +63,7 @@ if __name__ == "__main__":
         good_mapping_path = sys.argv[1]
     else:
         good_mapping_path = os.path.join(classify_dir, 'good_one2one_mappings.txt')
-    good_mappings = load_mappings_witd_score(good_mapping_path)
+    good_mappings = load_mappings_witd_score(good_mapping_path, 0.1)
 
     bk_urls = set()
     fb_uris = set()
