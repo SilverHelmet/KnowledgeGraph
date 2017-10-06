@@ -4,6 +4,7 @@
 /result
 /log
 /lib
+/src/test
 
 # database
 vdb
