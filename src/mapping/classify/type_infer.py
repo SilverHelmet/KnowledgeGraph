@@ -97,6 +97,7 @@ class TypeInfer:
     def __init__(self, infobox_path, baike_cls_path):
         self.infobox_type_infer = InfoboxTypeInfer(path = infobox_path)
         self.baike_cls_infer = BKClassTypeInfer(path = baike_cls_path)
+        Print("Baike Class Infer: add mapping type_person -> fb:people.person")
         self.baike_cls_infer.add_map('type_person', 'fb:people.person')
 
     
