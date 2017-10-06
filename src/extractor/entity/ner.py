@@ -115,14 +115,6 @@ class NamedEntityReg:
 
 
 
-
-
-
-
-
-
-
-
 if __name__ == "__main__":
 	ner=NamedEntityReg("../../../../LTP/ltp_data_v3.4.0")
 	while(True):
