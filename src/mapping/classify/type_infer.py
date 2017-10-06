@@ -76,8 +76,9 @@ class BKClassTypeInfer:
 
     def add_map(self, baike_cls, fb_type):
         baike_cls_cnt = BaikeClassCount(baike_cls)
-        baike_cls_cnt.fb_type_cnt = {'fb_type': 10000}
+        baike_cls_cnt.fb_type_cnt = {fb_type: 10000}
         baike_cls_cnt.count = 10000
+        baike_cls_cnt.calc_prob()
         self.baike_cls_cnt_map[baike_cls] = baike_cls_cnt
 
 
@@ -269,6 +270,7 @@ def test():
     type_infer = TypeInfer(infobox_path = infobox_path, baike_cls_path = baike_cls_path)
 
     baike_cls = ['prod:art:filmtv']
+    baike_cls = ['type_person']
     baike_info = [u'唱片公司', u'所属专辑', u'发行时间', u'歌曲原唱', u'谱曲', u'编曲', u'填词', u'音乐风格', u'版本', u'歌曲语言', u'歌曲时长']
     type_probs = type_infer.infer(baike_info, baike_cls)
     # type_infer.choose_one_music_type(type_probs, 0.8)
