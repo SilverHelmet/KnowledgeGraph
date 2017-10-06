@@ -195,7 +195,7 @@ def infer_type():
 
 
 if __name__ == "__main__":
-    # infer_type()
+    infer_type()
 
     # debug
     # infobox_path = os.path.join(result_dir, '360/mapping/one2one_predicates_map.json')
