@@ -230,14 +230,16 @@ def infer_type():
     
     outf.close()
     Print('baike classes hit = %d' %cls_hit)
-    
 
-
-if __name__ == "__main__":
+def load_and_write_extra_types():
     fb_prop_path = os.path.join(classify_dir, 'mapped_fb_entity_info.json')
     total = 6282988
     extra_type_map = load_extra_type(fb_prop_path, total)
     write_json_map(os.path.join(classify_dir, 'extra_type.json'), extra_type_map, sort = True)
+
+
+if __name__ == "__main__":
+    load_and_write_extra_types()
 
     # infer_type()
 
