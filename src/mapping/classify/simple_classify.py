@@ -157,7 +157,7 @@ class SimpleClassifer:
                 summary_score *= 10
             score = self.infobox_cof * self.infobox_scores.get(key, 0) + self.summary_cof * summary_score
             if self.type_infer:
-                infer_score = type_infer_scores[key]
+                infer_score = self.type_infer_scores[key]
                 if infer_score < 0 and summary_score > 0.3:
                     infer_score = 0        
 
