@@ -98,22 +98,28 @@ class Estimator:
                 self.estimation.error += 1
 
         # miss analysis
+        miss_type_map = {}
         for entity in entities_name:
             if entity in ner_entities_name:
                 continue
             self.estimation.miss += 1
             if self.check_include(entity, ner_entities_name):
                 self.estimation.miss_partial += 1
+                miss_type_map[entity] = 1
                 continue
 
             st, ed = self.find_pos(ltp_result, entity)
             if st == -1:
                 self.estimation.miss_seg += 1
+                miss_type_map[entity] = 2
                 continue
             if self.check_noun(ltp_result, st, ed):
                 self.estimation.miss_nn += 1
+                miss_type_map[entity] = 3
             else:
                 self.estimation.miss_other += 1
+                miss_type_map[entity] = 4
+        return miss_type_map
         
     def check_include(self, entity, reco_entities):
         for reco_entity in reco_entities:
