@@ -1,3 +1,4 @@
+#encoding: utf-8
 from ..ltp import LTP, LTPResult
 
 class ParseTree:
