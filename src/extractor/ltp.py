@@ -27,7 +27,7 @@ class LTPResult:
         for word in self.words:
             word_st = self.sentence.find(word, st)
             words_st.append(word_st)
-            st = word_st
+            st = word_st + len(word)
         return words_st
 
     def text(self, st, ed):
