@@ -1,5 +1,5 @@
-from ..ltp import LTP, LTPResult
-
+#encoding: utf-8
+from ..ltp import LTP
 class ParseTree:
     def __init__(self, ltp_result):
         self.length = ltp_result.length
@@ -79,7 +79,8 @@ if __name__ == "__main__":
     tree = ParseTree(ltp_result)
     path1, path2 = tree.find_path(1, 4)
     for node in path1:
-        print "%s -%s-" %(node.word, node.rel),
+        print "%s -%s-" %(node.word, node.rel)
     print ""
     for node in path2:
-        print "%s -%s-" %(node.word, node.rel),
+        print "%s -%s-" %(node.word, node.rel)
+    
