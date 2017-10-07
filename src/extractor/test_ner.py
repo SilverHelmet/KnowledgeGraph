@@ -45,7 +45,7 @@ def read_data_from_file(filepath, datas_map):
 
 def read_data(filepath):
     datas_map = {}
-    for filepath in glob.glob(filepath + '/实体标注/*t*'):
+    for filepath in glob.glob(filepath + '/*t*'):
         read_data_from_file(filepath, datas_map)
     return datas_map
 
