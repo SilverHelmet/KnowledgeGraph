@@ -160,7 +160,6 @@ if __name__ == "__main__":
                 elif ner_tag.startswith('E'):
                     ner_entities_name.append(ltp_result.text(st, idx + 1))
 
-
             est.add(ltp_result, data.entities, ner_entities_name)
     est.estimation.print_info()
 

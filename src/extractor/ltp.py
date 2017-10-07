@@ -35,6 +35,11 @@ class LTPResult:
             return ""
         return self.sentence[self.words_st[st]: self.words_st[ed-1] + len(self.words[ed-1])]
 
+    def update(self, new_words, new_tags):
+        self.words = new_words
+        self.tags = new_tags
+        self.words_st = find_pos()
+
 class LTP:
     def __init__(self, base_dir):
         if base_dir is None:
