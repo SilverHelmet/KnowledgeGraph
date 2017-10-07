@@ -4,6 +4,7 @@ from .gen_dict import get_domain
 import os
 import json
 from tqdm import tqdm
+from .gen_dict import is_valid_dict_name
 
 if __name__ == "__main__":
     domains = set()
@@ -15,7 +16,8 @@ if __name__ == "__main__":
 
     
     outf = file(os.path.join(rel_ext_dir, 'vertical_domain_baike_names.tsv'), 'w')
-    dict_outf = file(os.path.join(rel_ext_dir, 'vertical_domain_baike_dict.txt'), 'w')
+    dict_path = os.path.join(rel_ext_dir, 'vertical_domain_baike_dict.txt')
+    dict_outf = file(dict_path, 'w')
     fb_type_map = load_bk_types()
     names = set()
     for line in tqdm(file(os.path.join(rel_ext_dir, 'baike_names.tsv')), total  = 21710208):
@@ -32,8 +34,11 @@ if __name__ == "__main__":
                 names.add(name)
     outf.close()
 
+    Print('write dict to %s' %(dict_path))
     for name in sorted(names):
-        dict_outf.write("%s\n" %(name))
+        name = name.strip()
+        if is_valid_dict_name(name):
+            dict_outf.write("%s\n" %(name))
     dict_outf.close()
 
 

@@ -19,6 +19,27 @@ def has_punc_eng(name):
             return True
     return False
 
+year_pattern = re.compile(ur'(公元前|公元)?\d{1,4}年$')
+re_digit = re.compile(r'^[0-9+\-=!?]+$')
+re_eng = re.compile(r"^[a-zA-Z]+$")
+def is_valid_dict_name(name):
+    global year_pattern, re_digit, re_eng
+    if name == "":
+        return False
+    if name.find(" ") != -1:
+        return False
+    if year_pattern.match(name):
+        return False
+    if re_digit.match(name):
+        # print "digit name", name
+        return False
+    if re_eng.match(name):
+        return False
+    if has_punc_eng(name):
+        return False
+    if BaikeDatetime.parse(name, strict = True) is not None:
+        return False
+
 def get_domain(fb_type):
     return fb_type.split('.')[0]
 
@@ -29,6 +50,8 @@ def is_vertical_domain(types):
         if get_domain(fb_type) in valid_domains:
             return True
     return False
+
+
 
 if __name__ == "__main__":
     # pop_map = load_bk_entity_pop()
@@ -55,20 +78,11 @@ if __name__ == "__main__":
     Print('write dict to %s' %out_path)
     for name in tqdm(keys, total = len(keys)):
         name = name.strip()
-        if name == "":
+        
+        if not is_valid_dict_name(name):
             continue
-        if name.find(" ") != -1:
-            continue
-        if year_pattern.match(name):
-            # print 'time name', name
-            continue
-        if re_digit.match(name):
-            # print "digit name", name
-            continue
-        if re_eng.match(name):
-            continue
-        if has_punc_eng(name):
-            continue
+        # if has_punc_eng(name):
+        #     continue
         bks = name2bk[name]
 
         # pop = 0
