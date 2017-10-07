@@ -1,3 +1,4 @@
+#encoding: utf-8
 from ..IOUtil import data_dir
 from .ltp import LTP
 import os
@@ -42,9 +43,9 @@ def read_data_from_file(filepath, datas_map):
                 datas.append(data)
     datas_map[url] = datas
 
-def read_data():
+def read_data(filepath):
     datas_map = {}
-    for filepath in glob.glob(data_dir + '/实体标注/*t*'):
+    for filepath in glob.glob(filepath + '/实体标注/*t*'):
         read_data_from_file(filepath, datas_map)
     return datas_map
 
@@ -140,7 +141,7 @@ class Estimator:
 
 
 if __name__ == "__main__":
-    datas_map = read_data()
+    datas_map = read_data(os.path.join(data_dir, '实体标注'))
 
     ltp = LTP(None)
     est = Estimator()
