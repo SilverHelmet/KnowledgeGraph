@@ -4,7 +4,7 @@ import json
 from ..IOUtil import base_dir, load_file, Print, result_dir
 import os
 
-def load_attrs():
+def load_baike_name_attrs():
     path = os.path.join(base_dir, 'docs/one2one_name_attr.txt')
     attrs = load_file(path)
     attrs = [attr.strip().split("\t")[-1].decode('utf-8') for attr in attrs]
@@ -42,7 +42,7 @@ def count_lv_map(maps):
 
 
 if __name__ == "__main__":
-    attrs = load_attrs()
+    attrs = load_baike_name_attrs()
     out_path = os.path.join(result_dir, '360/mapping/exact_mapping.tsv')
     in_path = os.path.join(result_dir, '360/360_mapping.json')
 

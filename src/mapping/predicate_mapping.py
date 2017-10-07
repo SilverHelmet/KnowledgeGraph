@@ -6,7 +6,7 @@ from tqdm import tqdm
 from .fb_date import FBDatetime, BaikeDatetime
 from .name_mapping import del_space
 from ..schema.schema import Schema
-from .one2one_mapping_cnt import load_attrs
+from .one2one_mapping_cnt import load_baike_name_attrs
 from .classify.simple_classify import make_key
 from ..fb_process.process_fb_result import process_fb_value
 from ..baike_process.process_entity_info import del_book_bracket, ignore_baike_name_attr
@@ -159,7 +159,7 @@ def extend_fb_ttls(fb_ttls, fb_uri, mediator_ttl_map, schema):
     return new_fb_ttls
 
 def do_predicate_mapping(outpath, name_map, fb2baike, baike_entity_info, fb_property_path, score_map, total):
-    baike_name_attrs = load_attrs()
+    baike_name_attrs = load_baike_name_attrs()
     schema = Schema()
     schema.init()
     Print("do predicate mapping %s, write to %s" %(fb_property_path, outpath))

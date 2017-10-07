@@ -5,13 +5,13 @@ from tqdm import tqdm
 
 from ...IOUtil import result_dir, write_json_map, Print
 from ...schema.schema import Schema
-from ..one2one_mapping_cnt import load_attrs
+from ..one2one_mapping_cnt import load_baike_name_attrs
 from ..predicate_mapping import load_baike_info, load_name_attr, load_ttl2map, extend_fb_ttls
 
 
 def load_mapping_pairs(filepath, total = 4483846):
     Print("load mapping from file [%s]" %filepath)
-    mapping_attrs = load_attrs()
+    mapping_attrs = load_baike_name_attrs()
 
     baike_entities = []
     fb_entities = set()

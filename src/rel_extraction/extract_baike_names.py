@@ -24,7 +24,7 @@ def load_mapping_names(bk2fb):
             bk_name_map[bk_url] = names
     return bk_name_map
 
-def load_and_write_baike_name(bk_name_map, out_path):
+def load_and_write_baike_name(bk_name_map, out_path, ):
     baike_entity_info_path = os.path.join(result_dir, '360/360_entity_info.json')
     total = 21710208
     Print('load and write baike name to [%s]' %out_path)
@@ -36,6 +36,7 @@ def load_and_write_baike_name(bk_name_map, out_path):
         obj = json.loads(p[1])
         names.append(obj['ename'])
         names.append(obj['title'])
+
         names = [html_unescape(x.replace('\n',"")).strip() for x in names]
         names = list(set(names))
 
