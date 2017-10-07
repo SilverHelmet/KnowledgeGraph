@@ -34,8 +34,10 @@ if __name__ == "__main__":
                 names.add(name)
     outf.close()
 
+    Print("sorting names")
+    names = sorted(names)
     Print('write dict to %s' %(dict_path))
-    for name in tqdm(sorted(names), total = len(names)):
+    for name in tqdm(names, total = len(names)):
         name = name.strip()
         if is_valid_dict_name(name):
             dict_outf.write("%s\n" %(name))
