@@ -124,7 +124,7 @@ class NamedEntityReg:
 		ltp_result.words = new_words
 		ltp_result.tags = new_postag
 		ltp_result.ner_tags = new_entitys
-		#更新words_st
+		#更新
 		ltp_result.words_st = ltp_result.find_pos()
 
 	"""

@@ -157,13 +157,13 @@ def test(ltp,ner):
 	lines = load_text(MY_FOLDER+"/lsx-lhr.line.txt")
 
 	std_result_raw = load_stanford_result(MY_FOLDER+"/lsx-lhr.line.out.txt")
-	std_result = extract_stanford_result(std_result_raw,text_lines)
+	std_result = extract_stanford_result(std_result_raw,lines)
 
 	lines_labled_entitys = load_labled_entitys(MY_FOLDER+"/lsx-lhr.line.marks.txt")
 	est = Estimator()
-	for index,line in range(len(lines)):
+	for index,line in enumerate(lines):
 		ltp_result = ltp.parse(line)
-		ner_tuples = ner.recognize(line,ltp_result,"",std_result)
+		ner_tuples = ner.recognize(line,ltp_result,"",std_result[index])
 		ner_entitys = []
 		for en_t in ner_tuples:
 			ner_entitys.append(ltp_result.text(en_t[0],en_t[1]))
