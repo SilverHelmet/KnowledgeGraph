@@ -1,5 +1,10 @@
 #encoding: utf-8
+<<<<<<< HEAD
 from ..ltp import LTP
+=======
+from ..ltp import LTP, LTPResult
+
+>>>>>>> ce435da567b6a55064143c8229d5448ac925e3e4
 class ParseTree:
     def __init__(self, ltp_result):
         self.length = ltp_result.length

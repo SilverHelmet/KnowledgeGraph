@@ -1,5 +1,5 @@
 #encoding: utf-8
-import dateparser
+# import dateparser
 import re
 
 class FBDatetime:

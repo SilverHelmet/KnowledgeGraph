@@ -39,6 +39,7 @@ def is_valid_dict_name(name):
         return False
     if BaikeDatetime.parse(name, strict = True) is not None:
         return False
+    return True
 
 def get_domain(fb_type):
     return fb_type.split('.')[0]
