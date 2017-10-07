@@ -35,9 +35,13 @@ class LTPResult:
             return ""
         return self.sentence[self.words_st[st]: self.words_st[ed-1] + len(self.words[ed-1])]
 
-    def update(self, new_words, new_tags):
-        self.words = new_words
-        self.tags = new_tags
+    def update(self, new_words = None, new_tags = None, new_ner_tags = None):
+        if new_words:
+            self.words = new_words
+        if new_tags:
+            self.tags = new_tags
+        if new_ner_tags:
+            self.ner_tags = new_ner_tags
         self.words_st = find_pos()
 
 class LTP:
