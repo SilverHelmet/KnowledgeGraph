@@ -121,11 +121,9 @@ class NamedEntityReg:
 			new_postag.append(pos)
 			new_entitys.append(en)
 			index += 1
-		ltp_result.words = new_words
-		ltp_result.tags = new_postag
-		ltp_result.ner_tags = new_entitys
 		#更新
-		ltp_result.words_st = ltp_result.find_pos()
+		ltp_result.update(new_words,new_postag,new_entitys)
+		
 
 	"""
 	std_result是一行文本的Stanford结果，[(entitys,en_label,pos_label),...,]

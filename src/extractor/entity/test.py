@@ -154,12 +154,12 @@ def write_test(ltp,ner):
 	fw_ltp_all_res.close()
 
 def test(ltp,ner):
-	lines = load_text(MY_FOLDER+"/lsx-lhr.line.txt")
+	lines = load_text(MY_FOLDER+"/update_all.line.txt")
 
-	std_result_raw = load_stanford_result(MY_FOLDER+"/lsx-lhr.line.out.txt")
+	std_result_raw = load_stanford_result(MY_FOLDER+"/update_all.line.out.txt")
 	std_result = extract_stanford_result(std_result_raw,lines)
 
-	lines_labled_entitys = load_labled_entitys(MY_FOLDER+"/lsx-lhr.line.marks.txt")
+	lines_labled_entitys = load_labled_entitys(MY_FOLDER+"/update_all.line.marks.txt")
 	est = Estimator()
 	for index,line in enumerate(lines):
 		ltp_result = ltp.parse(line)
@@ -167,7 +167,12 @@ def test(ltp,ner):
 		ner_entitys = []
 		for en_t in ner_tuples:
 			ner_entitys.append(ltp_result.text(en_t[0],en_t[1]))
-		est.add(ltp_result,lines_labled_entitys[index],ner_entitys)
+		mist_type = est.add(ltp_result,lines_labled_entitys[index],ner_entitys)
+
+		pos_l = []
+		for i,p in enumerate(ltp_result.tags):
+			pos_l.append((ltp_result.words[i],p))
+		#print pos_l,"\n",ner_entitys,"\n",mist_type,"\n"
 	est.estimation.print_info()
 
 
