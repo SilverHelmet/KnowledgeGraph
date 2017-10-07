@@ -10,30 +10,17 @@ import json
 import uniout
 
 ENTITY_PATH=IOUtil.base_dir+"/src/extractor/entity"
-MY_FOLDER=IOUtil.base_dir+"/test_file"
+MY_FOLDER=IOUtil.base_dir+"/../test_file"
 
 class NamedEntityReg:
 
-	def __init__(self,ltp_base):
-		self.__ltp = LTP(ltp_base)
 
 	def recognize(self,sentence,ltp_result,page_info,stanford_result):
 		#new_ltp_result=copy.deepcopy(ltp_result)
 		new_ltp_result=ltp_result
-		new_ltp_result.ner_tags=list(self.__ltp.nertagger.recognize(new_ltp_result.words,new_ltp_result.tags))
 		self.__optimize_entitys(new_ltp_result)
 		return self.__entity_tuples(new_ltp_result.ner_tags)
 
-	def segment(self,sentence):
-		words = self.__ltp.segmentor.segment(sentence)
-		return list(words)
-	
-	def postag(self,words):
-		return list(self.__ltp.tagger.postag(words))
-
-
-	def release(self):
-		return ""
 
 	def __entity_tuples(self,entitys):
 		tuples = []
@@ -142,6 +129,8 @@ class NamedEntityReg:
 		ltp_result.words = new_words
 		ltp_result.tags = new_postag
 		ltp_result.ner_tags = new_entitys
+		#更新words_st
+		ltp_result.words_st = ltp_result.find_pos()
 
 
 def extract_stanford_result(stanford_result,sentences):
@@ -160,18 +149,19 @@ def extract_stanford_result(stanford_result,sentences):
 			index += 1
 
 		#stanford 的seg和pos和ner的个数不同，比如：乔治·R·R·马丁于20世纪60年代末期，即20岁左右的大学时代，开始从事当时热火朝天的科幻故事创作。
-		ner_words = [ ner[i][0] for i in range(len(ner)) ]
+		ner_words = [ ner[i][0].encode("utf-8") for i in range(len(ner)) ]
 
 		#借用LTPResult的text函数
-		#ltp_result = LTPResult(ner_words,"","","",sentences[stf_index])
+		ltp_result = LTPResult(ner_words,"","","",sentences[stf_index])
 		entitys = []
 		for t in en_tuples:
-			ner_words
-			entitys.append()	
-			
+			entitys.append(ltp_result.text(t[0],t[1]))	
 		result.append(entitys)
+
 	return result
 """		
+	
+
 def get_text(words,sentence,start,end):
 	index1 = sentence.find(words[start])
 	index2 = 0
@@ -189,23 +179,21 @@ def load_stanford_result(file_name):
 			stanford_result.append(json.loads(line))
 	return stanford_result
 
+
 def load_text(file_name):
 	text_lines = []
 	with open(file_name,"r") as f:
 		text_lines = copy.deepcopy(f.readlines())
 	return text_lines
 
-def test_multi(ner):
+def test_multi(ltp,ner):
 	while(True):
 		text=raw_input("please input text :")
 		print "\n"
 		if text == "exit":
 			break
-		
-		words=ner.segment(text)
-		postag=ner.postag(words)
 
-		ltp_result = LTPResult(words,postag,"","",text)
+		ltp_result = ltp.parse(text)
 		entitys = ner.recognize(text,ltp_result,"","")
 		print entitys,"\n"
 
@@ -217,7 +205,7 @@ def test_multi(ner):
 		print tags,"\n"
 		print ner_tags,"\n"
 
-def test_write_file(ner):
+def test_write_file(ltp,ner):
 	stanford_result_raw = load_stanford_result(MY_FOLDER+"/lsx-lhr.line.out.txt")
 	text_lines = load_text(MY_FOLDER+"/lsx-lhr.line.txt")
 
@@ -227,20 +215,19 @@ def test_write_file(ner):
 
 	stanford_result = extract_stanford_result(stanford_result_raw,text_lines)
 	for index in range(len(text_lines)):
-		if text_lines[index] == "" or text_lines[index] == "\n":
+		line = text_lines[index]
+		if line == "" or line == "\n":
 			break
-		words = ner.segment(text_lines[index])
-		postag = ner.postag(words)
 
-		ltp_result = LTPResult(words,postag,"","",text_lines[index])
-		entitys = ner.recognize(text_lines[index],ltp_result,stanford_result[index],"")
+		ltp_result = ltp.parse(line)
+
+		entitys = ner.recognize(line,ltp_result,"",stanford_result[index])
 		for en in entitys:
 			fw_ltp.write( ltp_result.text(en[0],en[1])+"\t")
-			
 		fw_ltp.write("\n\n")
 
 		for i in range(len(ltp_result.ner_tags)):
-			fw_ltp_raw_en.write(words[i]+":"+ltp_result.ner_tags[i]+"  ")
+			fw_ltp_raw_en.write(ltp_result.words[i]+":"+ltp_result.ner_tags[i]+"  ")
 		fw_ltp_raw_en.write("\n\n")
 
 
@@ -255,12 +242,12 @@ def test_write_file(ner):
 
 
 if __name__ == "__main__":
-	ner = NamedEntityReg(IOUtil.base_dir+"/../LTP/ltp_data_v3.4.0")
+	ner = NamedEntityReg()
 
-	test_multi(ner)
+	ltp = LTP(IOUtil.base_dir+"/../LTP/ltp_data_v3.4.0")
+#	test_multi(ltp,ner)
 
-#	test_write_file(ner)
+	test_write_file(ltp,ner)
 
-	ner.release()
 
 	
