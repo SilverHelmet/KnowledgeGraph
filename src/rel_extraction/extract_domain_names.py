@@ -1,4 +1,4 @@
-from ..IOUtil import doc_dir, load_file, rel_ext_dir
+from ..IOUtil import doc_dir, load_file, rel_ext_dir, Print
 from .util import load_bk_types
 from .gen_dict import get_domain
 import os
