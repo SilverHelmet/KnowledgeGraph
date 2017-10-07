@@ -42,7 +42,8 @@ class LTPResult:
             self.tags = new_tags
         if new_ner_tags:
             self.ner_tags = new_ner_tags
-        self.words_st = find_pos()
+        self.length = len(self.words)
+        self.words_st = self.find_pos()
 
 class LTP:
     def __init__(self, base_dir):
