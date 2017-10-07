@@ -49,4 +49,3 @@ if __name__ == "__main__":
 
     out_path = os.path.join(rel_ext_dir, 'baike_names.tsv')
     load_and_write_baike_name(bk_name_map, out_path)
-
