@@ -12,7 +12,9 @@ import sys
 from ..rel_extraction.util import load_bk_types
 
 def has_punc_eng(name):
-    for _, flag in pseg.cut(name):
+    for word, flag in pseg.cut(name):
+        if word == '·':
+            continue
         if flag == 'x':
             return True
         if flag == "eng":
