@@ -9,7 +9,7 @@ from .structure import *
 from .dataset import load_name2bk
 from .util import load_predicate_map
 from ..schema.schema import Schema
-
+from .ltp import LTP
 
 entity_flags = set(['baike', 'ns', 'nt', 'nr', 'nz', 'nrt', 'nrfg'])
 rel_flags = set(['v', 'vd', 'vg', 'vi', 'vn', 'vq'])
@@ -146,6 +146,14 @@ class SimpleExtractor:
         spo = spos[0]
         knowledge = Knowledge.from_spo(spo, words)
         return [knowledge]
+
+class SimpleLTPExtractor:
+    def __init__(self):
+        self.ltp = LTP(None)
+
+    def parse_sentence(self, sentence):
+        ltp_result = self.ltp.parse(sentence)
+        
 
 
         
