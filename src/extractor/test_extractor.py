@@ -1,7 +1,7 @@
 #encoding: utf-8
 import glob
 import os
-from ..IOUtil import data_dir
+from ..IOUtil import data_dir, rel_ext_dir
 import pandas as pd
 import json
 import numpy as np 
