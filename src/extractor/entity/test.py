@@ -15,23 +15,22 @@ MY_FOLDER=IOUtil.base_dir+"/../test_file"
 
 
 
-
-def extract_stanford_result(stanford_result,sentences):
+def extract_stanford_result(stf_result_jsons,sentences):
 	results = []
-	for stf_index in range(len(stanford_result)):
+	for stf_index in range(len(stf_result_jsons)):
 		en_tuples = []
 		en_pos  = []
-		ner = stanford_result[stf_index]["ner"]
+		ner = stf_result_jsons[stf_index]["ner"]
 
 		index = 0
 		while index < len(ner):
 			if ner[index][1] != "O":
 				en_label = ner[index][1]
-				pos_label = stanford_result[stf_index]["pos"][index][1]
+				pos_label = stf_result_jsons[stf_index]["pos"][index][1]
 				first = index
 				while index < len(ner) and ner[index][1] == ner[first][1]:
 					index += 1
-				en_tuples.append((first,index,en_label,pos_label))  #(start,end,label)
+				en_tuples.append((first,index,en_label,pos_label))  #(start,end,en_label,pos_label)
 				index -= 1
 			index += 1
 

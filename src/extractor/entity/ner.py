@@ -11,7 +11,7 @@ class NamedEntityReg:
 
 
 	def recognize(self,sentence,ltp_result,page_info,stanford_result=None):
-		self.__optimize_entitys(ltp_result)
+		# self.__optimize_entitys(ltp_result)
 		if stanford_result:
 			self.__blend_with_stanford(ltp_result,stanford_result)
 		return self.__entity_tuples(ltp_result.ner_tags)
