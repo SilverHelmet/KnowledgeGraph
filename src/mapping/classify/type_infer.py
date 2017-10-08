@@ -192,7 +192,7 @@ def load_extra_type(fb_prop_path, total):
                 extra_types.append('fb:music.recording')
                     
         elif "fb:music.album" in fb_types or "fb:music.recording" in fb_types:
-            extra_types.append(['fb:music.composition'])
+            extra_types.append('fb:music.composition')
             # if "fb:music.recording" not in extra_types:
             #     extra_types.append('fb:music.recording')
         if len(extra_types) > 0:
@@ -237,7 +237,6 @@ def infer_type():
                 extra_types = extra_type_map[fb_uri]
                 for ext_type in extra_types:
                     fb_types.append(ext_type)
-            print fb_types
             fb_types = list(set(fb_types))
             outf.write('%s\t%s\t%d\t%s\n' %(baike_url, fb_uri, nb_names * 2 + 3, json.dumps(fb_types)))
             continue
