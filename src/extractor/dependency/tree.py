@@ -12,10 +12,8 @@ class ParseTree:
         for node, arc in zip(self.nodes, ltp_result.arcs):
             father_idx = arc.head
             if father_idx == self.length:
-                self.root = Node
                 continue
             node.father = self.nodes[father_idx]
-        
         self.calc_depth()
 
     def calc_depth(self):
@@ -48,28 +46,61 @@ class ParseTree:
         while node.idx != father.idx:
             node = node.father
             path.append(node)
+        return path
+    
+class Node:
+    def __init__(self, idx, postag, arc, word = None, nertag = None):
+        self.idx = idx
+        self.postag = postag
+        self.rel = arc.relation
+        self.word = word
+        self.nertag = nertag
+        self.father = None
+        self.depth = -1
+
+    def search_depth(self):
+        if self.depth != -1:
+            pass
+        elif self.father is None:
+            self.depth = 0
+        else:
+            self.depth = self.father.search_depth() + 1
+        return self.depth
+'''
+输入的参数是(ltp_result, e1, e2, entity_pool)
+e1, e2是struecture.py 下面的 StrEntity类型 有st和ed属性，代表一个识别的实体
+'''
+class RelationExtractor:
+    def __init__(self):
+        pass
+      
     def find_path_to_root(self, node):
         path = [node]
         while node.father != None:
             node = node.father
             path.append(node)
         return path
-    def find_index(self, word):
+    
+    def find_index(self, tree, word):
         unigram = []
         bigram = []
         trigram = []
         quagram = []
         fifgram = []
-        for i in range(self.length):
-            unigram.append(self.nodes[i].word)
-        for i in range(self.length - 1):
+        sixgram = []
+        lens = tree.length
+        for i in range(lens):
+            unigram.append(tree.nodes[i].word)
+        for i in range(lens - 1):
             bigram.append(''.join(unigram[i : i + 2]))
-        for i in range(self.length - 2):
+        for i in range(lens - 2):
             trigram.append(''.join(unigram[i : i + 3]))
-        for i in range(self.length - 3):
+        for i in range(lens - 3):
             quagram.append(''.join(unigram[i : i + 4]))
-        for i in range(self.length - 4):
-           	fifgram.append(''.join(unigram[i : i + 5]))
+        for i in range(lens - 4):
+            fifgram.append(''.join(unigram[i : i + 5]))
+        for i in range(lens - 5):
+            sixgram.append(''.join(unigram[i : i + 6]))
         if word in unigram:
             return [1, unigram.index(word)]
         elif word in bigram:
@@ -80,10 +111,12 @@ class ParseTree:
             return [4, quagram.index(word)]
         elif word in fifgram:
             return [5, fifgram.index(word)]
+        elif word in sixgram:
+            return [6, sixgram.index(word)]
         else:
             return [0, None]
         
-    def find_coo_father(self, lis):
+    def find_coo_father(self, tree, lis):
         if lis[0] == 0:
             return -1
         else:
@@ -91,7 +124,7 @@ class ParseTree:
             st_index = lis[1]
             words = []
             for i in range(lens):
-                words.append(self.nodes[st_index + i])
+                words.append(tree.nodes[st_index + i])
             coo_father = []
             final_res = []
             res = []
@@ -112,117 +145,54 @@ class ParseTree:
             for i in final_res:
                 res.append(process_father[0].index(i))
             return process_father[0][min(res)]
-    def nearest_verb(self, path):
-        res = None
-        for node in path:
-            if node.postag == 'v':
-                res = node
-                break
-        if res == None:
-            print "can't find nearest verb!"
-        return res
-    def judge_coo(self, verb1, verb2):
-        if verb1.father == verb2 and verb1.rel == 'COO':
-            return True
-        if verb2.father == verb1 and verb2.rel == 'COO':
-            return True
-        return False
-    def judge_one_SBV(self, near_verb1, near_verb2):
-        if near_verb1.rel == 'SBV' and near_verb2.rel != 'SBV':
-            return near_verb2.father
-        elif near_verb2.rel == 'SBV' and near_verb1.rel != 'SBV': 
-            return near_verb1.father
-        return None
-    def find_path_verbs(self, word1, word2):
-        w1 = self.find_coo_father(self.find_index(word1))
-        w2 = self.find_coo_father(self.find_index(word2))
+        
+    def find_path_verbs(self, ltp_result, e1, e2, entity_pool):
+        tree = ParseTree(ltp_result)
+        word1 = word2 = ''
+        for i in range(e1.st, e1.ed):
+            word1 += tree.nodes[i].word
+        for i in range(e2.st, e2.ed):
+            word2 += tree.nodes[i].word
+        w1 = self.find_coo_father(tree, self.find_index(tree, word1))
+        w2 = self.find_coo_father(tree, self.find_index(tree, word2))
         simple_res = []
-        res = []
         if w1 == -1:
             print word1, "not recognized!"
         if w2 == -1:
             print word2, "not recognized!"
         else:
-            p1, p2 = self.find_path(w1, w2)
+            p1 = self.find_path_to_root(tree.nodes[w1])
+            p2 = self.find_path_to_root(tree.nodes[w2])
             coo_p = p1 + p2[:-1]
-            for i in coo_p:
-                if i.postag == 'v':
-                    simple_res.append(i)
-            p1 = p1[1:]
-            p2 = p2[1:]
-            verb1 = self.nearest_verb(p1)
-            verb2 = self.nearest_verb(p2)
-            if verb1 == None or verb2 == None:
-                return simple_res, []
-            rel1 = verb1.rel
-            rel2 = verb2.rel
-            for i in p2:
-                print i.word
-            near_verb1 = self.find_path_to_father(self.nodes[w1], verb1)[-2]
-            near_verb2 = self.find_path_to_father(self.nodes[w2], verb2)[-2]
-            if rel1 == rel2:
-                print "the relation to verb is same! not found!"
-            elif verb1 == verb2:
-                print "same verb found!"
-                res = verb1
-            else:
-                if self.judge_coo(verb1, verb2):
-                    one_SBV = self.judge_one_SBV(near_verb1, near_verb2)
-                    if one_SBV != None:
-                        print "coo verbs and one SBV found!"
-                        res = one_SBV
+            for node in coo_p:
+                if node.postag == 'v':
+                    if entity_pool[node.idx] == 1:
+                        print node.word,": extract verb is an entity! error!"
                     else:
-                        print "coo verbs but not one SBV! not found!"
-                else:
-                    print "other situation not found!"
-        return simple_res, res
+                        simple_res.append([(node.idx, node.idx + 1)])
+        return simple_res
     
-class Node:
-    def __init__(self, idx, postag, arc, word = None, nertag = None):
-        self.idx = idx
-        self.postag = postag
-        self.rel = arc.relation
-        self.word = word
-        self.nertag = nertag
-        self.father = None
-        self.depth = -1
-
-    def search_depth(self):
-        if self.depth != -1:
-            pass
-        elif self.father is None:
-            self.depth = 0
-        else:
-            self.depth = self.father.search_depth() + 1
-        return self.depth
-def Extractor(sentence, ner1, ner2):
-    print sentence
-    ltp = LTP(None)
-    ltp_result = ltp.parse(sentence)
-    print '#' * 20
-    print "words num:", len(ltp_result.words)
-    for i in range(len(ltp_result.words)):
-        print ltp_result.words[i], ":", ltp_result.tags[i]
-    print '#' * 20
-    print "arcs are:"
-    for i, arc in enumerate(ltp_result.arcs):
-        if arc.head == ltp_result.length:
-            print "root", "--", arc.relation, "--", ltp_result.words[i]
-        else:
-            print ltp_result.words[arc.head], "--", arc.relation, "--", ltp_result.words[i]
-    tree = ParseTree(ltp_result)
-    simple_res, advanced_res = tree.find_path_verbs(ner1, ner2)
-    print '*' * 25
-    print "simple res:"
-    for i in range(len(simple_res)):
-        print "verb",i,":", simple_res[i].word
-    print '*' * 25
-    print "advanced res:"
-    for i in range(len(advanced_res)):
-        print "verb",i,":", advanced_res[i].word
-    return simple_res
-
+class prenode:
+    def __init__(self, st, ed):
+        self.st = st
+        self.ed = ed
+        
 if __name__ == "__main__":
-    Extractor('截至2016年8月，巴萨在西班牙国内，共赢得了24次西甲联赛冠军、\
-    28次国王杯（在国王杯历史上高居榜首）、12座西班牙超级杯、2座伊娃杯和2座西班牙联赛杯',\
-    '巴萨', '西班牙联赛杯')
+    ltp = LTP(None)
+    sentence = '《冰与火之歌》(A Song of Ice and Fire)是由美国作家乔治·R·R·马丁所著的严肃奇幻小说系列。'
+    ltp_result = ltp.parse(sentence)
+    for i in range(ltp_result.length):
+        print i, ":", ltp_result.words[i]
+    e1 = prenode(1, 6)
+    e2 = prenode(17, 18)
+    entity_pool = [0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0]
+    res = RelationExtractor()
+    tmp = res.find_path_verbs(ltp_result, e1, e2, entity_pool)
+    print tmp
+    '''
+    simple_res = SimpleExtract(ltp_result, e1, e2, entity_pool)
+    print '*' * 25
+    print "simple res :"
+    for i in range(len(simple_res)):
+        print "verb", i, ":", tree.nodes[simple_res[i][0]].word
+    '''
