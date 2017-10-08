@@ -5,11 +5,12 @@ class StrEntity:
         self.ed = ed
 
 class BaikeEntity:
-    def __init__(self, str_entity, baike_url, pop):
+    def __init__(self, str_entity, baike_url, pop, types):
         self.st = str_entity.st
         self.ed = str_entity.ed
         self.baike_url = baike_url
         self.pop = pop
+        self.types = types
 
 class StrRelation:
     def __init__(self, st, ed):
@@ -72,5 +73,33 @@ class ChapterInfo:
         self.chapt_title = chapt_title
         self.ename = ename
 
+class Triple:
+    def __init__(self, str_e1, str_rel, str_e2):
+        self.e1 = str_e1
+        self.rel = str_rel
+        self.e2 = str_e2
 
+class LinkedTriple:
+    def __init__(self, baike_subj, fb_rel, baike_obj):
+        self.baike_subj = baike_subj
+        self.fb_rel = fb_rel
+        self.baike_obj = baike_obj
+
+    def check_type(self, schema):
+        schema_type = schema.schema_type(self.fb_rel.fb_prop)
+        expected_type =schema.expected_type(self.fb_rel.fb_prop)
+        return schema_type in self.baike_subj.types and expected_type in self.baike_obj.types
+
+    def score(self):
+        return (self.baike_subj.pop + self.baike_obj.pop) * self.fb_rel.prob
+        
+    def info(self, ltp_result):
+        subj = ltp_result.text(self.baike_subj.st, self.baike_subj.ed)
+        subj_url = self.baike_subj.baike_url
+        obj = ltp_result.text(self.baike_obj.st, self.baike_obj.ed)
+        obj_url = self.baike_obj.baike_url
+        rel = ltp_result.text(self.fb_rel.st, self.fb_rel.ed)
+        fb_prop = self.fb_rel.fb_prop
+        score = self.score()
+        return  "%s:%s\t%s:%s\t%s:%s %f" %(subj, subj_url, rel, fb_prop, obj, obj_url, score)
 

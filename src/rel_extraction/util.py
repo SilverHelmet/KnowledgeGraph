@@ -3,6 +3,11 @@ import os
 import json
 from tqdm import tqdm
 
+class BaikeInfo:
+    def __init__(self, pop, types):
+        self.pop = pop
+        self.types = types
+
 def load_mappings(filepath = None):
     if filepath is None:
         filepath = os.path.join(rel_ext_dir, 'mapping_result.tsv')
@@ -44,6 +49,19 @@ def load_bk_types(filepath = None):
         types = json.loads(p[3])
         type_map[bk_url] = types
     return type_map
+
+def load_bk_static_info(filepath):
+    total = nb_lines_of(filepath)
+    info_map = {}
+    for line in file(filepath):
+        p = line.strip().split('\t')
+        bk_url = p[0]
+        pop = int(p[2])
+        types = json.loads(p[3])
+        info = BaikeInfo(pop, types)
+        info_map[bk_url] = info
+    return info_map
+
 
 def load_name2baike(filepath = None):
     if filepath is None:

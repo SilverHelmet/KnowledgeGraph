@@ -1,8 +1,6 @@
 #encoding: utf-8
-import jieba
-import jieba.posseg as pseg
 import os
-from ..IOUtil import result_dir
+from ..IOUtil import result_dir, rel_ext_dir
 from ..rel_extraction.util import load_bk_entity_pop, load_bk_types
 from ..rel_extraction.parse_baike_entity import split_sentences
 from .structure import *
@@ -11,9 +9,12 @@ from .util import load_predicate_map
 from ..schema.schema import Schema
 from .ltp import LTP
 
+    
+
 entity_flags = set(['baike', 'ns', 'nt', 'nr', 'nz', 'nrt', 'nrfg'])
 rel_flags = set(['v', 'vd', 'vg', 'vi', 'vn', 'vq'])
 time_flags = set([''])
+
 class SimpleExtractor:
     def __init__(self):
         self.sentence_splitter = split_sentences
@@ -61,7 +62,6 @@ class SimpleExtractor:
             name = "".join(words[st:ed])
             baike_urls = self.name2baike.get(name, [])
             for bk_url in baike_urls:
-                print "".join(words[str_entity.st:str_entity.ed]), bk_url
                 baike_entities.append(BaikeEntity(str_entity, bk_url, self.baike_pop_map[bk_url]))
         return baike_entities
 
@@ -146,41 +146,3 @@ class SimpleExtractor:
         spo = spos[0]
         knowledge = Knowledge.from_spo(spo, words)
         return [knowledge]
-
-class SimpleLTPExtractor:
-    def __init__(self):
-        self.ltp = LTP(None)
-
-    def parse_sentence(self, sentence):
-        ltp_result = self.ltp.parse(sentence)
-        
-
-
-        
-        
-            
-
-
-if __name__ == "__main__":
-    jieba.add_word('投奔怒海', 5, 'nz')
-    # jieba.add_word('投奔怒海', 5, 'nz')
-    s = u'刘德华出生于1966年，是知名演员、歌手。'
-    s = u'刘德华，1999年，参演电影了《投奔怒海》'
-    s = u'《青花瓷》是方文山作词，周杰伦作曲并演唱的歌曲，收录于2007年11月2日周杰伦制作发行音乐专辑《我很忙》中。'
-
-    extractor = SimpleExtractor()
-    res = pseg.cut(s)
-    words = []
-    flags = []
-    for word, flag in res:
-        words.append(word)
-        flags.append(flag)
-        print "%s:%s" %(word, flag),
-
-    # knowledges = extractor.parse_sentence(s)
-    # for kl in knowledges:
-    #     print kl
-
-    
-        
-    

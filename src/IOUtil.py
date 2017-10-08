@@ -107,7 +107,7 @@ def load_ttl2map(filepath, total = None, entities = None):
 
 def nb_lines_of(filepath):
     output = commands.getoutput('wc -l %s' %filepath)
-    p = int(output.split(" ")[0])
+    p = int(output.strip().split(" ")[0])
     return p
 
 

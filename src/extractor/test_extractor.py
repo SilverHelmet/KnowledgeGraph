@@ -6,7 +6,9 @@ import pandas as pd
 import json
 import numpy as np 
 from .structure import Knowledge
-from .SimpleExtractor import SimpleExtractor
+from entity.naive_ner import NaiveNer
+from dependency.relation_extractors import RelTagExtractor
+from .linkers import SeparatedLinker, PopularityEntityLinker, MatchRelLinker
 
 def decode(text):
     return str(text).decode('utf-8')
@@ -114,19 +116,27 @@ def process_labeled_data(ignore_miss):
     
 if __name__ == "__main__":
     datas_map, nb_data, nb_kl = process_labeled_data(ignore_miss = True)
+
+    
     print "#data = %d, #labeled kl = %d" %(nb_data, nb_kl)
-    extractor = SimpleExtractor()
+    ner = NaiveNer()    
+    rel_extractor = RelTagExtractor()
+    entity_linker = PopularityEntityLinker(os.path.join(rel_ext_dir, 'baike_static_info.tsv'))
+    rel_linker = MatchRelLinker()
+    linker = SeparatedLinker(entity_linker, rel_linker)
+
+    ltp_extractor = SimpleLTPExtractor(ner, rel_extractor, linker)
 
     for baike_name in datas_map:
         datas = datas_map[baike_name]
         for data in datas:
             sentence = data.sentence
-            kls = extractor.parse_sentence(sentence)
+            triples, ltp_result = ltp_extractor.parse_sentence(sentence)
             print sentence
-            if kls:
-                print '\t', kls[0]
+            for triple in triples:
+                print triple.info(ltp_result)
                 for kl in data.knowledges:
-                    print '\t\t', kl
+                    print '\t', kl
 
 
 

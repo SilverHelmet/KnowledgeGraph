@@ -1,5 +1,6 @@
 #encoding: utf-8
 from ..ltp import LTP, LTPResult
+from ..structure import StrEntity
 
 class NaiveNer:
     def __init__(self):
