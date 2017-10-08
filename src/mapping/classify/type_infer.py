@@ -237,6 +237,7 @@ def infer_type():
                 extra_types = extra_type_map[fb_uri]
                 for ext_type in extra_types:
                     fb_types.append(ext_type)
+            print fb_types
             fb_types = list(set(fb_types))
             outf.write('%s\t%s\t%d\t%s\n' %(baike_url, fb_uri, nb_names * 2 + 3, json.dumps(fb_types)))
             continue
