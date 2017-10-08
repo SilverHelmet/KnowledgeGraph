@@ -1,7 +1,7 @@
 #encoding: utf-8
 import glob
 import os
-from ..IOUtil import data_dir, rel_ext_dir
+from ..IOUtil import data_dir, rel_ext_dir, Print
 import pandas as pd
 import json
 import numpy as np 
@@ -119,6 +119,7 @@ def test_ltp_extractor():
 
     
     print "#data = %d, #labeled kl = %d" %(nb_data, nb_kl)
+    Print('init extractor')
     ner = NaiveNer()    
     rel_extractor = RelTagExtractor()
     entity_linker = PopularityEntityLinker(os.path.join(rel_ext_dir, 'baike_static_info.tsv'))
@@ -127,12 +128,15 @@ def test_ltp_extractor():
 
     ltp_extractor = SimpleLTPExtractor(ner, rel_extractor, linker)
 
+    Print('init finished')
+
     for baike_name in datas_map:
         datas = datas_map[baike_name]
         for data in datas:
             sentence = data.sentence
-            triples, ltp_result = ltp_extractor.parse_sentence(sentence)
             print sentence
+            triples, ltp_result = ltp_extractor.parse_sentence(sentence)
+            
             for triple in triples:
                 print triple.info(ltp_result)
                 for kl in data.knowledges:

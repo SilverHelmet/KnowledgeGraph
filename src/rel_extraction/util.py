@@ -53,7 +53,8 @@ def load_bk_types(filepath = None):
 def load_bk_static_info(filepath):
     total = nb_lines_of(filepath)
     info_map = {}
-    for line in file(filepath):
+    Print("load baike static info from [%s]" %filepath)
+    for line in tqdm(file(filepath), total = nb_lines_of(filepath)):
         p = line.strip().split('\t')
         bk_url = p[0]
         pop = int(p[2])
