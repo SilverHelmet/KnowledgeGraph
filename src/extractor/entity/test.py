@@ -91,13 +91,16 @@ def test_multi(ltp,ner):
 		entitys = ner.recognize(text,ltp_result,"","")
 		print entitys,"\n"
 
-		words=ltp_result.words
-		tags=ltp_result.tags
-		ner_tags=ltp_result.ner_tags
+		words = ltp_result.words
+		tags = ltp_result.tags
+		ner_tags = ltp_result.ner_tags
 
-		print words,"\n"
-		print tags,"\n"
-		print ner_tags,"\n"
+		for i in range(len(words)):
+			print "%s:%s:%s " %(words[i],tags[i],ner_tags[i]),
+		print "\n"
+		# print words,"\n"
+		# print tags,"\n"
+		# print ner_tags,"\n"
 
 def test_write_file(ltp,ner):
 	stanford_result_raw = load_stanford_result(MY_FOLDER+"/lsx-lhr.line.out.txt")
@@ -159,24 +162,42 @@ def test(ltp,ner):
 	std_result = extract_stanford_result(std_result_raw,lines)
 
 	lines_labled_entitys = load_labled_entitys(MY_FOLDER+"/update_all.line.marks.txt")
+
+	fw_miss = open(MY_FOLDER+"/miss.txt","w")
+	fw_reg_en = open(MY_FOLDER+"/reg_entitys.txt","w")
+
 	est = Estimator()
 	for index,line in enumerate(lines):
-		ltp_result = ltp.parse(line)
+		ltp_result = ltp.parse(line.encode("utf-8"))
 		ner_tuples = ner.recognize(line,ltp_result,"",std_result[index])
 		ner_entitys = []
 		for en_t in ner_tuples:
 			ner_entitys.append(ltp_result.text(en_t[0],en_t[1]))
-		mist_type = est.add(ltp_result,lines_labled_entitys[index],ner_entitys)
+		miss_type = est.add(ltp_result,lines_labled_entitys[index],ner_entitys)
 
-		pos_l = []
-		for i,p in enumerate(ltp_result.tags):
-			pos_l.append((ltp_result.words[i],p))
-		#print pos_l,"\n",ner_entitys,"\n",mist_type,"\n"
+		if len(miss_type) > 0:
+			msg = []
+			for i,p in enumerate(ltp_result.tags):
+				msg.append((ltp_result.words[i],p))
+				fw_miss.write(ltp_result.words[i]+":"+ltp_result.tags[i]+":"+ltp_result.ner_tags[i]+" ")
+				fw_reg_en.write(ltp_result.words[i]+":"+ltp_result.tags[i]+":"+ltp_result.ner_tags[i]+" ")
+			ner_str = ""
+			for en in ner_entitys:
+				ner_str += en + " "
+			miss_str = ""
+			for m_en,m_t in miss_type.items():
+				miss_str += m_en +":" +str(m_t) + " "
+			fw_miss.write("\n"+ner_str+"\n"+miss_str+"\n\n")
+			fw_reg_en.write("\n"+ner_str+"\n\n")
+			# print msg,"\n",ner_entitys,"\n",miss_type,"\n"
+		
+
 	est.estimation.print_info()
-
+	fw_miss.close()
+	fw_reg_en.close()
 
 if __name__ == "__main__":
 	ner = NamedEntityReg()
 	ltp = LTP(IOUtil.base_dir+"/../LTP/ltp_data_v3.4.0")
-	test(ltp,ner)
-	
+	# test(ltp,ner)
+	test_multi(ltp,ner)
