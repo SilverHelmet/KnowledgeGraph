@@ -6,20 +6,15 @@ from ... import IOUtil
 import copy
 import json
 
-#放在最后，正常输出中文
-import uniout
-
-ENTITY_PATH=IOUtil.base_dir+"/src/extractor/entity"
-MY_FOLDER=IOUtil.base_dir+"/../test_file"
 
 class NamedEntityReg:
 
 
-	def recognize(self,sentence,ltp_result,page_info,stanford_result):
-		#new_ltp_result=copy.deepcopy(ltp_result)
-		new_ltp_result=ltp_result
-		self.__optimize_entitys(new_ltp_result)
-		return self.__entity_tuples(new_ltp_result.ner_tags)
+	def recognize(self,sentence,ltp_result,page_info,stanford_result=None):
+		self.__optimize_entitys(ltp_result)
+		if stanford_result:
+			self.__blend_with_stanford(ltp_result,stanford_result)
+		return self.__entity_tuples(ltp_result.ner_tags)
 
 
 	def __entity_tuples(self,entitys):
@@ -126,128 +121,56 @@ class NamedEntityReg:
 			new_postag.append(pos)
 			new_entitys.append(en)
 			index += 1
-		ltp_result.words = new_words
-		ltp_result.tags = new_postag
-		ltp_result.ner_tags = new_entitys
-		#更新words_st
-		ltp_result.words_st = ltp_result.find_pos()
-
-
-def extract_stanford_result(stanford_result,sentences):
-	result = []
-	for stf_index in range(len(stanford_result)):
-		en_tuples = []
-		ner = stanford_result[stf_index]["ner"]
-		index = 0
-		while index < len(ner):
-			if ner[index][1] != "O":
-				first = index
-				while index < len(ner) and ner[index][1] == ner[first][1]:
-					index += 1
-				en_tuples.append((first,index))
-				index -= 1
-			index += 1
-
-		#stanford 的seg和pos和ner的个数不同，比如：乔治·R·R·马丁于20世纪60年代末期，即20岁左右的大学时代，开始从事当时热火朝天的科幻故事创作。
-		ner_words = [ ner[i][0].encode("utf-8") for i in range(len(ner)) ]
-
-		#借用LTPResult的text函数
-		ltp_result = LTPResult(ner_words,"","","",sentences[stf_index])
-		entitys = []
-		for t in en_tuples:
-			entitys.append(ltp_result.text(t[0],t[1]))	
-		result.append(entitys)
-
-	return result
-"""		
-	
-
-def get_text(words,sentence,start,end):
-	index1 = sentence.find(words[start])
-	index2 = 0
-	if end >= len(words):
-		index2 = len(sentence)
-	else:
-		index2 = sentence.find(words[end],index1) + len(words[end])
-	return sentence[0 : 2 ]
-"""
-
-def load_stanford_result(file_name):
-	stanford_result = []
-	with open(file_name,"r") as f:
-		for line in f.readlines():
-			stanford_result.append(json.loads(line))
-	return stanford_result
-
-
-def load_text(file_name):
-	text_lines = []
-	with open(file_name,"r") as f:
-		text_lines = copy.deepcopy(f.readlines())
-	return text_lines
-
-def test_multi(ltp,ner):
-	while(True):
-		text=raw_input("please input text :")
-		print "\n"
-		if text == "exit":
-			break
-
-		ltp_result = ltp.parse(text)
-		entitys = ner.recognize(text,ltp_result,"","")
-		print entitys,"\n"
-
-		words=ltp_result.words
-		tags=ltp_result.tags
-		ner_tags=ltp_result.ner_tags
-
-		print words,"\n"
-		print tags,"\n"
-		print ner_tags,"\n"
-
-def test_write_file(ltp,ner):
-	stanford_result_raw = load_stanford_result(MY_FOLDER+"/lsx-lhr.line.out.txt")
-	text_lines = load_text(MY_FOLDER+"/lsx-lhr.line.txt")
-
-	fw_ltp = open(MY_FOLDER+"/ltp_result.txt","w")
-	fw_ltp_raw_en = open(MY_FOLDER+"/ltp_raw_entitys.txt","w")
-	fw_stf = open(MY_FOLDER+"/stf_result.txt","w")
-
-	stanford_result = extract_stanford_result(stanford_result_raw,text_lines)
-	for index in range(len(text_lines)):
-		line = text_lines[index]
-		if line == "" or line == "\n":
-			break
-
-		ltp_result = ltp.parse(line)
-
-		entitys = ner.recognize(line,ltp_result,"",stanford_result[index])
-		for en in entitys:
-			fw_ltp.write( ltp_result.text(en[0],en[1])+"\t")
-		fw_ltp.write("\n\n")
-
-		for i in range(len(ltp_result.ner_tags)):
-			fw_ltp_raw_en.write(ltp_result.words[i]+":"+ltp_result.ner_tags[i]+"  ")
-		fw_ltp_raw_en.write("\n\n")
-
-
-		for en in stanford_result[index]:
-			#print en,"\n"
-			fw_stf.write(en+"\t")
-		fw_stf.write("\n\n")
+		#更新
+		ltp_result.update(new_words,new_postag,new_entitys)
 		
-	
-	fw_ltp.close()
-	fw_stf.close()
+
+	"""
+	std_result是一行文本的Stanford结果，[(entitys,en_label,pos_label),...,]
+	"""
+	def __blend_with_stanford(self,ltp_result,std_result):
+		#fw_error = open(MY_FOLDER+"/stf_ltp_error.txt","a")
+		#fw_add = open(MY_FOLDER+"/stf_ltp_add.txt","a")
+
+		new_std_result = copy.deepcopy(std_result)
+		for index,res in enumerate(new_std_result):
+			if res[1] == "MISC" and (res[2] != "NT" and res[2] != "NR"):
+			#if res[1] == "MISC" and res[2] != "NR":
+				continue
+			elif res[0] not in ltp_result.words :
+				#fw_error.write(ltp_result.sentence+"\n"+",".join(ltp_result.words)+"\n"+res[0]+"\n\n")			
+				continue
+			else:
+				b = True
+				for ltp_index,ltp_en in enumerate(ltp_result.words):
+					if ltp_en in res[0]  and ltp_result.ner_tags[ltp_index] != "O" :
+						#fw_error.write(ltp_result.sentence+"\t"+ltp_en+":"+ltp_result.ner_tags[ltp_index]+"\n"+res[0]+"\n\n")
+						b = False
+						break
+				if b:
+					ltp_result.ner_tags[ltp_result.words.index(res[0])] = "S-"+res[1]
+					ltp_result.tags[ltp_result.words.index(res[0])] = "STD-"+res[2]
+					#fw_add.write(ltp_result.sentence+"\t"+res[0]+"\n")
+					#fw_add.write(res[0]+":"+res[1]+":"+res[2]+"\n")
+
+		#fw_error.close()
+		#fw_add.close()
+
+	def _reg_non_chinese_entitys(self,ltp_result):
+
+		return
+
+
+
+
+
+
+
+
+
 
 
 if __name__ == "__main__":
 	ner = NamedEntityReg()
-
-	ltp = LTP(IOUtil.base_dir+"/../LTP/ltp_data_v3.4.0")
-#	test_multi(ltp,ner)
-
-	test_write_file(ltp,ner)
-
 
 	
