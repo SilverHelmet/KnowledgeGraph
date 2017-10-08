@@ -126,15 +126,15 @@ class TypeInfer:
 
     def choose_music_type(self, type_probs, threshold):
         composition_prob = type_probs.get('fb:music.composition', 0)
-        recording_prob = type_probs.get("fb:music.recoding", 0)
+        recording_prob = type_probs.get("fb:music.recording", 0)
         album_prob = type_probs.get("fb:music.album", 0)
 
         if recording_prob > album_prob:
-            max_key = 'fb:music.recoding'
+            max_key = 'fb:music.recording'
             other_key = 'fb:music.album'
         else:
             max_key = 'fb:music.album'
-            other_key = 'fb:music.recoding'
+            other_key = 'fb:music.recording'
         
         if composition_prob >= threshold:    
             if type_probs.get(max_key, 0) >= threshold:
@@ -171,7 +171,7 @@ def find_music_type(props):
     if is_album:
         return ['fb:music.album']
     else:
-        return []
+        return ['fb:music.recording']
             
 def load_extra_type(fb_prop_path, total):
     extra_type_map = {}
@@ -186,15 +186,15 @@ def load_extra_type(fb_prop_path, total):
         if "fb:music.composition" in fb_types:
             if "fb:music.recording" not in fb_types and "fb:music.album" not in fb_types:
                 extra_types = find_music_type(json.loads(obj))
-                if "fb:music.recording" not in extra_types:
-                    extra_types.append('fb:music.recording')
+                # if "fb:music.recording" not in extra_types:
+                    # extra_types.append('fb:music.recording')
             else:
-                if "fb:music.recording" not in extra_types:
-                    extra_types.append('fb:music.recording')
-        elif "fb:music.album" in fb_types or "fb:music.recording" in fb_types:
-            extra_types = ['fb:music.composition']
-            if "fb:music.recording" not in extra_types:
                 extra_types.append('fb:music.recording')
+                    
+        elif "fb:music.album" in fb_types or "fb:music.recording" in fb_types:
+            extra_types.append(['fb:music.composition'])
+            # if "fb:music.recording" not in extra_types:
+            #     extra_types.append('fb:music.recording')
         if len(extra_types) > 0:
             extra_type_map[fb_uri] = extra_types
     return extra_type_map
@@ -236,10 +236,10 @@ def infer_type():
             if fb_uri in extra_type_map:
                 extra_types = extra_type_map[fb_uri]
                 for ext_type in extra_types:
-                    if not ext_type in fb_types:
-                        fb_types.append(ext_type)
+                    fb_types.append(ext_type)
+            print fb_types
             fb_types = list(set(fb_types))
-            outf.write('%s\t%s\t%d\t%s\n' %(baike_url, fb_uri, nb_names, json.dumps(fb_types)))
+            outf.write('%s\t%s\t%d\t%s\n' %(baike_url, fb_uri, nb_names * 2 + 3, json.dumps(fb_types)))
             continue
 
         obj = json.loads(p[1])
@@ -269,14 +269,18 @@ def test():
     baike_cls_path = os.path.join(classify_dir, 'final_baike_cls2fb_type.json')
     type_infer = TypeInfer(infobox_path = infobox_path, baike_cls_path = baike_cls_path)
 
-    baike_cls = ['prod:art:filmtv']
-    baike_cls = ['type_person']
+    baike_cls = ['type_prod_art_music']
+
     baike_info = [u'唱片公司', u'所属专辑', u'发行时间', u'歌曲原唱', u'谱曲', u'编曲', u'填词', u'音乐风格', u'版本', u'歌曲语言', u'歌曲时长']
+    baike_info = [u'专辑歌手', u'音乐风格', u'发行地区', u'曲目数量', u'唱片公司', u'获得奖项', u'发行时间', u'专辑语言', u'制作人']
     type_probs = type_infer.infer(baike_info, baike_cls)
+    type_infer.choose_music_type(type_probs, 0.8)
     # type_infer.choose_one_music_type(type_probs, 0.8)
     decided_inferred_types = []
+
     for inferred_type in type_probs:
         prob = type_probs[inferred_type]
+        
         if prob > 0.8:
             print inferred_type, prob
             decided_inferred_types.append(inferred_type)
@@ -285,7 +289,7 @@ def test():
 
 
 if __name__ == "__main__":
-    loadz_and_write_extra_types()
+    load_and_write_extra_types()
     infer_type()
 
     #debug
