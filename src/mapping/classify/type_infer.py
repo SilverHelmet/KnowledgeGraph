@@ -192,7 +192,7 @@ def load_extra_type(fb_prop_path, total):
                 extra_types.append('fb:music.recording')
                     
         elif "fb:music.album" in fb_types or "fb:music.recording" in fb_types:
-            extra_types.append(['fb:music.composition'])
+            extra_types.append('fb:music.composition')
             # if "fb:music.recording" not in extra_types:
             #     extra_types.append('fb:music.recording')
         if len(extra_types) > 0:
