@@ -70,10 +70,10 @@ class LTP:
         self.parser.load(parser_model)
 
     def parse(self, sentence):
-        words = self.segmentor.segment(sentence)
-        tags = self.tagger.postag(words)
-        ner_tags = self.nertagger.recognize(words, tags)
-        arcs = self.parser.parse(words, tags)
+        words = list(self.segmentor.segment(sentence))
+        tags = list(self.tagger.postag(words))
+        ner_tags = list(self.nertagger.recognize(words, tags))
+        arcs = list(self.parser.parse(words, tags))
         result = LTPResult(words, tags, ner_tags, arcs, sentence)
         return result
         
