@@ -113,8 +113,8 @@ def process_labeled_data(ignore_miss):
         name = os.path.basename(filepath).split(".")[0]
         datas_map[name] = datas
     return datas_map, nb_data, nb_kl
-    
-if __name__ == "__main__":
+
+def test_ltp_extractor():
     datas_map, nb_data, nb_kl = process_labeled_data(ignore_miss = True)
 
     
@@ -137,6 +137,9 @@ if __name__ == "__main__":
                 print triple.info(ltp_result)
                 for kl in data.knowledges:
                     print '\t', kl
+
+if __name__ == "__main__":
+    test_ltp_extractor()
 
 
 
