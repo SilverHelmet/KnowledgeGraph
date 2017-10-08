@@ -238,7 +238,7 @@ def infer_type():
                 for ext_type in extra_types:
                     fb_types.append(ext_type)
             fb_types = list(set(fb_types))
-            outf.write('%s\t%s\t%d\t%s\n' %(baike_url, fb_uri, nb_names, json.dumps(fb_types)))
+            outf.write('%s\t%s\t%d\t%s\n' %(baike_url, fb_uri, nb_names * 2 + 3, json.dumps(fb_types)))
             continue
 
         obj = json.loads(p[1])
