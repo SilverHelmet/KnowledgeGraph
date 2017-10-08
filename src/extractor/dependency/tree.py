@@ -113,23 +113,22 @@ class ParseTree:
             for i in final_res:
                 res.append(process_father[0].index(i))
             return process_father[0][min(res)]
-        
     def find_path_verbs(self, word1, word2):
         w1 = self.find_coo_father(self.find_index(word1))
         w2 = self.find_coo_father(self.find_index(word2))
-        res = []
+        simple_res = []
         if w1 == -1:
             print word1, "not recognized!"
-        if w2 == -2:
+        if w2 == -1:
             print word2, "not recognized!"
         else:
             p1, p2 = self.find_path(w1, w2)
-            p_all = p1 + p2[:-1]
-            for p in p_all:
-                if p.postag == 'v':
-                    res.append(p.word)
-        return res
-        
+            coo_p = p1 + p2[:-1]
+            for node in coo_p:
+                if node.postag == 'v':
+                    simple_res.append(node)
+        return simple_res
+    
 class Node:
     def __init__(self, idx, postag, arc, word = None, nertag = None):
         self.idx = idx
@@ -153,17 +152,23 @@ class Node:
 
 if __name__ == "__main__":
     ltp = LTP(None)
-    sentence = '《忘情水》是刘德华演唱的一首歌曲，由陈耀川作曲、李安修作词，收录在刘德华1994年推出的同名专辑《忘情水》中。'
+    sentence = '截至2016年8月，巴萨在西班牙国内，共赢得了24次西甲联赛冠军、\
+    28次国王杯（在国王杯历史上高居榜首）、12座西班牙超级杯、2座伊娃杯和2座西班牙联赛杯'
     ltp_result = ltp.parse(sentence)
+    print '#' * 20
+    print "words num:", len(ltp_result.words)
+    for i in range(len(ltp_result.words)):
+        print ltp_result.words[i], ":", ltp_result.tags[i]
+    print '#' * 20
+    print "arcs are:"
+    for i, arc in enumerate(ltp_result.arcs):
+        if arc.head == ltp_result.length:
+            print "root", "--", arc.relation, "--", ltp_result.words[i]
+        else:
+            print ltp_result.words[arc.head], "--", arc.relation, "--", ltp_result.words[i]
     tree = ParseTree(ltp_result)
-    path_verbs = tree.find_path_verbs( "同名专辑", "一首歌曲")
-    for i in range(len(path_verbs)):
-        print "verb",i,":", path_verbs[i]
-    tree.find_index("一首歌曲")
-    path1, path2 = tree.find_path(1, 4)
-    for node in path1:
-        print "%s -%s- %s" %(node.word, node.rel, node.postag)
-    print ""
-    for node in path2:
-        print "%s -%s- %s" %(node.word, node.rel, node.postag)
-    
+    simple_res = tree.find_path_verbs( "巴萨", "西班牙联赛杯")
+    print '*'*25
+    print "simple res :"
+    for i in range(len(simple_res)):
+        print "verb",i,":", simple_res[i].word, ", postag: ", simple_res[i].postag
