@@ -22,12 +22,12 @@
 # python -u -m src.mapping.collect_predicate_mapping_result $predicate_out $predicate_collect_out 
 
 #type infer
-# python -u -m src.mapping.classify.type_infer >& log/type_infer.log
+python -u -m src.mapping.classify.type_infer >& log/type_infer.log
 
 
 # extract mapped baike doc
 # python -u -m src.rel_extraction.extract_doc >& log/extract_docs.log 
 
 # extract vertical domain baike name
-python -m src.rel_extraction.extract_baike_names >& log/extract_baike_names.log 
-python -m src.rel_extraction.extract_domain_names >& log/extract_domain_names.log
+# python -m src.rel_extraction.extract_baike_names >& log/extract_baike_names.log 
+# python -m src.rel_extraction.extract_domain_names >& log/extract_domain_names.log

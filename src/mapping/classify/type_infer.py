@@ -171,7 +171,7 @@ def find_music_type(props):
     if is_album:
         return ['fb:music.album']
     else:
-        return []
+        return ['fb:music.recording']
             
 def load_extra_type(fb_prop_path, total):
     extra_type_map = {}
@@ -186,15 +186,15 @@ def load_extra_type(fb_prop_path, total):
         if "fb:music.composition" in fb_types:
             if "fb:music.recording" not in fb_types and "fb:music.album" not in fb_types:
                 extra_types = find_music_type(json.loads(obj))
-                if "fb:music.recording" not in extra_types:
-                    extra_types.append('fb:music.recording')
+                # if "fb:music.recording" not in extra_types:
+                    # extra_types.append('fb:music.recording')
             else:
-                if "fb:music.recording" not in extra_types:
-                    extra_types.append('fb:music.recording')
-        elif "fb:music.album" in fb_types or "fb:music.recording" in fb_types:
-            extra_types = ['fb:music.composition']
-            if "fb:music.recording" not in extra_types:
                 extra_types.append('fb:music.recording')
+                    
+        elif "fb:music.album" in fb_types or "fb:music.recording" in fb_types:
+            extra_types.append(['fb:music.composition'])
+            # if "fb:music.recording" not in extra_types:
+            #     extra_types.append('fb:music.recording')
         if len(extra_types) > 0:
             extra_type_map[fb_uri] = extra_types
     return extra_type_map
@@ -236,8 +236,7 @@ def infer_type():
             if fb_uri in extra_type_map:
                 extra_types = extra_type_map[fb_uri]
                 for ext_type in extra_types:
-                    if not ext_type in fb_types:
-                        fb_types.append(ext_type)
+                    fb_types.append(ext_type)
             fb_types = list(set(fb_types))
             outf.write('%s\t%s\t%d\t%s\n' %(baike_url, fb_uri, nb_names, json.dumps(fb_types)))
             continue
@@ -285,7 +284,7 @@ def test():
 
 
 if __name__ == "__main__":
-    loadz_and_write_extra_types()
+    load_and_write_extra_types()
     infer_type()
 
     #debug
