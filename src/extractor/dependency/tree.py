@@ -148,12 +148,9 @@ class Node:
             self.depth = self.father.search_depth() + 1
         return self.depth
 
-
-
-if __name__ == "__main__":
+def SimpleExtractor(sentence,ner1,ner2):
     ltp = LTP(None)
-    sentence = '截至2016年8月，巴萨在西班牙国内，共赢得了24次西甲联赛冠军、\
-    28次国王杯（在国王杯历史上高居榜首）、12座西班牙超级杯、2座伊娃杯和2座西班牙联赛杯'
+    print sentence
     ltp_result = ltp.parse(sentence)
     print '#' * 20
     print "words num:", len(ltp_result.words)
@@ -167,8 +164,14 @@ if __name__ == "__main__":
         else:
             print ltp_result.words[arc.head], "--", arc.relation, "--", ltp_result.words[i]
     tree = ParseTree(ltp_result)
-    simple_res = tree.find_path_verbs( "巴萨", "西班牙联赛杯")
+    simple_res = tree.find_path_verbs(ner1, ner2)
     print '*'*25
     print "simple res :"
     for i in range(len(simple_res)):
         print "verb",i,":", simple_res[i].word, ", postag: ", simple_res[i].postag
+    return simple_res
+if __name__ == "__main__":
+    SimpleExtractor('截至2016年8月，巴萨在西班牙国内，共赢得了24次西甲联赛冠军、\
+    28次国王杯（在国王杯历史上高居榜首）、12座西班牙超级杯、2座伊娃杯和2座西班牙联赛杯', '巴萨', '西班牙超级杯') 
+    
+    
