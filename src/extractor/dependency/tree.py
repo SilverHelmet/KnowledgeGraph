@@ -125,7 +125,7 @@ class VerbRelationExtractor:
     def find_nearest_verb(self, path):
         res = []
         if len(path) == 1:
-            res = [None, None]
+            return [None, None]
         for node in path:
             if node.father.postag == 'v':
                 res.append(node)
