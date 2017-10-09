@@ -62,7 +62,7 @@ class TopPopEntityLinker:
             return []
 
         baike_entities.sort(key = lambda x: x.pop, reverse = True)
-        total_score = 0.0001
+        total_score = 0.000
         for e in baike_entities:
             total_score += e.pop
 

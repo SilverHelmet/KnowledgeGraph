@@ -1,6 +1,6 @@
 #encoding: utf-8
 import os
-from ..IOUtil import result_dir, rel_ext_dir
+from ..IOUtil import result_dir, rel_ext_dir, data_dir
 from ..rel_extraction.util import load_bk_entity_pop, load_bk_types
 from ..rel_extraction.parse_baike_entity import split_sentences
 from .structure import *
@@ -10,8 +10,10 @@ from ..schema.schema import Schema
 from .ltp import LTP
 from entity.naive_ner import NaiveNer
 from dependency.relation_extractors import RelTagExtractor
-from .entity.linkers import SeparatedLinker, PopularityEntityLinker, MatchRelLinker
+from .entity.linkers import SeparatedLinker, PopularityEntityLinker, MatchRelLinker, TopPopEntityLinker
+from .entity.ner import NamedEntityReg
 from .mst import perform_MST, Edge
+
     
 def parse_str_relations_by_ltp_tag(ltr_result, entity_pool):
     str_relations = []
@@ -54,12 +56,12 @@ class SimpleLTPExtractor:
                     triples.append(Triple(e1, str_rel, e2))
         return triples
 
-    def parse_sentence(self, sentence, page_info):
+    def parse_sentence(self, sentence, page_info, stf_result):
         if type(sentence) is unicode:
             sentence = sentence.encode('utf-8')
         ltp_result = self.ltp.parse(sentence)
 
-        str_entites = self.ner.recognize(sentence, ltp_result, page_info)
+        str_entites = self.ner.recognize(sentence, ltp_result, page_info, stf_result)
         str_entites = [ StrEntity(st, ed) for st, ed in str_entites]
 
         entity_pool = fill_entity_pool(ltp_result.length, str_entites)
@@ -75,6 +77,7 @@ class SimpleLTPExtractor:
         linked_triples = []
         for triple in triples:
             linked_triples.extend(self.linker.link(ltp_result, triple, page_info))        
+
 
         mst_triples = mst_select_triple(linked_triples)
         return mst_triples, ltp_result
@@ -95,17 +98,22 @@ def mst_select_triple(linked_triples):
 if __name__ == "__main__":
     s = u'刘德华出生于1966年，是知名演员、歌手。'
     s = '赛后，梅西力压德国诸将，获得金球奖。'
-    # s = u'《青花瓷》是方文山作词，周杰伦作曲并演唱的歌曲，收录于2007年11月2日周杰伦制作发行音乐专辑《我很忙》中。'
+    s = '《青花瓷》是方文山作词，周杰伦作曲并演唱的歌曲，收录于2007年11月2日周杰伦制作发行音乐专辑《我很忙》中。'
 
-    ner = NaiveNer()    
+    from .test_extractor import load_stanford_result
+    
+    base_dir = os.path.join(data_dir, '标注数据')
+    stf_results_map = load_stanford_result(os.path.join(base_dir, 'sentences.txt'), os.path.join(base_dir, 'sentences_stanf_nlp.json'))
+
+    # ner = NaiveNer()    
+    ner = NamedEntityReg()
     rel_extractor = RelTagExtractor()
-    entity_linker = PopularityEntityLinker(os.path.join(rel_ext_dir, 'baike_static_info.tsv'))
+    entity_linker = TopPopEntityLinker(os.path.join(rel_ext_dir, 'baike_static_info.tsv'))
     rel_linker = MatchRelLinker()
     linker = SeparatedLinker(entity_linker, rel_linker)
-
     ltp_extractor = SimpleLTPExtractor(ner, rel_extractor, linker)
 
-    triples, ltp_result = ltp_extractor.parse_sentence(s, None)
+    triples, ltp_result = ltp_extractor.parse_sentence(s, None, stf_results_map[s])
 
     for triple in triples:
         print triple.info(ltp_result)
