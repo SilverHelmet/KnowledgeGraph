@@ -1,7 +1,7 @@
 from .test_extractor import process_labeled_data
 from .structure import StrEntity
 from .ltp import LTP
-from .dependency import RelationExtractor
+from .dependency.tree import RelationExtractor
 
 class Estimation():
     def __init__(self):
@@ -28,16 +28,15 @@ class RelExtractorTestor():
         self.estimation = Estimation()
 
     def add(self, data):
-        sentence = data.sentence        
+        sentence = data.sentence.encode('utf-8')
         ltp_result = ltp.parse(sentence)
-        self.extractor.find_path_verbs()
 
         entity_pool = [False] * ltp_result.length
 
         for kl in data.knowledges:
             kl.subj = kl.subj.encode('utf-8')
-            kl.rel = kl.rel.encode('utf-8')
-            kl.obj = kl.subj.encode('utf-8')
+            kl.prop = kl.prop.encode('utf-8')
+            kl.obj = kl.obj.encode('utf-8')
 
             st, ed = ltp_result.search_word(kl.subj)
             if st != -1:
@@ -58,10 +57,10 @@ class RelExtractorTestor():
             st_2, ed_2 = ltp_result.search_word(kl.obj)
             if st_1 == -1 or st_2 == -1:
                 self.estimation.error_seg += 1
-                ret[kl_str] = (None, "miss segement")
+                ret[kl_str] = (" ".join(ltp_result.words), "error segment")
                 continue
             
-            rels = self.extractor.find_path_verbs(ltp_result, StrEntity(st_1, ed_1), StrEntity(st_2, ed_2), entity_pool)
+            rels = self.extractor.find_relation(ltp_result, StrEntity(st_1, ed_1), StrEntity(st_2, ed_2), entity_pool)
             rels = [ltp_result.text(st, ed) for st, ed in rels]
             rels_str = "\t".join(rels)
             prop = kl.prop
@@ -88,18 +87,27 @@ class RelExtractorTestor():
 def test(extractor, ltp):
     datas_map, nb_data, nb_kl = process_labeled_data(ignore_miss = True)
 
+    print "#sentence: %d, #labeled: %d" %(nb_data, nb_kl)
+
+
     testor = RelExtractorTestor(extractor, ltp)
     for url in datas_map:
         datas = datas_map[url]
         for data in datas:
-            testor.add(data)
+            ret = testor.add(data)
+            for labeled in ret:
+                out = ret[labeled]
+                if out[1] == 'error segment':
+                    print labeled
+                    print out[0]
+    testor.estimation.print_info()
 
 
 
 if __name__ == "__main__":
     extractor = RelationExtractor()
     ltp = LTP(None)
-
+    test(extractor, ltp)
     
 
 

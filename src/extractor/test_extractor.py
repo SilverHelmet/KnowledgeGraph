@@ -143,7 +143,7 @@ def test_ltp_extractor():
             print sentence
             triples, ltp_result = ltp_extractor.parse_sentence(sentence, None)
             
-            kl_set()
+            kl_set = set()
             for kl in data.knowledges:
                 kl_set.add(kl.knowledge())
             estimation['total labeled'] += len(kl_set)

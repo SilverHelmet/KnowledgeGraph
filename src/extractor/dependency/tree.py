@@ -103,7 +103,7 @@ class RelationExtractor:
             res.append(process_father[0].index(i))
         return process_father[0][min(res)]
 
-    def find_path_verbs(self, ltp_result, e1, e2, entity_pool):
+    def find_relation(self, ltp_result, e1, e2, entity_pool):
         simple_res = []
         tree = ParseTree(ltp_result)
         node_list_1 = tree.nodes[e1.st : e1.ed]
