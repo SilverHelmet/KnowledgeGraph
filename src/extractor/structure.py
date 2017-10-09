@@ -58,6 +58,9 @@ class Knowledge:
     def __str__(self):
         return "%s\t%s %s\t%s" %(self.subj, self.prop, self.prop_uri, self.obj)
 
+    def triple(self):
+        return "%s\t%s\t%s" %(self.subj, self.prop, self.obj)
+
     @staticmethod
     def from_spo(spo, words):
         args = ["".join(words[spo.e1.st:spo.e1.ed]),  "".join(words[spo.rel.st:spo.rel.ed]), 

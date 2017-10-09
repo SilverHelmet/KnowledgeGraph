@@ -30,6 +30,18 @@ class LTPResult:
             st = word_st + len(word)
         return words_st
 
+    def search_word(self, name):
+        for i in range(0, self.length):
+            for j in range(i + 1, self.length + 1):
+                text = self.text(i, j)
+                if text == name:
+                    return i, j
+                if len(text) > name:
+                    break
+        return -1, -1
+                    
+
+
     def text(self, st, ed):
         if ed <= st:
             return ""

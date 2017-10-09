@@ -9,6 +9,7 @@ from .structure import Knowledge
 from entity.naive_ner import NaiveNer
 from dependency.relation_extractors import RelTagExtractor
 from .linkers import SeparatedLinker, PopularityEntityLinker, MatchRelLinker
+from .simple_extractors import SimpleLTPExtractor
 
 def decode(text):
     return str(text).decode('utf-8')
@@ -135,7 +136,7 @@ def test_ltp_extractor():
         for data in datas:
             sentence = data.sentence
             print sentence
-            triples, ltp_result = ltp_extractor.parse_sentence(sentence)
+            triples, ltp_result = ltp_extractor.parse_sentence(sentence, None)
             
             for triple in triples:
                 print triple.info(ltp_result)
