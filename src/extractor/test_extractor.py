@@ -176,7 +176,7 @@ def test_ltp_extractor():
         for data in datas:
             sentence = data.sentence
             print sentence
-            stf_result = stf_results_map[sentence]
+            stf_result = stf_results_map[sentence.decode('utf-8')]
             triples, ltp_result = ltp_extractor.parse_sentence(sentence, None, stf_result)
             
             kl_set = set()

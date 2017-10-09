@@ -42,6 +42,21 @@ class RelExtractorTestor():
         for st, ed in entities:
             for i in range(st, ed):
                 entity_pool[i] = True
+
+        # for kl in data.knowledges:		         
+            
+        #     kl.subj = kl.subj.encode('utf-8')		
+        #     kl.prop = kl.prop.encode('utf-8')		
+        #     kl.obj = kl.obj.encode('utf-8')		
+        #     st, ed = ltp_result.search_word(kl.subj)		
+        #     if st != -1:		
+        #         for i in range(st, ed):		
+        #             entity_pool[i] = True		
+
+        #     st, ed = ltp_result.search_word(kl.obj)		
+        #     if st != -1:				
+        #         for i in range(st, ed):		  
+        #             entity_pool[i] = True
         
         ret = {}
         for kl in data.knowledges:

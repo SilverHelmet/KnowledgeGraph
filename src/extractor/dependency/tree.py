@@ -182,6 +182,7 @@ class VerbRelationExtractor:
             else:
                 print "other situation not found!"
         return advanced_res
+    
 class prenode:
     def __init__(self, st, ed):
         self.st = st
