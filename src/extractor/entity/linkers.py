@@ -67,8 +67,6 @@ class TopPopEntityLinker:
             total_score += e.pop
 
         top_entity = baike_entities[0]
-        if total_score == 0:
-            print 'zero score:', top_entity.baike_url
         if total_score > 0:
             top_entity.pop /= (total_score)
         return [top_entity]

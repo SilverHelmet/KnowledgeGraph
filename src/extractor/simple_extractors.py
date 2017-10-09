@@ -98,7 +98,7 @@ def mst_select_triple(linked_triples):
 if __name__ == "__main__":
     s = u'刘德华出生于1966年，是知名演员、歌手。'
     s = '赛后，梅西力压德国诸将，获得金球奖。'
-    s = '《青花瓷》是方文山作词，周杰伦作曲并演唱的歌曲，收录于2007年11月2日周杰伦制作发行音乐专辑《我很忙》中。'
+    s = '1996年，刘德华相继发行了《相思成灾》和《因为爱》两张国语唱片。'
 
     from .test_extractor import load_stanford_result
     

@@ -1,9 +1,12 @@
 
-from .test_extractor import process_labeled_data
+from .test_extractor import process_labeled_data, load_stanford_result
 from .structure import StrEntity
 from .ltp import LTP
-from .dependency.tree import VerbRelationExtractor
+from .dependency.verb_relation_advanced_extractor import VerbRelationExtractor
 from .entity.naive_ner import NaiveNer
+from .entity.ner import NamedEntityReg
+from ..IOUtil import data_dir
+import os
 
 class Estimation():
     def __init__(self):
@@ -24,11 +27,18 @@ class Estimation():
 
 
 class RelExtractorTestor():
-    def __init__(self, extractor, ltp = None):
+    def __init__(self, extractor, ltp = None, use_advanced_ner = False):
         if ltp is None:
             ltp = LTP(None)
         self.ltp = ltp
-        self.ner = NaiveNer()
+        self.use_advanced_ner = use_advanced_ner
+        if use_advanced_ner:
+            self.ner = NamedEntityReg()
+            base_dir = os.path.join(data_dir, '标注数据')
+            self.stf_results_map = load_stanford_result(os.path.join(base_dir, 'sentences.txt'), os.path.join(base_dir, 'sentences_stanf_nlp.json'))
+        else:
+            self.ner = NaiveNer()
+
         self.extractor = extractor
         self.estimation = Estimation()
 
@@ -37,7 +47,11 @@ class RelExtractorTestor():
         ltp_result = ltp.parse(sentence)
 
         entity_pool = [False] * ltp_result.length
-        entities = self.ner.recognize(sentence, ltp_result, None)
+        if self.use_advanced_ner:
+            entities = self.ner.recognize(sentence, ltp_result, None, self.stf_results_map[sentence])
+            # ltp_result.update_parsing_tree(self.ltp)
+        else:
+            entities = self.ner.recognize(sentence, ltp_result, None)
 
         for st, ed in entities:
             for i in range(st, ed):
@@ -72,7 +86,7 @@ class RelExtractorTestor():
                 ret[kl_str] = (" ".join(ltp_result.words), "error segment")
                 continue
             
-            rels = self.extractor.extract_relation(ltp_result, StrEntity(st_1, ed_1), StrEntity(st_2, ed_2), entity_pool)
+            rels = self.extractor.find_relation(ltp_result, StrEntity(st_1, ed_1), StrEntity(st_2, ed_2), entity_pool)
             rels = [ltp_result.text(st, ed) for st, ed in rels]
             rels_str = "\t".join(rels)
             prop = kl.prop
@@ -106,14 +120,14 @@ def test(extractor, ltp):
 
     print "#sentence: %d, #labeled: %d" %(nb_data, nb_kl)
 
-    testor = RelExtractorTestor(extractor, ltp)
+    testor = RelExtractorTestor(extractor, ltp, use_advanced_ner = False)
     for url in datas_map:
         datas = datas_map[url]
         for data in datas:
             ret = testor.add(data)
             for labeled in ret:
                 out = ret[labeled]
-                if out[1] == 'partial right':
+                if out[1] == 'error':
                     print data.sentence
                     print '\t%s' %out[0]
                     print '\t%s' %labeled

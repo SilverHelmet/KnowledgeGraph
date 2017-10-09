@@ -12,6 +12,7 @@ from dependency.relation_extractors import RelTagExtractor
 from entity.linkers import SeparatedLinker, PopularityEntityLinker, MatchRelLinker, TopPopEntityLinker
 from .simple_extractors import SimpleLTPExtractor
 from .entity.test import extract_stanford_result
+from ..schema.schema import Schema
 
 def decode(text):
     return str(text).decode('utf-8')
@@ -171,17 +172,22 @@ def test_ltp_extractor():
         'total labeled': 0,
         'right output': 0,
     }
+    schema = Schema()
+    schema.init()
     for baike_name in datas_map:
         datas = datas_map[baike_name]
         for data in datas:
             sentence = data.sentence
-            print sentence
             stf_result = stf_results_map[sentence.encode('utf-8')]
             triples, ltp_result = ltp_extractor.parse_sentence(sentence, None, stf_result)
             
             kl_set = set()
             for kl in data.knowledges:
                 kl_set.add(kl.knowledge())
+                reverse_prop = schema.reverse_property(kl.prop)
+                if reverse_prop:
+                    kl_set.add("%s\t%s\t%s" %(kl.obj, reverse_prop, kl.subj))
+
             estimation['total labeled'] += len(kl_set)
 
             for triple in triples:

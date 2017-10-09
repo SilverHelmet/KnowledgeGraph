@@ -44,7 +44,7 @@ class SPO:
         return "%s\t%s\t%s\t%f" %(self.e1.baike_url, self.rel.fb_prop, self.e2.baike_url, self.score)
 
 class Knowledge:
-    def __init__(self, subj, prop, obj, subj_url, prop_uri, obj_url, score = 0 ):
+    def __init__(self, subj, prop, obj, subj_url, prop_uri, obj_url, score = 0):
         self.subj = subj
         self.prop = prop
         self.obj = obj
@@ -98,7 +98,15 @@ class LinkedTriple:
         return schema_type in self.baike_subj.types and expected_type in self.baike_obj.types
 
     def score(self):
-        return (self.baike_subj.pop + self.baike_obj.pop) * self.fb_rel.prob
+        return (self.baike_subj.pop + self.baike_obj.pop) * self.fb_rel.prob * self. position_coef()
+
+    def position_coef(self):
+        pos_diff = min(abs(self.baike_subj.st - self.baike_obj.ed), abs(self.baike_obj.st - self.baike_subj.ed) )
+        if pos_diff < 9:
+            return 1 - pos_diff / 10
+        else:
+            return 0.2
+
         
     def info(self, ltp_result):
         subj = ltp_result.text(self.baike_subj.st, self.baike_subj.ed)
