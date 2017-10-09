@@ -68,6 +68,7 @@ class TopPopEntityLinker:
 
         top_entity = baike_entities[0]
         top_entity.pop /= (total_score)
+        return top_entity
 
         
 
