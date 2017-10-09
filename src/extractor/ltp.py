@@ -57,6 +57,15 @@ class LTPResult:
         self.length = len(self.words)
         self.words_st = self.find_pos()
 
+    def update_parsing_tree(self, ltp):
+        arcs = ltp.parser.parse(self.words, self.tags)
+        arcs = list(arcs)
+        for arc in arcs:
+            arc.head -= 1
+            if arc.head == -1:
+                arc.head = self.length
+        self.arcs = arcs
+
 class LTP:
     def __init__(self, base_dir):
         if base_dir is None:

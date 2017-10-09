@@ -184,7 +184,7 @@ def test_ltp_extractor():
             kl_set = set()
             for kl in data.knowledges:
                 kl_set.add(kl.knowledge())
-                reverse_prop = schema.get_reverse_property_map(kl.prop)
+                reverse_prop = schema.reverse_property(kl.prop)
                 if reverse_prop:
                     kl_set.add("%s\t%s\t%s" %(kl.obj, reverse_prop, kl.subj))
 
