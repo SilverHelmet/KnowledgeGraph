@@ -76,7 +76,7 @@ class VerbRelationExtractor:
                 break
         return res
     
-    def extract_relation(self, ltp_result, e1, e2, entity_pool):
+    def find_relation(self, ltp_result, e1, e2, entity_pool):
         advanced_res = []
         tree = ParseTree(ltp_result)
         node_list_1 = tree.nodes[e1.st : e1.ed]
@@ -128,5 +128,5 @@ if __name__ == "__main__":
     for i in range(ltp_result.length):
         entity_pool.append(0)
     res = VerbRelationExtractor(True)
-    tmp1 = res.extract_relation(ltp_result, e1, e2, entity_pool)
+    tmp1 = res.find_relation(ltp_result, e1, e2, entity_pool)
     print ltp_result.words[tmp1[0][0]]
