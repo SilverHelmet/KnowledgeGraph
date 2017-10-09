@@ -184,7 +184,7 @@ class NamedEntityReg:
 						break
 				if b:
 					ltp_result.ner_tags[ltp_result.words.index(res[0])] = "S-"+res[1]
-					ltp_result.tags[ltp_result.words.index(res[0])] = "STD-"+res[2]
+			
 					#fw_add.write(ltp_result.sentence+"\t"+res[0]+"\n")
 					#fw_add.write(res[0]+":"+res[1]+":"+res[2]+"\n")
 
