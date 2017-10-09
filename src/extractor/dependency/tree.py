@@ -70,7 +70,7 @@ class Node:
 输入的参数是(ltp_result, e1, e2, entity_pool)
 e1, e2是struecture.py 下面的 StrEntity类型 有st和ed属性，代表一个识别的实体
 '''
-class RelationExtractor:
+class VerbRelationExtractor:
     def __init__(self):
         pass
       

@@ -72,12 +72,12 @@ class RelExtractorTestor():
 
             partial_right_flag = False
             for rel in rels:
-                if rel.find(prop) != -1:
+                if prop.find(rel) != -1:
                     partial_right_flag = True
                     break
             if partial_right_flag:
                 self.estimation.partial_right += 1
-                ret[kl_str] = (rels_str, 'partial rights')
+                ret[kl_str] = (rels_str, 'partial right')
                 continue
         
             self.estimation.error += 1
@@ -97,9 +97,11 @@ def test(extractor, ltp):
             ret = testor.add(data)
             for labeled in ret:
                 out = ret[labeled]
-                if out[1] == 'error segment':
-                    print labeled
-                    print out[0]
+                if out[1] == 'partial right':
+                    print data.sentence
+                    print '\t%s' %out[0]
+                    print '\t%s' %labeled
+                    
     testor.estimation.print_info()
 
 
