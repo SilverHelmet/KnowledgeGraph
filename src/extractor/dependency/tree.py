@@ -116,7 +116,8 @@ class RelationExtractor:
         for node in coo_p:
             if node.postag == 'v':
                 if entity_pool[node.idx] == 1:
-                    print node.word,": extract verb is an entity! error!"
+                    # print node.word,": extract verb is an entity! error!"
+                    pass
                 else:
                     simple_res.append((node.idx, node.idx + 1))
         return simple_res
