@@ -29,7 +29,7 @@ if __name__ == "__main__":
     # out_dir = os.path.join(result_dir, '360/mapping/classify')
     # baike2fb_map, baike_entities, fb_entities = load_mapping_pairs(mapping_file)
 
-    baike_entities = set(baike_entities)
+    # baike_entities = set(baike_entities)
 
     nb_files = 461
     Print("---- parse summary ----")
