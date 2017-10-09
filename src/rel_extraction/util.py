@@ -73,7 +73,8 @@ def load_name2baike(filepath = None):
     name2bk = {}
     Print('load name -> baike from %s' %filepath)
     for line in tqdm(file(filepath), total = total):
-        p = line.strip().decode('utf-8').split('\t')
+        # p = line.strip().decode('utf-8').split('\t')
+        p = line.strip().split('\t')
         bk_url = p[0]
         names = p[1:]
         for name in names:

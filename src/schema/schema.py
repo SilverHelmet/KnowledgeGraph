@@ -110,6 +110,8 @@ def load_type_attrs():
         key, obj = line.split('\t')
         attrs_map[key] = json.loads(obj)
     for line in file(os.path.join(doc_dir, 'human_add_type_attr.json'), 'r'):
+        if line.startswith("#"):
+            continue
         key, obj = line.split('\t')
         obj = json.loads(obj)
         for name in obj:
