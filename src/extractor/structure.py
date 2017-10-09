@@ -118,3 +118,6 @@ class LinkedTriple:
         score = self.score()
         return  "%s:%s\t%s:%s\t%s:%s %f" %(subj, subj_url, rel, fb_prop, obj, obj_url, score)
 
+    def knowledge(self):
+        return "%s\t%s\t%s" %(subj_url, fb_prop, obj_url)
+

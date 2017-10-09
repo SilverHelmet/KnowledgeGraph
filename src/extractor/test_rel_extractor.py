@@ -49,7 +49,7 @@ class RelExtractorTestor():
         entity_pool = [False] * ltp_result.length
         if self.use_advanced_ner:
             entities = self.ner.recognize(sentence, ltp_result, None, self.stf_results_map[sentence])
-            # ltp_result.update_parsing_tree(self.ltp)
+            ltp_result.update_parsing_tree(self.ltp)
         else:
             entities = self.ner.recognize(sentence, ltp_result, None)
 
@@ -113,18 +113,18 @@ class RelExtractorTestor():
         
             self.estimation.error += 1
             ret[kl_str] = (rels_str, 'error')
-        return ret
+        return ret, ltp_result
 
 def test(extractor, ltp):
     datas_map, nb_data, nb_kl = process_labeled_data(ignore_miss = True)
 
     print "#sentence: %d, #labeled: %d" %(nb_data, nb_kl)
 
-    testor = RelExtractorTestor(extractor, ltp, use_advanced_ner = False)
+    testor = RelExtractorTestor(extractor, ltp, use_advanced_ner = True)
     for url in datas_map:
         datas = datas_map[url]
         for data in datas:
-            ret = testor.add(data)
+            ret, ltp_result = testor.add(data)
             for labeled in ret:
                 out = ret[labeled]
                 if out[1] == 'error':
