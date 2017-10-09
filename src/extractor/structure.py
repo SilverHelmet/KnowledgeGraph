@@ -44,7 +44,7 @@ class SPO:
         return "%s\t%s\t%s\t%f" %(self.e1.baike_url, self.rel.fb_prop, self.e2.baike_url, self.score)
 
 class Knowledge:
-    def __init__(self, subj, prop, obj, subj_url, prop_uri, obj_url, score = 0 ):
+    def __init__(self, subj, prop, obj, subj_url, prop_uri, obj_url, score = 0):
         self.subj = subj
         self.prop = prop
         self.obj = obj

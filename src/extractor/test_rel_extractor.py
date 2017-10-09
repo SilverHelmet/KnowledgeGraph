@@ -59,10 +59,12 @@ class RelExtractorTestor():
         #             entity_pool[i] = True
         
         ret = {}
+        print sentence
         for kl in data.knowledges:
             kl.subj = kl.subj.encode('utf-8')
             kl.prop = kl.prop.encode('utf-8')
             kl.obj = kl.obj.encode('utf-8')
+            print kl.subj, kl.obj
             kl_str = kl.triple()
             self.estimation.total += 1
             st_1, ed_1 = ltp_result.search_word(kl.subj)
