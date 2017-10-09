@@ -55,7 +55,7 @@ class SimpleLTPExtractor:
         return triples
 
     def parse_sentence(self, sentence, page_info):
-        print "sentense is:" sentence 
+        print "sentense is:", sentence 
         if type(sentence) is unicode:
             sentence = sentence.encode('utf-8')
         ltp_result = self.ltp.parse(sentence)

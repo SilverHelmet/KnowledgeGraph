@@ -157,6 +157,7 @@ def test_ltp_extractor():
 
             for kl in data.knowledges:
                 print '\t', kl
+    print estimation
 
 if __name__ == "__main__":
     test_ltp_extractor()
