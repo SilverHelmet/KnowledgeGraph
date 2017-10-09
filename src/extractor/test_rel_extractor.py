@@ -1,7 +1,9 @@
+
 from .test_extractor import process_labeled_data
 from .structure import StrEntity
 from .ltp import LTP
-from .dependency.tree import RelationExtractor
+from .dependency.tree import VerbRelationExtractor
+from .entity.naive_ner import NaiveNer
 
 class Estimation():
     def __init__(self):
@@ -26,6 +28,7 @@ class RelExtractorTestor():
         if ltp is None:
             ltp = LTP(None)
         self.ltp = ltp
+        self.ner = NaiveNer()
         self.extractor = extractor
         self.estimation = Estimation()
 
@@ -34,25 +37,17 @@ class RelExtractorTestor():
         ltp_result = ltp.parse(sentence)
 
         entity_pool = [False] * ltp_result.length
+        entities = self.ner.recognize(sentence, ltp_result, None)
 
-        for kl in data.knowledges:
-            kl.subj = kl.subj.encode('utf-8')
-            kl.prop = kl.prop.encode('utf-8')
-            kl.obj = kl.obj.encode('utf-8')
-
-            st, ed = ltp_result.search_word(kl.subj)
-            if st != -1:
-                for i in range(st, ed):
-                    entity_pool[i] = True
-
-            st, ed = ltp_result.search_word(kl.obj)
-            if st == -1:
-                continue
+        for st, ed in entities:
             for i in range(st, ed):
                 entity_pool[i] = True
         
         ret = {}
         for kl in data.knowledges:
+            kl.subj = kl.subj.encode('utf-8')
+            kl.prop = kl.prop.encode('utf-8')
+            kl.obj = kl.obj.encode('utf-8')
             kl_str = kl.triple()
             self.estimation.total += 1
             st_1, ed_1 = ltp_result.search_word(kl.subj)
@@ -95,7 +90,6 @@ def test(extractor, ltp):
     datas_map, nb_data, nb_kl = process_labeled_data(ignore_miss = True)
 
     print "#sentence: %d, #labeled: %d" %(nb_data, nb_kl)
-
 
     testor = RelExtractorTestor(extractor, ltp)
     for url in datas_map:

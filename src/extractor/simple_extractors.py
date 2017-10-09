@@ -27,6 +27,7 @@ def fill_entity_pool(length, str_entites):
         st = entity.st
         ed = entity.ed
         for i in range(st, ed):
+            print i
             pool[i] = True
     return pool
 
@@ -55,14 +56,12 @@ class SimpleLTPExtractor:
         return triples
 
     def parse_sentence(self, sentence, page_info):
-        print "sentense is:", sentence 
         if type(sentence) is unicode:
             sentence = sentence.encode('utf-8')
         ltp_result = self.ltp.parse(sentence)
 
         str_entites = self.ner.recognize(sentence, ltp_result, page_info)
         str_entites = [ StrEntity(st, ed) for st, ed in str_entites]
-        str_entites.append(StrEntity(9, 11))
 
         entity_pool = fill_entity_pool(ltp_result.length, str_entites)
 
@@ -96,7 +95,7 @@ def mst_select_triple(linked_triples):
 
 if __name__ == "__main__":
     s = u'刘德华出生于1966年，是知名演员、歌手。'
-    s = '刘德华，1999年，周杰伦参演电影了《投奔怒海》'
+    s = '赛后，梅西力压德国诸将，获得金球奖。'
     # s = u'《青花瓷》是方文山作词，周杰伦作曲并演唱的歌曲，收录于2007年11月2日周杰伦制作发行音乐专辑《我很忙》中。'
 
     ner = NaiveNer()    
