@@ -70,6 +70,8 @@ def parse_summary(obj):
     summary = None
     if 'intro_info' in obj:
         intro_info = obj['intro_info']
+        if type(intro_info) is not dict:
+            return None
         if 'summary' in intro_info:
             summary = intro_info['summary']
     if summary:
