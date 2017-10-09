@@ -98,6 +98,8 @@ class MatchRelLinker:
             probs = self.predicate_map[infobox_pred]
             for fb_prop in probs:
                 prob = probs[fb_prop] * match_ratio
+                if prob < 0.1:
+                    continue
                 if mapped_probs.get(fb_prop, 0) < prob:
                     mapped_probs[fb_prop] = prob
         return mapped_probs
