@@ -8,7 +8,7 @@ import numpy as np
 from .structure import Knowledge
 from entity.naive_ner import NaiveNer
 from dependency.relation_extractors import RelTagExtractor
-from .linkers import SeparatedLinker, PopularityEntityLinker, MatchRelLinker
+from entity.linkers import SeparatedLinker, PopularityEntityLinker, MatchRelLinker, TopPopEntityLinker
 from .simple_extractors import SimpleLTPExtractor
 
 def decode(text):
@@ -123,7 +123,7 @@ def test_ltp_extractor():
     Print('init extractor')
     ner = NaiveNer()    
     rel_extractor = RelTagExtractor()
-    entity_linker = PopularityEntityLinker(os.path.join(rel_ext_dir, 'baike_static_info.tsv'))
+    entity_linker = TopPopEntityLinker(os.path.join(rel_ext_dir, 'baike_static_info.tsv'))
     rel_linker = MatchRelLinker()
     linker = SeparatedLinker(entity_linker, rel_linker)
 

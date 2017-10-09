@@ -1,10 +1,10 @@
 #encoding: utf-8
-from ..rel_extraction.util import load_name2baike, load_bk_static_info
-from ..IOUtil import rel_ext_dir, doc_dir
-from .structure import BaikeEntity, FBRelation, LinkedTriple
-from .util import load_predicate_map
+from ...rel_extraction.util import load_name2baike, load_bk_static_info
+from ...IOUtil import rel_ext_dir, doc_dir
+from ..structure import BaikeEntity, FBRelation, LinkedTriple
+from ..util import load_predicate_map
 import os
-from ..schema.schema import Schema
+from ...schema.schema import Schema
 
 class SeparatedLinker:
     def __init__(self, entity_linker, rel_linker):
@@ -43,12 +43,41 @@ class PopularityEntityLinker:
             baike_entities.append(BaikeEntity(str_entity, bk_url, bk_info.pop, bk_info.types))
         return baike_entities
 
+class TopPopEntityLinker:
+    def __init__(self, static_info_path):
+        self.bk_info_map = load_bk_static_info(filepath = static_info_path)
+        self.name2bk = load_name2baike(filepath = os.path.join(rel_ext_dir, 'baike_names.tsv'))
+
+    def link(self, ltp_result, str_entity):
+        name = ltp_result.text(str_entity.st, str_entity.ed)
+        baike_urls = self.name2bk.get(name, [])
+        baike_entities = []
+
+        
+        for bk_url in baike_urls:
+            bk_info = self.bk_info_map[bk_url]
+            baike_entities.append(BaikeEntity(str_entity, bk_url, bk_info.pop, bk_info.types))
+
+        if len(baike_entities) == 0:
+            return []
+
+        baike_entities.sort(key = lambda x: x.pop, reverse = True)
+        total_score = 0.0001
+        for e in baike_entities:
+            total_score += e.pop
+
+        top_entity = baike_entities[0]
+        top_entity.pop /= (total_score)
+
+        
+
+
 class MatchRelLinker:
     def __init__(self):
         self.predicate_map = load_predicate_map(extra_path = os.path.join(doc_dir, 'human_add_predicate_map.json'))
 
     def link(self, ltp_result, rel):
-        predicate = ltp_result.text(rel.st, rel.ed).decode('utf-8')
+        predicate = ltp_result.text(rel.st, rel.ed)
         fb_rels = []
         if predicate in self.predicate_map:
             probs = self.predicate_map[predicate]

@@ -10,7 +10,7 @@ def load_predicate_map(filepath = None, extra_path = None):
     predicate_map  = {}
     for line in file(filepath):
         p = line.split('\t')
-        infobox_pred = p[0].decode('utf-8')
+        infobox_pred = p[0]
         mappings = json.loads(p[1])[:7]
         probs = {}
         for prop, occur in mappings:
@@ -26,7 +26,7 @@ def load_predicate_map(filepath = None, extra_path = None):
             if line == "":
                 continue
             p = line.split('\t')
-            infobox_pred = p[0].decode('utf-8')
+            infobox_pred = p[0]
             fb_props = json.loads(p[1])
             probs = predicate_map[infobox_pred]
             for prop in fb_props:

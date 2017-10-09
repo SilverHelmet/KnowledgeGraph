@@ -10,7 +10,7 @@ from ..schema.schema import Schema
 from .ltp import LTP
 from entity.naive_ner import NaiveNer
 from dependency.relation_extractors import RelTagExtractor
-from .linkers import SeparatedLinker, PopularityEntityLinker, MatchRelLinker
+from .entity.linkers import SeparatedLinker, PopularityEntityLinker, MatchRelLinker
 from .mst import perform_MST, Edge
     
 def parse_str_relations_by_ltp_tag(ltr_result, entity_pool):
@@ -27,7 +27,6 @@ def fill_entity_pool(length, str_entites):
         st = entity.st
         ed = entity.ed
         for i in range(st, ed):
-            print i
             pool[i] = True
     return pool
 
