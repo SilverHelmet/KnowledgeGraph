@@ -103,7 +103,7 @@ def process_labeled_data(ignore_miss):
             new_datas = []
             for data in datas:
                 data.clear_miss_data()
-                if (data.knowledges) > 0:
+                if len(data.knowledges) > 0:
                     new_datas.append(data)
             datas = new_datas
 
@@ -131,6 +131,11 @@ def test_ltp_extractor():
 
     Print('init finished')
 
+    estimation = {
+        "total output": 0,
+        'total labeled': 0,
+        'right output': 0,
+    }
     for baike_name in datas_map:
         datas = datas_map[baike_name]
         for data in datas:
@@ -138,10 +143,20 @@ def test_ltp_extractor():
             print sentence
             triples, ltp_result = ltp_extractor.parse_sentence(sentence, None)
             
+            kl_set()
+            for kl in data.knowledges:
+                kl_set.add(kl.knowledge())
+            estimation['total labeled'] += len(kl_set)
+
             for triple in triples:
-                print triple.info(ltp_result)
-                for kl in data.knowledges:
-                    print '\t', kl
+                info = triple.info(ltp_result)
+                print info
+                estimation['total output'] += 1
+                if info in kl_set:
+                    estimation['total output'] += 1
+
+            for kl in data.knowledges:
+                print '\t', kl
 
 if __name__ == "__main__":
     test_ltp_extractor()

@@ -61,6 +61,10 @@ class Knowledge:
     def triple(self):
         return "%s\t%s\t%s" %(self.subj, self.prop, self.obj)
 
+    def knowledge(self):
+        return "%s\t%s\t%s" %(self.subj_url, self.prop_uri, self.obj_url)
+
+
     @staticmethod
     def from_spo(spo, words):
         args = ["".join(words[spo.e1.st:spo.e1.ed]),  "".join(words[spo.rel.st:spo.rel.ed]), 
