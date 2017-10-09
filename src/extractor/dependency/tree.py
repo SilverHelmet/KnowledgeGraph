@@ -1,5 +1,18 @@
 #encoding: utf-8
 from ..ltp import LTP, LTPResult
+from ..structure import StrEntity
+
+class Debug:
+    def __init__(self, flag):
+        self.flag = flag
+        
+    def debug(self, *l):
+        if self.flag:
+            l = map(str, l)
+            print("\t".join(l))
+        else:
+            pass
+
 class ParseTree:
     def __init__(self, ltp_result):
         self.length = ltp_result.length
@@ -71,7 +84,8 @@ class Node:
 e1, e2是struecture.py 下面的 StrEntity类型 有st和ed属性，代表一个识别的实体
 '''
 class VerbRelationExtractor:
-    def __init__(self):
+    def __init__(self, debug_flag = False):
+        self.debuger = Debug(debug_flag)
         pass
       
     def find_path_to_root(self, node):
@@ -116,7 +130,6 @@ class VerbRelationExtractor:
         for node in coo_p:
             if node.postag == 'v':
                 if entity_pool[node.idx] == 1:
-                    # print node.word,": extract verb is an entity! error!"
                     pass
                 else:
                     simple_res.append((node.idx, node.idx + 1))
@@ -127,12 +140,12 @@ class VerbRelationExtractor:
         if len(path) == 1:
             return [None, None]
         for node in path:
-            if node.father.postag == 'v':
+            if node.father == None:
+                return [None, None]
+            elif node.father.postag == 'v':
                 res.append(node)
                 res.append(node.father)
                 break
-        if res == []:
-            res = [None, None]
         return res
     
     def judge_coo(self, verb1, verb2):
@@ -160,45 +173,53 @@ class VerbRelationExtractor:
         w2 = self.find_coo_father(node_list_2)
         p1 = self.find_path_to_root(tree.nodes[w1])
         p2 = self.find_path_to_root(tree.nodes[w2])
-        near_verb1 = self.find_nearest_verb(p1)[0]
+        near_verb1 = self.find_nearest_verb(p1)[0]      
         verb1 = self.find_nearest_verb(p1)[1]
         near_verb2 = self.find_nearest_verb(p2)[0]
         verb2 = self.find_nearest_verb(p2)[1]
         if verb1 == None or verb2 == None:
-            print "can't find nearest verb!"
+            self.debuger.debug("can't find nearest verb!")
         elif near_verb1.rel == near_verb2.rel:
-            print "the relation to verb is same! not found!"
+            self.debuger.debug("the relation to verb is same! not found!")
         elif verb1 == verb2:
-            print "same verb found!"
+            self.debuger.debug("same verb found!")
             advanced_res.append((verb1.idx, verb1.idx + 1))
         else:
             if self.judge_coo(verb1, verb2):
                 one_SBV = self.judge_one_SBV(near_verb1, near_verb2)
                 if one_SBV != None:
-                    print "coo verbs and one SBV found!"
+                    self.debuger.debug("coo verbs and one SBV found!")
                     advanced_res.append((one_SBV.idx, one_SBV.idx + 1))
                 else:
-                    print "coo verbs but not one SBV! not found!"
+                    self.debuger.debug("coo verbs but not one SBV! not found!")
             else:
-                print "other situation not found!"
+                self.debuger.debug("other situation not found!")
         return advanced_res
     
-class prenode:
-    def __init__(self, st, ed):
-        self.st = st
-        self.ed = ed
-        
 if __name__ == "__main__":
     ltp = LTP(None)
-    sentence = '《冰与火之歌》(A Song of Ice and Fire)是由美国作家乔治·R·R·马丁所著的严肃奇幻小说系列。'
+    sentence = '任天堂株式会社(日文:任天堂株式会社，平假名:にんてんどうかぶしきがいしゃ)于1947年11月20日成立 。'
     ltp_result = ltp.parse(sentence)
     for i in range(ltp_result.length):
-        print i, ":", ltp_result.words[i]
-    e1 = prenode(1, 6)
-    e2 = prenode(17, 18)
-    entity_pool = [0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0]
-    res = VerbRelationExtractor()
+        print i, ":", ltp_result.words[i], ltp_result.tags[i]
+    for i in range(len(ltp_result.arcs)):
+        if ltp_result.arcs[i].head == ltp_result.length:
+            print 'ROOT', "--", ltp_result.arcs[i].relation, '--',ltp_result.words[i], '(', ltp_result.tags[i], ')'
+        else:
+            print ltp_result.words[ltp_result.arcs[i].head], '(', ltp_result.tags[ltp_result.arcs[i].head], ')', "--", ltp_result.arcs[i].relation, '--', ltp_result.words[i], '(', ltp_result.tags[i], ')'
+    print sentence
+    e1 = '任天堂'
+    e2 = '1947年11月20日'
+    st, ed = ltp_result.search_word(e1)
+    e1 = StrEntity(st, ed)
+    st, ed = ltp_result.search_word(e2)
+    e2 = StrEntity(st, ed)
+    entity_pool = []
+    for i in range(ltp_result.length):
+        entity_pool.append(0)
+    res = VerbRelationExtractor(True)
     tmp1 = res.find_relation(ltp_result, e1, e2, entity_pool)
     tmp2 = res.extract_relation(ltp_result, e1, e2, entity_pool)
     print tmp1
     print tmp2
+    
