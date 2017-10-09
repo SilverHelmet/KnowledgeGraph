@@ -1,6 +1,7 @@
 from .test_extractor import process_labeled_data
 from .structure import StrEntity
 from .ltp import LTP
+from .dependency import RelationExtractor
 
 class Estimation():
     def __init__(self):
@@ -9,6 +10,13 @@ class Estimation():
         self.partial_right = 0
         self.error_seg = 0
         self.error = 0
+
+    def print_info(self):
+        print "total:", self.total
+        print "right:", self.right
+        print "partial right:", self.partial_right
+        print 'error segment:', self.error_seg
+        print "error", self.error
 
 
 class RelExtractorTestor():
@@ -77,8 +85,21 @@ class RelExtractorTestor():
             ret[kl_str] = (rels_str, 'error')
         return ret
 
-if __name__ == "__main__":
+def test(extractor, ltp):
     datas_map, nb_data, nb_kl = process_labeled_data(ignore_miss = True)
+
+    testor = RelExtractorTestor(extractor, ltp)
+    for url in datas_map:
+        datas = datas_map[url]
+        for data in datas:
+            testor.add(data)
+
+
+
+if __name__ == "__main__":
+    extractor = RelationExtractor()
+    ltp = LTP(None)
+
     
 
 
