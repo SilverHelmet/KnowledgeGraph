@@ -156,8 +156,8 @@ def decide_type(type_probs, schema):
     for fb_type in type_probs:
         if type_probs[fb_type] >= 0.8:
             types.append(fb_type)
-    if len(types) == 0:
-        types = topk_key(type_probs, 1)
+    # if len(types) == 0:
+        # types = topk_key(type_probs, 1)
     types = schema.complement_type(types)
     return types
 
@@ -268,10 +268,11 @@ def test():
     baike_cls_path = os.path.join(classify_dir, 'final_baike_cls2fb_type.json')
     type_infer = TypeInfer(infobox_path = infobox_path, baike_cls_path = baike_cls_path)
 
-    baike_cls = ['type_prod_art_music']
+    baike_cls = ['type_default']
 
     baike_info = [u'唱片公司', u'所属专辑', u'发行时间', u'歌曲原唱', u'谱曲', u'编曲', u'填词', u'音乐风格', u'版本', u'歌曲语言', u'歌曲时长']
     baike_info = [u'专辑歌手', u'音乐风格', u'发行地区', u'曲目数量', u'唱片公司', u'获得奖项', u'发行时间', u'专辑语言', u'制作人']
+    baike_info = [u'中文名称', u'所属公司', u'名师讲堂', u'商业模式', u'特色', u'上市时间']
     type_probs = type_infer.infer(baike_info, baike_cls)
     type_infer.choose_music_type(type_probs, 0.8)
     # type_infer.choose_one_music_type(type_probs, 0.8)
