@@ -84,6 +84,7 @@ class RelationExtractor:
     def find_coo_father(self, nodes):
         coo_father = []
         process_father = []
+        index_father = []
         final_res = []
         res = []
         for i in range(len(nodes)):
@@ -91,8 +92,7 @@ class RelationExtractor:
         for i in range(len(nodes)):
             process_father.append([])
             for j in range(len(coo_father[i])):
-                process_father[i].append(coo_father[i][j].idx)
-        index_father = []
+                process_father[i].append(coo_father[i][j].idx)  
         for i in range(len(nodes)):
             index_father += process_father[i]
         father = set(index_father)
@@ -104,12 +104,12 @@ class RelationExtractor:
         return process_father[0][min(res)]
 
     def find_path_verbs(self, ltp_result, e1, e2, entity_pool):
+        simple_res = []
         tree = ParseTree(ltp_result)
         node_list_1 = tree.nodes[e1.st : e1.ed]
         node_list_2 = tree.nodes[e2.st : e2.ed]
         w1 = self.find_coo_father(node_list_1)
         w2 = self.find_coo_father(node_list_2)
-        simple_res = []
         p1 = self.find_path_to_root(tree.nodes[w1])
         p2 = self.find_path_to_root(tree.nodes[w2])
         coo_p = p1 + p2[:-1]
