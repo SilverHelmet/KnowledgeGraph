@@ -41,7 +41,7 @@ class NamedEntityReg:
 	"""
 	def __pos_nh_to_ner_nh(self,postag,raw_entitys):
 		new_entitys = list(raw_entitys)
-		pos_nh_lists = self.__find_pos_nh_lists(postag)
+		pos_nh_lists = self.__find_pos_nh_lists(postag,raw_entitys)
 		for t in pos_nh_lists:
 			for i in range(len(t) - 1):
 				new_entitys[t[i]] = "I-Nh"
@@ -53,13 +53,13 @@ class NamedEntityReg:
 		return new_entitys
 		
 
-	def __find_pos_nh_lists(self,postag):
+	def __find_pos_nh_lists(self,postag,entitys):
 		L = []
 		index = 0
 		while index < len(postag):
 			t = []
-			if postag[index] == "nh":
-				while index < len(postag) and postag[index] == "nh":
+			if postag[index] == "nh" and entitys[index] == "O":
+				while index < len(postag) and postag[index] == "nh"  and entitys[index] == "O":
 					t.append(index)
 					index += 1
 				t.append(index)	
@@ -219,11 +219,11 @@ class NamedEntityReg:
 				# Pokémon  é  d'Ossó ó
 				# 无法判断：Lluís d'Ossó的 ó     能判断Real Unión 的 ó
 				#乔治·R·R·马丁 不能加入·
-				if index < len(ltp_result.tags) and  is_other(ltp_result.words[index].decode("utf-8")) and self.__get_words_dist(ltp_result.sentence,ltp_result.words[index - 1],ltp_result.words[index]) == 1:
-					ltp_result.tags[index] = "ws"
-					while index < len(ltp_result.tags) and ltp_result.tags[index] == "ws":
-						ltp_result.ner_tags[index] = "I-Nf"
-						index += 1
+				# if index < len(ltp_result.tags) and  is_other(ltp_result.words[index].decode("utf-8")) and self.__get_words_dist(ltp_result.sentence,ltp_result.words[index - 1],ltp_result.words[index]) == 1:
+				# 	ltp_result.tags[index] = "ws"
+				# 	while index < len(ltp_result.tags) and ltp_result.tags[index] == "ws":
+				# 		ltp_result.ner_tags[index] = "I-Nf"
+				# 		index += 1
 
 				last = index
 				if last - first == 1:
