@@ -72,7 +72,7 @@ class RelExtractorTestor():
                 ret[kl_str] = (" ".join(ltp_result.words), "error segment")
                 continue
             
-            rels = self.extractor.find_relation(ltp_result, StrEntity(st_1, ed_1), StrEntity(st_2, ed_2), entity_pool)
+            rels = self.extractor.extract_relation(ltp_result, StrEntity(st_1, ed_1), StrEntity(st_2, ed_2), entity_pool)
             rels = [ltp_result.text(st, ed) for st, ed in rels]
             rels_str = "\t".join(rels)
             prop = kl.prop
