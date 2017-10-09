@@ -193,10 +193,13 @@ def test_ltp_extractor():
 
             for triple in triples:
                 info = triple.info(ltp_result)
-                print info
+                
                 estimation['total output'] += 1
                 if triple.knowledge() in kl_set:
                     estimation['right output'] += 1
+                    print info, 'right'
+                else:
+                    print info
 
             for kl in data.knowledges:
                 print '\t', kl

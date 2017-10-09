@@ -15,7 +15,7 @@ def load_predicate_map(filepath = None, extra_path = None):
         probs = {}
         for prop, occur in mappings:
             cnt, total = map(int, occur.split('/'))
-            prob = (cnt + 0.0) / (total + 5)
+            prob = (cnt + 0.0) / (total + 3)
             probs[prop] = prob
         predicate_map[infobox_pred] = probs
 

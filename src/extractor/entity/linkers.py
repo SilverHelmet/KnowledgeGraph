@@ -94,7 +94,9 @@ class MatchRelLinker:
         for infobox_pred in self.predicate_map:
             if infobox_pred.find(predicate) == -1:
                 continue
-            match_ratio = len(predicate) / float(len(infobox_pred))
+            match_ratio = len(predicate.decode('utf-8')) / float(len(infobox_pred.decode('utf-8')))
+            if match_ratio < 0.5:
+                continue
             probs = self.predicate_map[infobox_pred]
             for fb_prop in probs:
                 prob = probs[fb_prop] * match_ratio

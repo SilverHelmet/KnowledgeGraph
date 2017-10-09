@@ -156,7 +156,7 @@ def decide_type(type_probs, schema):
     for fb_type in type_probs:
         if type_probs[fb_type] >= 0.8:
             types.append(fb_type)
-    # if len(types) == 0:
+    if len(types) == 0:
         # types = topk_key(type_probs, 1)
     types = schema.complement_type(types)
     return types
