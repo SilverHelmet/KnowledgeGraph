@@ -6,6 +6,7 @@ from .dependency.tree import RelationExtractor
 class Estimation():
     def __init__(self):
         self.total = 0
+        self.exact_right = 0
         self.right = 0
         self.partial_right = 0
         self.error_seg = 0
@@ -13,6 +14,7 @@ class Estimation():
 
     def print_info(self):
         print "total:", self.total
+        print "exact_right:", self.exact_right
         print "right:", self.right
         print "partial right:", self.partial_right
         print 'error segment:', self.error_seg
@@ -66,8 +68,13 @@ class RelExtractorTestor():
             prop = kl.prop
 
             if prop in rels:
-                self.estimation.right += 1
-                ret[kl_str] = (rels_str, "right")
+                
+                if len(rels) == 1:
+                    self.estimation.exact_right += 1
+                    ret[kl_str] = (rels_str, "exact right")
+                else:
+                    self.estimation.right += 1
+                    ret[kl_str] = (rels_str, "right")
                 continue
 
             partial_right_flag = False
@@ -107,7 +114,7 @@ def test(extractor, ltp):
 
 
 if __name__ == "__main__":
-    extractor = RelationExtractor()
+    extractor = VerbRelationExtractor()
     ltp = LTP(None)
     test(extractor, ltp)
     
