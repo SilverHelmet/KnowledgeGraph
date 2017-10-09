@@ -42,12 +42,18 @@ class RelExtractorTestor():
         
         ret = {}
         for kl in data.knowledges:
+            kl_str = kl.triple()
             self.estimation.total += 1
             st_1, ed_1 = ltp_result.search_word(kl.subj)
             st_2, ed_2 = ltp_result.search_word(kl.obj)
             if st_1 == -1 or st_2 == -1:
                 self.estimation.error_seg += 1
+                ret[kl_str] = (None, "miss _seg")
                 continue
+            
+            rels = 
+        
+                
 
 
 

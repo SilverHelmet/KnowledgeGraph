@@ -118,7 +118,7 @@ class RelationExtractor:
                 if entity_pool[node.idx] == 1:
                     print node.word,": extract verb is an entity! error!"
                 else:
-                    simple_res.append([(node.idx, node.idx + 1)])
+                    simple_res.append((node.idx, node.idx + 1))
         return simple_res
     
 class prenode:
