@@ -185,7 +185,7 @@ def test_ltp_extractor():
             for kl in data.knowledges:
                 kl_set.add(kl.knowledge())
                 reverse_prop_uri = schema.reverse_property(kl.prop_uri)
-                if reverse_prop:
+                if reverse_prop_uri:
                     kl_set.add("%s\t%s\t%s" %(kl.obj_url, reverse_prop_uri, kl.subj_url))
 
             estimation['total labeled'] += len(kl_set)
