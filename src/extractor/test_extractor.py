@@ -178,6 +178,7 @@ def test_ltp_extractor():
         datas = datas_map[baike_name]
         for data in datas:
             sentence = data.sentence
+            print sentence
             stf_result = stf_results_map[sentence.encode('utf-8')]
             triples, ltp_result = ltp_extractor.parse_sentence(sentence, None, stf_result)
             
@@ -195,11 +196,13 @@ def test_ltp_extractor():
                 print info
                 estimation['total output'] += 1
                 if triple.knowledge() in kl_set:
-                    estimation['total output'] += 1
+                    estimation['right output'] += 1
 
             for kl in data.knowledges:
                 print '\t', kl
     print estimation
+
+    
 
 if __name__ == "__main__":
     test_ltp_extractor()
