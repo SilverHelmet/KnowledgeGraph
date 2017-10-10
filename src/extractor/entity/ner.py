@@ -6,6 +6,10 @@ from ... import IOUtil
 import copy
 import json
 import re
+
+stf_ltp_en_dist = {"PERSON":"Nh" , "LOCATION":"Ns" , "ORGANIZATION":"Ni" ,"MISC":"Nb" 
+,"GPE":"Ns" ,"DEMONYM":"Nh","FACILITY":"Ns"}
+
 class NamedEntityReg:
 
 
@@ -164,32 +168,39 @@ class NamedEntityReg:
 	std_result是一行文本的Stanford结果，[(entitys,en_label,pos_label),...,]
 	"""
 	def __blend_with_stanford(self,ltp_result,std_result):
-		#fw_error = open(MY_FOLDER+"/stf_ltp_error.txt","a")
-		#fw_add = open(MY_FOLDER+"/stf_ltp_add.txt","a")
 
 		new_std_result = copy.deepcopy(std_result)
 		for index,res in enumerate(new_std_result):
-			# if res[1] == "MISC" and (res[2] != "NT" and res[2] != "NR"):
-			if res[1] == "MISC" and res[2] != "NR":
-				continue
-			elif res[0] not in ltp_result.words :
-				#fw_error.write(ltp_result.sentence+"\n"+",".join(ltp_result.words)+"\n"+res[0]+"\n\n")			
+			if res[1] == "MISC" and res[2] != "NR" and res[2] != "NN":
 				continue
 			else:
-				b = True
-				for ltp_index,ltp_en in enumerate(ltp_result.words):
-					if ltp_en in res[0]  and ltp_result.ner_tags[ltp_index] != "O" :
-						#fw_error.write(ltp_result.sentence+"\t"+ltp_en+":"+ltp_result.ner_tags[ltp_index]+"\n"+res[0]+"\n\n")
-						b = False
-						break
-				if b:
-					ltp_result.ner_tags[ltp_result.words.index(res[0])] = "S-"+res[1]
-			
-					#fw_add.write(ltp_result.sentence+"\t"+res[0]+"\n")
-					#fw_add.write(res[0]+":"+res[1]+":"+res[2]+"\n")
+				b = False
+				for li,lw in enumerate(ltp_result.words):
+					if res[0] == lw and ltp_result.ner_tags[li] == "O":
+						ltp_result.ner_tags[li] = "S-"+stf_ltp_en_dist[res[1]]
+						b = True
+				# if b:
+				# 	print res[0]
 
-		#fw_error.close()
-		#fw_add.close()
+				
+
+	# def __blend_with_stanford(self,ltp_result,std_result):
+
+	# 	new_std_result = copy.deepcopy(std_result)
+	# 	for index,res in enumerate(new_std_result):
+	# 		if res[1] == "MISC" and res[2] != "NR":
+	# 			continue
+	# 		elif res[0] not in ltp_result.words :	
+	# 			continue
+	# 		else:
+	# 			b = True
+	# 			for ltp_index,ltp_en in enumerate(ltp_result.words):
+	# 				if ltp_en in res[0]  and ltp_result.ner_tags[ltp_index] != "O" :
+	# 					b = False
+	# 					break
+	# 			if b:
+	# 				ltp_result.ner_tags[ltp_result.words.index(res[0])] = "S-"+res[1]
+
 
 	def __reg_non_chinese_entitys(self,ltp_result):
 		# self.__optimize_by_punct(ltp_result,"(",")","ws","ws","S-Nf") #Nf表示外文实体
