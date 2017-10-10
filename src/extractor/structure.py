@@ -107,6 +107,8 @@ class LinkedTriple:
         else:
             return 0.2
 
+    
+
         
     def info(self, ltp_result):
         subj = ltp_result.text(self.baike_subj.st, self.baike_subj.ed)

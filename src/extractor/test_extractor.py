@@ -184,18 +184,24 @@ def test_ltp_extractor():
             
             kl_set = set()
             for kl in data.knowledges:
-                kl_set.add(kl.knowledge())
+                # kl_set.add(kl.knowledge())
+                kl_set.add("%s\t%s\t%s" %(kl.subj, kl.prop_uri, kl.obj))
                 reverse_prop_uri = schema.reverse_property(kl.prop_uri)
                 if reverse_prop_uri:
-                    kl_set.add("%s\t%s\t%s" %(kl.obj_url, reverse_prop_uri, kl.subj_url))
+                    kl_set.add("%s\t%s\t%s" %(kl.obj, reverse_prop_uri, kl.subj))
 
             estimation['total labeled'] += len(kl_set)
 
             for triple in triples:
                 info = triple.info(ltp_result)
+
+                subj = ltp_result.text(triple.baike_subj.st, triple.baike_subj.ed)
+                obj = ltp_result.text(triple.baike_obj.st, triple.baike_obj.ed)
+                prop = triple.fb_rel.fb_prop
+
                 
                 estimation['total output'] += 1
-                if triple.knowledge() in kl_set:
+                if "%s\t%s\t%s" %(subj, prop, obj) in kl_set:
                     estimation['right output'] += 1
                     print info, 'right'
                 else:
