@@ -190,7 +190,7 @@ def test_ltp_extractor():
                 if reverse_prop_uri:
                     kl_set.add("%s\t%s\t%s" %(kl.obj, reverse_prop_uri, kl.subj))
 
-            estimation['total labeled'] += len(kl_set)
+            estimation['total labeled'] += len(data.knowledges)
 
             for triple in triples:
                 info = triple.info(ltp_result)
