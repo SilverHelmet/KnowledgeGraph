@@ -7,5 +7,5 @@ result/360/360_entity_info_processed.json \
 
 for path in $paths
 do
-    scp lhr@dlib:~/Knowledge/${path}.sample ${path}
+    scp lhr@dlib:~/KnowledgeGraph/${path}.sample ${path}
 done
