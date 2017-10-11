@@ -8,7 +8,7 @@ python -u -m src.mapping.classify.gen_baike_class_to_fb
 python -u -m src.mapping.predicate_mapping >& log/predicate_mapping.log
 python -m src.mapping.collect_predicate_mapping_result
 
-
+# classify
 python -u -m src.mapping.classify.simple_classify >& log/simple_classify.log
 python -u -m src.mapping.classify.merge_classify_result >& log/merge_classify_result.log
 
