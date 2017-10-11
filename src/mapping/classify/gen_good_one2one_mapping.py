@@ -44,7 +44,7 @@ if __name__ == "__main__":
 
     Print("#good mapping pairs = %d" %len(good_mapping_pairs))
 
-    out_path = os.path.join(result_dir, '360/mapping/classify/good_one2one_mappings.txt')
+    out_path = os.path.join(result_dir, '360/mapping/classify/good_one2one_mappings.tsv')
     outf = file(out_path, 'w')
     for bk_url, fb_uri, score in good_mapping_pairs:
         outf.write("%s\t%s\t%f\n" %(bk_url, fb_uri, score))

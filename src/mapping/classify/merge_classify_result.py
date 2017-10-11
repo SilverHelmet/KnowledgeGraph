@@ -15,7 +15,7 @@ if __name__ == "__main__":
         bk2fb[bk_url] = fb_uri
         outf.write('%s\t%s\n' %(bk_url, fb_uri))
 
-    one2one_map_path = os.path.join(classify_dir, 'good_one2one_mappings.txt')
+    one2one_map_path = os.path.join(classify_dir, 'good_one2one_mappings.tsv')
     one2one_mappings = []
     bk_urls = set()
     fb_uris = set()

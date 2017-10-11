@@ -86,6 +86,8 @@ class SimpleLTPExtractor:
         for triple in triples:
             linked_triples.extend(self.linker.link(ltp_result, triple, page_info))        
 
+        if debug:
+            print "#linked triples", len(linked_triples)
 
         mst_triples = mst_select_triple(linked_triples)
         return mst_triples, ltp_result

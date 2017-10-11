@@ -36,6 +36,6 @@ do
 
     for url in $urls
     do
-        grep ${url} ${path} >> ${path}.sample
+        grep -m 1 ${url} ${path} >> ${path}.sample
     done
 done
