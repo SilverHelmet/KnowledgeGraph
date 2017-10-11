@@ -61,7 +61,7 @@ def remove_extra_punc(text):
     return text
 
 def remove_etc(text):
-    if text[-1] == u'等':
+    if len(text) >= 1 and text[-1] == u'等':
         text = text[0:-1]
     return text
 
