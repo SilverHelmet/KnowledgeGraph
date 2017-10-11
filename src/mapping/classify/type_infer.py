@@ -158,6 +158,7 @@ def decide_type(type_probs, schema):
             types.append(fb_type)
     if len(types) == 0:
         # types = topk_key(type_probs, 1)
+        pass
     types = schema.complement_type(types)
     return types
 
