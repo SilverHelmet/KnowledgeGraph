@@ -46,17 +46,17 @@ def not_number(text):
 
 def remove_extra_punc(text):
     extra_punc_list = [u'：', u'。', u'，', u'、', u'？', u'！']
-    while text[0] == ' ':
+    while len(text) >= 1 and text[0] == ' ':
         text = text[1:]
-    while text[0] in extra_punc_list:
+    while len(text) >= 1 and text[0] in extra_punc_list:
         text = text[1:]
-    while text[0] == ' ':
+    while len(text) >= 1 and text[0] == ' ':
         text = text[1:]
-    while text[-1] == ' ':
+    while len(text) >= 1 and text[-1] == ' ':
         text = text[0:-1]
-    while text[-1:] in extra_punc_list:
+    while len(text) >= 1 and text[-1:] in extra_punc_list:
         text = text[0:-1]
-    while text[-1] == ' ':
+    while len(text) >= 1 and text[-1] == ' ':
         text = text[0:-1]
     return text
 
