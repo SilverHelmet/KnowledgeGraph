@@ -167,7 +167,7 @@ def test_ltp_extractor():
 
     ltp_extractor = SimpleLTPExtractor(ner, rel_extractor, linker)
 
-    Print('init finished')z
+    Print('init finished')
 
     estimation = {
         "total output": 0,
