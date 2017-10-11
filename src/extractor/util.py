@@ -25,6 +25,8 @@ def load_predicate_map(filepath = None, extra_path = None):
             line = line.strip()
             if line == "":
                 continue
+            if line.startswith("#"):
+                continue
             p = line.split('\t')
             infobox_pred = p[0]
             fb_props = json.loads(p[1])

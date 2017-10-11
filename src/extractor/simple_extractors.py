@@ -58,7 +58,7 @@ class SimpleLTPExtractor:
                     triples.append(Triple(e1, StrRelation(rel_st, rel_ed), e2))
         return triples
 
-    def parse_sentence(self, sentence, page_info, stf_result):
+    def parse_sentence(self, sentence, page_info, stf_result, debug = False):
         if type(sentence) is unicode:
             sentence = sentence.encode('utf-8')
         ltp_result = self.ltp.parse(sentence)
@@ -67,16 +67,21 @@ class SimpleLTPExtractor:
         str_entites = [ StrEntity(st, ed) for st, ed in str_entites]
         ltp_result.update_parsing_tree(self.ltp)
 
+        if debug:
+            print "#str entities:", len(str_entites)
+
         entity_pool = fill_entity_pool(ltp_result.length, str_entites)
 
         
         triples = self.parse_triples(ltp_result, str_entites, entity_pool)
 
-        for triple in triples:
-            subj = ltp_result.text(triple.e1.st, triple.e1.ed)
-            rel = ltp_result.text(triple.rel.st, triple.rel.ed)
-            obj = ltp_result.text(triple.e2.st, triple.e2.ed)
-
+        if debug:
+            print "#triples:", len(triples)
+            for triple in triples:
+                subj = ltp_result.text(triple.e1.st, triple.e1.ed)
+                rel = ltp_result.text(triple.rel.st, triple.rel.ed)
+                obj = ltp_result.text(triple.e2.st, triple.e2.ed)
+                
         linked_triples = []
         for triple in triples:
             linked_triples.extend(self.linker.link(ltp_result, triple, page_info))        
