@@ -15,16 +15,19 @@ class SeparatedLinker:
         self.schema = Schema()
         self.schema.init()
 
-    def link(self, ltp_result, triple, page_info = None):
+    def link(self, ltp_result, triple, page_info):
         e1_entities = self.entity_linker.link(ltp_result, triple.e1)
         e2_entities = self.entity_linker.link(ltp_result, triple.e2)
 
         fb_rels = self.rel_linker.link(ltp_result, triple.rel)
+        print len(e1_entities), len(e2_entities), len(fb_rels)
+    
         linked_triples = []
         for e1 in e1_entities:
             for e2 in e2_entities:
                 for rel in fb_rels:
                     ltriple = LinkedTriple(e1, rel, e2)
+                    print ltriple.knowledge()
                     if ltriple.check_type(self.schema):
                         linked_triples.append(ltriple)
                         

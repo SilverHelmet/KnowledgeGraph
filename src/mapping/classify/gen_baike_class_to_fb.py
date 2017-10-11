@@ -62,7 +62,7 @@ if __name__ == "__main__":
     if len(sys.argv) >= 3:
         good_mapping_path = sys.argv[1]
     else:
-        good_mapping_path = os.path.join(classify_dir, 'good_one2one_mappings.txt')
+        good_mapping_path = os.path.join(classify_dir, 'good_one2one_mappings.tsv')
     good_mappings = load_mappings_witd_score(good_mapping_path, 0.1)
 
     bk_urls = set()

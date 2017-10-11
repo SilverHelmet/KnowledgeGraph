@@ -222,7 +222,7 @@ if __name__ == "__main__":
     if len(sys.argv) >= 3:
         mapping_path = sys.argv[1]
     else:
-        mapping_path = os.path.join(result_dir, '360/mapping/classify/good_one2one_mappings.txt')
+        mapping_path = os.path.join(result_dir, '360/mapping/classify/good_one2one_mappings.tsv')
     fb2baike, baike_entities, score_map = load_exact_mappings(mapping_path, 0.01)
 
 

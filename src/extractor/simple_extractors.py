@@ -81,11 +81,13 @@ class SimpleLTPExtractor:
                 subj = ltp_result.text(triple.e1.st, triple.e1.ed)
                 rel = ltp_result.text(triple.rel.st, triple.rel.ed)
                 obj = ltp_result.text(triple.e2.st, triple.e2.ed)
-                
+
         linked_triples = []
         for triple in triples:
             linked_triples.extend(self.linker.link(ltp_result, triple, page_info))        
 
+        if debug:
+            print "#linked triples", len(linked_triples)
 
         mst_triples = mst_select_triple(linked_triples)
         return mst_triples, ltp_result
@@ -122,7 +124,7 @@ if __name__ == "__main__":
     linker = SeparatedLinker(entity_linker, rel_linker)
     ltp_extractor = SimpleLTPExtractor(ner, rel_extractor, linker)
 
-    triples, ltp_result = ltp_extractor.parse_sentence(s, None, stf_results_map[s])
+    triples, ltp_result = ltp_extractor.parse_sentence(s, None, stf_results_map[s], True)
 
     for triple in triples:
         print triple.info(ltp_result)
