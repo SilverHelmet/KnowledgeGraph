@@ -7,7 +7,7 @@ import HTMLParser
 import re
 from tqdm import tqdm
 
-delimeters = [u';', u'；', u'、', u'，', u',']
+delimeters = [u';', u'；', u'、', u'，', u',', u'/']
 html_parser = HTMLParser.HTMLParser()
 bracket_pattern = re.compile(ur'（.*）|\(.*\)')
 digits = set([u'0', u'1', u'2', u'3', u'4', u'5', u'6', u'7', u'8', u'9'])
@@ -37,21 +37,59 @@ def not_digit(text, pos):
         return True
     return not text[pos] in digits
 
+def not_number(text):
+    global digits
+    for i in range(len(text)):
+        if text[i] in digits:
+            return False
+    return True
+
+def remove_extra_punc(text):
+    extra_punc_list = [u'：', u'。', u'，', u'、', u'？', u'！']
+    while text[0] == ' ':
+        text = text[1:]
+    while text[0] in extra_punc_list:
+        text = text[1:]
+    while text[0] == ' ':
+        text = text[1:]
+    while text[-1] == ' ':
+        text = text[0:-1]
+    while text[-1:] in extra_punc_list:
+        text = text[0:-1]
+    while text[-1] == ' ':
+        text = text[0:-1]
+    return text
+
+def remove_etc(text):
+    if text[-1] == u'等':
+        text = text[0:-1]
+    return text
+
 def unfold(text):
     global delimeters, html_parser
     text = html_parser.unescape(text)
     max_sep = delimeters[0]
     pos = text.find(u',')
     if pos != -1 and not_digit(text, pos-1) and not_digit(text, pos+1):
-        candidate = delimeters
+        if not_number(text):
+            candidate = delimeters
+        else:
+            candidate = delimeters[:-1]
     else:
-        candidate = delimeters[:-1]
+        if not_number(text):
+            candidate = delimeters[:-1]
+            candidate[-1] = delimeters[-1]
+        else:
+            candidate = delimeters[:-2]
 
     for sep in candidate:
         if len(text.split(sep)) > len(text.split(max_sep)):
             max_sep = sep
     values = text.split(max_sep)
     values = [del_space(x) for x in values]
+    values = [remove_extra_punc(x) for x in values]
+    if len(values) >= 2:
+        values[-1] = remove_etc(values[-1])
 
     values_2 = []
     for value in values:
