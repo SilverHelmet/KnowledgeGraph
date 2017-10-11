@@ -11,6 +11,69 @@ from ..predicate_mapping import map_time
 from ..fb_date import FBDatetime, BaikeDatetime
 from ..name_mapping import del_space
 from ...baike_process.process_entity_info import del_book_bracket, ignore_baike_name_attr
+import units_transfer_table
+
+def units_transfer(s):
+    start = 0
+    end = 0
+    if s[0].isnumeric() or (s[0] == '+' and s[1].isnumeric()) or (s[0] == '-' and s[1].isnumeric()):
+        end = 1
+        for i in range(1, len(s)):
+            if s[end].isdigit() or s[end] == '+' or s[end] == '-':
+                print("num")
+                end += 1
+            elif s[end] == ',' or s[end] == '，' or s[end] == '.':
+                if s[end + 1].isnumeric():
+                    end += 1
+                else:
+                    break
+            elif s[end] == 'e':
+                if s[end + 1] == '+' or s[end + 1] == '-':
+                    end += 1
+                else:
+                    break
+            else:
+                break
+        tmp = s[start:end].replace(',', '')
+        tmp = tmp.replace('，', '')
+        num = float(tmp)
+        units = s[end:len(s)]
+        if units in units_transfer_table.transfer_table:
+            new_num = num * units_transfer_table.transfer_table[units][0][0]
+            new_s = str(new_num)
+            return new_s
+        else:
+            return str(num) + units
+    elif s[len(s) - 1].isnumeric():
+        end = len(s)
+        start = len(s) - 2
+        for i in range(1, len(s)):
+            if s[start].isnumeric() or s[start] == '+' or s[start] == '-':
+                start -= 1
+            elif s[start] == ',' or s[start] == '，' or s[start] == '.':
+                if s[start + 1].isnumeric():
+                    start -= 1
+                else:
+                    break
+            elif s[start] == 'e':
+                if s[start + 1] == '+' or s[start + 1] == '-':
+                    start -= 1
+                else:
+                    break
+            else:
+                break
+        tmp = s[start + 1:end].replace(',', '')
+        tmp = tmp.replace('，', '')
+        num = float(tmp)
+        units = s[0:start + 1]
+        if units in units_transfer_table.transfer_table:
+            new_num = num * units_transfer_table.transfer_table[units][0][0]
+            new_s = str(new_num)
+            return new_s
+        else:
+            return str(num) + units
+    else:
+        return s
 
 def extend_name(fb_info, name_map):
     value_names = []
@@ -108,7 +171,9 @@ def calc_infobox_mapping_score(baike2fb_map, baike_entity_info, fb_entity_info, 
                             match = find_match(baike_date, fb_time_values)
                             if match:
                                 time_match_cnt += 1
-
+                        baike_number = units_transfer(baike_value)
+                        if str(baike_number) in fb_str_values:
+                        	match = True
                     if match:
                         break
 
