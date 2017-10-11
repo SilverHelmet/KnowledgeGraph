@@ -4,7 +4,7 @@ class RelTagExtractor:
     def __init__(self):
         pass
 
-    def parse_relation(self, ltp_result, e1, e2, entity_pool):
+    def find_relation(self, ltp_result, e1, e2, entity_pool):
         rel_range_l = max(min(e1.st, e2.st) - 2, 0)
         rel_range_r = min(max(e1.ed, e2.ed) + 2, ltp_result.length)
         
@@ -14,7 +14,7 @@ class RelTagExtractor:
             if entity_pool[idx]:
                 continue
             if tag == 'v' or tag == 'n':
-                rels.append(StrRelation(idx, idx + 1))
+                rels.append((idx, idx + 1))
         return rels
 
 

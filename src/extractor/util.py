@@ -20,7 +20,7 @@ def load_predicate_map(filepath = None, extra_path = None):
         predicate_map[infobox_pred] = probs
 
     if extra_path is not None:
-        Print("load exta rule from [%s]" %extra_path)
+        Print("load extra rule from [%s]" %extra_path)
         for line in file(extra_path):
             line = line.strip()
             if line == "":

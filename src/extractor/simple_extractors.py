@@ -10,6 +10,7 @@ from ..schema.schema import Schema
 from .ltp import LTP
 from entity.naive_ner import NaiveNer
 from dependency.relation_extractors import RelTagExtractor
+from dependency.verb_relation_simple_extractor import VerbRelationExtractor
 from .entity.linkers import SeparatedLinker, PopularityEntityLinker, MatchRelLinker, TopPopEntityLinker
 from .entity.ner import NamedEntityReg
 from .mst import perform_MST, Edge
@@ -51,9 +52,10 @@ class SimpleLTPExtractor:
             for e2 in str_entites:
                 if e1.st == e2.st:
                     continue
-                rels = self.rel_extractor.parse_relation(ltp_result, e1, e2 , entity_pool)
-                for str_rel in rels:
-                    triples.append(Triple(e1, str_rel, e2))
+                rels = self.rel_extractor.find_relation(ltp_result, e1, e2 , entity_pool)
+                for rel_st, rel_ed in rels:
+                    
+                    triples.append(Triple(e1, StrRelation(rel_st, rel_ed), e2))
         return triples
 
     def parse_sentence(self, sentence, page_info, stf_result):
@@ -63,6 +65,7 @@ class SimpleLTPExtractor:
 
         str_entites = self.ner.recognize(sentence, ltp_result, page_info, stf_result)
         str_entites = [ StrEntity(st, ed) for st, ed in str_entites]
+        ltp_result.update_parsing_tree(self.ltp)
 
         entity_pool = fill_entity_pool(ltp_result.length, str_entites)
 
@@ -107,7 +110,8 @@ if __name__ == "__main__":
 
     # ner = NaiveNer()    
     ner = NamedEntityReg()
-    rel_extractor = RelTagExtractor()
+    # rel_extractor = RelTagExtractor()
+    rel_extractor = VerbRelationExtractor()
     entity_linker = TopPopEntityLinker(os.path.join(rel_ext_dir, 'baike_static_info.tsv'))
     rel_linker = MatchRelLinker()
     linker = SeparatedLinker(entity_linker, rel_linker)

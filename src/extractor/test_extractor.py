@@ -8,7 +8,8 @@ import numpy as np
 from .structure import Knowledge
 from .entity.naive_ner import NaiveNer
 from .entity.ner import NamedEntityReg
-from dependency.relation_extractors import RelTagExtractor
+# from dependency.relation_extractors import RelTagExtractor
+from dependency.verb_relation_simple_extractor import VerbRelationExtractor
 from entity.linkers import SeparatedLinker, PopularityEntityLinker, MatchRelLinker, TopPopEntityLinker
 from .simple_extractors import SimpleLTPExtractor
 from .entity.test import extract_stanford_result
@@ -158,14 +159,15 @@ def test_ltp_extractor():
     stf_results_map = load_stanford_result(os.path.join(base_dir, 'sentences.txt'), os.path.join(base_dir, 'sentences_stanf_nlp.json'))
 
     ner = NamedEntityReg()    
-    rel_extractor = RelTagExtractor()
+    # rel_extractor = RelTagExtractor()
+    rel_extractor = VerbRelationExtractor()
     entity_linker = TopPopEntityLinker(os.path.join(rel_ext_dir, 'baike_static_info.tsv'))
     rel_linker = MatchRelLinker()
     linker = SeparatedLinker(entity_linker, rel_linker)
 
     ltp_extractor = SimpleLTPExtractor(ner, rel_extractor, linker)
 
-    Print('init finished')
+    Print('init finished')z
 
     estimation = {
         "total output": 0,
