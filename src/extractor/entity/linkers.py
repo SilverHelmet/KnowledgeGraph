@@ -1,10 +1,12 @@
 #encoding: utf-8
 from ...rel_extraction.util import load_name2baike, load_bk_static_info
-from ...IOUtil import rel_ext_dir, doc_dir
+from ...IOUtil import rel_ext_dir, doc_dir, Print, nb_lines_of
 from ..structure import BaikeEntity, FBRelation, LinkedTriple
 from ..util import load_predicate_map
 import os
+import json
 from ...schema.schema import Schema
+from tqdm import tqdm
 
 class SeparatedLinker:
     def __init__(self, entity_linker, rel_linker):
@@ -71,7 +73,29 @@ class TopPopEntityLinker:
             top_entity.pop /= (total_score)
         return [top_entity]
 
-        
+def load_summary_and_infobox(summary_path, infobox_path):
+    Print("load summary from [%s]" %summary_path)
+    summary_path = {}
+    for line in tqdm(file(summary_path, 'r'), total = nb_lines_of(summary_path)):
+        p = line.split('\t')
+        key = p[0]
+        summary_path[key] = json.loasd(key)['summary'].encode('utf-8')
+
+    Print('add infobox value to summary, path is [%s]' %infobox_path)
+    # for line in tqdm(file(infobox_path), total = nb_lines_of(infobox_path)):
+        # p = 
+
+
+
+class TopRelatedEntityLinker:
+    def __init__(self, static_info_path):
+        self.bk_info_map = load_bk_static_info(filepath = static_info_path)
+        self.name2bk = load_name2baike(filepath = os.path.join(rel_ext_dir, 'baike_names.tsv'))
+        self.summary_map = load_summary_and_infobox(summary_path = os.path.join(rel_ext_dir, 'baike_summary.json'),
+                                                infobox_path = os.path.join(result_dir, '360/360_entity_info_processed.json'))
+
+
+
 
 
 class MatchRelLinker:
