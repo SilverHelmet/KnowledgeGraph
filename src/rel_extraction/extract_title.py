@@ -1,6 +1,6 @@
 from ..IOUtil import rel_ext_dir
 from ..baike_process.parse import strip_url, parse_text
-
+import os
 
 def extract_title(filepath, outf):
     Print('extract doc from [%s]' %os.path.basename(filepath))
