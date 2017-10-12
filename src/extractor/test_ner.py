@@ -10,11 +10,14 @@ class Data:
         self.title = title
         self.sentence = sentence
         self.entities = []
+        self.bk_urls = []
     
     def add(self, entity_str, bk_url):
         self.entities.append(entity_str)
+        self.bk_urls.append(bk_url)
 
-def read_data_from_file(filepath, datas_map):
+
+def read_data_from_file(filepath, datas_map, ignore_miss):
     title = None
     sentence = None
     data = None
@@ -35,7 +38,10 @@ def read_data_from_file(filepath, datas_map):
                 assert sentence is not None
                 p = line.strip().split('\t')
                 assert len(p) == 2
-                data.add(p[0], p[1])
+                if p[1].strip() == "*" and ignore_miss:
+                    pass
+                else:
+                    data.add(p[0], p[1])
             
             else:
                 sentence = line
@@ -43,10 +49,10 @@ def read_data_from_file(filepath, datas_map):
                 datas.append(data)
     datas_map[url] = datas
 
-def read_data(filepath):
+def read_data(filepath, ignore_miss):
     datas_map = {}
     for filepath in glob.glob(filepath + '/*t*'):
-        read_data_from_file(filepath, datas_map)
+        read_data_from_file(filepath, datas_map, ignore_miss)
     return datas_map
 
 class Estimation:
@@ -147,7 +153,7 @@ class Estimator:
 
 
 if __name__ == "__main__":
-    datas_map = read_data(os.path.join(data_dir, '实体标注'))
+    datas_map = read_data(os.path.join(data_dir, '实体标注'), False)
 
     ltp = LTP(None)
     est = Estimator()

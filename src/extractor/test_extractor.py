@@ -150,23 +150,12 @@ def load_stanford_result(sentence_path, stanford_result_path):
 
 
 
-def test_ltp_extractor():
-    datas_map, nb_data, nb_kl = process_labeled_data(ignore_miss = True)
+def test_ltp_extractor(datas_map, ner, rel_extractor, linker):
 
-    
-    print "#data = %d, #labeled kl = %d" %(nb_data, nb_kl)
     Print('init extractor')
 
     base_dir = os.path.join(data_dir, '标注数据')
     stf_results_map = load_stanford_result(os.path.join(base_dir, 'sentences.txt'), os.path.join(base_dir, 'sentences_stanf_nlp.json'))
-
-    ner = NamedEntityReg()    
-    # rel_extractor = RelTagExtractor()
-    rel_extractor = VerbRelationExtractor()
-    # entity_linker = TopPopEntityLinker(os.path.join(rel_ext_dir, 'baike_static_info.tsv'))
-    entity_linker = TopRelatedEntityLinker(os.path.join(rel_ext_dir, 'baike_static_info.tsv'))
-    rel_linker = MatchRelLinker()
-    linker = SeparatedLinker(entity_linker, rel_linker)
 
     ltp_extractor = SimpleLTPExtractor(ner, rel_extractor, linker)
 
@@ -187,6 +176,8 @@ def test_ltp_extractor():
             stf_result = stf_results_map[sentence.encode('utf-8')]
             page_info = PageInfo(baike_name)
             triples, ltp_result = ltp_extractor.parse_sentence(sentence, page_info, stf_result)
+
+            str_entites = self.ner.recognize(sentence, ltp_result, page_info, stf_result)
             
             kl_set = set()
             for kl in data.knowledges:
@@ -220,7 +211,20 @@ def test_ltp_extractor():
     
 
 if __name__ == "__main__":
-    test_ltp_extractor()
+    datas_map, nb_data, nb_kl = process_labeled_data(ignore_miss = True)
+    print "#data = %d, #labeled kl = %d" %(nb_data, nb_kl)
+
+    ner = NamedEntityReg()    
+
+    # rel_extractor = RelTagExtractor()
+    rel_extractor = VerbRelationExtractor()
+
+    # entity_linker = TopPopEntityLinker(os.path.join(rel_ext_dir, 'baike_static_info.tsv'))
+    entity_linker = TopRelatedEntityLinker(os.path.join(rel_ext_dir, 'baike_static_info.tsv'))
+    rel_linker = MatchRelLinker()
+    linker = SeparatedLinker(entity_linker, rel_linker)
+
+    test_ltp_extractor(datas_map, ner, rel_extractor, linker)
 
 
 

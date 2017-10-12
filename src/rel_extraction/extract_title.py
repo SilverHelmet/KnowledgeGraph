@@ -1,4 +1,4 @@
-from ..IOUtil import rel_ext_dir
+from ..IOUtil import rel_ext_dir, Print
 from ..baike_process.parse import strip_url, parse_text
 import os
 import glob

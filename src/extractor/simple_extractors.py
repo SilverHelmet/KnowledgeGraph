@@ -64,7 +64,7 @@ class SimpleLTPExtractor:
         ltp_result = self.ltp.parse(sentence)
 
         str_entites = self.ner.recognize(sentence, ltp_result, page_info, stf_result)
-        str_entites = [ StrEntity(st, ed) for st, ed in str_entites]
+        str_entites = [ StrEntity(st, ed) for st, ed, _ in str_entites]
         ltp_result.update_parsing_tree(self.ltp)
 
         if debug:
