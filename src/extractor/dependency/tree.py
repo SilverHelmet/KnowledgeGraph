@@ -43,6 +43,7 @@ class ParseTree:
             if father_idx == self.length:
                 continue
             node.father = self.nodes[father_idx]
+            self.nodes[father_idx].children.append(node)
         self.calc_depth()
 
     def calc_depth(self):
@@ -85,7 +86,9 @@ class Node:
         self.word = word
         self.nertag = nertag
         self.father = None
+        self.mark = None
         self.depth = -1
+        self.children = []
 
     def search_depth(self):
         if self.depth != -1:
@@ -102,3 +105,7 @@ if __name__ == "__main__":
     ltp_result = ltp.parse(sentence)
     info = PrintInfo()
     info.print_ltp(ltp_result)
+    tree = ParseTree(ltp_result)
+    for node in tree.nodes:
+        for child in node.children:
+            print node.word, "children:", child.word
