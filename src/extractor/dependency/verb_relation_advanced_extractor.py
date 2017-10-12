@@ -121,6 +121,8 @@ class VerbRelationExtractor:
             return None
 
     def deal_with_isA(self, verb, rel, string):
+        if verb == None:
+            return
         if rel != 'SBV' or verb.word != '是':
             return
         for child in verb.children:
@@ -128,6 +130,8 @@ class VerbRelationExtractor:
                 child.mark = string
 
     def find_by_ATT_rule(self, verb, rel):
+        if verb == None:
+            return
         if rel in ['FOB', 'VOB']:
             return None
         path = self.find_path_to_root(verb)
@@ -185,12 +189,12 @@ class VerbRelationExtractor:
     
 if __name__ == "__main__":
     ltp = LTP(None)
-    sentence = '《冰与火之歌》是由美国作家乔治所著的小说。'
+    sentence = '任天堂株式会社(日文:任天堂株式会社，平假名:にんてんどうかぶしきがいしゃ)于1947年11月20日成立 。'
     ltp_result = ltp.parse(sentence)
     info = PrintInfo()
     info.print_ltp(ltp_result)
-    e1 = '冰与火之歌'
-    e2 = '乔治'
+    e1 = '任天堂'
+    e2 = '1947年11月20日'
     st, ed = ltp_result.search_word(e1)
     e1 = StrEntity(st, ed)
     st, ed = ltp_result.search_word(e2)
