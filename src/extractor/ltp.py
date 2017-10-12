@@ -67,19 +67,23 @@ class LTPResult:
         self.arcs = arcs
 
 class LTP:
-    def __init__(self, base_dir):
+    def __init__(self, base_dir,is_custom_seg_dict = False):
         if base_dir is None:
             base_dir = 'lib/ltp_data_v3.4.0'
-        self.init(base_dir)
+        self.init(base_dir,is_custom_seg_dict)
 
-    def init(self, base_dir):
+    def init(self, base_dir,is_custom_seg_dict):
         segmentor_model = os.path.join(base_dir, 'cws.model')
         tagger_model = os.path.join(base_dir, 'pos.model')
         ner_model = os.path.join(base_dir, 'ner.model')
         parser_model = os.path.join(base_dir, 'parser.model')
+        custom_seg_dict = os.path.join(base_dir,'vertical_domain_baike_dict.txt')
 
         self.segmentor = Segmentor()
-        self.segmentor.load(segmentor_model)
+        if is_custom_seg_dict:
+            self.segmentor.load_with_lexicon(segmentor_model,custom_seg_dict)
+        else:
+            self.segmentor.load(segmentor_model)
 
         self.tagger = Postagger()
         self.tagger.load(tagger_model)

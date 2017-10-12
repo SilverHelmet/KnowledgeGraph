@@ -11,7 +11,7 @@ from .ltp import LTP
 from entity.naive_ner import NaiveNer
 from dependency.relation_extractors import RelTagExtractor
 from dependency.verb_relation_simple_extractor import VerbRelationExtractor
-from .entity.linkers import SeparatedLinker, PopularityEntityLinker, MatchRelLinker, TopPopEntityLinker
+from .entity.linkers import SeparatedLinker, MatchRelLinker, TopPopEntityLinker, TopRelatedEntityLinker
 from .entity.ner import NamedEntityReg
 from .mst import perform_MST, Edge
 
@@ -64,7 +64,7 @@ class SimpleLTPExtractor:
         ltp_result = self.ltp.parse(sentence)
 
         str_entites = self.ner.recognize(sentence, ltp_result, page_info, stf_result)
-        str_entites = [ StrEntity(st, ed) for st, ed in str_entites]
+        str_entites = [ StrEntity(st, ed) for st, ed, _ in str_entites]
         ltp_result.update_parsing_tree(self.ltp)
 
         if debug:
@@ -110,6 +110,8 @@ if __name__ == "__main__":
     s = '赛后，梅西力压德国诸将，获得金球奖。'
     s = '1996年，刘德华相继发行了《相思成灾》和《因为爱》两张国语唱片。'
 
+    page_info = PageInfo('刘德华')
+
     from .test_extractor import load_stanford_result
     
     base_dir = os.path.join(data_dir, '标注数据')
@@ -117,14 +119,18 @@ if __name__ == "__main__":
 
     # ner = NaiveNer()    
     ner = NamedEntityReg()
+
     # rel_extractor = RelTagExtractor()
     rel_extractor = VerbRelationExtractor()
-    entity_linker = TopPopEntityLinker(os.path.join(rel_ext_dir, 'baike_static_info.tsv'))
+
+    # entity_linker = TopPopEntityLinker(os.path.join(rel_ext_dir, 'baike_static_info.tsv'))
+    entity_linker = TopRelatedEntityLinker(os.path.join(rel_ext_dir, 'baike_static_info.tsv'))
+
     rel_linker = MatchRelLinker()
     linker = SeparatedLinker(entity_linker, rel_linker)
     ltp_extractor = SimpleLTPExtractor(ner, rel_extractor, linker)
 
-    triples, ltp_result = ltp_extractor.parse_sentence(s, None, stf_results_map[s], True)
+    triples, ltp_result = ltp_extractor.parse_sentence(s, page_info, stf_results_map[s], True)
 
     for triple in triples:
         print triple.info(ltp_result)

@@ -49,6 +49,7 @@ class RelExtractorTestor():
         entity_pool = [False] * ltp_result.length
         if self.use_advanced_ner:
             entities = self.ner.recognize(sentence, ltp_result, None, self.stf_results_map[sentence])
+            entities = [(st, ed)for st, ed, _ in entities]
             ltp_result.update_parsing_tree(self.ltp)
         else:
             entities = self.ner.recognize(sentence, ltp_result, None)

@@ -62,12 +62,12 @@ class VerbRelationExtractor:
 
 if __name__ == "__main__":
     ltp = LTP(None)
-    sentence = '1982年，刘德华参演许鞍华指导的影片《怒海》，从此走上了演艺之路。'
+    sentence = '刘德华是一个优秀的演员。'
     ltp_result = ltp.parse(sentence)
     info = PrintInfo()
     info.print_ltp(ltp_result)
     e1 = '刘德华'
-    e2 = '怒海'
+    e2 = '演员'
     st, ed = ltp_result.search_word(e1)
     e1 = StrEntity(st, ed)
     st, ed = ltp_result.search_word(e2)
@@ -77,4 +77,5 @@ if __name__ == "__main__":
         entity_pool.append(0)
     res = VerbRelationExtractor(True)
     tmp1 = res.find_relation(ltp_result, e1, e2, entity_pool)
-    print ltp_result.words[tmp1[0][0]]
+    if tmp1 != []:
+        print ltp_result.words[tmp1[0][0]]

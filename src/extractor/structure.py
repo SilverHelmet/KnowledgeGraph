@@ -1,4 +1,8 @@
 
+class PageInfo:
+    def __init__(self, ename):
+        self.ename = ename
+
 class StrEntity:
     def __init__(self, st, ed):
         self.st = st
