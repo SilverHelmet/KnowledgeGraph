@@ -130,11 +130,15 @@ class VerbRelationExtractor:
     def find_by_ATT_rule(self, verb, rel):
         if rel in ['FOB', 'VOB']:
             return None
-        while verb.father != None and verb.rel in {'ATT', 'COO'}:
-            if verb.father.postag == 'n':
-                return verb
-            elif node.father.mark in ['first_entity', 'second_entity']:
-                return verb
+        path = self.find_path_to_root(verb)
+        for verbs in path:
+            if verbs.rel not in {'ATT', 'COO'}:
+                return None
+            else:
+                if verbs.father.postag == 'n':
+                    return verb
+                elif verbs.father.mark in ['first_entity', 'second_entity']:
+                    return verb
         return None
 
     def find_relation(self, ltp_result, e1, e2, entity_pool):
@@ -181,12 +185,12 @@ class VerbRelationExtractor:
     
 if __name__ == "__main__":
     ltp = LTP(None)
-    sentence = '刘德华的妻子朱丽倩'
+    sentence = '《冰与火之歌》是由美国作家乔治所著的小说。'
     ltp_result = ltp.parse(sentence)
     info = PrintInfo()
     info.print_ltp(ltp_result)
-    e1 = '刘德华'
-    e2 = '朱丽倩'
+    e1 = '冰与火之歌'
+    e2 = '乔治'
     st, ed = ltp_result.search_word(e1)
     e1 = StrEntity(st, ed)
     st, ed = ltp_result.search_word(e2)
