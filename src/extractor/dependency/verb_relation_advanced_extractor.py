@@ -14,7 +14,14 @@ class VerbRelationExtractor:
             node = node.father
             path.append(node)
         return path
-        
+    
+    def find_COO_path(self, node):
+        path = [node]
+        while node.father != None and node.rel == 'COO':
+            path.append(node.father)
+            node = node.father
+        return path
+
     def find_coo_father(self, nodes):
         coo_father = []
         process_father = []
@@ -48,16 +55,14 @@ class VerbRelationExtractor:
         return p1, p2
     
     def judge_coo(self, verb1, verb2):
-        if verb1.father != None:
-            if verb1.father == verb2 and verb1.rel == 'COO':
-                return True
-        if verb2.father != None:
-            if verb2.father == verb1 and verb2.rel == 'COO':
-                return True
+        path1 = self.find_COO_path(verb1)
+        path2 = self.find_COO_path(verb2)
+        if verb2 in path1 or verb1 in path2:
+            return True
         return False
     
     def judge_if_special(self, node):
-        if node.words in ['例如','比如','包括','如','像']:
+        if node.word in ['例如','比如','包括','如','像']:
             return True
         else:
             return False 
@@ -189,12 +194,12 @@ class VerbRelationExtractor:
     
 if __name__ == "__main__":
     ltp = LTP(None)
-    sentence = '任天堂株式会社(日文:任天堂株式会社，平假名:にんてんどうかぶしきがいしゃ)于1947年11月20日成立 。'
+    sentence = '巴塞罗那足球俱乐部（Futbol Club Barcelona），中文简称巴萨，是位于西班牙巴塞罗那市的大球会，1899年11月29日由瑞士人汉斯·甘伯创立，西甲传统豪门之一，也是现今欧洲乃至世界足坛最成功的俱乐部之一。'
     ltp_result = ltp.parse(sentence)
     info = PrintInfo()
     info.print_ltp(ltp_result)
-    e1 = '任天堂'
-    e2 = '1947年11月20日'
+    e1 = '巴塞罗那足球俱乐部'
+    e2 = '1899年11月29日'
     st, ed = ltp_result.search_word(e1)
     e1 = StrEntity(st, ed)
     st, ed = ltp_result.search_word(e2)
