@@ -10,6 +10,7 @@ import re
 stf_ltp_en_dist = {"PERSON":"Nh" , "LOCATION":"Ns" , "ORGANIZATION":"Ni" ,"MISC":"Nb" 
 ,"GPE":"Ns" ,"DEMONYM":"Nh","FACILITY":"Ns"}
 
+
 class NamedEntityReg:
 
 
@@ -17,6 +18,7 @@ class NamedEntityReg:
 		self.__optimize_entitys(ltp_result)
 		if stanford_result:
 			self.__blend_with_stanford(ltp_result,stanford_result)
+		self.__combine(ltp_result)
 		return self.__entity_tuples(ltp_result.ner_tags)
 
 
@@ -26,14 +28,56 @@ class NamedEntityReg:
 		while index < len(entitys):
 			if entitys[index] != "O":
 				if entitys[index].split("-")[0] == "S":
-					tuples.append((index,index+1))
+					tuples.append((index,index+1,entitys[index].split("-")[1]))
 				elif entitys[index].split("-")[0] == "B":
 					begin = index
 					while entitys[index].split("-")[0] != "E":
 						index += 1
-					tuples.append((begin,index+1,entitys[index]))
+					tuples.append((begin,index+1,entitys[index].split("-")[1]))
+					
 			index += 1
 		return tuples
+
+	def __combine(self,ltp_result):
+		new_words = []
+		new_postag = []
+		new_entitys = []
+		entitys = ltp_result.ner_tags
+		first = -1
+		index = 0
+		while index < len(entitys):
+			word = ltp_result.words[index]
+			pos = ltp_result.tags[index]
+			en = ltp_result.ner_tags[index]
+			b = True
+			if entitys[index] != "O":
+				if entitys[index].split("-")[0] == "B":
+					first = index
+				elif entitys[index].split("-")[0] == "E" and first != -1:
+					last = index + 1
+					word = ltp_result.text(first,last)
+					pos = ltp_result.tags[first]
+					
+					en = "S-" + entitys[first].split("-")[1]
+					while first < last - 1:
+						if pos != ltp_result.tags[last - 1]:
+							b = False
+						new_words.pop()
+						new_postag.pop()
+						new_entitys.pop()
+						last -= 1
+					first = -1
+
+			new_words.append(word)
+			if b:
+				new_postag.append(pos)
+			else:
+				new_postag.append("nz")				
+			new_entitys.append(en)
+			index += 1
+		#更新
+		ltp_result.update(new_words,new_postag,new_entitys)
+				
 
 	def __optimize_entitys(self,ltp_result):
 		self.__optimize_segment(ltp_result)
@@ -81,50 +125,8 @@ class NamedEntityReg:
 
 	"""
 	对于《》中的词，做强制分词, 同时看做是nz词性,看作实体(如果本来没有识别)
-	"""
+	"""	
 	def __optimize_segment(self,ltp_result):
-		self.__optimize_by_punct(ltp_result,"《","》","*","nz","S-Nb")
-		
-	# def __optimize_segment(self,ltp_result):
-	# 	new_words = []
-	# 	new_postag = []
-	# 	new_entitys = []
-	# 	index = 0
-	# 	first = -1
-	# 	while index < len(ltp_result.words):
-	# 		word = ltp_result.words[index]
-	# 		pos = ltp_result.tags[index]
-	# 		en = ltp_result.ner_tags[index]
-	# 		if word == "《":
-	# 			first = index
-	# 		elif word == "》" and first != -1:
-	# 			last = index
-	# 			word = ltp_result.text(first + 1,last)
-	# 			pos = "nz"
-	# 			en = "S-Nb"
-	# 			while first < last - 1:
-	# 				new_words.pop()
-	# 				new_postag.pop()
-	# 				new_entitys.pop()
-	# 				last -= 1
-	# 			first = -1
-	# 			index -= 1
-	# 		new_words.append(word)
-	# 		new_postag.append(pos)
-	# 		new_entitys.append(en)
-	# 		index += 1
-	# 	#更新
-	# 	ltp_result.update(new_words,new_postag,new_entitys)
-
-	"""
-	ltp_result:
-	p_left:左符号，如《
-	p_right:右符号，如》
-	pos_label：p_left，p_right内原词性
-	pos_set:p_left，p_right内新词性
-	en_set:p_left，p_right内实体类型
-	"""
-	def __optimize_by_punct(self,ltp_result,p_left,p_right,pos_label,pos_set,en_set):
 		new_words = []
 		new_postag = []
 		new_entitys = []
@@ -134,49 +136,32 @@ class NamedEntityReg:
 			word = ltp_result.words[index]
 			pos = ltp_result.tags[index]
 			en = ltp_result.ner_tags[index]
-			if word == p_left:
+			if word == "《":
 				first = index
-			elif word == p_right and first != -1:
+			elif word == "》" and first != -1:
 				last = index
-
-				is_pos_label = True
-
-				#检查p_left，p_right内是否包含词性非pos_label类型的词
-				if pos_label != "*": # "*"表示所有pos类型都替换
-					ti = first + 1
-					while ti < last:
-						if ltp_result.tags[ti] != pos_label:
-							is_pos_label = False
-							break
-						ti += 1
-
-				if is_pos_label:
-					word = ltp_result.text(first + 1,last)
-					pos = pos_set
-					en = en_set
-					while first < last - 1:
-						new_words.pop()
-						new_postag.pop()
-						new_entitys.pop()
-						last -= 1
-					first = -1
-					index -= 1
-				else:
-					first = -1
-
+				word = ltp_result.text(first + 1,last)
+				pos = "nz"
+				en = "S-Nb"
+				while first < last - 1:
+					new_words.pop()
+					new_postag.pop()
+					new_entitys.pop()
+					last -= 1
+				first = -1
+				index -= 1
 			new_words.append(word)
 			new_postag.append(pos)
 			new_entitys.append(en)
 			index += 1
 		#更新
 		ltp_result.update(new_words,new_postag,new_entitys)
-		
+
 
 	"""
 	std_result是一行文本的Stanford结果，[(entitys,en_label,pos_label),...,]
 	"""
 	def __blend_with_stanford(self,ltp_result,std_result):
-		# fw = open(IOUtil.base_dir+"/../test_file/stf_add.txt","a")
 		new_std_result = copy.deepcopy(std_result)
 		for index,res in enumerate(new_std_result):
 			if res[1] == "MISC" and res[2] != "NR" and res[2] != "NN":
@@ -187,33 +172,7 @@ class NamedEntityReg:
 					if res[0] == lw and ltp_result.ner_tags[li] == "O":
 						ltp_result.ner_tags[li] = "S-"+stf_ltp_en_dist[res[1]]
 						b = True
-				# if b:
-				# 	fw.write(ltp_result.sentence)
-				# 	sestr = ""
-				# 	for se in new_std_result:
-				# 		sestr += "%s:%s:%s," % (se[0],se[1],se[2])
-				# 	fw.write(sestr+"\n")
-				# 	fw.write(res[0]+"\n\n")
-				# 	print res[0]
-
 				
-
-	# def __blend_with_stanford(self,ltp_result,std_result):
-
-	# 	new_std_result = copy.deepcopy(std_result)
-	# 	for index,res in enumerate(new_std_result):
-	# 		if res[1] == "MISC" and res[2] != "NR":
-	# 			continue
-	# 		elif res[0] not in ltp_result.words :	
-	# 			continue
-	# 		else:
-	# 			b = True
-	# 			for ltp_index,ltp_en in enumerate(ltp_result.words):
-	# 				if ltp_en in res[0]  and ltp_result.ner_tags[ltp_index] != "O" :
-	# 					b = False
-	# 					break
-	# 			if b:
-	# 				ltp_result.ner_tags[ltp_result.words.index(res[0])] = "S-"+res[1]
 
 
 	def __reg_non_chinese_entitys(self,ltp_result):
@@ -244,15 +203,6 @@ class NamedEntityReg:
 					while index < len(ltp_result.tags) and ltp_result.tags[index] == "ws":
 						ltp_result.ner_tags[index] = "I-Nf"
 						index += 1
-
-				# Pokémon  é  d'Ossó ó
-				# 无法判断：Lluís d'Ossó的 ó     能判断Real Unión 的 ó
-				#乔治·R·R·马丁 不能加入·
-				# if index < len(ltp_result.tags) and  is_other(ltp_result.words[index].decode("utf-8")) and self.__get_words_dist(ltp_result.sentence,ltp_result.words[index - 1],ltp_result.words[index]) == 1:
-				# 	ltp_result.tags[index] = "ws"
-				# 	while index < len(ltp_result.tags) and ltp_result.tags[index] == "ws":
-				# 		ltp_result.ner_tags[index] = "I-Nf"
-				# 		index += 1
 
 				last = index
 				if last - first == 1:

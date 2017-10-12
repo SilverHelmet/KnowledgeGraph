@@ -13,7 +13,13 @@ import uniout
 ENTITY_PATH=IOUtil.base_dir+"/src/extractor/entity"
 MY_FOLDER=IOUtil.base_dir+"/../test_file"
 
-
+"""
+Nh 人名
+Ns 地名
+Ni 机构名（orhanization)
+Nb 著作名，在《》里的如 生活大爆炸
+Nz 其他实体（由词性nz转化来的实体）
+"""
 
 def extract_stanford_result(stf_result_jsons,sentences):
 	results = []
@@ -88,7 +94,7 @@ def test_multi(ltp,ner):
 			break
 
 		ltp_result = ltp.parse(text)
-		entitys = ner.recognize(text,ltp_result,"","")
+		entitys = ner.recognize(text,ltp_result,"")
 		print entitys,"\n"
 
 		words = ltp_result.words
