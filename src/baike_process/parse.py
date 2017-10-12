@@ -162,7 +162,7 @@ def parse_text(url, b64_content):
     ret = {}
     summary = parse_summary(obj)
     if summary:
-        ret['intro_summary'] = summary
+        ret['intro_summary'] = [summary.split('\n')]
     content = obj.get('content', {}).get("content", {})
     if type(content) is unicode:
         content = {'1': {'section_content': content, 'section_title': "faked title"}}

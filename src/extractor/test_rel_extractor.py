@@ -53,7 +53,7 @@ class RelExtractorTestor():
         else:
             entities = self.ner.recognize(sentence, ltp_result, None)
 
-        for st, ed in entities:
+        for st, ed, _ in entities:
             for i in range(st, ed):
                 entity_pool[i] = True
 
