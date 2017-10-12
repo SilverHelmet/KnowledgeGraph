@@ -131,10 +131,10 @@ class VerbRelationExtractor:
         if rel != 'SBV' or verb.word != '是':
             return
         for child in verb.children:
-            if child.rel in ['FOB', 'VOB'] and child == father and child.mark == None:
+            if child.rel in ['FOB', 'VOB'] and child.mark == None:
                 child.mark = string
 
-    def find_by_ATT_rule(self, verb, rel):
+    def find_by_ATT_rule(self, verb, rel, father):
         if verb == None:
             return
         if rel in ['FOB', 'VOB']:
@@ -144,7 +144,7 @@ class VerbRelationExtractor:
             if verbs.rel not in {'ATT', 'COO'}:
                 return None
             else:
-                if verbs.father.postag == 'n':
+                if verbs.father == father:
                     return verb
                 elif verbs.father.mark in ['first_entity', 'second_entity']:
                     return verb
@@ -179,8 +179,8 @@ class VerbRelationExtractor:
             self.debuger.debug("coo verbs but not one SBV! not found!")
         self.deal_with_isA(verb1, rel1, father1, 'first_entity')
         self.deal_with_isA(verb2, rel2, father2, 'second_entity')
-        ATT_rule_res1 = self.find_by_ATT_rule(verb1, rel1)
-        ATT_rule_res2 = self.find_by_ATT_rule(verb2, rel2)
+        ATT_rule_res1 = self.find_by_ATT_rule(verb1, rel1, father2)
+        ATT_rule_res2 = self.find_by_ATT_rule(verb2, rel2, father1)
         if ATT_rule_res1 != None:
             self.debuger.debug("first eneity: find by ATT rule!")
             advanced_res.append((ATT_rule_res1.idx,ATT_rule_res1.idx + 1))
