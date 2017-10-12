@@ -3,6 +3,7 @@ from ..baike_process.parse import strip_url, parse_text
 import os
 import glob
 from tqdm import tqdm
+import json
 
 def extract_title(filepath, outf):
     Print('extract doc from [%s]' %os.path.basename(filepath))
