@@ -21,14 +21,12 @@ class SeparatedLinker:
         e2_entities = self.entity_linker.link(ltp_result, triple.e2, page_info)
 
         fb_rels = self.rel_linker.link(ltp_result, triple.rel)
-        print len(e1_entities), len(e2_entities), len(fb_rels)
     
         linked_triples = []
         for e1 in e1_entities:
             for e2 in e2_entities:
                 for rel in fb_rels:
                     ltriple = LinkedTriple(e1, rel, e2)
-                    print ltriple.knowledge()
                     if ltriple.check_type(self.schema):
                         linked_triples.append(ltriple)
                         
@@ -83,11 +81,11 @@ def load_summary_and_infobox(summary_path, infobox_path):
     for line in tqdm(file(summary_path, 'r'), total = nb_lines_of(summary_path)):
         p = line.split('\t')
         key = p[0]
-        summary_map[key] = json.loads(key)['summary'].encode('utf-8')
+        summary_map[key] = json.loads(p[1])['summary'].encode('utf-8')
 
     Print('add infobox value to summary, path is [%s]' %infobox_path)
     for line in tqdm(file(infobox_path), total = nb_lines_of(infobox_path)):
-        p = liine.split('\t')
+        p = line.split('\t')
         key = p[0]
         info_values = list()
         info = json.loads(p[1])['info']
@@ -108,9 +106,9 @@ def load_summary_and_infobox(summary_path, infobox_path):
 
 def summary_related_score(summary, page_info):
     cnt = len(re.findall(page_info.ename, summary))
-    score = cnt
+    score = cnt * 2
     if cnt >= 1:
-        score += 10
+        score += 50
     return score
 
 
@@ -131,7 +129,7 @@ class TopRelatedEntityLinker:
         for bk_url in baike_urls:
             bk_info = self.bk_info_map[bk_url]
             pop = bk_info.pop
-            summary = self.summary_map.get(summary, "")
+            summary = self.summary_map.get(bk_url, "")
             summary_score = summary_related_score(summary, page_info)
             baike_entities.append(BaikeEntity(str_entity, bk_url, bk_info.pop + summary_score, bk_info.types))
 
