@@ -76,7 +76,7 @@ if __name__ == "__main__":
                         print '\t%s\t%s\t%s' %(entity, link_map[entity], 'right')
                     else:
                         estimation['error'] += 1
-                        print '\t%s\t%s\t%s\t%s' %(entity, url, zlink_map[entity], 'error')
+                        print '\t%s\t%s\t%s\t%s' %(entity, url, link_map[entity], 'error')
                 else:
                     estimation['miss'] += 1 
 
