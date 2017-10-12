@@ -7,7 +7,7 @@ import copy
 import json
 import re
 
-stf_ltp_en_dist = {"PERSON":"Nh" , "LOCATION":"Ns" , "ORGANIZATION":"Ni" ,"MISC":"Nb" 
+stf_ltp_en_dist = {"PERSON":"Nh" , "LOCATION":"Ns" , "ORGANIZATION":"Ni" ,"MISC":"Nm" 
 ,"GPE":"Ns" ,"DEMONYM":"Nh","FACILITY":"Ns"}
 
 
