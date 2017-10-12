@@ -74,7 +74,7 @@ def year_month_checker(args):
     return args['year'] > 12
 
 class BaikeDatetime:
-    date_p = re.compile(ur'(?P<year>-?\d{1,4})(-|年|\.)(?P<month>\d{1,2})(-|月|\.)(?P<day>\d{1,2})(日)?$')
+    date_p = re.compile(ur'(?P<year>-?\d{1,4})(-|年|/|\.)(?P<month>\d{1,2})(-|月|/|\.)(?P<day>\d{1,2})(日)?$')
     year_p = re.compile(ur'(?P<year>-?\d{1,4})年$')
     year_p_2 = re.compile(ur'(?P<year>\d{4,4})$')
     yearmonth_p = re.compile(ur'(?P<year>-?\d{1,4})(-|年|\.)(?P<month>\d{1,2})(月)?$')
@@ -150,7 +150,7 @@ if __name__ == "__main__":
     #     d = FBDatetime.parse_fb_datetime(value)
     #     print d
 
-    # values = [u'2003年8月26日', u'2003年8', '2003', u'2003年8月', u'2003年', '203-8', u'1916年', u'公元前485年10月',u'1972.6.23', u'12.9']
+    #values = [u'2003年8月26日', u'2003年8', '2003', u'2003年8月', u'2003年', '203-8', u'1916年', u'公元前485年10月',u'1972.6.23', u'12.9', u'1971/02/05']
     values = [u'12.9']
     for value in values:
         print "str", value
