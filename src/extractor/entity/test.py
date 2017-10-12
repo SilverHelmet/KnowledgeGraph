@@ -203,8 +203,15 @@ def test(ltp,ner):
 	lines_labled_entitys = load_labled_entitys(MY_FOLDER+"/update_all.line.marks.txt")
 
 	fw_miss = open(MY_FOLDER+"/miss.txt","w")
+	fw_miss_1 = open(MY_FOLDER+"/miss_1.txt","w")
+	fw_miss_2 = open(MY_FOLDER+"/miss_2.txt","w")
+	fw_miss_3 = open(MY_FOLDER+"/miss_3.txt","w")
+	fw_miss_4 = open(MY_FOLDER+"/miss_4.txt","w")
+
 	fw_reg_en = open(MY_FOLDER+"/reg_entitys.txt","w")
 	fw_stf_en = open(MY_FOLDER+"/stf_en.txt","w")
+	fw_nz = open(MY_FOLDER+"/nz.txt","w")
+	
 
 	for s_e in std_result:
 		for e in s_e:
@@ -226,22 +233,52 @@ def test(ltp,ner):
 		for en in ner_entitys:
 			ner_str += en + " "
 
+		isnz = False
 		for i,p in enumerate(ltp_result.tags):
 			fw_reg_en.write(ltp_result.words[i]+":"+ltp_result.tags[i]+":"+ltp_result.ner_tags[i]+" ")
+			if p == "nz":
+				isnz=True
+				fw_nz.write(ltp_result.words[i]+":"+ltp_result.tags[i]+":"+ltp_result.ner_tags[i]+" ")
 		fw_reg_en.write("\n"+ner_str+"\n\n")
+		if isnz :
+			fw_nz.write("\n"+ltp_result.sentence+"\n")
 
 		if len(miss_type) > 0:
 			msg = []
+			w_p_n = ""
 			for i,p in enumerate(ltp_result.tags):
 				msg.append((ltp_result.words[i],p))
+				w_p_n += ltp_result.words[i]+":"+ltp_result.tags[i]+":"+ltp_result.ner_tags[i]+" "
 				fw_miss.write(ltp_result.words[i]+":"+ltp_result.tags[i]+":"+ltp_result.ner_tags[i]+" ")
 				
 
 			miss_str = ""
+			miss_str_2 = ""
+			miss_str_3 = ""
+			miss_str_4 = ""
+			miss_str_1 = ""
+			
 			for m_en,m_t in miss_type.items():
 				miss_str += m_en +":" +str(m_t) + " "
+				if m_t == 1:
+					miss_str_1 += m_en +":" +str(m_t) + " "
+				elif m_t == 2:
+					miss_str_2 += m_en +":" +str(m_t) + " "
+				elif m_t == 3:
+					miss_str_3 += m_en +":" +str(m_t) + " "
+				else:
+					miss_str_4 += m_en +":" +str(m_t) + " "
+					
 			fw_miss.write("\n"+ner_str+"\n"+miss_str+"\n\n")
 			
+			if miss_str_1 != "":
+				fw_miss_1.write(w_p_n+"\n"+ner_str+"\n"+miss_str_1+"\n\n")
+			if miss_str_2 != "":
+				fw_miss_2.write(w_p_n+"\n"+ner_str+"\n"+miss_str_2+"\n\n")
+			if miss_str_3 != "":
+				fw_miss_3.write(w_p_n+"\n"+ner_str+"\n"+miss_str_3+"\n\n")
+			if miss_str_4 != "":
+				fw_miss_4.write(w_p_n+"\n"+ner_str+"\n"+miss_str_4+"\n\n")
 			# print msg,"\n",ner_entitys,"\n",miss_type,"\n"
 		
 
@@ -251,7 +288,7 @@ def test(ltp,ner):
 
 if __name__ == "__main__":
 	ner = NamedEntityReg()
-	ltp = LTP(IOUtil.base_dir+"/../LTP/ltp_data_v3.4.0")
+	ltp = LTP(IOUtil.base_dir+"/../LTP/ltp_data_v3.4.0_lsx",True)
 	test(ltp,ner)
 	# test_multi(ltp,ner)
 

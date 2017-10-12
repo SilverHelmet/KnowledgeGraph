@@ -31,14 +31,15 @@ class NamedEntityReg:
 					begin = index
 					while entitys[index].split("-")[0] != "E":
 						index += 1
-					tuples.append((begin,index+1))
+					tuples.append((begin,index+1,entitys[index]))
 			index += 1
 		return tuples
 
 	def __optimize_entitys(self,ltp_result):
 		self.__optimize_segment(ltp_result)
-		ltp_result.ner_tags = self.__pos_nh_to_ner_nh(ltp_result.tags,ltp_result.ner_tags)
 		self.__reg_non_chinese_entitys(ltp_result)
+		ltp_result.ner_tags = self.__pos_nh_to_ner_nh(ltp_result.tags,ltp_result.ner_tags)
+		self.__pos_nz_to_ner(ltp_result)
 
 	"""
 	将postag词性为nh的词判定为实体Nh
@@ -70,6 +71,13 @@ class NamedEntityReg:
 				L.append(t)
 			index += 1
 		return L
+
+	def __pos_nz_to_ner(self, ltp_result):
+		for index , pos in enumerate(ltp_result.tags):
+			if pos == "nz" and ltp_result.ner_tags[index] == "O":
+				ltp_result.ner_tags[index] = "S-Nz"
+		pass
+
 
 	"""
 	对于《》中的词，做强制分词, 同时看做是nz词性,看作实体(如果本来没有识别)
@@ -168,7 +176,7 @@ class NamedEntityReg:
 	std_result是一行文本的Stanford结果，[(entitys,en_label,pos_label),...,]
 	"""
 	def __blend_with_stanford(self,ltp_result,std_result):
-
+		# fw = open(IOUtil.base_dir+"/../test_file/stf_add.txt","a")
 		new_std_result = copy.deepcopy(std_result)
 		for index,res in enumerate(new_std_result):
 			if res[1] == "MISC" and res[2] != "NR" and res[2] != "NN":
@@ -180,6 +188,12 @@ class NamedEntityReg:
 						ltp_result.ner_tags[li] = "S-"+stf_ltp_en_dist[res[1]]
 						b = True
 				# if b:
+				# 	fw.write(ltp_result.sentence)
+				# 	sestr = ""
+				# 	for se in new_std_result:
+				# 		sestr += "%s:%s:%s," % (se[0],se[1],se[2])
+				# 	fw.write(sestr+"\n")
+				# 	fw.write(res[0]+"\n\n")
 				# 	print res[0]
 
 				
@@ -203,8 +217,6 @@ class NamedEntityReg:
 
 
 	def __reg_non_chinese_entitys(self,ltp_result):
-		# self.__optimize_by_punct(ltp_result,"(",")","ws","ws","S-Nf") #Nf表示外文实体
-		# self.__optimize_by_punct(ltp_result,"（","）","ws","ws","S-Nf")
 		self.__reg_pos_ws_entitys(ltp_result)
 		return
 
@@ -226,6 +238,12 @@ class NamedEntityReg:
 				if index < len(ltp_result.tags) and ltp_result.tags[index] == "m":
 					ltp_result.ner_tags[index] = "I-Nf"
 					index += 1
+
+				if index < len(ltp_result.tags) and  (ltp_result.words[index] == "." or ltp_result.words[index] == "'"):
+					ltp_result.tags[index] = "ws"
+					while index < len(ltp_result.tags) and ltp_result.tags[index] == "ws":
+						ltp_result.ner_tags[index] = "I-Nf"
+						index += 1
 
 				# Pokémon  é  d'Ossó ó
 				# 无法判断：Lluís d'Ossó的 ó     能判断Real Unión 的 ó
@@ -250,7 +268,29 @@ class NamedEntityReg:
 		wb_end_index = sentence.index(wb) + len(wb) - 1
 		we_begin_index = sentence.index(we,wb_end_index)
 		return we_begin_index - wb_end_index
-		
+
+	# def __combine_single_big_dot(self,ltp_result):
+	# 	for index , word in enumerate(ltp_result.words):
+	# 		if word == "•" and (ltp_result.ner_tags[index] == "E-Nh" or ltp_result.ner_tags[index] == "O"):
+	# 			if index == 0 or index == len(ltp_result.words) - 1:
+	# 				continue
+	# 			elif ltp_result.ner_tags[index - 1] != "O" and ltp_result.ner_tags[index +1] != "O" \
+	# 			and ltp_result.ner_tags[index - 1].split("-")[1] == "Nh" and ltp_result.ner_tags[index + 1].split("-")[1] == "Nh":
+	# 				ltp_result.ner_tags[index] = "I-Nh"
+
+	# 				if ltp_result.ner_tags[index - 1].split("-")[0] == "S":
+	# 					ltp_result.ner_tags[index - 1] = "B-Nh"
+	# 				else:
+	# 					ltp_result.ner_tags[index - 1] = "I-Nh"
+					
+	# 				if ltp_result.ner_tags[index + 1].split("-")[0] == "S":
+	# 					ltp_result.ner_tags[index + 1] = "E-Nh"
+	# 				else:
+	# 					ltp_result.ner_tags[index + 1] = "I-Nh"
+
+	# def __combine_attach_big_dot(self,ltp_result):
+	# 	index = ltp_result.words.index("•")
+	# 	# while index 
 
 def is_chinese(uchar):
 	"""判断一个unicode是否是汉字"""
