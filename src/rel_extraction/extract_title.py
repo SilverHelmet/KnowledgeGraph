@@ -1,4 +1,4 @@
-from ..IOUtil import rel_ext_dir, Print
+from ..IOUtil import rel_ext_dir, Print, nb_lines_of
 from ..baike_process.parse import strip_url, parse_text
 import os
 import glob
@@ -25,3 +25,4 @@ if __name__ == "__main__":
         Print('parse %3d %s' %(idx, os.path.basename(filepath)))
         extract_title(filepath, outf)
     outf.close()
+

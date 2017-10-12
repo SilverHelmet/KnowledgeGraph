@@ -1,3 +1,4 @@
+#encoding: utf-8
 from entity.linkers import TopRelatedEntityLinker
 from .test_ner import read_data
 from entity.linkers import SeparatedLinker, MatchRelLinker, TopRelatedEntityLinker
@@ -47,7 +48,7 @@ if __name__ == "__main__":
     ner = NamedEntityReg()    
     entity_linker = TopRelatedEntityLinker(os.path.join(rel_ext_dir, 'baike_static_info.tsv'))
 
-    base_dir = os.path.join(data_dir, '标注数据')
+    base_dir = os.path.join(data_dir, '实体标注')
     stf_results_map = load_stanford_result(os.path.join(base_dir, 'sentences.txt'), os.path.join(base_dir, 'sentences_stanf_nlp.json'))
 
     testor = EntityLinkingTestor(ner, entity_linker, LTP(None))
@@ -60,18 +61,32 @@ if __name__ == "__main__":
     }
 
     for ename in datas_map:
+        datas = datas_map[ename]
         print ename
         for data in datas:
             entities = data.entities
             bk_urls = data.bk_urls
-            sentence = data.sentence.decode('utf-8')
-
+            sentence = data.sentence.encode('utf-8')
+            if sentence != '刘德华的父亲刘礼在启德机场做过消防员的工作。':
+                continue
             link_map = testor.test(sentence, PageInfo(ename), stf_results_map[sentence])
 
             for entity, url in zip(data.entities, data.bk_urls):
-                print type(entity), entity, url
-            break
-        break
+                estimation['total'] += 1
+                if entity in link_map:
+                    if link_map[entity] == url:
+                        estimation['right'] += 1
+                    else:
+                        estimation['error'] += 1
+                else:
+                    estimation['miss'] += 1 
+
+        
+
+    print estimation
+
+
+            
 
 
 

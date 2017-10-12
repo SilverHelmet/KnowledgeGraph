@@ -23,6 +23,8 @@ def read_data_from_file(filepath, datas_map, ignore_miss):
     data = None
     datas = []
     url = os.path.basename(filepath).split('.')[0]
+    if url == '塞尔达传说时之笛':
+        url = '塞尔达传说:时之笛'
     for idx, line in enumerate(file(filepath), start = 1):
         line = line.rstrip()
         if line == "":
@@ -51,7 +53,7 @@ def read_data_from_file(filepath, datas_map, ignore_miss):
 
 def read_data(filepath, ignore_miss):
     datas_map = {}
-    for filepath in glob.glob(filepath + '/*t*'):
+    for filepath in glob.glob(filepath + '/*tsv'):
         read_data_from_file(filepath, datas_map, ignore_miss)
     return datas_map
 
