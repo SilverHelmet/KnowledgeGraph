@@ -5,12 +5,12 @@ from ..IOUtil import data_dir, rel_ext_dir, Print
 import pandas as pd
 import json
 import numpy as np 
-from .structure import Knowledge
+from .structure import Knowledge, PageInfo
 from .entity.naive_ner import NaiveNer
 from .entity.ner import NamedEntityReg
 # from dependency.relation_extractors import RelTagExtractor
 from dependency.verb_relation_simple_extractor import VerbRelationExtractor
-from entity.linkers import SeparatedLinker, PopularityEntityLinker, MatchRelLinker, TopPopEntityLinker
+from entity.linkers import SeparatedLinker, MatchRelLinker, TopRelatedEntityLinker
 from .simple_extractors import SimpleLTPExtractor
 from .entity.test import extract_stanford_result
 from ..schema.schema import Schema
@@ -116,6 +116,8 @@ def process_labeled_data(ignore_miss):
             nb_kl += len(data.knowledges)
 
         name = os.path.basename(filepath).split(".")[0]
+        if name == '塞尔达传说时之笛':
+            name = '塞尔达传说:时之笛'
         datas_map[name] = datas
     return datas_map, nb_data, nb_kl
 
@@ -161,7 +163,8 @@ def test_ltp_extractor():
     ner = NamedEntityReg()    
     # rel_extractor = RelTagExtractor()
     rel_extractor = VerbRelationExtractor()
-    entity_linker = TopPopEntityLinker(os.path.join(rel_ext_dir, 'baike_static_info.tsv'))
+    # entity_linker = TopPopEntityLinker(os.path.join(rel_ext_dir, 'baike_static_info.tsv'))
+    entity_linker = TopRelatedEntityLinker(os.path.join(rel_ext_dir, 'baike_static_info.tsv'))
     rel_linker = MatchRelLinker()
     linker = SeparatedLinker(entity_linker, rel_linker)
 
@@ -182,7 +185,8 @@ def test_ltp_extractor():
             sentence = data.sentence
             print sentence
             stf_result = stf_results_map[sentence.encode('utf-8')]
-            triples, ltp_result = ltp_extractor.parse_sentence(sentence, None, stf_result)
+            page_info = PageInfo(baike_name)
+            triples, ltp_result = ltp_extractor.parse_sentence(sentence, page_info, stf_result)
             
             kl_set = set()
             for kl in data.knowledges:
