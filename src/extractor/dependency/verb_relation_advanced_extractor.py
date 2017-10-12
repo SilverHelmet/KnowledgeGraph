@@ -125,13 +125,13 @@ class VerbRelationExtractor:
                 return 'dec'
             return None
 
-    def deal_with_isA(self, verb, rel, string):
+    def deal_with_isA(self, verb, rel, father, string):
         if verb == None:
             return
         if rel != 'SBV' or verb.word != '是':
             return
         for child in verb.children:
-            if child.rel in ['FOB', 'VOB'] and child.postag == 'n' and child.mark == None:
+            if child.rel in ['FOB', 'VOB'] and child == father and child.mark == None:
                 child.mark = string
 
     def find_by_ATT_rule(self, verb, rel):
@@ -177,8 +177,8 @@ class VerbRelationExtractor:
                 advanced_res.append((one_SBV.idx, one_SBV.idx + 1))
                 return advanced_res
             self.debuger.debug("coo verbs but not one SBV! not found!")
-        self.deal_with_isA(verb1, rel1, 'first_entity')
-        self.deal_with_isA(verb2, rel2, 'second_entity')
+        self.deal_with_isA(verb1, rel1, father1, 'first_entity')
+        self.deal_with_isA(verb2, rel2, father2, 'second_entity')
         ATT_rule_res1 = self.find_by_ATT_rule(verb1, rel1)
         ATT_rule_res2 = self.find_by_ATT_rule(verb2, rel2)
         if ATT_rule_res1 != None:
@@ -194,12 +194,12 @@ class VerbRelationExtractor:
     
 if __name__ == "__main__":
     ltp = LTP(None)
-    sentence = '巴塞罗那足球俱乐部（Futbol Club Barcelona），中文简称巴萨，是位于西班牙巴塞罗那市的大球会，1899年11月29日由瑞士人汉斯·甘伯创立，西甲传统豪门之一，也是现今欧洲乃至世界足坛最成功的俱乐部之一。'
+    sentence = '后来在周润发主演的《鳄鱼潭》里演一个杀手，并且获得周润发的鼓励。'
     ltp_result = ltp.parse(sentence)
     info = PrintInfo()
     info.print_ltp(ltp_result)
-    e1 = '巴塞罗那足球俱乐部'
-    e2 = '1899年11月29日'
+    e1 = '周润发'
+    e2 = '鳄鱼潭'
     st, ed = ltp_result.search_word(e1)
     e1 = StrEntity(st, ed)
     st, ed = ltp_result.search_word(e2)
