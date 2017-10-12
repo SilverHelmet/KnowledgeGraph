@@ -62,22 +62,21 @@ if __name__ == "__main__":
 
     for ename in datas_map:
         datas = datas_map[ename]
-        print ename
         for data in datas:
             entities = data.entities
             bk_urls = data.bk_urls
             sentence = data.sentence.encode('utf-8')
-            if sentence != '刘德华的父亲刘礼在启德机场做过消防员的工作。':
-                continue
             link_map = testor.test(sentence, PageInfo(ename), stf_results_map[sentence])
-
+            print sentence
             for entity, url in zip(data.entities, data.bk_urls):
                 estimation['total'] += 1
                 if entity in link_map:
                     if link_map[entity] == url:
                         estimation['right'] += 1
+                        print '\t%s\t%s\t%s' %(entity, link_map[entity], 'right')
                     else:
                         estimation['error'] += 1
+                        print '\t%s\t%s\t%s\t%s' %(entity, url, zlink_map[entity], 'error')
                 else:
                     estimation['miss'] += 1 
 
