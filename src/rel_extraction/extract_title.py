@@ -13,10 +13,10 @@ def extract_title(filepath, outf):
         titles = docs.keys()
 
         outf.write("%s\t%s\n" %(url, json.dumps(titles, ensure_ascii = False)))
-    
+
 
 if __name__ == "__main__":
-    out_path = os.path.join(rel_ext_dir, 'baike_doc.json')
+    out_path = os.path.join(rel_ext_dir, 'baike_titles.json')
     outf = file(out_path, 'w')
     nb_files = 461
     for idx, filepath in enumerate(glob.glob('data/360/*finish'), start = 1):
