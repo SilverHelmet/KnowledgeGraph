@@ -177,10 +177,15 @@ class VerbRelationExtractor:
                 advanced_res.append((one_SBV.idx, one_SBV.idx + 1))
                 return advanced_res
             self.debuger.debug("coo verbs but not one SBV! not found!")
-        self.deal_with_isA(verb1, rel1, father1, 'first_entity')
-        self.deal_with_isA(verb2, rel2, father2, 'second_entity')
-        ATT_rule_res1 = self.find_by_ATT_rule(verb1, rel1, father2)
-        ATT_rule_res2 = self.find_by_ATT_rule(verb2, rel2, father1)
+        if rel1 != None:
+            self.deal_with_isA(verb1, near_verb1.rel, father1, 'first_entity')
+        if rel2 != None:
+            self.deal_with_isA(verb2, near_verb2.rel, father2, 'second_entity')
+        ATT_rule_res1 = ATT_rule_res2 = None
+        if rel1 != None:
+            ATT_rule_res1 = self.find_by_ATT_rule(verb1, near_verb1.rel, father2)
+        if rel2 != None:
+            ATT_rule_res2 = self.find_by_ATT_rule(verb2, near_verb2.rel, father1)
         if ATT_rule_res1 != None:
             self.debuger.debug("first eneity: find by ATT rule!")
             advanced_res.append((ATT_rule_res1.idx,ATT_rule_res1.idx + 1))
@@ -194,12 +199,12 @@ class VerbRelationExtractor:
     
 if __name__ == "__main__":
     ltp = LTP(None)
-    sentence = '后来在周润发主演的《鳄鱼潭》里演一个杀手，并且获得周润发的鼓励。'
+    sentence = '《生活大爆炸》(The Big Bang Theory)是由查克·洛尔和比尔·普拉迪创作的一出美国情景喜剧，此剧由华纳兄弟电视公司和查克·洛尔制片公司共同制作。'
     ltp_result = ltp.parse(sentence)
     info = PrintInfo()
     info.print_ltp(ltp_result)
-    e1 = '周润发'
-    e2 = '鳄鱼潭'
+    e1 = '查克·洛尔'
+    e2 = '生活大爆炸'
     st, ed = ltp_result.search_word(e1)
     e1 = StrEntity(st, ed)
     st, ed = ltp_result.search_word(e2)
