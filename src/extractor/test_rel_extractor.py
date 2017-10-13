@@ -80,14 +80,17 @@ class RelExtractorTestor():
             kl.obj = kl.obj.encode('utf-8')
             kl_str = kl.triple()
             self.estimation.total += 1
-            st_1, ed_1 = ltp_result.search_word(kl.subj)
-            st_2, ed_2 = ltp_result.search_word(kl.obj)
-            if st_1 == -1 or st_2 == -1:
+            st_eds_1 = ltp_result.search_word(kl.subj, search_all = True)
+            st_eds_2 = ltp_result.search_word(kl.obj, search_all = True)
+            if len(st_eds_1) == 0 or len(st_eds_2) == 0:
                 self.estimation.error_seg += 1
                 ret[kl_str] = (" ".join(ltp_result.words), "error segment")
                 continue
-            
-            rels = self.extractor.find_relation(ltp_result, StrEntity(st_1, ed_1), StrEntity(st_2, ed_2), entity_pool)
+
+            rels = []
+            for st_1, ed_1 in st_eds_1:
+                for st_2, ed_2 in st_eds_2:
+                    rels.extend(self.extractor.find_relation(ltp_result, StrEntity(st_1, ed_1), StrEntity(st_2, ed_2), entity_pool))
             rels = [ltp_result.text(st, ed) for st, ed in rels]
             rels_str = "\t".join(rels)
             prop = kl.prop
