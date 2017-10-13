@@ -177,14 +177,14 @@ class VerbRelationExtractor:
                 advanced_res.append((one_SBV.idx, one_SBV.idx + 1))
                 return advanced_res
             self.debuger.debug("coo verbs but not one SBV! not found!")
-        if rel1 != None:
+        if near_verb1 != None:
             self.deal_with_isA(verb1, near_verb1.rel, father1, 'first_entity')
-        if rel2 != None:
+        if near_verb2 != None:
             self.deal_with_isA(verb2, near_verb2.rel, father2, 'second_entity')
         ATT_rule_res1 = ATT_rule_res2 = None
-        if rel1 != None:
+        if near_verb1 != None:
             ATT_rule_res1 = self.find_by_ATT_rule(verb1, near_verb1.rel, father2)
-        if rel2 != None:
+        if near_verb2 != None:
             ATT_rule_res2 = self.find_by_ATT_rule(verb2, near_verb2.rel, father1)
         if ATT_rule_res1 != None:
             self.debuger.debug("first eneity: find by ATT rule!")
