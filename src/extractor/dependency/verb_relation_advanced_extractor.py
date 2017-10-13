@@ -79,6 +79,13 @@ class VerbRelationExtractor:
             elif self.judge_if_special(near_verb1.father) == True:
                 return near_verb2.father
 
+    def judge_one_VOB(self, near_verb1, near_verb2):
+        if near_verb1.rel == 'VOB' and near_verb2.rel != 'VOB':
+            return True
+        elif near_verb2.rel == 'VOB' and near_verb1.rel != 'VOB': 
+            return True
+        return False
+
     def find_nearest_verb(self, path):
         res = []
         if len(path) == 1:
@@ -126,13 +133,14 @@ class VerbRelationExtractor:
             return None
 
     def deal_with_isA(self, verb, rel, father, string):
-        if verb == None:
+        if verb == None or rel != 'SBV':
             return
-        if rel != 'SBV' or verb.word != '是':
-            return
-        for child in verb.children:
-            if child.rel in ['FOB', 'VOB'] and child.mark == None:
-                child.mark = string
+        path = self.find_COO_path(verb)
+        for verbs in path:
+            if verbs.word == '是':
+                for child in verbs.children:
+                    if child.rel in ['FOB', 'VOB'] and child.mark == None:
+                        child.mark = string
 
     def find_by_ATT_rule(self, verb, rel, father):
         if verb == None:
@@ -170,13 +178,16 @@ class VerbRelationExtractor:
             self.debuger.debug("same verb found!")
             advanced_res.append((verb1.idx, verb1.idx + 1))
             return advanced_res
-        elif self.judge_coo(verb1, verb2):
-            one_SBV = self.judge_one_SBV(near_verb1, near_verb2)
-            if one_SBV != None:
-                self.debuger.debug("coo verbs and one SBV found!")
-                advanced_res.append((one_SBV.idx, one_SBV.idx + 1))
-                return advanced_res
-            self.debuger.debug("coo verbs but not one SBV! not found!")
+        else:
+            if_coo = self.judge_coo(verb1, verb2)
+            if_one_VOB = self.judge_one_VOB(near_verb1,near_verb2)
+            if if_coo or if_one_VOB :
+                one_SBV = self.judge_one_SBV(near_verb1, near_verb2)
+                if one_SBV != None:
+                    self.debuger.debug("coo verbs and one SBV found!")
+                    advanced_res.append((one_SBV.idx, one_SBV.idx + 1))
+                    return advanced_res
+                self.debuger.debug("coo verbs but not one SBV! not found!")
         if near_verb1 != None:
             self.deal_with_isA(verb1, near_verb1.rel, father1, 'first_entity')
         if near_verb2 != None:
