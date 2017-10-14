@@ -25,12 +25,12 @@ def units_transfer(s):
                 print("num")
                 end += 1
             elif s[end] == ',' or s[end] == '，' or s[end] == '.':
-                if s[end + 1].isnumeric():
+                if end + 1 < len(s) and s[end + 1].isnumeric():
                     end += 1
                 else:
                     break
             elif s[end] == 'e':
-                if s[end + 1] == '+' or s[end + 1] == '-':
+                if end + 1 < len(s) and (s[end + 1] == '+' or s[end + 1] == '-'):
                     end += 1
                 else:
                     break
