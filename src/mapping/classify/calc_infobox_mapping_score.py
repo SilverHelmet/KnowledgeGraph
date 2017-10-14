@@ -40,6 +40,9 @@ def units_transfer(s):
             num = float(tmp)
         except:
             print tmp
+            num = ""
+        if num == "":
+            return tmp
         units = s[end:len(s)]
         if units in units_transfer_table.transfer_table:
             new_num = num * units_transfer_table.transfer_table[units][0][0]
@@ -71,6 +74,9 @@ def units_transfer(s):
             num = float(tmp)
         except:
             print tmp
+            num = ""
+        if num == "":
+            return tmp
         units = s[0:start + 1]
         if units in units_transfer_table.transfer_table:
             new_num = num * units_transfer_table.transfer_table[units][0][0]
