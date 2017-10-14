@@ -8,7 +8,8 @@ def load_baike_name_attrs():
     path = os.path.join(base_dir, 'docs/one2one_name_attr.txt')
     attrs = load_file(path)
     attrs = [attr.strip().split("\t")[-1].decode('utf-8') for attr in attrs]
-    attrs = [x for x in attrs if not x.startswith('#')]
+    attrs = [x for x in attrs if not x.startswith('#') and x != ""]
+
     return attrs
 
 def attr_level(attr):
