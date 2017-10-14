@@ -79,6 +79,13 @@ class VerbRelationExtractor:
             elif self.judge_if_special(near_verb1.father) == True:
                 return near_verb2.father
 
+    def judge_one_VOB(self, near_verb1, near_verb2):
+        if near_verb1.rel == 'VOB' and near_verb2.rel != 'VOB':
+            return True
+        elif near_verb2.rel == 'VOB' and near_verb1.rel != 'VOB': 
+            return True
+        return False
+
     def find_nearest_verb(self, path):
         res = []
         if len(path) == 1:
@@ -126,13 +133,14 @@ class VerbRelationExtractor:
             return None
 
     def deal_with_isA(self, verb, rel, father, string):
-        if verb == None:
+        if verb == None or rel != 'SBV':
             return
-        if rel != 'SBV' or verb.word != '是':
-            return
-        for child in verb.children:
-            if child.rel in ['FOB', 'VOB'] and child.mark == None:
-                child.mark = string
+        path = self.find_COO_path(verb)
+        for verbs in path:
+            if verbs.word == '是':
+                for child in verbs.children:
+                    if child.rel in ['FOB', 'VOB'] and child.mark == None:
+                        child.mark = string
 
     def find_by_ATT_rule(self, verb, rel, father):
         if verb == None:
@@ -170,17 +178,25 @@ class VerbRelationExtractor:
             self.debuger.debug("same verb found!")
             advanced_res.append((verb1.idx, verb1.idx + 1))
             return advanced_res
-        elif self.judge_coo(verb1, verb2):
-            one_SBV = self.judge_one_SBV(near_verb1, near_verb2)
-            if one_SBV != None:
-                self.debuger.debug("coo verbs and one SBV found!")
-                advanced_res.append((one_SBV.idx, one_SBV.idx + 1))
-                return advanced_res
-            self.debuger.debug("coo verbs but not one SBV! not found!")
-        self.deal_with_isA(verb1, rel1, father1, 'first_entity')
-        self.deal_with_isA(verb2, rel2, father2, 'second_entity')
-        ATT_rule_res1 = self.find_by_ATT_rule(verb1, rel1, father2)
-        ATT_rule_res2 = self.find_by_ATT_rule(verb2, rel2, father1)
+        else:
+            if_coo = self.judge_coo(verb1, verb2)
+            if_one_VOB = self.judge_one_VOB(near_verb1,near_verb2)
+            if if_coo or if_one_VOB :
+                one_SBV = self.judge_one_SBV(near_verb1, near_verb2)
+                if one_SBV != None:
+                    self.debuger.debug("coo verbs and one SBV found!")
+                    advanced_res.append((one_SBV.idx, one_SBV.idx + 1))
+                    return advanced_res
+                self.debuger.debug("coo verbs but not one SBV! not found!")
+        if near_verb1 != None:
+            self.deal_with_isA(verb1, near_verb1.rel, father1, 'first_entity')
+        if near_verb2 != None:
+            self.deal_with_isA(verb2, near_verb2.rel, father2, 'second_entity')
+        ATT_rule_res1 = ATT_rule_res2 = None
+        if near_verb1 != None:
+            ATT_rule_res1 = self.find_by_ATT_rule(verb1, near_verb1.rel, father2)
+        if near_verb2 != None:
+            ATT_rule_res2 = self.find_by_ATT_rule(verb2, near_verb2.rel, father1)
         if ATT_rule_res1 != None:
             self.debuger.debug("first eneity: find by ATT rule!")
             advanced_res.append((ATT_rule_res1.idx,ATT_rule_res1.idx + 1))
@@ -194,12 +210,12 @@ class VerbRelationExtractor:
     
 if __name__ == "__main__":
     ltp = LTP(None)
-    sentence = '后来在周润发主演的《鳄鱼潭》里演一个杀手，并且获得周润发的鼓励。'
+    sentence = '《生活大爆炸》(The Big Bang Theory)是由查克·洛尔和比尔·普拉迪创作的一出美国情景喜剧，此剧由华纳兄弟电视公司和查克·洛尔制片公司共同制作。'
     ltp_result = ltp.parse(sentence)
     info = PrintInfo()
     info.print_ltp(ltp_result)
-    e1 = '周润发'
-    e2 = '鳄鱼潭'
+    e1 = '查克·洛尔'
+    e2 = '生活大爆炸'
     st, ed = ltp_result.search_word(e1)
     e1 = StrEntity(st, ed)
     st, ed = ltp_result.search_word(e2)
