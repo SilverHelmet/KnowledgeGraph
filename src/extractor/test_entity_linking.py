@@ -84,7 +84,7 @@ if __name__ == "__main__":
                         print '\t%s\t%s\t%s\t%s' %(entity, url, linked_url, 'error')
                 else:
                     estimation['miss'] += 1 
-                    print '\t%s\t%s\t%s\t%s' %(entity, url, 'miss')
+                    print '\t%s\t%s\t%s' %(entity, url, 'miss')
     print estimation
 
 
