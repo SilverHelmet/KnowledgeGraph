@@ -33,6 +33,8 @@ baike.so.com/doc/6900892-10493334.html \
 baike.so.com/doc/6900892-10511247.html \
 baike.so.com/doc/6900892-24932290.html \
 baike.so.com/doc/6900892-24967609.html \
+baike.so.com/doc/5488058-13772750.html \
+baike.so.com/doc/5488058-5725970.html \
 "
 paths="\
 result/rel_extraction/baike_static_info.tsv \
