@@ -365,7 +365,7 @@ def test():
     baike_cls_path = os.path.join(classify_dir, 'final_baike_cls2fb_type.json')
     baike_title_path = os.path.join(result_dir, '360/title_type.txt')
     baike_info_path = os.path.join(result_dir, '360/info_type.txt')
-    type_infer = TypeInfer(infobox_path = baike_info_path, baike_cls_path = baike_cls_path, baike_title_path=baike_title_path)
+    type_infer = TypeInfer(baike_info_path = baike_info_path, baike_cls_path = baike_cls_path, baike_title_path=baike_title_path)
 
     baike_cls = ['type_default']
 
