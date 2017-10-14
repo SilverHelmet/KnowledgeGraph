@@ -297,9 +297,11 @@ def infer_type():
 
 
 
-    predicates_map_path = os.path.join(result_dir, '360/mapping/final_predicates_map.json')
+    #predicates_map_path = os.path.join(result_dir, '360/mapping/final_predicates_map.json')
+    baike_title_path = os.path.join(result_dir, '360/title_type.txt')
+    baike_infobox_path = os.path.join(result_dir, '360/info_type.txt')
     baike_cls2tpe_path = os.path.join(classify_dir, 'final_baike_cls2fb_type.json')
-    type_infer = TypeInfer(infobox_path = predicates_map_path, baike_cls_path = baike_cls2tpe_path)
+    type_infer = TypeInfer(baike_info_path = baike_infobox_path, baike_cls_path = baike_cls2tpe_path, baike_title_path=baike_title_path)
     
     extra_type_path = os.path.join(classify_dir, 'extra_type.json')
     extra_type_map = load_json_map(extra_type_path)
@@ -307,7 +309,7 @@ def infer_type():
     out_path = os.path.join(rel_ext_dir, 'baike_static_info.tsv')
     outf = file(out_path, 'w')
     
-    baike_info_path = os.path.join(result_dir, '360/360_entity_info.json')
+    baike_info_path = os.path.join(result_dir, '360/360_entity_info_processed.json')
     total = 21710208
     cls_hit = 0
     schema = Schema()
@@ -382,7 +384,7 @@ def test():
 
 if __name__ == "__main__":
     load_and_write_extra_types()
-    infer_type()
+    #infer_type()
 
     #debug
-    # test()
+    test()
