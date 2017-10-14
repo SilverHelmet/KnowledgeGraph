@@ -79,10 +79,10 @@ class VerbRelationExtractor:
             elif self.judge_if_special(near_verb1.father) == True:
                 return near_verb2.father
 
-    def judge_one_VOB(self, near_verb1, near_verb2):
-        if near_verb1.rel == 'VOB' and near_verb2.rel != 'VOB':
+    def judge_one_VOB(self, verb1, verb2):
+        if verb1.rel == 'VOB' and verb1.father == verb2:
             return True
-        elif near_verb2.rel == 'VOB' and near_verb1.rel != 'VOB': 
+        if verb2.rel == 'VOB' and verb2.father == verb1:
             return True
         return False
 
@@ -180,7 +180,7 @@ class VerbRelationExtractor:
             return advanced_res
         else:
             if_coo = self.judge_coo(verb1, verb2)
-            if_one_VOB = self.judge_one_VOB(near_verb1,near_verb2)
+            if_one_VOB = self.judge_one_VOB(verb1, verb2)
             if if_coo or if_one_VOB :
                 one_SBV = self.judge_one_SBV(near_verb1, near_verb2)
                 if one_SBV != None:
@@ -210,12 +210,12 @@ class VerbRelationExtractor:
     
 if __name__ == "__main__":
     ltp = LTP(None)
-    sentence = '《生活大爆炸》(The Big Bang Theory)是由查克·洛尔和比尔·普拉迪创作的一出美国情景喜剧，此剧由华纳兄弟电视公司和查克·洛尔制片公司共同制作。'
+    sentence = '1993年，主演刘镇伟执导的浪漫剧情片《天长地久》，刘德华与刘锦玲和吴家丽合作诠释了一段悲剧爱情故事。'
     ltp_result = ltp.parse(sentence)
     info = PrintInfo()
     info.print_ltp(ltp_result)
-    e1 = '查克·洛尔'
-    e2 = '生活大爆炸'
+    e1 = '刘镇伟'
+    e2 = '天长地久'
     st, ed = ltp_result.search_word(e1)
     e1 = StrEntity(st, ed)
     st, ed = ltp_result.search_word(e2)
