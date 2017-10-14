@@ -22,7 +22,7 @@ def units_transfer(s):
         end = 1
         for i in range(1, len(s)):
             if s[end].isdigit() or s[end] == '+' or s[end] == '-':
-                print("num")
+                #print("num")
                 end += 1
             elif s[end] == ',' or s[end] == '，' or s[end] == '.':
                 if end + 1 < len(s) and s[end + 1].isnumeric():
