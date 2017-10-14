@@ -6,7 +6,7 @@ from .entity.ner import NamedEntityReg
 from ..IOUtil import data_dir, rel_ext_dir
 from .structure import *
 from .ltp import LTP
-from test_extractor import load_stanford_result
+from test_extractor import load_stanford_result, load_same_linkings
 import os
 
 
@@ -53,6 +53,8 @@ if __name__ == "__main__":
 
     testor = EntityLinkingTestor(ner, entity_linker, LTP(None))
 
+    same_link_map = load_same_linkings()
+
     estimation = {
         "total": 0,
         'miss': 0,
@@ -66,19 +68,20 @@ if __name__ == "__main__":
             entities = data.entities
             bk_urls = data.bk_urls
             sentence = data.sentence.encode('utf-8')
-            if sentence != "1990年凭专辑《可不可以》走红歌坛，演唱过《忘情水》、《中国人》、《冰雨》等歌曲。":
-                continue
             link_map = testor.test(sentence, PageInfo(ename), stf_results_map[sentence])
             print sentence
             for entity, url in zip(data.entities, data.bk_urls):
                 estimation['total'] += 1
                 if entity in link_map:
-                    if link_map[entity] == url:
+                    linked_url = link_map[entity]
+                    if linked_url in same_link_map:
+                        linked_url = same_link_map[linked_url]
+                    if linked_url == url :
                         estimation['right'] += 1
-                        print '\t%s\t%s\t%s' %(entity, link_map[entity], 'right')
+                        print '\t%s\t%s\t%s' %(entity, linked_url, 'right')
                     else:
                         estimation['error'] += 1
-                        print '\t%s\t%s\t%s\t%s' %(entity, url, link_map[entity], 'error')
+                        print '\t%s\t%s\t%s\t%s' %(entity, url, linked_url, 'error')
                 else:
                     estimation['miss'] += 1 
     print estimation

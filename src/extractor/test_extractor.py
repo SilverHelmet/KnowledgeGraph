@@ -5,6 +5,8 @@ from ..IOUtil import data_dir, rel_ext_dir, Print
 import pandas as pd
 import json
 import numpy as np 
+from ..IOUtil import doc_dir
+import os
 from .structure import Knowledge, PageInfo
 from .entity.naive_ner import NaiveNer
 from .entity.ner import NamedEntityReg
@@ -14,6 +16,21 @@ from entity.linkers import SeparatedLinker, MatchRelLinker, TopRelatedEntityLink
 from .simple_extractors import SimpleLTPExtractor
 from .entity.test import extract_stanford_result
 from ..schema.schema import Schema
+
+def load_same_linkings():
+    path = os.path.join(doc_dir, 'same_links.tsv')
+    link_map = {}
+    for line in file(path):
+        line = line.strip()
+        if line.startswith("#") or line == "":
+            continue
+        p = line.strip().split('\t')
+        for link in p[1:]:
+            link_map[link] = p[0]
+    return link_map
+
+
+
 
 def decode(text):
     return str(text).decode('utf-8')
