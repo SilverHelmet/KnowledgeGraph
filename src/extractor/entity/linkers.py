@@ -111,8 +111,6 @@ def summary_related_score(summary, page_info):
         score += 50
     return score
 
-
-
 class TopRelatedEntityLinker:
     def __init__(self, static_info_path):
         self.bk_info_map = load_bk_static_info(filepath = static_info_path)
@@ -144,6 +142,18 @@ class TopRelatedEntityLinker:
         if total_score > 0:
             top_entity.pop /= (total_score)
         return [top_entity]
+
+# class ChapterEntityLinker:
+#     def __init__(self, static_info_path):
+#         self.bk_info_map = load_bk_static_info(filepath = static_info_path)
+#         self.name2bk = load_name2baike(filepath = os.path.join(rel_ext_dir, 'baike_names.tsv'))
+#         self.summary_map = load_summary_and_infobox(summary_path = os.path.join(rel_ext_dir, 'baike_summary.json'),
+#                                                 infobox_path = os.path.join(result_dir, '360/360_entity_info_processed.json'))
+
+#     def link_chapter(self, chapter_ltp_result, chapter_str_entities):
+
+
+
 
 
 
