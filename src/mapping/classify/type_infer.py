@@ -82,7 +82,7 @@ class InfoTypeInfer:
             		continue
             	info_count += 1
                 mapping = Mapping((info_tuple[0], str(info_tuple[1]) + '/' + str(info_sum)))
-                if (index <= 2 or mapping.hit >= 50) and mapping.hit >= 3:
+                if (title_count <= 2 or mapping.hit >= 50) and mapping.hit >= 3:
                     mappings.append(mapping)
             baike_info_map[baikeattr] = mappings
 
@@ -160,7 +160,7 @@ class TitleTypeInfer:
             		continue
             	title_count += 1
                 mapping = Mapping((title_tuple[0], str(title_tuple[1]) + '/' + str(title_sum)))
-                if (index <= 2 or mapping.hit >= 50) and mapping.hit >= 3:
+                if (title_count <= 2 or mapping.hit >= 50) and mapping.hit >= 3:
                     mappings.append(mapping)
             baike_title_map[baikeattr] = mappings
 
