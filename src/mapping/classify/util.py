@@ -37,6 +37,19 @@ def load_baike_entity_class(filepath = None, baike_urls = None, simple = False):
             bk2cls[url] = cls.split(" ")
     return bk2cls
 
+def load_baike_entity_title():
+    filepath = os.path.join(result_dir, 'rel_extraction/baike_titles.json')
+    Print("load baike entity class from [%s]" %filepath)
+    bk2tls = {}
+    for line in tqdm(file(filepath), total = nb_lines_of(filepath)):
+        url, title = line.strip().split('\t')
+        if title == '':
+            continue
+        if url in bk2tl:
+            bk2tls[url].append(cls[0])
+        else:
+            bk2tls[url] = [cls[0]]
+    return bk2tls
 
 def load_mappings_witd_score(filepath, threshold):
     Print('load mappings from [%s] with score' %filepath)
