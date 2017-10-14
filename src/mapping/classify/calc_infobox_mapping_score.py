@@ -16,6 +16,8 @@ import units_transfer_table
 def units_transfer(s):
     start = 0
     end = 0
+    if s == '':
+        return s
     if s[0].isnumeric() or (s[0] == '+' and s[1].isnumeric()) or (s[0] == '-' and s[1].isnumeric()):
         end = 1
         for i in range(1, len(s)):
