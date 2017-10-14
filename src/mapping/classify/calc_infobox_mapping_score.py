@@ -36,7 +36,10 @@ def units_transfer(s):
                 break
         tmp = s[start:end].replace(',', '')
         tmp = tmp.replace('，', '')
-        num = float(tmp)
+        try:
+            num = float(tmp)
+        except:
+            print tmp
         units = s[end:len(s)]
         if units in units_transfer_table.transfer_table:
             new_num = num * units_transfer_table.transfer_table[units][0][0]
@@ -64,7 +67,10 @@ def units_transfer(s):
                 break
         tmp = s[start + 1:end].replace(',', '')
         tmp = tmp.replace('，', '')
-        num = float(tmp)
+        try:
+            num = float(tmp)
+        except:
+            print tmp
         units = s[0:start + 1]
         if units in units_transfer_table.transfer_table:
             new_num = num * units_transfer_table.transfer_table[units][0][0]
