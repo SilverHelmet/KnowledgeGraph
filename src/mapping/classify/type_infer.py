@@ -70,7 +70,7 @@ class InfoTypeInfer:
         for line in file(mapping_path):
             p = line.decode('utf-8').split('\t')
             baikeattr = p[0]
-            mapping_pairs = json.loads(p[1])
+            mapping_pairs = eval(p[1])
             mappings = []
             info_count = 0
             info_sum = 0
@@ -148,7 +148,7 @@ class TitleTypeInfer:
         for line in file(mapping_path):
             p = line.decode('utf-8').split('\t')
             baikeattr = p[0]
-            mapping_pairs = json.loads(p[1])
+            mapping_pairs = eval(p[1])
             mappings = []
             title_count = 0
             title_sum = 0
