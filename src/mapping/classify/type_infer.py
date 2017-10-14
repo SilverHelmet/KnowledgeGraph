@@ -155,7 +155,7 @@ class TitleTypeInfer:
             title_maximum = 0
             for title_tuple in mapping_pairs:
             	if title_count == 0:
-            		title_sum = info_tuple[1]
+            		title_sum = title_tuple[1]
             		title_count += 1
             		continue
             	title_count += 1
