@@ -185,9 +185,12 @@ def calc_infobox_mapping_score(baike2fb_map, baike_entity_info, fb_entity_info, 
                             match = find_match(baike_date, fb_time_values)
                             if match:
                                 time_match_cnt += 1
-                        baike_number = units_transfer(baike_value)
-                        if str(baike_number) in fb_str_values:
-                        	match = True
+                        try:
+                            baike_number = units_transfer(baike_value)
+                            if str(baike_number) in fb_str_values:
+                        	   match = True
+                        except:
+                            continue
                     if match:
                         break
 
