@@ -152,12 +152,11 @@ def del_space(text):
     return text.replace(u'\xa0', '').replace(u'\u200b', '').strip()
 
 def parse_text(url, b64_content):
-    ret = []
     try:
         obj = json.loads(base64.b64decode(b64_content))
     except Exception, e:
         print "error url", url
-        return ret
+        return {}
 
     ret = {}
     summary = parse_summary(obj)

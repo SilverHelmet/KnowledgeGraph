@@ -131,6 +131,7 @@ class TopRelatedEntityLinker:
             pop = bk_info.pop
             summary = self.summary_map.get(bk_url, "")
             summary_score = summary_related_score(summary, page_info)
+            print bk_url, pop, summary_score
             baike_entities.append(BaikeEntity(str_entity, bk_url, bk_info.pop + summary_score, bk_info.types))
 
         if len(baike_entities) == 0:

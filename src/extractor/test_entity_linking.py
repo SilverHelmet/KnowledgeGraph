@@ -66,6 +66,8 @@ if __name__ == "__main__":
             entities = data.entities
             bk_urls = data.bk_urls
             sentence = data.sentence.encode('utf-8')
+            if sentence != "1990年凭专辑《可不可以》走红歌坛，演唱过《忘情水》、《中国人》、《冰雨》等歌曲。":
+                continue
             link_map = testor.test(sentence, PageInfo(ename), stf_results_map[sentence])
             print sentence
             for entity, url in zip(data.entities, data.bk_urls):
@@ -79,9 +81,6 @@ if __name__ == "__main__":
                         print '\t%s\t%s\t%s\t%s' %(entity, url, link_map[entity], 'error')
                 else:
                     estimation['miss'] += 1 
-
-        
-
     print estimation
 
 

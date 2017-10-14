@@ -21,6 +21,20 @@ baike.so.com/doc/6305282-24643457.html \
 baike.so.com/doc/9318082-9653967.html \
 baike.so.com/doc/9145755-9478904.html \
 baike.so.com/doc/8719264-9041748.html \
+baike.so.com/doc/9237659-9570996.html \
+baike.so.com/doc/23961448-24530363.html \
+baike.so.com/doc/8972750-9301011.html \
+baike.so.com/doc/9142666-9475814.html \
+baike.so.com/doc/6900892-10434866.html \
+baike.so.com/doc/6900892-25003153.html \
+baike.so.com/doc/7953997-8238479.html \
+baike.so.com/doc/6900892-7121579.html \
+baike.so.com/doc/6900892-10493334.html \
+baike.so.com/doc/6900892-10511247.html \
+baike.so.com/doc/6900892-24932290.html \
+baike.so.com/doc/6900892-24967609.html \
+baike.so.com/doc/5488058-13772750.html \
+baike.so.com/doc/5488058-5725970.html \
 "
 paths="\
 result/rel_extraction/baike_static_info.tsv \
