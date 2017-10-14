@@ -78,12 +78,13 @@ if __name__ == "__main__":
                         linked_url = same_link_map[linked_url]
                     if linked_url == url :
                         estimation['right'] += 1
-                        print '\t%s\t%s\t%s' %(entity, linked_url, 'right')
+                        print '\t%s\t%s\t%s' %(entity, url, 'right')
                     else:
                         estimation['error'] += 1
                         print '\t%s\t%s\t%s\t%s' %(entity, url, linked_url, 'error')
                 else:
                     estimation['miss'] += 1 
+                    print '\t%s\t%s\t%s\t%s' %(entity, url, 'miss')
     print estimation
 
 
