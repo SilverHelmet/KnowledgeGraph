@@ -392,7 +392,7 @@ def test():
 
 if __name__ == "__main__":
     load_and_write_extra_types()
-    #infer_type()
+    infer_type()
 
     #debug
-    test()
+    #test()
