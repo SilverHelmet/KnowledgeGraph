@@ -293,6 +293,7 @@ def infer_type():
 
     bk2fb_map = load_match_result(filepath = os.path.join(rel_ext_dir, 'mapping_result.tsv'))
     baike_cls_map = load_baike_entity_class()
+    baike_title_map = load_baike_entity_title()
     fb_type_map = load_fb_type(fb_uris = set(bk2fb_map.values()) )
 
 
@@ -340,7 +341,11 @@ def infer_type():
             clses = baike_cls_map[baike_url]
         else:
             clses = []
-        type_probs = type_infer.infer(names, clses) 
+        if baike_url in baike_title_map:
+            titles = baike_title_map[baike_url]
+        else:
+            titles = []
+        type_probs = type_infer.infer(names, clses, titles) 
         type_infer.choose_music_type(type_probs, 0.8)
         inffered_types = decide_type(type_probs, schema)
         outf.write('%s\t%s\t%d\t%s\n' %(baike_url, "None", nb_names, json.dumps(inffered_types)))
@@ -367,6 +372,7 @@ def test():
     baike_info = [u'唱片公司', u'所属专辑', u'发行时间', u'歌曲原唱', u'谱曲', u'编曲', u'填词', u'音乐风格', u'版本', u'歌曲语言', u'歌曲时长']
     baike_info = [u'专辑歌手', u'音乐风格', u'发行地区', u'曲目数量', u'唱片公司', u'获得奖项', u'发行时间', u'专辑语言', u'制作人']
     baike_info = [u'中文名称', u'所属公司', u'名师讲堂', u'商业模式', u'特色', u'上市时间']
+    baike_title = []
     type_probs = type_infer.infer(baike_info, baike_cls, baike_title)
     type_infer.choose_music_type(type_probs, 0.8)
     # type_infer.choose_one_music_type(type_probs, 0.8)
