@@ -33,7 +33,7 @@ if __name__ == "__main__":
 
     nb_files = 461
     Print("---- parse summary ----")
-    outf = file(os.path.join(rel_ext_dir, 'baike_summary.json.test'), 'w')
+    outf = file(os.path.join(rel_ext_dir, 'baike_summary.json'), 'w')
     cnt = 0
     for idx, filepath in enumerate(glob.glob('data/360/*finish'), start = 1):
         Print('parse %3d %s' %(idx, os.path.basename(filepath)))
