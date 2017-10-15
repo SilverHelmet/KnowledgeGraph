@@ -26,9 +26,9 @@ def load_mapping_names(bk2fb):
             bk_name_map[bk_url] = names
     return bk_name_map
 
-def person_last_name(name):
+def person_first_and_last_name(name):
     tokens = name.split(u"·")
-    return tokens[-1]
+    return tokens[-1], tokens[0]
 
 def load_and_write_baike_name(bk_name_map, out_path):
     bk_types_map = load_bk_types()
@@ -56,7 +56,11 @@ def load_and_write_baike_name(bk_name_map, out_path):
 
         is_person = "fb:people.person" in bk_types_map[bk_url]
         if is_person:
-            extra_names = [person_last_name(name) for name in names]
+            extra_names = []
+            for name in names:
+                last, first = person_first_and_last_name(name)
+                extra_names.append(first)
+                extra_names.append(last)
             names.extend(extra_names)
         names = list(set(names))
 
