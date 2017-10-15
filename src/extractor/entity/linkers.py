@@ -120,7 +120,9 @@ class TopRelatedEntityLinker:
 
     def link(self, ltp_result, str_entity, page_info):
         name = ltp_result.text(str_entity.st, str_entity.ed)
+
         baike_urls = self.name2bk.get(name, [])
+
         baike_entities = []
 
         for bk_url in baike_urls:

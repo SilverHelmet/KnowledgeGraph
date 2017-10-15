@@ -23,6 +23,8 @@ class EntityLinkingTestor:
         str_entites = self.ner.recognize(sentence, ltp_result, page_info, stf_result)
         str_entites = [StrEntity(st, ed) for st, ed, _ in str_entites]
 
+
+
         link_map = {}
         for str_entity in str_entites:
             baike_entity = self.linker.link(ltp_result, str_entity, page_info)
@@ -68,6 +70,8 @@ if __name__ == "__main__":
             entities = data.entities
             bk_urls = data.bk_urls
             sentence = data.sentence.encode('utf-8')
+            if sentence != "这支五冠王球队拥有一群出色的球员和一位传奇前锋：拉马莱茨，塞古尔，比奥斯卡，萨加拉，冈萨尔沃，巴索拉，塞萨尔，库巴拉，莫雷诺和曼崇。":
+                continue
             link_map = testor.test(sentence, PageInfo(ename), stf_results_map[sentence])
             print sentence
             for entity, url in zip(data.entities, data.bk_urls):
