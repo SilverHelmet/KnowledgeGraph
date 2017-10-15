@@ -13,7 +13,13 @@ def parse(filepath, entities, outf):
         parts = line.split('\t')
         url = strip_url(parts[0])
         if entities is None or url in entities:
-            content = json.loads(base64.b64decode(parts[1]))
+            try:
+                content = json.loads(base64.b64decode(parts[1]))
+            except Exception, e:
+                print "error", r
+                print parts[1]
+                continue
+            
             summary = parse_summary(content)
             if summary is not None:
                 obj = {'summary': summary}
