@@ -1,7 +1,8 @@
+#encoding: utf-8
 from ..IOUtil import rel_ext_dir, Print, result_dir
 from ..mapping.predicate_mapping import load_name_attr
 from ..baike_process.parse import html_unescape
-from util import load_mappings
+from util import load_mappings, load_bk_types
 import json
 import os
 from tqdm import tqdm
@@ -25,7 +26,12 @@ def load_mapping_names(bk2fb):
             bk_name_map[bk_url] = names
     return bk_name_map
 
-def load_and_write_baike_name(bk_name_map, out_path, ):
+def person_last_name(name):
+    tokens = name.split(u"·")
+    return tokens[-1]
+
+def load_and_write_baike_name(bk_name_map, out_path):
+    bk_types_map = load_bk_types()
     baike_entity_info_path = os.path.join(result_dir, '360/360_entity_info_processed.json')
     total = 21710208
     Print('load and write baike name to [%s]' %out_path)
@@ -34,6 +40,7 @@ def load_and_write_baike_name(bk_name_map, out_path, ):
     for line in tqdm(file(baike_entity_info_path), total = total):
         p = line.split('\t')
         bk_url = p[0].decode('utf-8')
+        
         names = bk_name_map.get(bk_url, [])
         obj = json.loads(p[1])
         names.append(obj['ename'])
@@ -44,7 +51,13 @@ def load_and_write_baike_name(bk_name_map, out_path, ):
             if attr in baike_name_attrs:
                 names.extend(info[attr])
 
+        
         names = [html_unescape(x.replace('\n',"")).strip() for x in names]
+
+        is_person = "fb:people.person" in bk_types_map[bk_url]
+        if is_person:
+            extra_names = [person_last_name(name) for name in names]
+            names.extend(extra_names)
         names = list(set(names))
 
         outf.write("%s\t%s\n" %(bk_url, "\t".join(names)))

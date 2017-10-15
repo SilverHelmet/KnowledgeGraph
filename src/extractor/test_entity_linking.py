@@ -22,6 +22,9 @@ class EntityLinkingTestor:
 
         str_entites = self.ner.recognize(sentence, ltp_result, page_info, stf_result)
         str_entites = [StrEntity(st, ed) for st, ed, _ in str_entites]
+        names = set()
+        for str_entity in str_entites:
+            names.add(ltp_result.text(str_entity.st, str_entity.ed))
 
 
 
@@ -35,7 +38,7 @@ class EntityLinkingTestor:
             if baike_entity:
                 link_map[ltp_result.text(str_entity.st, str_entity.ed)] = baike_entity.baike_url
 
-        return link_map
+        return link_map, names
 
         
 
@@ -59,7 +62,8 @@ if __name__ == "__main__":
 
     estimation = {
         "total": 0,
-        'miss': 0,
+        'linking miss': 0,
+        'ner miss': 0,
         'error': 0,
         'right': 0
     }
@@ -70,9 +74,7 @@ if __name__ == "__main__":
             entities = data.entities
             bk_urls = data.bk_urls
             sentence = data.sentence.encode('utf-8')
-            if sentence != "这支五冠王球队拥有一群出色的球员和一位传奇前锋：拉马莱茨，塞古尔，比奥斯卡，萨加拉，冈萨尔沃，巴索拉，塞萨尔，库巴拉，莫雷诺和曼崇。":
-                continue
-            link_map = testor.test(sentence, PageInfo(ename), stf_results_map[sentence])
+            link_map, ner_names = testor.test(sentence, PageInfo(ename), stf_results_map[sentence])
             print sentence
             for entity, url in zip(data.entities, data.bk_urls):
                 estimation['total'] += 1
@@ -86,9 +88,12 @@ if __name__ == "__main__":
                     else:
                         estimation['error'] += 1
                         print '\t%s\t%s\t%s\t%s' %(entity, url, linked_url, 'error')
+                elif entity in ner_names:
+                    estimation['linking miss'] += 1 
+                    print '\t%s\t%s\t%s' %(entity, url, 'linking miss')
                 else:
-                    estimation['miss'] += 1 
-                    print '\t%s\t%s\t%s' %(entity, url, 'miss')
+                    estimation['ner miss'] += 1 
+                    print '\t%s\t%s\t%s' %(entity, url, 'ner miss')
     print estimation
 
 
