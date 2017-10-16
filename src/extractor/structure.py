@@ -3,6 +3,12 @@ class PageInfo:
     def __init__(self, ename):
         self.ename = ename
 
+# class PageInfo:
+#     def __init__(self, names, url, types):
+#         self.names = names
+#         self.url = url
+#         self.types = types
+
 class StrEntity:
     def __init__(self, st, ed):
         self.st = st

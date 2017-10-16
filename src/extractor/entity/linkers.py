@@ -75,16 +75,29 @@ class TopPopEntityLinker:
             top_entity.pop /= (total_score)
         return [top_entity]
 
+def filter_bad_summary(summary):
+    sentences = summary.split(u'。')
+    new_s = []
+    for sentence in sentences:
+        if len(sentence) > 100 or sentence.split("：") >= 4:
+            break
+        new_s.append(sentence)
+    return u'。'.join(new_s)
+
+
+
+
 def load_summary_and_infobox(summary_path, infobox_path, lowercase):
     Print("load summary from [%s]" %summary_path)
     summary_map = {}
     for line in tqdm(file(summary_path, 'r'), total = nb_lines_of(summary_path)):
         p = line.split('\t')
         key = p[0]
-        summary = json.loads(p[1])['summary'].encode('utf-8')
+        summary = json.loads(p[1])['summary']
         if lowercase:
             summary = summary.lower()
-        summary_map[key] = summary
+        summary = filter_bad_summary(summary)
+        summary_map[key] = summary.encode('utf-8')
 
     Print('add infobox value to summary, path is [%s]' %infobox_path)
     for line in tqdm(file(infobox_path), total = nb_lines_of(infobox_path)):
@@ -142,6 +155,8 @@ class TopRelatedEntityLinker:
         if len(baike_urls) == 0 and self.lowercase:
             baike_urls = self.lower_name2bk.get(name.lower(), [])
 
+    
+
 
 
         baike_entities = []
@@ -151,6 +166,7 @@ class TopRelatedEntityLinker:
             pop = bk_info.pop
             summary = self.summary_map.get(bk_url, "")
             summary_score = summary_related_score(summary, page_info)
+            print name, bk_url, pop, summary_score
             baike_entities.append(BaikeEntity(str_entity, bk_url, bk_info.pop + summary_score, bk_info.types))
 
         if len(baike_entities) == 0:
@@ -166,14 +182,28 @@ class TopRelatedEntityLinker:
             top_entity.pop /= (total_score)
         return [top_entity]
 
-# class ChapterEntityLinker:
-#     def __init__(self, static_info_path):
-#         self.bk_info_map = load_bk_static_info(filepath = static_info_path)
-#         self.name2bk = load_name2baike(filepath = os.path.join(rel_ext_dir, 'baike_names.tsv'))
-#         self.summary_map = load_summary_and_infobox(summary_path = os.path.join(rel_ext_dir, 'baike_summary.json'),
-#                                                 infobox_path = os.path.join(result_dir, '360/360_entity_info_processed.json'))
+class PageMemory:
+    def __init__(self):
+        self.link_map = {}
+      
+class PageMemoryEntityLinker:
+    def __init__(self, static_info_path, lowercase = False):
+        self.bk_info_map = load_bk_static_info(filepath = static_info_path)
+        self.name2bk = load_name2baike(filepath = os.path.join(rel_ext_dir, 'baike_names.tsv'))
+        if lowercase:
+            self.lower_name2bk = self.gen_lowercase_name(self.name2bk)
+        self.summary_map = load_summary_and_infobox(summary_path = os.path.join(rel_ext_dir, 'baike_summary.json'),
+                                                infobox_path = os.path.join(result_dir, '360/360_entity_info_processed.json'),
+                                                lowercase = False)
 
-#     def link_chapter(self, chapter_ltp_result, chapter_str_entities):
+        self.lowercase = lowercase
+
+        self.context = None
+
+    def link(self, page):
+        pass
+
+        
 
 
 
