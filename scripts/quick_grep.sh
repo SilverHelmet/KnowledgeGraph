@@ -6,7 +6,10 @@ baike.so.com/doc/6411356-6625024.html \
 baike.so.com/doc/6411356-6625024.html \
 baike.so.com/doc/24678290-25575214.html \
 baike.so.com/doc/5344366-5579811.html \
-baike.so.com/doc/3074939-3240918.html
+baike.so.com/doc/3074939-3240918.html \
+baike.so.com/doc/1957541-2071736.html \
+baike.so.com/doc/6143842-6357018.html \
+baike.so.com/doc/6741534-6956052.html
 "
 paths="\
 result/rel_extraction/baike_static_info.tsv \
