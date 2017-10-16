@@ -78,7 +78,8 @@ def load_name2baike(filepath = None, lowercase = False):
         bk_url = p[0]
         names = p[1:]
         for name in names:
-            name = name.lower()
+            if lowercase:
+                name = name.lower()
             if not name in name2bk:
                 name2bk[name] = []
             name2bk[name].append(bk_url)

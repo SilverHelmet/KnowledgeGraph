@@ -119,19 +119,31 @@ def summary_related_score(summary, page_info):
 class TopRelatedEntityLinker:
     def __init__(self, static_info_path, lowercase = False):
         self.bk_info_map = load_bk_static_info(filepath = static_info_path)
-        self.name2bk = load_name2baike(filepath = os.path.join(rel_ext_dir, 'baike_names.tsv'), lowercase = lowercase)
+        self.name2bk = load_name2baike(filepath = os.path.join(rel_ext_dir, 'baike_names.tsv'))
+        if lowercase:
+            self.lower_name2bk = self.gen_lowercase_name(self.name2bk)
         self.summary_map = load_summary_and_infobox(summary_path = os.path.join(rel_ext_dir, 'baike_summary.json'),
-                                                infobox_path = os.path.join(result_dir, '360/360_entity_info_processed.json'), lowercase = lowercase)
+                                                infobox_path = os.path.join(result_dir, '360/360_entity_info_processed.json'),
+                                                lowercase = False)
 
         self.lowercase = lowercase
+
+    def gen_lowercase_name(self, name2bk):
+        lower_name2bk = {}
+        for name in name2bk:
+            if name.lower() != name:
+                lower_name2bk[name.lower()] = name2bk[name]
+            else:
+                print "same", name, name.lower()
+        return lower_name2bk
 
     def link(self, ltp_result, str_entity, page_info):
         name = ltp_result.text(str_entity.st, str_entity.ed)
 
-        if self.lowercase:
-            name = name.lower()
-
         baike_urls = self.name2bk.get(name, [])
+        if len(baike_urls) == 0 and self.lowercase:
+            baike_urls = self.lower_name2bk.get(name.lower(), [])
+
 
 
         baike_entities = []

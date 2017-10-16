@@ -40,7 +40,20 @@ baike.so.com/doc/7324655-7554297.html \
 baike.so.com/doc/4280208-4483441.html \
 baike.so.com/doc/6120709-6333858.html \
 baike.so.com/doc/5978224-6191185.html \
-baike.so.com/doc/7129291-7352593.html
+baike.so.com/doc/7129291-7352593.html \
+baike.so.com/doc/6742319-6956844.html \
+baike.so.com/doc/6492878-24791255.html \
+baike.so.com/doc/5349374-5584830.html \
+baike.so.com/doc/8433713-8753584.html \
+baike.so.com/doc/2785795-7624588.html \
+baike.so.com/doc/7208864-7433553.html \
+baike.so.com/doc/7099759-7322726.html \
+baike.so.com/doc/5666247-5878906.html \
+baike.so.com/doc/7014276-7237163.html \
+baike.so.com/doc/7014582-7237469.html \
+baike.so.com/doc/9883253-10230368.html \
+baike.so.com/doc/2582857-2727470.html \
+baike.so.com/doc/8736542-9059519.html
 "
 paths="\
 result/rel_extraction/baike_static_info.tsv \
