@@ -24,7 +24,7 @@ if __name__ == "__main__":
 
     outf = file(os.path.join(rel_ext_dir, 'title_verb_dict.txt'), 'w')
     for key in sorted(name2title.keys()):
-        titles = sorted(list(set(name2title[name])))
+        titles = sorted(list(set(name2title[key])))
         outf.write("%s\t%s\n" %(key, "\t".join(titles)))
     outf.close()
 
