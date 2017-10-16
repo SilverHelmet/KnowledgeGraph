@@ -75,13 +75,16 @@ class TopPopEntityLinker:
             top_entity.pop /= (total_score)
         return [top_entity]
 
-def load_summary_and_infobox(summary_path, infobox_path):
+def load_summary_and_infobox(summary_path, infobox_path, lowercase):
     Print("load summary from [%s]" %summary_path)
     summary_map = {}
     for line in tqdm(file(summary_path, 'r'), total = nb_lines_of(summary_path)):
         p = line.split('\t')
         key = p[0]
-        summary_map[key] = json.loads(p[1])['summary'].encode('utf-8')
+        summary = json.loads(p[1])['summary'].encode('utf-8')
+        if lowercase:
+            summary = summary.lower()
+        summary_map[key] = summary
 
     Print('add infobox value to summary, path is [%s]' %infobox_path)
     for line in tqdm(file(infobox_path), total = nb_lines_of(infobox_path)):
@@ -93,9 +96,11 @@ def load_summary_and_infobox(summary_path, infobox_path):
             for value in value_list:
                 info_values.append(value)
         if len(info_values) == 0:
-            continue
+            continu
         text = u"。" + u"#".join(info_values)
         text = text.encode('utf-8')
+        if lowercase:
+            text = text.lower()
         if not key in summary_map:
             summary_map[key] = text
         else:
@@ -112,18 +117,22 @@ def summary_related_score(summary, page_info):
     return score
 
 class TopRelatedEntityLinker:
-    def __init__(self, static_info_path):
+    def __init__(self, static_info_path, lowercase = False):
         self.bk_info_map = load_bk_static_info(filepath = static_info_path)
-        self.name2bk = load_name2baike(filepath = os.path.join(rel_ext_dir, 'baike_names.tsv'))
+        self.name2bk = load_name2baike(filepath = os.path.join(rel_ext_dir, 'baike_names.tsv'), lowercase = lowercase)
         self.summary_map = load_summary_and_infobox(summary_path = os.path.join(rel_ext_dir, 'baike_summary.json'),
-                                                infobox_path = os.path.join(result_dir, '360/360_entity_info_processed.json'))
+                                                infobox_path = os.path.join(result_dir, '360/360_entity_info_processed.json'), lowercase = lowercase)
+
+        self.lowercase = lowercase
 
     def link(self, ltp_result, str_entity, page_info):
         name = ltp_result.text(str_entity.st, str_entity.ed)
 
+        if self.lowercase:
+            name = name.lower()
+
         baike_urls = self.name2bk.get(name, [])
 
-        print name, len(baike_urls)
 
         baike_entities = []
 

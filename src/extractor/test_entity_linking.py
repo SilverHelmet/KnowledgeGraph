@@ -51,7 +51,7 @@ if __name__ == "__main__":
     datas_map = read_data(os.path.join(data_dir, '实体标注'), ignore_miss = True)
 
     ner = NamedEntityReg()    
-    entity_linker = TopRelatedEntityLinker(os.path.join(rel_ext_dir, 'baike_static_info.tsv'))
+    entity_linker = TopRelatedEntityLinker(os.path.join(rel_ext_dir, 'baike_static_info.tsv'), lowercase = True)
 
     base_dir = os.path.join(data_dir, '实体标注')
     stf_results_map = load_stanford_result(os.path.join(base_dir, 'sentences.txt'), os.path.join(base_dir, 'sentences_stanf_nlp.json'))
@@ -74,9 +74,10 @@ if __name__ == "__main__":
             entities = data.entities
             bk_urls = data.bk_urls
             sentence = data.sentence.encode('utf-8')
+            # if sentence != "2007年，在北京奥运会倒计时一周年时，刘德华推出了自己为北京残奥会写作的歌曲《EveryoneIsNO.1》，并自费港币150万，赴北京取景拍摄了整整三天的经典MTV。":
+                # continue
             link_map, ner_names = testor.test(sentence, PageInfo(ename), stf_results_map[sentence])
-            if sentence != "2007年，在北京奥运会倒计时一周年时，刘德华推出了自己为北京残奥会写作的歌曲《EveryoneIsNO.1》，并自费港币150万，赴北京取景拍摄了整整三天的经典MTV。":
-                continue
+            
             print sentence
             for entity, url in zip(data.entities, data.bk_urls):
                 estimation['total'] += 1

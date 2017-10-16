@@ -64,7 +64,7 @@ def load_bk_static_info(filepath):
     return info_map
 
 
-def load_name2baike(filepath = None):
+def load_name2baike(filepath = None, lowercase = False):
     if filepath is None:
         filepath = os.path.join(rel_ext_dir, 'baike_names.tsv')
         total = nb_lines_of(filepath)
@@ -78,6 +78,7 @@ def load_name2baike(filepath = None):
         bk_url = p[0]
         names = p[1:]
         for name in names:
+            name = name.lower()
             if not name in name2bk:
                 name2bk[name] = []
             name2bk[name].append(bk_url)
