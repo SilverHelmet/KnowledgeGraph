@@ -97,7 +97,7 @@ if __name__ == "__main__":
                 else:
                     estimation['ner miss'] += 1 
                     print '\t%s\t%s\t%s' %(entity, url, 'ner miss')
-    print estimation
+    Print(str(estimation))
 
 
             
