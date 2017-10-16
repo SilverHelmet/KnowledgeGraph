@@ -53,7 +53,9 @@ baike.so.com/doc/7014276-7237163.html \
 baike.so.com/doc/7014582-7237469.html \
 baike.so.com/doc/9883253-10230368.html \
 baike.so.com/doc/2582857-2727470.html \
-baike.so.com/doc/8736542-9059519.html
+baike.so.com/doc/8736542-9059519.html \
+baike.so.com/doc/125863-132966.html \
+baike.so.com/doc/3688690-3876616.html
 "
 paths="\
 result/rel_extraction/baike_static_info.tsv \
