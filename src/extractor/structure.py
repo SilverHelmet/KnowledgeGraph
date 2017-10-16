@@ -10,9 +10,10 @@ class PageInfo:
 #         self.types = types
 
 class StrEntity:
-    def __init__(self, st, ed):
+    def __init__(self, st, ed, etype):
         self.st = st
         self.ed = ed
+        self.etype = etype
 
 class BaikeEntity:
     def __init__(self, str_entity, baike_url, pop, types):

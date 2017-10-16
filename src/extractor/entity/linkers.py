@@ -3,6 +3,7 @@ from ...rel_extraction.util import load_name2baike, load_bk_static_info
 from ...IOUtil import rel_ext_dir, doc_dir, Print, nb_lines_of, result_dir
 from ..structure import BaikeEntity, FBRelation, LinkedTriple
 from ..util import load_predicate_map
+from ...rel_extraction.extract_baike_names import person_extra_names
 import os
 import json
 from ...schema.schema import Schema
@@ -79,7 +80,7 @@ def filter_bad_summary(summary):
     sentences = summary.split(u'。')
     new_s = []
     for sentence in sentences:
-        if len(sentence) > 100 or sentence.split("：") >= 4:
+        if sentence.split("：") >= 4:
             break
         new_s.append(sentence)
     return u'。'.join(new_s)
@@ -129,24 +130,26 @@ def summary_related_score(summary, page_info):
         score += 50
     return score
 
+def gen_lowercase_name(name2bk):
+    lower_name2bk = {}
+    for name in name2bk:
+        if name.lower() != name:
+            lower_name2bk[name.lower()] = name2bk[name]
+    return lower_name2bk
+
 class TopRelatedEntityLinker:
     def __init__(self, static_info_path, lowercase = False):
         self.bk_info_map = load_bk_static_info(filepath = static_info_path)
         self.name2bk = load_name2baike(filepath = os.path.join(rel_ext_dir, 'baike_names.tsv'))
         if lowercase:
-            self.lower_name2bk = self.gen_lowercase_name(self.name2bk)
+            self.lower_name2bk = gen_lowercase_name(self.name2bk)
         self.summary_map = load_summary_and_infobox(summary_path = os.path.join(rel_ext_dir, 'baike_summary.json'),
                                                 infobox_path = os.path.join(result_dir, '360/360_entity_info_processed.json'),
                                                 lowercase = False)
 
         self.lowercase = lowercase
 
-    def gen_lowercase_name(self, name2bk):
-        lower_name2bk = {}
-        for name in name2bk:
-            if name.lower() != name:
-                lower_name2bk[name.lower()] = name2bk[name]
-        return lower_name2bk
+    
 
     def link(self, ltp_result, str_entity, page_info):
         name = ltp_result.text(str_entity.st, str_entity.ed)
@@ -155,10 +158,6 @@ class TopRelatedEntityLinker:
         if len(baike_urls) == 0 and self.lowercase:
             baike_urls = self.lower_name2bk.get(name.lower(), [])
 
-    
-
-
-
         baike_entities = []
 
         for bk_url in baike_urls:
@@ -166,7 +165,6 @@ class TopRelatedEntityLinker:
             pop = bk_info.pop
             summary = self.summary_map.get(bk_url, "")
             summary_score = summary_related_score(summary, page_info)
-            print name, bk_url, pop, summary_score
             baike_entities.append(BaikeEntity(str_entity, bk_url, bk_info.pop + summary_score, bk_info.types))
 
         if len(baike_entities) == 0:
@@ -185,23 +183,93 @@ class TopRelatedEntityLinker:
 class PageMemory:
     def __init__(self):
         self.link_map = {}
+
+    # def find_link(self, text):
+    #     return self.link_map.get(text, None)
+
+    def add(self, ltp_result, str_entity, baike_entity):
+        text = ltp_result.text(str_entity.st, str_entity.ed)
+        self.link_map[text] = baike_entity
+        if str_entity.etype == 'Nh' or str_entity.etype == 'Nf':
+            self.add_person(text, baike_entity)
+        if str_entity.etype == 'Ni':
+            self.add_organzition(ltp_result, str_entity, baike_entity)
+
+    def add_person(self, text, baike_entity):
+        person_names = person_extra_names(text)
+        for name in person_names:
+            self.link_map[name] = baike_entity
+
+    def add_organzition(self, ltp_result, str_entity, baike_entity): 
+        st = str_entity.st
+        for ed in range(st + 1, str_entity.ed):
+            text = ltp_result.text(st, ed)
+            self.link_map[text] = baike_entity
       
 class PageMemoryEntityLinker:
     def __init__(self, static_info_path, lowercase = False):
         self.bk_info_map = load_bk_static_info(filepath = static_info_path)
         self.name2bk = load_name2baike(filepath = os.path.join(rel_ext_dir, 'baike_names.tsv'))
         if lowercase:
-            self.lower_name2bk = self.gen_lowercase_name(self.name2bk)
+            self.lower_name2bk = gen_lowercase_name(self.name2bk)
         self.summary_map = load_summary_and_infobox(summary_path = os.path.join(rel_ext_dir, 'baike_summary.json'),
                                                 infobox_path = os.path.join(result_dir, '360/360_entity_info_processed.json'),
                                                 lowercase = False)
 
         self.lowercase = lowercase
+        self.memory = None
 
-        self.context = None
+    def link(self, ltp_result, str_entity, page_info):
+        name = ltp_result.text(str_entity.st, str_entity.ed)
 
-    def link(self, page):
-        pass
+        # baike_entity =  self.memory.find_link(name)
+        if name in self.memory.link_map:
+            baike_entity = self.memory.link_map[name]
+            if baike_entity is None:
+                return []
+            else:
+                new_bk_entity = BaikeEntity(str_entity, baike_entity.baike_url, baike_entity.pop, baike_entity.types) 
+                return [new_bk_entity]
+
+        baike_urls = self.name2bk.get(name, [])
+        if len(baike_urls) == 0 and self.lowercase:
+            baike_urls = self.lower_name2bk.get(name.lower(), [])
+
+        baike_entities = []
+
+        for bk_url in baike_urls:
+            bk_info = self.bk_info_map[bk_url]
+            pop = bk_info.pop
+            summary = self.summary_map.get(bk_url, "")
+            summary_score = summary_related_score(summary, page_info)
+            baike_entities.append(BaikeEntity(str_entity, bk_url, bk_info.pop + summary_score, bk_info.types))
+
+        if len(baike_entities) == 0:
+            return []
+
+        baike_entities.sort(key = lambda x: x.pop, reverse = True)
+        total_score = 0.000
+        for e in baike_entities:
+            total_score += e.pop
+
+        top_entity = baike_entities[0]
+        if total_score > 0:
+            top_entity.pop /= (total_score)
+        return [top_entity]
+
+    
+    def start_new_page(self):
+        self.memory = PageMemory()
+
+
+    def add_sentence(self, ltp_result, str_entities, baike_entities):
+        for i in range(len(str_entities)):
+            str_entity = str_entities[i]
+            baike_entity = baike_entities[i]
+            self.memory.add(ltp_result, str_entity, baike_entity)
+
+            
+
 
         
 
