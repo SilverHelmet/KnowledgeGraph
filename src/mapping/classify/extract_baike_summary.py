@@ -16,7 +16,7 @@ def parse(filepath, entities, outf):
             try:
                 content = json.loads(base64.b64decode(parts[1]))
             except Exception, e:
-                print "error", r
+                print "error", e
                 print parts[1]
                 continue
             
