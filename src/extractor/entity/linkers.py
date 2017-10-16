@@ -123,6 +123,8 @@ class TopRelatedEntityLinker:
 
         baike_urls = self.name2bk.get(name, [])
 
+        print name, len(baike_urls)
+
         baike_entities = []
 
         for bk_url in baike_urls:

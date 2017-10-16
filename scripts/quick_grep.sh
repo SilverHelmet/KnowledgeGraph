@@ -40,6 +40,7 @@ baike.so.com/doc/7324655-7554297.html \
 baike.so.com/doc/4280208-4483441.html \
 baike.so.com/doc/6120709-6333858.html \
 baike.so.com/doc/5978224-6191185.html \
+baike.so.com/doc/7129291-7352593.html
 "
 paths="\
 result/rel_extraction/baike_static_info.tsv \
