@@ -12,8 +12,7 @@ stf_ltp_en_dist = {"PERSON":"Nh" , "LOCATION":"Ns" , "ORGANIZATION":"Ni" ,"MISC"
 
 
 class NamedEntityReg:
-
-
+	re_eng = re.compile(r"^[a-zA-Z.]+$")
 	def recognize(self,sentence,ltp_result,page_info,stanford_result=None):
 		self.__optimize_entitys(ltp_result)
 		if stanford_result:
@@ -193,7 +192,7 @@ class NamedEntityReg:
 		while index < len(ltp_result.tags):
 			if ltp_result.tags[index] == "ws":
 				first = index
-				while index < len(ltp_result.tags) and ltp_result.tags[index] == "ws":
+				while index < len(ltp_result.tags) and (ltp_result.tags[index] == "ws" or self.re_eng.match(ltp_result.words[index])):
 					ltp_result.ner_tags[index] = "I-Nf"
 					index += 1
 
@@ -204,7 +203,7 @@ class NamedEntityReg:
 
 				if index < len(ltp_result.tags) and  (ltp_result.words[index] in ["'", '.', ':']):
 					ltp_result.tags[index] = "ws"
-					while index < len(ltp_result.tags) and ltp_result.tags[index] == "ws":
+					while index < len(ltp_result.tags) and (ltp_result.tags[index] == "ws" or self.re_eng.match(ltp_result.words[index])):
 						ltp_result.ner_tags[index] = "I-Nf"
 						index += 1
 
