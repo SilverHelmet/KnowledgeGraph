@@ -76,7 +76,7 @@ if __name__ == "__main__":
     for ename in datas_map:
         datas = datas_map[ename]
         entity_linker.start_new_page()
-        if ename != "乔治·马丁":
+        if ename != "梅西":
             continue
         for data in datas:
             entities = data.entities
