@@ -226,7 +226,7 @@ class PageMemoryEntityLinker:
         if name in self.memory.link_map:
             baike_entity = self.memory.link_map[name]
             if baike_entity is None:
-                return []
+                pass
             else:
                 new_bk_entity = BaikeEntity(str_entity, baike_entity.baike_url, baike_entity.pop, baike_entity.types) 
                 return [new_bk_entity]
