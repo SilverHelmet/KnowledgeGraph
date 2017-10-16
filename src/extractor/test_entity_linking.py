@@ -3,7 +3,7 @@ from entity.linkers import TopRelatedEntityLinker
 from .test_ner import read_data
 from entity.linkers import SeparatedLinker, MatchRelLinker, TopRelatedEntityLinker
 from .entity.ner import NamedEntityReg
-from ..IOUtil import data_dir, rel_ext_dir
+from ..IOUtil import data_dir, rel_ext_dir, Print
 from .structure import *
 from .ltp import LTP
 from test_extractor import load_stanford_result, load_same_linkings
