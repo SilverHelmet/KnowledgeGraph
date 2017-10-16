@@ -96,7 +96,7 @@ def load_summary_and_infobox(summary_path, infobox_path, lowercase):
             for value in value_list:
                 info_values.append(value)
         if len(info_values) == 0:
-            continu
+            continue
         text = u"。" + u"#".join(info_values)
         text = text.encode('utf-8')
         if lowercase:
