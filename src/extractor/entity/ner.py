@@ -202,7 +202,7 @@ class NamedEntityReg:
 					ltp_result.ner_tags[index] = "I-Nf"
 					index += 1
 
-				if index < len(ltp_result.tags) and  (ltp_result.words[index] == "." or ltp_result.words[index] == "'"):
+				if index < len(ltp_result.tags) and  (ltp_result.words[index] in ["'", '.', ':']):
 					ltp_result.tags[index] = "ws"
 					while index < len(ltp_result.tags) and ltp_result.tags[index] == "ws":
 						ltp_result.ner_tags[index] = "I-Nf"
