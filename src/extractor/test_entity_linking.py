@@ -74,8 +74,8 @@ if __name__ == "__main__":
             entities = data.entities
             bk_urls = data.bk_urls
             sentence = data.sentence.encode('utf-8')
-            if sentence != "2007年，在北京奥运会倒计时一周年时，刘德华推出了自己为北京残奥会写作的歌曲《EveryoneIsNO.1》，并自费港币150万，赴北京取景拍摄了整整三天的经典MTV。":
-                continue
+            # if sentence != "2007年，在北京奥运会倒计时一周年时，刘德华推出了自己为北京残奥会写作的歌曲《EveryoneIsNO.1》，并自费港币150万，赴北京取景拍摄了整整三天的经典MTV。":
+                # continue
             link_map, ner_names = testor.test(sentence, PageInfo(ename), stf_results_map[sentence])
             
             print sentence
