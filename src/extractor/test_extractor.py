@@ -60,11 +60,13 @@ class Data:
 
         self.half_add = not self.half_add
     
-    def clear_miss_data(self):
+    def clear_miss_data(self, ignore_subj_miss, ignore_verb_miss):
         knowledges = []
         for kl in self.knowledges:
             flag = True
-            if kl.subj.find("*") != -1 or kl.prop.find('*') != -1 or kl.obj.find('*') != -1:
+            if ignore_subj_miss and (kl.subj.find("*") != -1 or kl.obj.find('*') != -1):
+                flag = False
+            if ignore_verb_miss and kl.prop.find('*') != -1:
                 flag = False
             if kl.obj.find('/') != -1:
                 flag = False
@@ -104,7 +106,7 @@ def load_labeled_data(filepath):
             assert sentence is None and data is None
             continue
         if sentence is None:
-            sentence = row[0]
+            sentence = row[0].strip()
             data = Data(sentence)
             datas.append(data)
         else:
@@ -112,18 +114,18 @@ def load_labeled_data(filepath):
             data.add(subj, prop, obj)
     return datas
 
-def process_labeled_data(ignore_miss):
+def process_labeled_data(ignore_subj_miss, ignore_verb_miss):
     datas_map = {}
     nb_data = 0
     nb_kl = 0
     for filepath in glob.glob(data_dir + '/标注数据/*xlsx'):
-        print 'load %s' %filepath
+        # print 'load %s' %filepath
 
         datas = load_labeled_data(filepath)
-        if ignore_miss:      
+        if ignore_subj_miss or ignore_verb_miss:      
             new_datas = []
             for data in datas:
-                data.clear_miss_data()
+                data.clear_miss_data(ignore_subj_miss, ignore_verb_miss)
                 if len(data.knowledges) > 0:
                     new_datas.append(data)
             datas = new_datas
@@ -228,7 +230,7 @@ def test_ltp_extractor(datas_map, ner, rel_extractor, linker):
     
 
 if __name__ == "__main__":
-    datas_map, nb_data, nb_kl = process_labeled_data(ignore_miss = True)
+    datas_map, nb_data, nb_kl = process_labeled_data(ignore_subj_miss = True, ignore_verb_miss = True)
     print "#data = %d, #labeled kl = %d" %(nb_data, nb_kl)
 
     ner = NamedEntityReg()    

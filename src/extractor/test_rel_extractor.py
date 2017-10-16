@@ -16,6 +16,8 @@ class Estimation():
         self.partial_right = 0
         self.error_seg = 0
         self.error = 0
+        self.noverb_right = 0
+        self.noverb_error = 0
 
     def print_info(self):
         print "total:", self.total
@@ -24,6 +26,9 @@ class Estimation():
         print "partial right:", self.partial_right
         print 'error segment:', self.error_seg
         print "error", self.error
+        print ""
+        print "noverb right", self.noverb_right
+        print "noverb error", self.noverb_error
 
 
 class RelExtractorTestor():
@@ -48,7 +53,9 @@ class RelExtractorTestor():
 
         entity_pool = [False] * ltp_result.length
         if self.use_advanced_ner:
-            entities = self.ner.recognize(sentence, ltp_result, None, self.stf_results_map[sentence])
+            stf_result = self.stf_results_map[sentence]
+            
+            entities = self.ner.recognize(sentence, ltp_result, None, stf_result)
             entities = [(st, ed)for st, ed, _ in entities]
             ltp_result.update_parsing_tree(self.ltp)
         else:
@@ -114,13 +121,23 @@ class RelExtractorTestor():
                 self.estimation.partial_right += 1
                 ret[kl_str] = (rels_str, 'partial right')
                 continue
+
+            if prop == '*':
+                if len(rels) > 0:
+                    self.estimation.noverb_right += 1
+                    ret[kl_str] = (rels_str, 'noverb right')
+                else:
+                    self.estimation.noverb_error += 1
+                    ret[kl_str] = (rels_str, 'noverb error')
+                continue
+                
         
             self.estimation.error += 1
             ret[kl_str] = (rels_str, 'error')
         return ret, ltp_result
 
 def test(extractor, ltp):
-    datas_map, nb_data, nb_kl = process_labeled_data(ignore_miss = True)
+    datas_map, nb_data, nb_kl = process_labeled_data(ignore_subj_miss = True, ignore_verb_miss = False)
 
     print "#sentence: %d, #labeled: %d" %(nb_data, nb_kl)
 
@@ -129,9 +146,10 @@ def test(extractor, ltp):
         datas = datas_map[url]
         for data in datas:
             ret, ltp_result = testor.add(data)
+            
             for labeled in ret:
                 out = ret[labeled]
-                if out[1] == 'error':
+                if out[1] == 'noverb error':
                     print data.sentence
                     print '\t%s' %out[0]
                     print '\t%s' %labeled
