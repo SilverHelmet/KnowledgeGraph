@@ -133,8 +133,6 @@ class TopRelatedEntityLinker:
         for name in name2bk:
             if name.lower() != name:
                 lower_name2bk[name.lower()] = name2bk[name]
-            else:
-                print "same", name, name.lower()
         return lower_name2bk
 
     def link(self, ltp_result, str_entity, page_info):
