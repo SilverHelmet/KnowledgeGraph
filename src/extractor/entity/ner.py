@@ -51,22 +51,26 @@ class NamedEntityReg:
 			en = ltp_result.ner_tags[index]
 			b = True
 			if entitys[index] != "O":
+				
 				if entitys[index].split("-")[0] == "B":
 					first = index
 				elif entitys[index].split("-")[0] == "E" and first != -1:
-					last = index + 1
-					word = ltp_result.text(first,last)
-					pos = ltp_result.tags[first]
-					
-					en = "S-" + entitys[first].split("-")[1]
-					while first < last - 1:
-						if pos != ltp_result.tags[last - 1]:
-							b = False
-						new_words.pop()
-						new_postag.pop()
-						new_entitys.pop()
-						last -= 1
-					first = -1
+					# add by lihaoran, don't combine Ns and Ni
+					e_type = entitys[index].split('-')[1]
+					if e_type != 'Ns' and e_type != 'Ni':		
+						last = index + 1
+						word = ltp_result.text(first,last)
+						pos = ltp_result.tags[first]
+						
+						en = "S-" + entitys[first].split("-")[1]
+						while first < last - 1:
+							if pos != ltp_result.tags[last - 1]:
+								b = False
+							new_words.pop()
+							new_postag.pop()
+							new_entitys.pop()
+							last -= 1
+						first = -1
 
 			new_words.append(word)
 			if b:
