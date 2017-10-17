@@ -91,8 +91,9 @@ if __name__ == "__main__":
             entities = data.entities
             bk_urls = data.bk_urls
             sentence = data.sentence.encode('utf-8')
-            if sentence != "从《东风破》里的“一盏离愁孤灯伫立在窗口“到《发如雪》中的“你发如雪凄美了离别“再到《千里之外》里的黯然神伤“我送你离开，千里之外，你无声黑白“，离恨是歌者永恒的主题。":
+            if sentence != "1982年以全优成绩毕业于TVB艺训班签约出道，同年凭《猎鹰》走红，1983年主演《神雕侠侣》在香港创62点收视纪录，后因拒签五年长约被TVB雪藏。":
                 continue
+            print domains
             link_map, ner_names = testor.test(sentence, page_info, stf_results_map[sentence])
 
 
