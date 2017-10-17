@@ -7,7 +7,7 @@ from ..IOUtil import data_dir, rel_ext_dir, Print
 from .structure import *
 from .ltp import LTP
 from .util import load_stanford_result
-from .test_extractor import load_same_linking
+from .test_extractor import load_same_linkings
 import os
 
 
