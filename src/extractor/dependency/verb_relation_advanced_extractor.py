@@ -207,7 +207,58 @@ class VerbRelationExtractor:
             if entity_pool[res[0]] == 1:
                 self.debuger.debug('found verb', ltp_result.words[res[0]] ,'is an entity! error!')
         return advanced_res
-    
+
+    def find_all_COO_title(self, node):
+        res = []
+        path = self.find_path_to_root(node)
+        for p in path:
+            if p.rel == 'COO' and p.father.postag == 'n':
+                res.append(p.father)
+        for child in node.children:
+            res += self.trace_down_title_rule2(child)
+        return res
+
+    def find_COO_or_ATT_title(self, node):
+        res = []
+        for child in node.children:
+            if child.rel == 'ATT' and child.postag == 'n':
+                res += self.trace_down_title_rule1(child)
+        return res
+
+    def trace_down_title_rule2(self, node):
+        res = []
+        if node.rel == 'COO' and node.postag == 'n':
+            res.append(node)
+        for child in node.children:
+            self.trace_down_title_rule2(child)
+        return res
+
+    def trace_down_title_rule1(self, node):
+        res = []
+        if node.rel in ['ATT', 'COO'] and node.postag == 'n':
+            res.append(node)
+        for child in node.children:
+            self.trace_down_title_rule1(child)
+        return res
+
+    def find_title(self, ltp_result, e1, e2, entity_pool):
+        tree = ParseTree(ltp_result)
+        father1, near_verb1, verb1 = self.find_2_verbs(tree, e1)
+        father2, near_verb2, verb2 = self.find_2_verbs(tree, e2)
+        res1 = self.find_all_COO_title(father1)
+        res2 = self.find_all_COO_title(father2)
+        res3 = self.find_COO_or_ATT_title(father1)
+        res4 = self.find_COO_or_ATT_title(father2)
+        res = res1 + res2 + res3 + res4
+        tmp_res = []
+        final_res = []
+        for i in res:
+            tmp_res.append(i.idx)
+        tmp_res = set(tmp_res)
+        for j in tmp_res:
+            final_res.append((tree.nodes[j].idx, tree.nodes[j + 1].idx + 1))
+        return final_res
+
 if __name__ == "__main__":
     ltp = LTP(None)
     sentence = '1993年，主演刘镇伟执导的浪漫剧情片《天长地久》，刘德华与刘锦玲和吴家丽合作诠释了一段悲剧爱情故事。'
@@ -217,13 +268,16 @@ if __name__ == "__main__":
     e1 = '刘镇伟'
     e2 = '天长地久'
     st, ed = ltp_result.search_word(e1)
-    e1 = StrEntity(st, ed)
+    e1 = StrEntity(st, ed, None)
     st, ed = ltp_result.search_word(e2)
-    e2 = StrEntity(st, ed)
+    e2 = StrEntity(st, ed, None)
     entity_pool = []
     for i in range(ltp_result.length):
         entity_pool.append(0)
     res = VerbRelationExtractor(True)
     tmp1 = res.find_relation(ltp_result, e1, e2, entity_pool)
     for ans in tmp1:
+        print ltp_result.words[ans[0]]
+    tmp2 = res.find_title(ltp_result, e1, e2, entity_pool)
+    for ans in tmp2:
         print ltp_result.words[ans[0]]
