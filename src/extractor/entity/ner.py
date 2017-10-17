@@ -37,16 +37,20 @@ class NamedEntityPostProcessor:
 	def get_ATT_common_father(self, is_leaf, arcs, st, ed):
 		father = arcs[st].head
 		if father < ed:
-			return None
+			return []
 		for i in range(st, father):
 			if not is_leaf[i]:
 				continue
 			if arcs[i].head != father:
-				return None
+				return []
 			if arcs[i].relation != "ATT":
-				return None
+				return []
 		
-		return father
+		if arcs[father].relation == "ATT":
+			ff = arcs[father].head
+			if ff == father + 1:
+				return [ff, father]
+		return [father]
 
 	def ATT_extension(self, ltp_result, str_entities):
 		new_str_entities = []
@@ -60,11 +64,14 @@ class NamedEntityPostProcessor:
 			if entity_pool[st]:
 				continue
 
-			father = self.get_ATT_common_father(is_leaf, ltp_result.arcs, st, ed)
-			
-			if father is not None and ltp_result.text(st, father + 1) in self.dict:
-				ed = father + 1
-				etype = "Ni"
+			ancestors = self.get_ATT_common_father(is_leaf, ltp_result.arcs, st, ed)
+			for ancestor in ancestors:
+				text = ltp_result.text(st, ancestor + 1)
+				if text in self.dict:
+					ed = ancestor + 1
+					etype = 'Ni'
+					# print text, st, ed
+					break
 			for i in range(st, ed):
 				entity_pool[i] = True
 			new_str_entities.append((st, ed, etype))
