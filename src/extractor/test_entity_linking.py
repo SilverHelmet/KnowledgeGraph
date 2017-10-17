@@ -91,9 +91,9 @@ if __name__ == "__main__":
             entities = data.entities
             bk_urls = data.bk_urls
             sentence = data.sentence.encode('utf-8')
-            if sentence != "其著名小说包括《冰龙》、《热夜之梦》、《沙王》、《光逝》、《风港》、《猎人行》、《战士》、《图夫航行记》等。":
-                continue
-            print domains
+            # if sentence != "其著名小说包括《冰龙》、《热夜之梦》、《沙王》、《光逝》、《风港》、《猎人行》、《战士》、《图夫航行记》等。":
+                # continue
+
             link_map, ner_names = testor.test(sentence, page_info, stf_results_map[sentence])
 
 
