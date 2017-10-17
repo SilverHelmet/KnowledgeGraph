@@ -297,7 +297,6 @@ class PageMemoryEntityLinker:
             summary = self.summary_map.get(bk_url, "")
             summary_score = summary_related_score(summary, page_info)
             type_score = type_related_score(bk_info.types, page_info)
-            print bk_url, pop, summary_score, type_score
             baike_entities.append(BaikeEntity(str_entity, bk_url, bk_info.pop + summary_score + type_score, bk_info.types))
 
 
