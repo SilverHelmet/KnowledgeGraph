@@ -91,8 +91,8 @@ if __name__ == "__main__":
             entities = data.entities
             bk_urls = data.bk_urls
             sentence = data.sentence.encode('utf-8')
-            # if sentence != "其著名小说包括《冰龙》、《热夜之梦》、《沙王》、《光逝》、《风港》、《猎人行》、《战士》、《图夫航行记》等。":
-                # continue
+            if sentence != "世嘉（SEGA）开发为其16位元平台的Mega CD后，任天堂最初与索尼商量，设计为SNES游戏机的CD-ROM光驱，但他们同时亦为索尼获得一切CD-ROM的利益，以及他们为失败的世嘉 Mega CD担心；故此，任天堂终止与索尼的合作，转投与飞利浦合作。":
+                continue
 
             link_map, ner_names = testor.test(sentence, page_info, stf_results_map[sentence])
 
