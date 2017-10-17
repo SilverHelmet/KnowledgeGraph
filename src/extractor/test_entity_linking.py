@@ -74,6 +74,8 @@ if __name__ == "__main__":
     for ename in datas_map:
         datas = datas_map[ename]
         entity_linker.start_new_page()
+        # if ename != "梅西":
+        #     continue
         for data in datas:
             entities = data.entities
             bk_urls = data.bk_urls
@@ -92,7 +94,7 @@ if __name__ == "__main__":
                         linked_url = same_link_map[linked_url]
                     if linked_url == url :
                         estimation['right'] += 1
-                        print '\t%s\t%s\t%s' %(entity, url, 'right')
+                        print '\t%s\t%s\t%s\t%s' %(entity, url, link_map[entity], 'right')
                     else:
                         estimation['error'] += 1
                         print '\t%s\t%s\t%s\t%s' %(entity, url, linked_url, 'error')

@@ -183,6 +183,7 @@ class TopRelatedEntityLinker:
 class PageMemory:
     def __init__(self):
         self.link_map = {}
+        self.candidate_link_map = {}
 
     # def find_link(self, text):
     #     return self.link_map.get(text, None)
@@ -192,8 +193,8 @@ class PageMemory:
         self.link_map[text] = baike_entity
         if str_entity.etype == 'Nh' or str_entity.etype == 'Nf':
             self.add_person(text, baike_entity)
-        # if str_entity.etype == 'Ni':
-        #     self.add_organzition(ltp_result, str_entity, baike_entity)
+        if str_entity.etype == 'Ni':
+            self.add_organzition(ltp_result, str_entity, baike_entity)
 
     def add_person(self, text, baike_entity):
         person_names = person_extra_names(text)
@@ -201,13 +202,14 @@ class PageMemory:
             self.link_map[name] = baike_entity
 
     def add_organzition(self, ltp_result, str_entity, baike_entity): 
+        if baike_entity is None:
+            return
         st = str_entity.st
         for ed in range(st + 1, str_entity.ed):
             text = ltp_result.text(st, ed)
-            self.link_map[text] = baike_entity
+            self.candidate_link_map[text] = baike_entity.baike_url
 
 def top_cnt_keys(keys_cnt):
-    
     if len(keys_cnt) == 0:
         return []
     max_cnt = reduce(max, keys_cnt.values())
@@ -235,8 +237,10 @@ class PageMemoryEntityLinker:
 
     def get_candidate_urls(self, names):
         baike_urls_cnt = {}
-        for name in names:
+        for name in names: 
             baike_urls = self.name2bk.get(name, [])
+            if name in self.memory.candidate_link_map:
+                baike_urls.append(self.memory.candidate_link_map[name])
             for url in baike_urls:
                 if url not in baike_urls_cnt:
                     baike_urls_cnt[url] = 0
@@ -277,7 +281,8 @@ class PageMemoryEntityLinker:
         #     baike_urls = self.lower_name2bk.get(name.lower(), [])
 
         baike_urls = self.get_candidate_urls(names)
-
+        if name == "巴塞罗那":
+            print baike_urls
         baike_entities = []
 
         for bk_url in baike_urls:
