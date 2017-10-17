@@ -65,9 +65,6 @@ class NamedEntityPostProcessor:
 			if father is not None and ltp_result.text(st, father + 1) in self.dict:
 				ed = father + 1
 				etype = "Ni"
-				print ltp_result.sentence
-				print st, ed
-				print ltp_result.text(st, ed)
 			for i in range(st, ed):
 				entity_pool[i] = True
 			new_str_entities.append((st, ed, etype))
@@ -77,7 +74,7 @@ class NamedEntityPostProcessor:
 	def process(self, ltp_result, str_entities):
 		str_entities = self.merge_neighbor(ltp_result, str_entities)
 		str_entities = self.ATT_extension(ltp_result, str_entities)
-				
+
 		return str_entities
 
 
