@@ -233,7 +233,7 @@ def top_cnt_keys(keys_cnt):
     max_cnt = reduce(max, keys_cnt.values())
     top_keys = []
     for key in keys_cnt:
-        if keys_cnt[key] == max_cnt:
+        if keys_cnt[key] >= max_cnt - 0.5:
             top_keys.append(key)
     return top_keys
 
