@@ -81,15 +81,15 @@ if __name__ == "__main__":
         url = url_map[ename]
         names = url2names[url]
         types = entity_linker.bk_info_map[url].types
-        paeg_info = PageInfo(names, url, types)
+        page_info = PageInfo(names, url, types)
         # if ename != "梅西":
         #     continue
         for data in datas:
             entities = data.entities
             bk_urls = data.bk_urls
             sentence = data.sentence.encode('utf-8')
-            # if sentence != "莱昂内尔·安德列斯·梅西（西班牙语：Lionel Andrés Messi），1987年6月24日生于阿根廷圣菲省罗萨里奥，绰号“新马拉多纳”，阿根廷著名足球运动员，司职前锋、边锋和前腰，现效力于西班牙足球甲级联赛巴塞罗那足球俱乐部。":
-            #     continue
+            if sentence != "从《东风破》里的“一盏离愁孤灯伫立在窗口“到《发如雪》中的“你发如雪凄美了离别“再到《千里之外》里的黯然神伤“我送你离开，千里之外，你无声黑白“，离恨是歌者永恒的主题。":
+                continue
             link_map, ner_names = testor.test(sentence, page_info, stf_results_map[sentence])
 
 

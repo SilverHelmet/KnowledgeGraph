@@ -219,9 +219,6 @@ def top_cnt_keys(keys_cnt):
             top_keys.append(key)
     return top_keys
 
-
-
-      
 class PageMemoryEntityLinker:
     def __init__(self, static_info_path, lowercase = False):
         self.bk_info_map = load_bk_static_info(filepath = static_info_path)
@@ -262,6 +259,7 @@ class PageMemoryEntityLinker:
     def link(self, ltp_result, str_entity, page_info):
         name = ltp_result.text(str_entity.st, str_entity.ed)
         
+        
 
         # baike_entity =  self.memory.find_link(name)
         if name in self.memory.link_map:
@@ -281,7 +279,7 @@ class PageMemoryEntityLinker:
         #     baike_urls = self.lower_name2bk.get(name.lower(), [])
 
         baike_urls = self.get_candidate_urls(names)
-        if name == "巴塞罗那":
+        if name == "东风破":
             print baike_urls
         baike_entities = []
 
