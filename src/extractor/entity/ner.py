@@ -91,10 +91,9 @@ class NamedEntityPostProcessor:
 				if left_pos != -1:
 					brackets.append((left_pos, index))
 					left_pos = -1
-			
-		if len(brackets) == 0:
-			return
 
+		if len(brackets) == 0:
+			return str_entities
 
 		word_pos2entity_pos = [-1] * ltp_result.length
 		for idx, str_entity in enumerate(str_entities):
@@ -106,7 +105,7 @@ class NamedEntityPostProcessor:
 		in_bracket = [False] * ltp_result.length
 		for left, right in brackets:
 			entity_pos_set = set()
-			for i in range(st, ed + 1):
+			for i in range(left, right + 1):
 				in_bracket[i] = True
 				if word_pos2entity_pos[i] != -1:
 					entity_pos_set.add(word_pos2entity_pos[i])
@@ -126,24 +125,29 @@ class NamedEntityPostProcessor:
 		new_words = []
 		new_postags = []
 		new_ner_tags = []
+		new_str_entities = []
+		now_e_idx = 0
+		bias = 0
 		for i in range(ltp_result.length):
 			if not in_bracket[i]:
 				new_words.append(ltp_result.words[i])
 				new_postags.append(ltp_result.tags[i])
 				new_ner_tags.append(ltp_result.ner_tags[i])
+
+				entity_pos = word_pos2entity_pos[i]
+				if entity_pos != -1 and str_entities[entity_pos].st == i:
+					entity = str_entities[entity_pos]
+					entity.st -= bias
+					entity.ed -= bias
+					new_str_entities.append(entity)
+			else:
+				bias += 1
+
 		
 		ltp_result.update(new_words, new_postags, new_ner_tags)
 		ltp_result.update_parsing_tree(ltp)
 
-
-
-
-
-			
-		
-		
-
-
+		return new_str_entities
 
 
 	def process(self, ltp_result, str_entities, ltp):
@@ -152,8 +156,6 @@ class NamedEntityPostProcessor:
 
 		str_entities = [StrEntity(st, ed, etype) for st, ed, etype in str_entities]
 		str_entities = self.process_bracket(ltp_result, str_entities, ltp)
-
-
 		return str_entities
 
 

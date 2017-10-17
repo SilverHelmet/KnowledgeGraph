@@ -187,8 +187,9 @@ if __name__ == "__main__":
             stf_result = stf_results_map[sentence]
             str_entities = ner.recognize(sentence, ltp_result, None, stf_result)
             ner_entities_name = []
-            for st, ed, etype in str_entities:
-                ner_entities_name.append(ltp_result.text(st, ed))
+            for str_entity in str_entities:
+                ner_entities_name.append(ltp_result.text(str_entity.st, str_entity.ed))
+                ner_entities_name.extend(str_entity.extra_names)
 
             est.add(ltp_result, data.entities, ner_entities_name)
     est.estimation.print_info()

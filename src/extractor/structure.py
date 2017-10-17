@@ -10,11 +10,11 @@ class PageInfo:
 #         self.types = types
 
 class StrEntity:
-    def __init__(self, st, ed, etype, extra_names = []):
+    def __init__(self, st, ed, etype):
         self.st = st
         self.ed = ed
         self.etype = etype
-        self.extra_names = extra_names
+        self.extra_names = []
 
     def add_name(self, name):
         self.extra_names.append(name)
