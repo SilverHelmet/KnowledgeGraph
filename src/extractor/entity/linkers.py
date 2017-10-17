@@ -288,6 +288,7 @@ class PageMemoryEntityLinker:
             pop = bk_info.pop
             summary = self.summary_map.get(bk_url, "")
             summary_score = summary_related_score(summary, page_info)
+            print bk_url, pop, summary_score
             baike_entities.append(BaikeEntity(str_entity, bk_url, bk_info.pop + summary_score, bk_info.types))
 
         if len(baike_entities) == 0:
@@ -315,16 +316,6 @@ class PageMemoryEntityLinker:
             self.memory.add(ltp_result, str_entity, baike_entity)
 
             
-
-
-        
-
-
-
-
-
-
-
 class MatchRelLinker:
     def __init__(self):
         self.predicate_map = load_predicate_map(extra_path = os.path.join(doc_dir, 'human_add_predicate_map.json'))
