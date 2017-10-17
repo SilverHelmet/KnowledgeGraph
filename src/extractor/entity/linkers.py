@@ -197,6 +197,8 @@ class PageMemory:
     def add_person(self, text, baike_entity):
         person_names = person_extra_names(text)
         for name in person_names:
+            if type(name) is unicode:
+                name = name.encode('utf-8')
             self.link_map[name] = baike_entity
 
     def add_organzition(self, ltp_result, str_entity, baike_entity): 
