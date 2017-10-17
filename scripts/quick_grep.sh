@@ -1,6 +1,5 @@
 urls="\
-baike.so.com/doc/6601129-6814914.html \
-baike.so.com/doc/535685-567155.html
+baike.so.com/doc/6070019-25011519.html
 "
 paths="\
 result/rel_extraction/baike_static_info.tsv \

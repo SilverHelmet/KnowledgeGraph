@@ -244,8 +244,8 @@ class PageMemoryEntityLinker:
         if len(baike_urls_cnt) != 0:
             return top_cnt_keys(baike_urls_cnt)
 
-        names = [name.lower() for name in names if name.lower() != name]
         for name, score in names:
+            name = name.lower()
             baike_urls = self.lower_name2bk.get(name, [])
             for url in baike_urls:
                 if url not in baike_urls_cnt:

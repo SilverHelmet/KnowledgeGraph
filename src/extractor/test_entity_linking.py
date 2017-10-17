@@ -82,14 +82,14 @@ if __name__ == "__main__":
         names = url2names[url]
         types = entity_linker.bk_info_map[url].types
         # page_info = PageInfo(names, url, types)
-        # if ename != "梅西":
-        #     continue
+        if ename != "冰与火之歌":
+            continue
         for data in datas:
             entities = data.entities
             bk_urls = data.bk_urls
             sentence = data.sentence.encode('utf-8')
-            if sentence != "1990年凭专辑《可不可以》走红歌坛，演唱过《忘情水》、《中国人》、《冰雨》等歌曲。":
-                continue
+            # if sentence != "在2007年9月24日由哥伦比亚广播公司(CBS)推出，2009年8月，该剧赢得了电视评论协会(TCA)最佳喜剧系列奖。":
+            #     continue
             link_map, ner_names = testor.test(sentence, PageInfo(ename), stf_results_map[sentence])
 
 
