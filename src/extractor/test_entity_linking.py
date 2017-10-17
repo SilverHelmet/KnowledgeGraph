@@ -91,7 +91,7 @@ if __name__ == "__main__":
             entities = data.entities
             bk_urls = data.bk_urls
             sentence = data.sentence.encode('utf-8')
-            if sentence != "1982年以全优成绩毕业于TVB艺训班签约出道，同年凭《猎鹰》走红，1983年主演《神雕侠侣》在香港创62点收视纪录，后因拒签五年长约被TVB雪藏。":
+            if sentence != "其著名小说包括《冰龙》、《热夜之梦》、《沙王》、《光逝》、《风港》、《猎人行》、《战士》、《图夫航行记》等。":
                 continue
             print domains
             link_map, ner_names = testor.test(sentence, page_info, stf_results_map[sentence])
