@@ -80,7 +80,7 @@ def filter_bad_summary(summary):
     sentences = summary.split(u'。')
     new_s = []
     for sentence in sentences:
-        if sentence.split("：") >= 4:
+        if len(sentence.split("：")) >= 4:
             break
         new_s.append(sentence)
     return u'。'.join(new_s)
@@ -99,7 +99,6 @@ def load_summary_and_infobox(summary_path, infobox_path, lowercase):
             summary = summary.lower()
         summary = filter_bad_summary(summary)
         summary_map[key] = summary.encode('utf-8')
-
     Print('add infobox value to summary, path is [%s]' %infobox_path)
     for line in tqdm(file(infobox_path), total = nb_lines_of(infobox_path)):
         p = line.split('\t')
@@ -119,7 +118,6 @@ def load_summary_and_infobox(summary_path, infobox_path, lowercase):
             summary_map[key] = text
         else:
             summary_map[key] = summary_map[key] + text
-
     return summary_map
 
 
@@ -234,25 +232,25 @@ class PageMemoryEntityLinker:
 
     def get_candidate_urls(self, names):
         baike_urls_cnt = {}
-        for name in names: 
+        for name, score in names: 
             baike_urls = self.name2bk.get(name, [])
             if name in self.memory.candidate_link_map:
                 baike_urls.append(self.memory.candidate_link_map[name])
             for url in baike_urls:
                 if url not in baike_urls_cnt:
                     baike_urls_cnt[url] = 0
-                baike_urls_cnt[url] += 1
+                baike_urls_cnt[url] += score
 
         if len(baike_urls_cnt) != 0:
             return top_cnt_keys(baike_urls_cnt)
 
         names = [name.lower() for name in names if name.lower() != name]
-        for name in names:
+        for name, score in names:
             baike_urls = self.lower_name2bk.get(name, [])
             for url in baike_urls:
                 if url not in baike_urls_cnt:
                     baike_urls_cnt[url] = 0
-                baike_urls_cnt[url] += 1
+                baike_urls_cnt[url] += score
         return top_cnt_keys(baike_urls_cnt)
             
 
@@ -270,8 +268,9 @@ class PageMemoryEntityLinker:
                 new_bk_entity = BaikeEntity(str_entity, baike_entity.baike_url, baike_entity.pop, baike_entity.types) 
                 return [new_bk_entity]
 
-        names = [name]
-        names.extend(str_entity.extra_names)
+        names = [(name, 2)]
+        for extra_name in str_entity.extra_names:
+            names.append((extra_name, 1))
 
 
         # baike_urls = self.name2bk.get(name, [])
@@ -279,8 +278,6 @@ class PageMemoryEntityLinker:
         #     baike_urls = self.lower_name2bk.get(name.lower(), [])
 
         baike_urls = self.get_candidate_urls(names)
-        if name == "东风破":
-            print baike_urls
         baike_entities = []
 
         for bk_url in baike_urls:
@@ -288,7 +285,6 @@ class PageMemoryEntityLinker:
             pop = bk_info.pop
             summary = self.summary_map.get(bk_url, "")
             summary_score = summary_related_score(summary, page_info)
-            print bk_url, pop, summary_score
             baike_entities.append(BaikeEntity(str_entity, bk_url, bk_info.pop + summary_score, bk_info.types))
 
         if len(baike_entities) == 0:
