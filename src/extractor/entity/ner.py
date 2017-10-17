@@ -6,6 +6,7 @@ from ... import IOUtil
 import copy
 import json
 import re
+from ..structure import StrEntity
 
 class NamedEntityPostProcessor:
 	def __init__(self, name_dict):
@@ -77,10 +78,82 @@ class NamedEntityPostProcessor:
 			new_str_entities.append((st, ed, etype))
 		return new_str_entities
 
+	def process_bracket(self, ltp_result, str_entities, ltp):
+		brackets = []
 
-	def process(self, ltp_result, str_entities):
+		left_pos = -1
+		index = 0
+		for index in range(ltp_result.length):
+			word = ltp_result.words[index]
+			if word == "(" or  word ==  "（":
+				left_pos = index
+			elif word == ')' or word == '）':
+				if left_pos != -1:
+					brackets.append((left_pos, index))
+					left_pos = -1
+			
+
+		if len(brackets) == 0:
+			return
+
+
+		word_pos2entity_pos = [-1] * ltp_result.length
+		for idx, str_entity in enumerate(str_entities):
+			st = str_entity.st
+			ed = str_entity.ed
+			for i in range(st, ed):
+				word_pos2entity_pos[i] = idx
+
+		in_bracket = [False] * ltp_result.length
+		for left, right in brackets:
+			entity_pos_set = set()
+			for i in range(st, ed + 1):
+				in_bracket[i] = True
+				if word_pos2entity_pos[i] != -1:
+					entity_pos_set.add(word_pos2entity_pos[i])
+			
+			left_entity_pos = -1
+			if left - 1 >= 0:
+				left_entity_pos = word_pos2entity_pos[left - 1]
+			if ltp_result.tags[left-1] == 'wp'and left -2 >= 0:
+				left_entity_pos = word_pos2entity_pos[left - 2]
+			
+			if left_entity_pos != -1:
+				left_entity = str_entities[left_entity_pos]
+				for e_pos in entity_pos_set:
+					bracket_entity = str_entities[e_pos]
+					left_entity.add_name(ltp_result.text(bracket_entity.st, bracket_entity.ed))
+		
+		new_words = []
+		new_postags = []
+		new_ner_tags = []
+		for i in range(ltp_result.length):
+			if not in_bracket[i]:
+				new_words.append(ltp_result.words[i])
+				new_postags.append(ltp_result.tags[i])
+				new_ner_tags.append(ltp_result.ner_tags[i])
+		
+		ltp_result.update(new_words, new_postags, new_ner_tags)
+		ltp_result.update_parsing_tree(ltp)
+
+
+
+
+
+			
+		
+		
+
+
+
+
+	def process(self, ltp_result, str_entities, ltp):
 		str_entities = self.merge_neighbor(ltp_result, str_entities)
 		str_entities = self.ATT_extension(ltp_result, str_entities)
+
+		str_entities = [StrEntity(st, ed, etype) for st, ed, etype in str_entities]
+		str_entities = self.process_bracket(ltp_result, str_entities, ltp)
+
 
 		return str_entities
 
@@ -107,7 +180,7 @@ class NamedEntityReg:
 		str_entities = self.__entity_tuples(ltp_result.ner_tags)
 
 		ltp_result.update_parsing_tree(self.ltp)
-		str_entities = self.post_processor.process(ltp_result, str_entities)
+		str_entities = self.post_processor.process(ltp_result, str_entities, self.ltp)
 		return str_entities
 
 
