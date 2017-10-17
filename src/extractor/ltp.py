@@ -24,8 +24,15 @@ class LTPResult:
     def find_pos(self):
         words_st = []
         st = 0
-        for word in self.words:
+        for idx, word in enumerate(self.words):
             word_st = self.sentence.find(word, st)
+            if word_st == -1:
+                if idx == 0:
+                    word_st = 0
+                else:
+                    word_st = st + len(self.words[idx-1])
+                words_st.append(word_st)
+                continue
             words_st.append(word_st)
             st = word_st + len(word)
         return words_st
@@ -52,6 +59,8 @@ class LTPResult:
     def text(self, st, ed):
         if ed <= st:
             return ""
+        if ed == st+1:
+            return self.words[st]
         return self.sentence[self.words_st[st]: self.words_st[ed-1] + len(self.words[ed-1])]
 
     def update(self, new_words = None, new_tags = None, new_ner_tags = None):
@@ -102,6 +111,7 @@ class LTP:
         self.parser.load(parser_model)
 
     def parse(self, sentence):
+        sentence = sentence.replace("•", '·')
         words = list(self.segmentor.segment(sentence))
         tags = list(self.tagger.postag(words))
         ner_tags = list(self.nertagger.recognize(words, tags))

@@ -35,10 +35,10 @@ def is_valid_dict_name(name):
     if re_digit.match(name):
         # print "digit name", name
         return False
-    if re_eng.match(name):
-        return False
-    if has_punc_eng(name):
-        return False
+    # if re_eng.match(name):
+    #     return False
+    # if has_punc_eng(name):
+    #     return False
     if BaikeDatetime.parse(name, strict = True) is not None:
         return False
     return True

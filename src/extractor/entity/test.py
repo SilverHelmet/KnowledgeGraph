@@ -2,7 +2,7 @@
 
 from .ner import NamedEntityReg
 from ... import IOUtil
-from ..test_ner import Estimator 
+# from ..test_ner import Estimator 
 from ..ltp import LTP,LTPResult
 import copy
 import json

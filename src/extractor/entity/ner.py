@@ -7,6 +7,87 @@ import copy
 import json
 import re
 
+class NamedEntityPostProcessor:
+	def __init__(self):
+		pass
+
+	def decide_etype(self, str_entities, st, ed):
+		etype = str_entities[st][2]
+		if etype != "Ns":
+			return etype
+		for i in range(st + 1, ed):
+			etype = str_entities[i][2]
+			if etype != "Ns":
+				return etype
+		return "Ns"
+
+	def merge_neighbor(self, ltp_result, str_entities):
+		st = 0
+		new_str_entities = []
+		while st < len(str_entities):
+			ed = st + 1
+			while ed < len(str_entities) and str_entities[ed][0] == str_entities[ed - 1][1]:
+				ed += 1
+			
+			etype = self.decide_etype(str_entities, st, ed)
+			new_str_entities.append((str_entities[st][0], str_entities[ed-1][1], etype))
+			st = ed
+		return new_str_entities
+				
+	def get_ATT_common_father(self, is_leaf, arcs, st, ed):
+		father = arcs[st].head
+		if father < ed:
+			return None
+		for i in range(st, father):
+			if not is_leaf[i]:
+				continue
+			if arcs[i].head != father:
+				return None
+			if arcs[i].relation != "ATT":
+				return None
+		
+		return father
+
+	def ATT_extension(self, ltp_result, str_entities):
+		new_str_entities = []
+		entity_pool = [False] * ltp_result.length
+		is_leaf = [True] * (ltp_result.length + 1)
+		for arc in ltp_result.arcs:
+			head = arc.head
+			is_leaf[head] = False 
+		for str_entity in str_entities:
+			st, ed, etype = str_entity
+			if entity_pool[st]:
+				continue
+
+			father = self.get_ATT_common_father(is_leaf, ltp_result.arcs, st, ed)
+			if father is not None:
+				ed = father + 1
+				etype = "Ni"
+				print ltp_result.sentence
+				print st, ed
+				print ltp_result.text(st, ed)
+			for i in range(st, ed):
+				entity_pool[i] = True
+			new_str_entities.append((st, ed, etype))
+		return new_str_entities
+
+
+	def process(self, ltp_result, str_entities):
+		str_entities = self.merge_neighbor(ltp_result, str_entities)
+		str_entities = self.ATT_extension(ltp_result, str_entities)
+		
+		return str_entities
+		# entity_pool = [False] * ltp_result.length
+		# change_flag = False
+		# for st, ed, _ in str_entities:
+		# 	for i in range(st, ed):
+		# 		entity_pool[i] = True
+		
+		# new_str_entities = []
+		# for st, ed, _ in str_entities:
+		# 	pass
+
 stf_ltp_en_dist = {"PERSON":"Nh" , "LOCATION":"Ns" , "ORGANIZATION":"Ni" ,"MISC":"Nm" 
 ,"GPE":"Ns" ,"DEMONYM":"Nh","FACILITY":"Ns"}
 

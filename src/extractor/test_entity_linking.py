@@ -6,7 +6,7 @@ from .entity.ner import NamedEntityReg
 from ..IOUtil import data_dir, rel_ext_dir, Print
 from .structure import *
 from .ltp import LTP
-from test_extractor import load_stanford_result, load_same_linkings
+from .util import load_stanford_result, load_same_linkings
 import os
 
 
@@ -42,7 +42,7 @@ class EntityLinkingTestor:
 
         self.linker.add_sentence(ltp_result, str_entites, baike_entities)
 
-        return link_map, names
+            return link_map, names
 
         
 

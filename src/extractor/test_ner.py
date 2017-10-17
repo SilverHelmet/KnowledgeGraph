@@ -1,8 +1,11 @@
 #encoding: utf-8
 from ..IOUtil import data_dir
+from .entity.ner import NamedEntityReg, NamedEntityPostProcessor
+from .util import load_stanford_result
 from .ltp import LTP
 import os
 import glob
+
 
 class Data:
     def __init__(self, url, title, sentence):
@@ -159,6 +162,11 @@ if __name__ == "__main__":
 
     ltp = LTP(None)
     est = Estimator()
+    ner = NamedEntityReg()
+    ner_post_process = NamedEntityPostProcessor()
+    base_dir = os.path.join(data_dir, '实体标注')
+    stf_results_map = load_stanford_result(os.path.join(base_dir, 'sentences.txt'), os.path.join(base_dir, 'sentences_stanf_nlp.json'))
+
     for data_type in datas_map:
         datas = datas_map[data_type]
         for data in datas:
@@ -166,14 +174,21 @@ if __name__ == "__main__":
             ltp_result = ltp.parse(sentence)
 
             # direct result of ltp ner, replace ner_entities_name with your improved result
+            # ner_entities_name = []
+            # for idx, ner_tag in enumerate(ltp_result.ner_tags):
+            #     if ner_tag.startswith('S'):
+            #         ner_entities_name.append(ltp_result.text(idx, idx + 1))
+            #     elif ner_tag.startswith('B'):
+            #         st = idx
+            #     elif ner_tag.startswith('E'):
+            #         ner_entities_name.append(ltp_result.text(st, idx + 1))
+            stf_result = stf_results_map[sentence]
+            str_entities = ner.recognize(sentence, ltp_result, None, stf_result)
+            ltp_result.update_parsing_tree(ltp)
+            str_entities = ner_post_process.process(ltp_result, str_entities)
             ner_entities_name = []
-            for idx, ner_tag in enumerate(ltp_result.ner_tags):
-                if ner_tag.startswith('S'):
-                    ner_entities_name.append(ltp_result.text(idx, idx + 1))
-                elif ner_tag.startswith('B'):
-                    st = idx
-                elif ner_tag.startswith('E'):
-                    ner_entities_name.append(ltp_result.text(st, idx + 1))
+            for st, ed, etype in str_entities:
+                ner_entities_name.append(ltp_result.text(st, ed))
 
             est.add(ltp_result, data.entities, ner_entities_name)
     est.estimation.print_info()

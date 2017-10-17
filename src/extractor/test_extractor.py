@@ -14,8 +14,8 @@ from .entity.ner import NamedEntityReg
 from dependency.verb_relation_simple_extractor import VerbRelationExtractor
 from entity.linkers import SeparatedLinker, MatchRelLinker, TopRelatedEntityLinker
 from .simple_extractors import SimpleLTPExtractor
-from .entity.test import extract_stanford_result
 from ..schema.schema import Schema
+from .util import load_stanford_result
 
 def load_same_linkings():
     path = os.path.join(doc_dir, 'same_links.tsv')
@@ -139,33 +139,7 @@ def process_labeled_data(ignore_subj_miss, ignore_verb_miss):
             name = '塞尔达传说:时之笛'
         datas_map[name] = datas
     return datas_map, nb_data, nb_kl
-
-def load_stanford_result(sentence_path, stanford_result_path):
-    sentence_inf = file(sentence_path)
-    stanford_inf = file(stanford_result_path)
-    sentences = []
-    results = []
-    while True:
-        
-        sentence = sentence_inf.readline().strip()
-        if sentence == "":
-            break
-        sentence = sentence.strip()
-        sentences.append(sentence)
-
-        stanford_result_line = stanford_inf.readline()
-        results.append(json.loads(stanford_result_line))
-    sentence_inf.close()
-    stanford_inf.close()
-
-    result_map = {}
-    results = extract_stanford_result(results, sentences)
-    for idx in range(len(sentences)):
-        s = sentences[idx]
-        result = results[idx]
-        result_map[s] = result
-    return result_map
-        
+    
 
 
 

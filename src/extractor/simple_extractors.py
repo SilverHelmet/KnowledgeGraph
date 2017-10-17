@@ -112,7 +112,7 @@ if __name__ == "__main__":
 
     page_info = PageInfo('刘德华')
 
-    from .test_extractor import load_stanford_result
+    from .util import load_stanford_result
     
     base_dir = os.path.join(data_dir, '标注数据')
     stf_results_map = load_stanford_result(os.path.join(base_dir, 'sentences.txt'), os.path.join(base_dir, 'sentences_stanf_nlp.json'))

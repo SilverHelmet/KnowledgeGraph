@@ -1,5 +1,6 @@
 
-from .test_extractor import process_labeled_data, load_stanford_result
+from .test_extractor import process_labeled_data
+from .util import load_stanford_result
 from .structure import StrEntity
 from .ltp import LTP
 from .dependency.verb_relation_advanced_extractor import VerbRelationExtractor
