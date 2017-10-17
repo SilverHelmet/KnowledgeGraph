@@ -205,6 +205,20 @@ class PageMemory:
         for ed in range(st + 1, str_entity.ed):
             text = ltp_result.text(st, ed)
             self.link_map[text] = baike_entity
+
+def top_cnt_keys(keys_cnt):
+    
+    if len(keys_cnt) == 0:
+        return []
+    max_cnt = reduce(max, keys_cnt.values())
+    top_keys = []
+    for key in keys_cnt:
+        if keys_cnt[key] == max_cnt:
+            top_keys.append(key)
+    return top_keys
+
+
+
       
 class PageMemoryEntityLinker:
     def __init__(self, static_info_path, lowercase = False):
@@ -219,8 +233,31 @@ class PageMemoryEntityLinker:
         self.lowercase = lowercase
         self.memory = None
 
+    def get_candidate_urls(self, names):
+        baike_urls_cnt = {}
+        for name in names:
+            baike_urls = self.name2bk.get(name, [])
+            for url in baike_urls:
+                if url not in baike_urls_cnt:
+                    baike_urls_cnt[url] = 0
+                baike_urls_cnt[url] += 1
+
+        if len(baike_urls_cnt) != 0:
+            return top_cnt_keys(baike_urls_cnt)
+
+        names = [name.lower() for name in names if name.lower() != name]
+        for name in names:
+            baike_urls = self.lower_name2bk.get(name, [])
+            for url in baike_urls:
+                if url not in baike_urls_cnt:
+                    baike_urls_cnt[url] = 0
+                baike_urls_cnt[url] += 1
+        return top_cnt_keys(baike_urls_cnt)
+            
+
     def link(self, ltp_result, str_entity, page_info):
         name = ltp_result.text(str_entity.st, str_entity.ed)
+        
 
         # baike_entity =  self.memory.find_link(name)
         if name in self.memory.link_map:
@@ -231,9 +268,15 @@ class PageMemoryEntityLinker:
                 new_bk_entity = BaikeEntity(str_entity, baike_entity.baike_url, baike_entity.pop, baike_entity.types) 
                 return [new_bk_entity]
 
-        baike_urls = self.name2bk.get(name, [])
-        if len(baike_urls) == 0 and self.lowercase:
-            baike_urls = self.lower_name2bk.get(name.lower(), [])
+        names = [name]
+        names.extend(str_entity.extra_names)
+
+
+        # baike_urls = self.name2bk.get(name, [])
+        # if len(baike_urls) == 0 and self.lowercase:
+        #     baike_urls = self.lower_name2bk.get(name.lower(), [])
+
+        baike_urls = self.get_candidate_urls(names)
 
         baike_entities = []
 

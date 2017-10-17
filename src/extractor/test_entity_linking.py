@@ -22,10 +22,11 @@ class EntityLinkingTestor:
         stf_result = stf_results_map[sentence]
 
         str_entites = self.ner.recognize(sentence, ltp_result, page_info, stf_result)
-        str_entites = [StrEntity(st, ed, etype) for st, ed, etype in str_entites]
+        # str_entites = [StrEntity(st, ed, etype) for st, ed, etype in str_entites]
         names = set()
         for str_entity in str_entites:
             names.add(ltp_result.text(str_entity.st, str_entity.ed))
+            names.update(str_entity.extra_names)
 
 
 
@@ -40,6 +41,8 @@ class EntityLinkingTestor:
             baike_entities.append(baike_entity)
             if baike_entity:
                 link_map[ltp_result.text(str_entity.st, str_entity.ed)] = baike_entity.baike_url
+                for extra_name in str_entity.extra_names:
+                    link_map[extra_name] = baike_entity.baike_url
 
         self.linker.add_sentence(ltp_result, str_entites, baike_entities)
 
@@ -75,8 +78,8 @@ if __name__ == "__main__":
             entities = data.entities
             bk_urls = data.bk_urls
             sentence = data.sentence.encode('utf-8')
-            # if sentence != "梅西压过队友苏亚雷斯和C罗，成为2次荣膺欧洲最佳球员的第1人。":
-                # continue
+            # if sentence != "莱昂内尔·安德列斯·梅西（西班牙语：Lionel Andrés Messi），1987年6月24日生于阿根廷圣菲省罗萨里奥，绰号“新马拉多纳”，阿根廷著名足球运动员，司职前锋、边锋和前腰，现效力于西班牙足球甲级联赛巴塞罗那足球俱乐部。":
+            #     continue
             link_map, ner_names = testor.test(sentence, PageInfo(ename), stf_results_map[sentence])
 
 

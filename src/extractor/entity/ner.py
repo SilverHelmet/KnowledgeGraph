@@ -168,7 +168,9 @@ class NamedEntityReg:
 
 	def __init__(self, ltp, name_dict = None):
 		if name_dict is None:
-			name_dict = IOUtil.load_file(IOUtil.base_dir + "/lib/ltp_data_v3.4.0/vertical_domain_baike_dict.txt")
+			path = IOUtil.base_dir + "/lib/ltp_data_v3.4.0/vertical_domain_baike_dict.txt"
+			IOUtil.Print("load name dict from [%s]" %path)
+			name_dict = IOUtil.load_file(path)
 		self.ltp = ltp
 		self.post_processor = NamedEntityPostProcessor(name_dict)
 		
