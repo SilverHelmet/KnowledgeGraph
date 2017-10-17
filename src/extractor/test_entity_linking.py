@@ -42,26 +42,20 @@ class EntityLinkingTestor:
 
         self.linker.add_sentence(ltp_result, str_entites, baike_entities)
 
-            return link_map, names
-
-        
-
-
-
-
-
+        return link_map, names
 
 if __name__ == "__main__":
     datas_map = read_data(os.path.join(data_dir, '实体标注'), ignore_miss = True)
 
-    ner = NamedEntityReg()    
+    ltp = LTP(None)
+    ner = NamedEntityReg(ltp)    
     # entity_linker = TopRelatedEntityLinker(os.path.join(rel_ext_dir, 'baike_static_info.tsv'), lowercase = True)
     entity_linker = PageMemoryEntityLinker(os.path.join(rel_ext_dir, 'baike_static_info.tsv'), lowercase = True)
 
     base_dir = os.path.join(data_dir, '实体标注')
     stf_results_map = load_stanford_result(os.path.join(base_dir, 'sentences.txt'), os.path.join(base_dir, 'sentences_stanf_nlp.json'))
 
-    testor = EntityLinkingTestor(ner, entity_linker, LTP(None))
+    testor = EntityLinkingTestor(ner, entity_linker, ltp)
 
     same_link_map = load_same_linkings()
 

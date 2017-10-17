@@ -1,5 +1,5 @@
 #encoding: utf-8
-from ..IOUtil import data_dir
+from ..IOUtil import data_dir, load_file, rel_ext_dir
 from .entity.ner import NamedEntityReg, NamedEntityPostProcessor
 from .util import load_stanford_result
 from .ltp import LTP
@@ -160,11 +160,13 @@ class Estimator:
 if __name__ == "__main__":
     datas_map = read_data(os.path.join(data_dir, '实体标注'), False)
 
+
     ltp = LTP(None)
     est = Estimator()
-    ner = NamedEntityReg()
-    ner_post_process = NamedEntityPostProcessor()
+    ner = NamedEntityReg(ltp)
+
     base_dir = os.path.join(data_dir, '实体标注')
+    
     stf_results_map = load_stanford_result(os.path.join(base_dir, 'sentences.txt'), os.path.join(base_dir, 'sentences_stanf_nlp.json'))
 
     for data_type in datas_map:
@@ -184,8 +186,6 @@ if __name__ == "__main__":
             #         ner_entities_name.append(ltp_result.text(st, idx + 1))
             stf_result = stf_results_map[sentence]
             str_entities = ner.recognize(sentence, ltp_result, None, stf_result)
-            ltp_result.update_parsing_tree(ltp)
-            str_entities = ner_post_process.process(ltp_result, str_entities)
             ner_entities_name = []
             for st, ed, etype in str_entities:
                 ner_entities_name.append(ltp_result.text(st, ed))

@@ -8,8 +8,8 @@ import json
 import re
 
 class NamedEntityPostProcessor:
-	def __init__(self):
-		pass
+	def __init__(self, name_dict):
+		self.dict = name_dict
 
 	def decide_etype(self, str_entities, st, ed):
 		etype = str_entities[st][2]
@@ -61,7 +61,8 @@ class NamedEntityPostProcessor:
 				continue
 
 			father = self.get_ATT_common_father(is_leaf, ltp_result.arcs, st, ed)
-			if father is not None:
+			
+			if father is not None and ltp_result.text(st, father + 1) in self.dict:
 				ed = father + 1
 				etype = "Ni"
 				print ltp_result.sentence
@@ -76,17 +77,9 @@ class NamedEntityPostProcessor:
 	def process(self, ltp_result, str_entities):
 		str_entities = self.merge_neighbor(ltp_result, str_entities)
 		str_entities = self.ATT_extension(ltp_result, str_entities)
-		
+				
 		return str_entities
-		# entity_pool = [False] * ltp_result.length
-		# change_flag = False
-		# for st, ed, _ in str_entities:
-		# 	for i in range(st, ed):
-		# 		entity_pool[i] = True
-		
-		# new_str_entities = []
-		# for st, ed, _ in str_entities:
-		# 	pass
+
 
 stf_ltp_en_dist = {"PERSON":"Nh" , "LOCATION":"Ns" , "ORGANIZATION":"Ni" ,"MISC":"Nm" 
 ,"GPE":"Ns" ,"DEMONYM":"Nh","FACILITY":"Ns"}
@@ -94,12 +87,24 @@ stf_ltp_en_dist = {"PERSON":"Nh" , "LOCATION":"Ns" , "ORGANIZATION":"Ni" ,"MISC"
 
 class NamedEntityReg:
 	re_eng = re.compile(r"^[a-zA-Z.]+$")
+
+	def __init__(self, ltp, name_dict = None):
+		if name_dict is None:
+			name_dict = IOUtil.load_file(IOUtil.base_dir + "/lib/ltp_data_v3.4.0/vertical_domain_baike_dict.txt")
+		self.ltp = ltp
+		self.post_processor = NamedEntityPostProcessor(name_dict)
+		
+
 	def recognize(self,sentence,ltp_result,page_info,stanford_result=None):
 		self.__optimize_entitys(ltp_result)
 		if stanford_result:
 			self.__blend_with_stanford(ltp_result,stanford_result)
 		self.__combine(ltp_result)
-		return self.__entity_tuples(ltp_result.ner_tags)
+		str_entities = self.__entity_tuples(ltp_result.ner_tags)
+
+		ltp_result.update_parsing_tree(self.ltp)
+		str_entities = self.post_processor.process(ltp_result, str_entities)
+		return str_entities
 
 
 	def __entity_tuples(self,entitys):
