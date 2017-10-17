@@ -1,5 +1,5 @@
 #encoding: utf-8
-from ...rel_extraction.util import load_name2baike, load_bk_static_info
+from ...rel_extraction.util import load_name2baike, load_bk_static_info, load_url2names
 from ...IOUtil import rel_ext_dir, doc_dir, Print, nb_lines_of, result_dir
 from ..structure import BaikeEntity, FBRelation, LinkedTriple
 from ..util import load_predicate_map, get_domain
@@ -121,10 +121,18 @@ def load_summary_and_infobox(summary_path, infobox_path, lowercase):
     return summary_map
 
 
-def summary_related_score(summary, page_info):
+def summary_related_score(summary, page_info, summary_names):
     max_cnt = 0
     for name in page_info.names:
+        flag = True
+        for summary_name in summary_names:
+            if summary_name.find(name) != -1:
+                flag = False
+        if not flag:
+            continue
         max_cnt = max(max_cnt, len(re.findall(name, summary)))
+
+    
     score = max_cnt * 2
     if max_cnt >= 1:
         score += 50
@@ -148,6 +156,7 @@ class TopRelatedEntityLinker:
     def __init__(self, static_info_path, lowercase = False):
         self.bk_info_map = load_bk_static_info(filepath = static_info_path)
         self.name2bk = load_name2baike(filepath = os.path.join(rel_ext_dir, 'baike_names.tsv'))
+        self.url2name = load
         if lowercase:
             self.lower_name2bk = gen_lowercase_name(self.name2bk)
         self.summary_map = load_summary_and_infobox(summary_path = os.path.join(rel_ext_dir, 'baike_summary.json'),
@@ -232,6 +241,7 @@ class PageMemoryEntityLinker:
     def __init__(self, static_info_path, lowercase = False):
         self.bk_info_map = load_bk_static_info(filepath = static_info_path)
         self.name2bk = load_name2baike(filepath = os.path.join(rel_ext_dir, 'baike_names.tsv'))
+        self.url2names = load_url2names()
         if lowercase:
             self.lower_name2bk = gen_lowercase_name(self.name2bk)
         self.summary_map = load_summary_and_infobox(summary_path = os.path.join(rel_ext_dir, 'baike_summary.json'),
@@ -294,9 +304,12 @@ class PageMemoryEntityLinker:
         for bk_url in baike_urls:
             bk_info = self.bk_info_map[bk_url]
             pop = bk_info.pop
+            url_names = self.url2names[bk_url]
             summary = self.summary_map.get(bk_url, "")
-            summary_score = summary_related_score(summary, page_info)
+            summary_score = summary_related_score(summary, page_info, url_names)
             type_score = type_related_score(bk_info.types, page_info)
+            
+            # print name, bk_url, pop, summary_score, type_score
             baike_entities.append(BaikeEntity(str_entity, bk_url, bk_info.pop + summary_score + type_score, bk_info.types))
 
 

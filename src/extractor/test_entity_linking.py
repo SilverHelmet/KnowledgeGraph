@@ -55,7 +55,6 @@ if __name__ == "__main__":
     ltp = LTP(None)
     ner = NamedEntityReg(ltp)    
     # entity_linker = TopRelatedEntityLinker(os.path.join(rel_ext_dir, 'baike_static_info.tsv'), lowercase = True)
-    url2names = load_url2names()
     entity_linker = PageMemoryEntityLinker(os.path.join(rel_ext_dir, 'baike_static_info.tsv'), lowercase = True)
 
     base_dir = os.path.join(data_dir, '实体标注')
@@ -80,7 +79,7 @@ if __name__ == "__main__":
         entity_linker.start_new_page()
         
         url = url_map[ename]
-        names = url2names[url]
+        names = entity_linker.url2names[url]
         types = entity_linker.bk_info_map[url].types
         domains = get_url_domains(types, important_domains)
         page_info = PageInfo(names, url, domains)
