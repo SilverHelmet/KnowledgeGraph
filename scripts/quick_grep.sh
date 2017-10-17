@@ -9,7 +9,15 @@ baike.so.com/doc/3074939-3240918.html \
 baike.so.com/doc/1957541-2071736.html \
 baike.so.com/doc/6143842-6357018.html \
 baike.so.com/doc/6741534-6956052.html \
-baike.so.com/doc/8619623-24185478.html
+baike.so.com/doc/8619623-24185478.html \
+ke.so.com/doc/5382393-5618748.html \
+baike.so.com/doc/5348516-5583969.html \
+baike.so.com/doc/1287918-1361771.html \
+baike.so.com/doc/4835393-5052275.html \
+baike.so.com/doc/5385244-5621690.html \
+baike.so.com/doc/574984-608736.html \
+baike.so.com/doc/5329601-5564775.html
+baike.so.com/doc/3433066-3613205.html
 "
 paths="\
 result/rel_extraction/baike_static_info.tsv \
