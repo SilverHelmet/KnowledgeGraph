@@ -28,8 +28,8 @@ def is_valid_dict_name(name):
     global year_pattern, re_digit, re_eng
     if name == "":
         return False
-    if name.find(" ") != -1:
-        return False
+    # if name.find(" ") != -1:
+    #     return False
     if year_pattern.match(name):
         return False
     if re_digit.match(name):
