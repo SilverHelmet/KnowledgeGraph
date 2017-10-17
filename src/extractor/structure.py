@@ -1,13 +1,13 @@
 
-class PageInfo:
-    def __init__(self, ename):
-        self.ename = ename
-
 # class PageInfo:
-#     def __init__(self, names, url, types):
-#         self.names = names
-#         self.url = url
-#         self.types = types
+#     def __init__(self, ename):
+#         self.ename = ename
+
+class PageInfo:
+    def __init__(self, names, url, domains):
+        self.names = names
+        self.url = url
+        self.domains = domains
 
 class StrEntity:
     def __init__(self, st, ed, etype):

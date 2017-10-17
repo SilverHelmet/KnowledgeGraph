@@ -76,10 +76,10 @@ def load_important_domains():
 def get_domain(fb_type):
     return fb_type.split('.')[0]
 
-def get_domains(types, valid_domains):
+def get_url_domains(types, valid_domains):
     domains = set()
     for fb_type in types:
-        domain = get_domain(types)
+        domain = get_domain(fb_type)
         if domain in valid_domains:
             domains.add(domain)
     return list(domains)

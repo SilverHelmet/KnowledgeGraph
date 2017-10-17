@@ -6,7 +6,7 @@ from .entity.ner import NamedEntityReg
 from ..IOUtil import data_dir, rel_ext_dir, Print
 from .structure import *
 from .ltp import LTP
-from .util import load_stanford_result, load_important_domains
+from .util import load_stanford_result, load_important_domains, get_url_domains
 from .test_extractor import load_same_linkings, load_url_map
 from ..rel_extraction.util import load_url2names
 import os
@@ -62,6 +62,7 @@ if __name__ == "__main__":
     stf_results_map = load_stanford_result(os.path.join(base_dir, 'sentences.txt'), os.path.join(base_dir, 'sentences_stanf_nlp.json'))
 
     testor = EntityLinkingTestor(ner, entity_linker, ltp)
+    important_domains = load_important_domains()
 
     same_link_map = load_same_linkings()
     url_map = load_url_map()
@@ -81,16 +82,18 @@ if __name__ == "__main__":
         url = url_map[ename]
         names = url2names[url]
         types = entity_linker.bk_info_map[url].types
-        # page_info = PageInfo(names, url, types)
+        domains = get_url_domains(types, important_domains)
+        page_info = PageInfo(names, url, domains)
+        # page_info = PageInfo(ename)
         # if ename != "冰与火之歌":
             # continue
         for data in datas:
             entities = data.entities
             bk_urls = data.bk_urls
             sentence = data.sentence.encode('utf-8')
-            # if sentence != "在欧冠小组赛第二轮与鲍里索夫（白俄罗斯球队）的对阵中，梅西独中两元，并造成对方打进一个乌龙球，最终使得巴萨5-0大胜对手。":
-            #     continue
-            link_map, ner_names = testor.test(sentence, PageInfo(ename), stf_results_map[sentence])
+            if sentence != "从《东风破》里的“一盏离愁孤灯伫立在窗口“到《发如雪》中的“你发如雪凄美了离别“再到《千里之外》里的黯然神伤“我送你离开，千里之外，你无声黑白“，离恨是歌者永恒的主题。":
+                continue
+            link_map, ner_names = testor.test(sentence, page_info, stf_results_map[sentence])
 
 
             print sentence

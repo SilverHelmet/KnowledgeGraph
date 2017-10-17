@@ -2,7 +2,7 @@
 from ...rel_extraction.util import load_name2baike, load_bk_static_info
 from ...IOUtil import rel_ext_dir, doc_dir, Print, nb_lines_of, result_dir
 from ..structure import BaikeEntity, FBRelation, LinkedTriple
-from ..util import load_predicate_map
+from ..util import load_predicate_map, get_domain
 from ...rel_extraction.extract_baike_names import person_extra_names
 import os
 import json
@@ -122,11 +122,20 @@ def load_summary_and_infobox(summary_path, infobox_path, lowercase):
 
 
 def summary_related_score(summary, page_info):
-    cnt = len(re.findall(page_info.ename, summary))
-    score = cnt * 2
-    if cnt >= 1:
+    max_cnt = 0
+    for name in page_info.names:
+        max_cnt = max(max_cnt, len(re.findall(name, summary)))
+    score = max_cnt * 2
+    if max_cnt >= 1:
         score += 50
     return score
+
+def type_related_score(types, page_info):
+    domains = page_info.domains
+    for fb_type in types:
+        if get_domain(fb_type) in domains:
+            return 20
+    return 0
 
 def gen_lowercase_name(name2bk):
     lower_name2bk = {}
@@ -287,7 +296,8 @@ class PageMemoryEntityLinker:
             pop = bk_info.pop
             summary = self.summary_map.get(bk_url, "")
             summary_score = summary_related_score(summary, page_info)
-            baike_entities.append(BaikeEntity(str_entity, bk_url, bk_info.pop + summary_score, bk_info.types))
+            type_score = type_related_score(bk_info.types, page_info)
+            baike_entities.append(BaikeEntity(str_entity, bk_url, bk_info.pop + summary_score + type_score, bk_info.types))
 
         if len(baike_entities) == 0:
             return []
