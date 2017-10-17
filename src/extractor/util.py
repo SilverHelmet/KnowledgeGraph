@@ -64,6 +64,27 @@ def load_stanford_result(sentence_path, stanford_result_path):
         result_map[s] = result
     return result_map
 
+def load_important_domains():
+    domains = set()
+    for line in file(os.path.join(doc_dir, 'important_domains.txt')):
+        line = line.strip()
+        if line.startswith("#"):
+            continue
+        domains.add(line)
+    return domains
+
+def get_domain(fb_type):
+    return fb_type.split('.')[0]
+
+def get_domains(types, valid_domains):
+    domains = set()
+    for fb_type in types:
+        domain = get_domain(types)
+        if domain in valid_domains:
+            domains.add(domain)
+    return list(domains)
+
+
 if __name__ == "__main__":
     predicate_map = load_predicate_map(extra_path = os.path.join(doc_dir, 'human_add_predicate_map.json'))
 

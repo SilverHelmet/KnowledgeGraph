@@ -85,6 +85,25 @@ def load_name2baike(filepath = None, lowercase = False):
             name2bk[name].append(bk_url)
     return name2bk
 
+def load_url2names():
+    filepath = os.path.join(rel_ext_dir, 'baike_names.tsv')
+    total = nb_lines_of(filepath)
+
+    Print('load url -> names from [%s]' %filepath)
+
+    url2names = {}
+    for line in tqdm(file(filepath), total = total):
+        p = line.strip().split('\t')
+        bk_url = p[0]
+        names = p[1:]
+        url2names[bk_url] = p[1:]
+    return url2names
+
+
+
+
+
+
 
 
 

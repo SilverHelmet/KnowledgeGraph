@@ -6,8 +6,9 @@ from .entity.ner import NamedEntityReg
 from ..IOUtil import data_dir, rel_ext_dir, Print
 from .structure import *
 from .ltp import LTP
-from .util import load_stanford_result
-from .test_extractor import load_same_linkings
+from .util import load_stanford_result, load_important_domains
+from .test_extractor import load_same_linkings, load_url_map
+from ..rel_extraction.util import load_url2names
 import os
 
 
@@ -54,6 +55,7 @@ if __name__ == "__main__":
     ltp = LTP(None)
     ner = NamedEntityReg(ltp)    
     # entity_linker = TopRelatedEntityLinker(os.path.join(rel_ext_dir, 'baike_static_info.tsv'), lowercase = True)
+    url2names = load_url2names()
     entity_linker = PageMemoryEntityLinker(os.path.join(rel_ext_dir, 'baike_static_info.tsv'), lowercase = True)
 
     base_dir = os.path.join(data_dir, '实体标注')
@@ -62,6 +64,7 @@ if __name__ == "__main__":
     testor = EntityLinkingTestor(ner, entity_linker, ltp)
 
     same_link_map = load_same_linkings()
+    url_map = load_url_map()
 
     estimation = {
         "total": 0,
@@ -74,6 +77,11 @@ if __name__ == "__main__":
     for ename in datas_map:
         datas = datas_map[ename]
         entity_linker.start_new_page()
+        
+        url = url_map[ename]
+        names = url2names[url]
+        types = entity_linker.bk_info_map[url].types
+        paeg_info = PageInfo(names, url, types)
         # if ename != "梅西":
         #     continue
         for data in datas:
@@ -82,7 +90,7 @@ if __name__ == "__main__":
             sentence = data.sentence.encode('utf-8')
             # if sentence != "莱昂内尔·安德列斯·梅西（西班牙语：Lionel Andrés Messi），1987年6月24日生于阿根廷圣菲省罗萨里奥，绰号“新马拉多纳”，阿根廷著名足球运动员，司职前锋、边锋和前腰，现效力于西班牙足球甲级联赛巴塞罗那足球俱乐部。":
             #     continue
-            link_map, ner_names = testor.test(sentence, PageInfo(ename), stf_results_map[sentence])
+            link_map, ner_names = testor.test(sentence, page_info, stf_results_map[sentence])
 
 
             print sentence

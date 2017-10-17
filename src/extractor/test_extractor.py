@@ -29,6 +29,16 @@ def load_same_linkings():
             link_map[link] = p[0]
     return link_map
 
+def load_url_map():
+    path = os.path.join(data_dir, '实体标注/urls.txt')
+    url_map = {}
+    for line in file(path):
+        line = line.strip()
+        p = line.split('\t')
+        if len(p) == 2:
+            url_map[p[0]] = p[1]
+    return url_map
+
 
 
 
