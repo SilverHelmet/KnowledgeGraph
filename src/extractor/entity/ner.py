@@ -92,7 +92,6 @@ class NamedEntityPostProcessor:
 					brackets.append((left_pos, index))
 					left_pos = -1
 			
-
 		if len(brackets) == 0:
 			return
 
