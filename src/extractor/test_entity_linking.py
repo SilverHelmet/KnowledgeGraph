@@ -29,8 +29,6 @@ class EntityLinkingTestor:
             names.add(ltp_result.text(str_entity.st, str_entity.ed))
             names.update(str_entity.extra_names)
 
-
-
         link_map = {}
         baike_entities = []
         for str_entity in str_entites:
@@ -45,12 +43,13 @@ class EntityLinkingTestor:
                 for extra_name in str_entity.extra_names:
                     link_map[extra_name] = baike_entity.baike_url
 
-        self.linker.add_sentence(ltp_result, str_entites, baike_entities)
+        # self.linker.add_sentence(ltp_result, str_entites, baike_entities)
 
         return link_map, names
 
 if __name__ == "__main__":
     datas_map = read_data(os.path.join(data_dir, '实体标注'), ignore_miss = True)
+
 
     ltp = LTP(None)
     ner = NamedEntityReg(ltp)    
@@ -83,17 +82,10 @@ if __name__ == "__main__":
         types = entity_linker.bk_info_map[url].types
         domains = get_url_domains(types, important_domains)
         page_info = PageInfo(ename, names, url, domains)
-        # page_info = PageInfo(ename)
-        # if ename != "冰与火之歌":
-            # continue
         for data in datas:
             entities = data.entities
             bk_urls = data.bk_urls
             sentence = data.sentence.encode('utf-8')
-            # if sentence != "2011年，《冰与火之歌》被美国HBO电视网改编成了电视剧《权力的游戏》。":
-            #     continue
-            # print domains
-            # print url
             link_map, ner_names = testor.test(sentence, page_info, stf_results_map[sentence])
 
 

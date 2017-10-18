@@ -34,8 +34,8 @@ def fill_entity_pool(length, str_entites):
     return pool
 
 class SimpleLTPExtractor:
-    def __init__(self, ner, rel_extractor, linker):
-        self.ltp = LTP(None)
+    def __init__(self, ner, rel_extractor, linker, ltp`):
+        self.ltp = ltp
         self.ner = ner
         self.rel_extractor = rel_extractor
         self.linker = linker
@@ -59,13 +59,9 @@ class SimpleLTPExtractor:
         return triples
 
     def parse_sentence(self, sentence, page_info, stf_result, debug = False):
-        if type(sentence) is unicode:
-            sentence = sentence.encode('utf-8')
         ltp_result = self.ltp.parse(sentence)
 
         str_entites = self.ner.recognize(sentence, ltp_result, page_info, stf_result)
-        str_entites = [ StrEntity(st, ed) for st, ed, _ in str_entites]
-        ltp_result.update_parsing_tree(self.ltp)
 
         if debug:
             print "#str entities:", len(str_entites)

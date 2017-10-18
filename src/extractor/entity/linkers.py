@@ -238,7 +238,9 @@ def top_cnt_keys(keys_cnt):
     return top_keys
 
 class PageMemoryEntityLinker:
-    def __init__(self, static_info_path, lowercase = False):
+    def __init__(self, static_info_path = None, lowercase = False):
+        if static_info_path is None:
+            static_info_path = os.path.join(rel_ext_dir, 'baike_static_info.tsv')
         self.bk_info_map = load_bk_static_info(filepath = static_info_path)
         self.name2bk = load_name2baike(filepath = os.path.join(rel_ext_dir, 'baike_names.tsv'))
         self.url2names = load_url2names()
@@ -326,6 +328,7 @@ class PageMemoryEntityLinker:
         top_entity = baike_entities[0]
         if total_score > 0:
             top_entity.pop /= (total_score)
+        self.memory.add(ltp_result, str_entity, top_entity)
         return [top_entity]
 
     

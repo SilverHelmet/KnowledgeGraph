@@ -11,11 +11,11 @@ from .structure import Knowledge, PageInfo
 from .entity.naive_ner import NaiveNer
 from .entity.ner import NamedEntityReg
 # from dependency.relation_extractors import RelTagExtractor
-from dependency.verb_relation_simple_extractor import VerbRelationExtractor
-from entity.linkers import SeparatedLinker, MatchRelLinker, TopRelatedEntityLinker
+from dependency.verb_relation_advanced_extractor import VerbRelationExtractor
+from entity.linkers import SeparatedLinker, MatchRelLinker, PageMemoryEntityLinker
 from .simple_extractors import SimpleLTPExtractor
 from ..schema.schema import Schema
-from .util import load_stanford_result
+from .util import load_stanford_result, get_url_domains, load_important_domains
 
 def load_same_linkings():
     path = os.path.join(doc_dir, 'same_links.tsv')
@@ -51,12 +51,7 @@ class Data:
         self.half_add = False
         self.knowledges = []
         self.subj, self.prop, self.obj = [None] * 3
-        # self.subjs = []
-        # self.props = []
-        # self.objs = []
-        # self.subj_urls = []
-        # self.prop_uris = []
-        # self.obj_urls = []
+
     
     def add(self, subj, prop, obj):
         subj = decode(subj)
@@ -153,16 +148,16 @@ def process_labeled_data(ignore_subj_miss, ignore_verb_miss):
 
 
 
-def test_ltp_extractor(datas_map, ner, rel_extractor, linker):
-
-    Print('init extractor')
+def test_ltp_extractor(datas_map, ner, rel_extractor, linker, ltp):
 
     base_dir = os.path.join(data_dir, '标注数据')
     stf_results_map = load_stanford_result(os.path.join(base_dir, 'sentences.txt'), os.path.join(base_dir, 'sentences_stanf_nlp.json'))
 
-    ltp_extractor = SimpleLTPExtractor(ner, rel_extractor, linker)
-
-    Print('init finished')
+    ltp_extractor = SimpleLTPExtractor(ner, rel_extractor, linker, ltp)
+    url2names = linker.entity_linker.url2names
+    bk_info_map = linker.entity_linker.bk_info_map
+    url_map = load_url_map()
+    important_domains = load_important_domains()
 
     estimation = {
         "total output": 0,
@@ -173,14 +168,15 @@ def test_ltp_extractor(datas_map, ner, rel_extractor, linker):
     schema.init()
     for baike_name in datas_map:
         datas = datas_map[baike_name]
+        url = url_map[baike_name]
+        names = url2names[url]
+        types = bk_info_map[url].types
+        page_info = PageInfo(baike_name, names, url, get_url_domains(types, important_domains))
         for data in datas:
-            sentence = data.sentence
+            sentence = data.sentence.encode('utf-8')
             print sentence
-            stf_result = stf_results_map[sentence.encode('utf-8')]
-            page_info = PageInfo(baike_name)
+            stf_result = stf_results_map[sentence]
             triples, ltp_result = ltp_extractor.parse_sentence(sentence, page_info, stf_result)
-
-            str_entites = self.ner.recognize(sentence, ltp_result, page_info, stf_result)
             
             kl_set = set()
             for kl in data.knowledges:
@@ -217,13 +213,13 @@ if __name__ == "__main__":
     datas_map, nb_data, nb_kl = process_labeled_data(ignore_subj_miss = True, ignore_verb_miss = True)
     print "#data = %d, #labeled kl = %d" %(nb_data, nb_kl)
 
-    ner = NamedEntityReg()    
+    ltp = LTP(None)
+    ner = NamedEntityReg(ltp)  
 
     # rel_extractor = RelTagExtractor()
     rel_extractor = VerbRelationExtractor()
 
-    # entity_linker = TopPopEntityLinker(os.path.join(rel_ext_dir, 'baike_static_info.tsv'))
-    entity_linker = TopRelatedEntityLinker(os.path.join(rel_ext_dir, 'baike_static_info.tsv'))
+    entity_linker = PageMemoryEntityLinker(os.path.join(rel_ext_dir, 'baike_static_info.tsv'))
     rel_linker = MatchRelLinker()
     linker = SeparatedLinker(entity_linker, rel_linker)
 
