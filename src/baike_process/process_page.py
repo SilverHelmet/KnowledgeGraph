@@ -31,7 +31,7 @@ def work(inpath, sentence_out_path, docuemnt_out_path):
         sentences = []
         for text in texts:
             for paragraph in text:
-                sentences.extend(split_sentences(text))
+                sentences.extend(split_sentences(paragraph))
         obj = {
             'url': url,
             'sentences': sentences,
