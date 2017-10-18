@@ -41,7 +41,7 @@ def work(inpath, sentences_path, stanford_results_path, outpath):
             continue
 
         sentences = [s.encode('utf-8') for s in obj['sentences']]
-        outf.write('###%s\n' %url)
+        outf.write('%s\n' %url)
         Print('process %s' %url)
         names = url2names[url]
         types = bk_info_map[url].types
