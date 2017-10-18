@@ -198,8 +198,8 @@ def test_ltp_extractor(datas_map, ner, rel_extractor, linker, ltp, schema):
         linker.entity_linker.start_new_page()
         for data in datas:
             sentence = data.sentence.encode('utf-8')
-            # if sentence != '1996年，刘德华相继发行了《相思成灾》和《因为爱》两张国语唱片。':
-                # continue
+            if sentence != '1993年，主演刘镇伟执导的浪漫剧情片《天长地久》，刘德华与刘锦玲和吴家丽合作诠释了一段悲剧爱情故事。':
+                continue
             print sentence
             stf_result = stf_results_map[sentence]
             triples, ltp_result = ltp_extractor.parse_sentence(sentence, page_info, stf_result, link_maps)
