@@ -11,11 +11,10 @@ from tqdm import tqdm
 import re
 
 class SeparatedLinker:
-    def __init__(self, entity_linker, rel_linker):
+    def __init__(self, entity_linker, rel_linker, schema):
         self.entity_linker = entity_linker
         self.rel_linker = rel_linker
-        self.schema = Schema()
-        self.schema.init()
+        self.schema = schema
 
     def link(self, ltp_result, triple, page_info):
         e1_entities = self.entity_linker.link(ltp_result, triple.e1, page_info)
@@ -41,7 +40,7 @@ class SeparatedLinker:
         e2 = half_linked_triple.baike_obj
         for rel in fb_rels:
             ltriple = LinkedTriple(e1, rel, e2)
-            if ltriple.check_type(self.schema):
+            if self.schema.check_spo(ltriple.baike_subj.types, ltriple.fb_rel.fb_prop, ltriple.baike_obj.types, True):
                 linked_triples.append(ltriple)
                         
         return linked_triples
@@ -251,7 +250,7 @@ def top_cnt_keys(keys_cnt):
     return top_keys
 
 class PageMemoryEntityLinker:
-    def __init__(self, static_info_path = None, lowercase = False):
+    def __init__(self, static_info_path = None, lowercase = True):
         if static_info_path is None:
             static_info_path = os.path.join(rel_ext_dir, 'baike_static_info.tsv')
         self.bk_info_map = load_bk_static_info(filepath = static_info_path)
@@ -278,6 +277,9 @@ class PageMemoryEntityLinker:
                 baike_urls_cnt[url] += score
         if len(baike_urls_cnt) != 0:
             return top_cnt_keys(baike_urls_cnt)
+
+        if not self.lowercase:
+            return []
 
         for name, score in names:
             name = name.lower()

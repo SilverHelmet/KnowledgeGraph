@@ -16,6 +16,7 @@ from entity.linkers import SeparatedLinker, MatchRelLinker, PageMemoryEntityLink
 from .simple_extractors import SimpleLTPExtractor
 from ..schema.schema import Schema
 from .util import load_stanford_result, get_url_domains, load_important_domains
+from .ltp import LTP
 
 def load_same_linkings():
     path = os.path.join(doc_dir, 'same_links.tsv')
@@ -148,12 +149,12 @@ def process_labeled_data(ignore_subj_miss, ignore_verb_miss):
 
 
 
-def test_ltp_extractor(datas_map, ner, rel_extractor, linker, ltp):
+def test_ltp_extractor(datas_map, ner, rel_extractor, linker, ltp, schema):
 
     base_dir = os.path.join(data_dir, '标注数据')
     stf_results_map = load_stanford_result(os.path.join(base_dir, 'sentences.txt'), os.path.join(base_dir, 'sentences_stanf_nlp.json'))
 
-    ltp_extractor = SimpleLTPExtractor(ner, rel_extractor, linker, ltp)
+    ltp_extractor = SimpleLTPExtractor(ner, rel_extractor, linker, ltp, True)
     url2names = linker.entity_linker.url2names
     bk_info_map = linker.entity_linker.bk_info_map
     url_map = load_url_map()
@@ -164,18 +165,20 @@ def test_ltp_extractor(datas_map, ner, rel_extractor, linker, ltp):
         'total labeled': 0,
         'right output': 0,
     }
-    schema = Schema()
-    schema.init()
+
     for baike_name in datas_map:
         datas = datas_map[baike_name]
         url = url_map[baike_name]
+        # print baike_name
+        # print url
         names = url2names[url]
         types = bk_info_map[url].types
         page_info = PageInfo(baike_name, names, url, get_url_domains(types, important_domains))
         linker.entity_linker.start_new_page()
         for data in datas:
             sentence = data.sentence.encode('utf-8')
-            if sentence != ''
+            # if sentence != '1996年，刘德华相继发行了《相思成灾》和《因为爱》两张国语唱片。':
+                # continue
             print sentence
             stf_result = stf_results_map[sentence]
             triples, ltp_result = ltp_extractor.parse_sentence(sentence, page_info, stf_result)
@@ -208,6 +211,7 @@ def test_ltp_extractor(datas_map, ner, rel_extractor, linker, ltp):
             for kl in data.knowledges:
                 print '\t\t%s' %kl
     print estimation
+    ltp_extractor.finish()
 
     
 
@@ -221,12 +225,12 @@ if __name__ == "__main__":
     # rel_extractor = RelTagExtractor()
     rel_extractor = VerbRelationExtractor()
 
+    schema = Schema()
+    schema.init(init_type_neighbor = True)
+
     entity_linker = PageMemoryEntityLinker(os.path.join(rel_ext_dir, 'baike_static_info.tsv'))
     rel_linker = MatchRelLinker()
-    linker = SeparatedLinker(entity_linker, rel_linker)
+    linker = SeparatedLinker(entity_linker, rel_linker, schema)
 
-    test_ltp_extractor(datas_map, ner, rel_extractor, linker)
-
-
-
+    test_ltp_extractor(datas_map, ner, rel_extractor, linker, ltp, schema)
 

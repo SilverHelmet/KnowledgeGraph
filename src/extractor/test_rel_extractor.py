@@ -57,7 +57,7 @@ class RelExtractorTestor():
             stf_result = self.stf_results_map[sentence]
             
             entities = self.ner.recognize(sentence, ltp_result, None, stf_result)
-            entities = [(st, ed)for st, ed, _ in entities]
+            entities = [(e.st, e.ed)for e in entities]
             ltp_result.update_parsing_tree(self.ltp)
         else:
             entities = self.ner.recognize(sentence, ltp_result, None)
@@ -98,7 +98,7 @@ class RelExtractorTestor():
             rels = []
             for st_1, ed_1 in st_eds_1:
                 for st_2, ed_2 in st_eds_2:
-                    rels.extend(self.extractor.find_relation(ltp_result, StrEntity(st_1, ed_1), StrEntity(st_2, ed_2), entity_pool))
+                    rels.extend(self.extractor.find_relation(ltp_result, StrEntity(st_1, ed_1, None), StrEntity(st_2, ed_2, None), entity_pool))
             rels = [ltp_result.text(st, ed) for st, ed in rels]
             rels_str = "\t".join(rels)
             prop = kl.prop

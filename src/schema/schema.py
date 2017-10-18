@@ -9,10 +9,42 @@ class Schema:
     def __init__(self):
         pass
     
-    def init(self):
+    def init(self, init_type_neighbor = False):
         self.property_attrs = load_property_attrs()
         self.type_attrs = load_type_attrs()
         self.reverse_prop_map = self.get_reverse_property_map(self.property_attrs)
+
+        if init_type_neighbor:
+            self.type_neighbors = self.init_type_neighbor()
+
+    # def init_type_neighbor(self):
+    #     type_neighbors = {}
+
+    #     for fb_prop in self.property_attrs:
+    #         schema_type = self.schema_type(fb_prop)
+    #         expected_type = self.expected_type(fb_prop)
+
+    #         if not schema_type in type_neighbors:
+    #             type_neighbors[schema_type] = set()
+    #         type_neighbors[schema_type].add(expected_type)
+
+    #         if not expected_type in type_neighbors:
+    #             type_neighbors[expected_type] = set()
+    #         type_neighbors[expected_type].add(schema_type)
+
+    #     return type_neighbors
+
+    def init_type_neighbor(self):
+        type_neighbors = {
+            'fb:music.composition': 'fb:music.recording',
+            'fb:music.composition': 'fb:music.album',
+            'fb:sports.sports_league': 'fb:sports.sports_championship',
+            'fb:award.award': 'fb:award.award_category',
+            'fb:cvg.game_series': 'fb:cvg.computer_videogame',
+        }
+        return type_neighbors
+
+            
     
     def get_reverse_property_map(self, property_attrs):
         reverse_map = {}
@@ -61,10 +93,28 @@ class Schema:
             else:
                 fb_types = new_types
 
-    def check_spo(self, subj_types, prob, obj_types):
+    def check_in_neightbor(self, prop_type, obj_types):
+        neighbors = self.type_neighbors[prop_type]
+        for obj_type in obj_types:
+            if obj_type in neighbors:
+                return True
+        return False
+
+    def check_spo(self, subj_types, prob, obj_types, use_neighbor):
         subj_type = self.schema_type(prob)
         obj_type = self.expected_type(prob)
-        return subj_type in subj_types and obj_type in obj_types
+        
+
+
+        if subj_type in subj_types and obj_type in obj_types:
+            return True
+        else:
+            if use_neighbor:
+                for cand_type in obj_types:
+                    if self.type_neighbors.get(cand_type, "") == obj_type:
+                        return True
+            return False
+
 
 
 

@@ -1,6 +1,6 @@
 #encoding: utf-8
 import os
-from ..IOUtil import result_dir, rel_ext_dir, data_dir
+from ..IOUtil import result_dir, rel_ext_dir, data_dir, cache_dir
 from ..rel_extraction.util import load_bk_entity_pop, load_bk_types
 from ..rel_extraction.parse_baike_entity import split_sentences
 from .structure import *
@@ -14,6 +14,7 @@ from dependency.verb_relation_simple_extractor import VerbRelationExtractor
 from .entity.linkers import SeparatedLinker, MatchRelLinker, TopPopEntityLinker, TopRelatedEntityLinker
 from .entity.ner import NamedEntityReg
 from .mst import perform_MST, Edge
+import json
 
     
 def parse_str_relations_by_ltp_tag(ltr_result, entity_pool):
@@ -34,11 +35,15 @@ def fill_entity_pool(length, str_entites):
     return pool
 
 class SimpleLTPExtractor:
-    def __init__(self, ner, rel_extractor, linker, ltp):
+    def __init__(self, ner, rel_extractor, linker, ltp, link_map_out = False):
         self.ltp = ltp
         self.ner = ner
         self.rel_extractor = rel_extractor
         self.linker = linker
+        if link_map_out:
+            self.link_map_outf = file(os.path.join(cache_dir, 'link_map.jsons'), 'w')
+        else:
+            self.link_map_outf = None
         # self.ner = NaiveNer()
         # self.rel_extractor = RelTagRelation()
         # entity_linker = PopularityEntityLinker(os.path.join(rel_ext_dir, 'baike_static_info.tsv'))
@@ -59,6 +64,9 @@ class SimpleLTPExtractor:
 
 
     def parse_sentence(self, sentence, page_info, stf_result, debug = False):
+
+        
+
         ltp_result = self.ltp.parse(sentence)
 
         str_entites = self.ner.recognize(sentence, ltp_result, page_info, stf_result)
@@ -69,7 +77,7 @@ class SimpleLTPExtractor:
             if len(baike_entity_list) > 0:
                 baike_entity = baike_entity_list[0]
                 baike_entities.append(baike_entity)
-                link_map[ltp_result.text(str_entity.st, str_entity.ed)] = baike_entity
+                link_map[ltp_result.text(str_entity.st, str_entity.ed)] = baike_entity.to_obj()
 
         if debug:
             print "#str entities:", len(str_entites)
@@ -89,8 +97,15 @@ class SimpleLTPExtractor:
         if debug:
             print "#linked triples", len(linked_triples)
 
+        if self.link_map_outf:
+            self.link_map_outf.write('%s\t%s\n' %(sentence, json.dumps(link_map, ensure_ascii = False)))
+
         mst_triples = mst_select_triple(linked_triples)
         return mst_triples, ltp_result
+
+    def finish(self):
+        if self.link_map_outf:
+            self.link_map_outf.close()
 
 
 def mst_select_triple(linked_triples):

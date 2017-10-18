@@ -35,7 +35,7 @@ class BaikeEntity:
             'ed': self.ed,
             "baike_url": self.baike_url,
             'pop': self.pop,
-            'self.types': self.types
+            'types': self.types
         }
 
     @classmethod
@@ -132,7 +132,8 @@ class LinkedTriple:
     def check_type(self, schema):
         schema_type = schema.schema_type(self.fb_rel.fb_prop)
         expected_type =schema.expected_type(self.fb_rel.fb_prop)
-        return schema_type in self.baike_subj.types and expected_type in self.baike_obj.types
+        return schema.check_spo(self.baike_subj.types, self.fb_rel.fb_prop, self.baike_obj.types, True)
+        # return schema_type in self.baike_subj.types and expected_type in self.baike_obj.types
 
     def score(self):
         # return (self.baike_subj.pop + self.baike_obj.pop) * self.fb_rel.prob * self. position_coef()

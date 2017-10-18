@@ -10,4 +10,5 @@ do
     scp lhr@dlib:~/KnowledgeGraph/${path}.sample ${path}
 done
 
-uniq result/rel_extraction/baike_names.tsv > result/rel_extraction/baike_names.tsv
+cat result/rel_extraction/baike_names.tsv|uniq > tmp
+mv tmp result/rel_extraction/baike_names.tsv
