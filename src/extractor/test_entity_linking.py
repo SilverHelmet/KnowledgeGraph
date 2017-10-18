@@ -90,8 +90,8 @@ if __name__ == "__main__":
             entities = data.entities
             bk_urls = data.bk_urls
             sentence = data.sentence.encode('utf-8')
-            if sentence != "梅西压过队友苏亚雷斯和C罗，成为2次荣膺欧洲最佳球员的第1人。":
-                continue
+            # if sentence != "梅西压过队友苏亚雷斯和C罗，成为2次荣膺欧洲最佳球员的第1人。":
+            #     continue
 
             link_map, ner_names = testor.test(sentence, page_info, stf_results_map[sentence])
 
