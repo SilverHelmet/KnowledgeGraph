@@ -106,7 +106,7 @@ class SimpleLTPExtractor:
             self.link_map_outf.write('%s\t%s\n' %(sentence, json.dumps(link_map, ensure_ascii = False)))
 
         mst_triples = mst_select_triple(linked_triples)
-        return mst_triples, half_linked_triples, ltp_result
+        return mst_triples, ltp_result
 
     def finish(self):
         if self.link_map_outf:
@@ -126,34 +126,35 @@ def mst_select_triple(linked_triples):
     return mst_triples
 
 if __name__ == "__main__":
-    s = u'刘德华出生于1966年，是知名演员、歌手。'
-    s = '赛后，梅西力压德国诸将，获得金球奖。'
-    s = '1996年，刘德华相继发行了《相思成灾》和《因为爱》两张国语唱片。'
+    pass
+    # s = u'刘德华出生于1966年，是知名演员、歌手。'
+    # s = '赛后，梅西力压德国诸将，获得金球奖。'
+    # s = '1996年，刘德华相继发行了《相思成灾》和《因为爱》两张国语唱片。'
 
-    page_info = PageInfo('刘德华')
+    # page_info = PageInfo('刘德华')
 
-    from .util import load_stanford_result
+    # from .util import load_stanford_result
     
-    base_dir = os.path.join(data_dir, '标注数据')
-    stf_results_map = load_stanford_result(os.path.join(base_dir, 'sentences.txt'), os.path.join(base_dir, 'sentences_stanf_nlp.json'))
+    # base_dir = os.path.join(data_dir, '标注数据')
+    # stf_results_map = load_stanford_result(os.path.join(base_dir, 'sentences.txt'), os.path.join(base_dir, 'sentences_stanf_nlp.json'))
 
-    # ner = NaiveNer()    
-    ner = NamedEntityReg()
+    # # ner = NaiveNer()    
+    # ner = NamedEntityReg()
 
-    # rel_extractor = RelTagExtractor()
-    rel_extractor = VerbRelationExtractor()
+    # # rel_extractor = RelTagExtractor()
+    # rel_extractor = VerbRelationExtractor()
 
-    # entity_linker = TopPopEntityLinker(os.path.join(rel_ext_dir, 'baike_static_info.tsv'))
-    entity_linker = TopRelatedEntityLinker(os.path.join(rel_ext_dir, 'baike_static_info.tsv'))
+    # # entity_linker = TopPopEntityLinker(os.path.join(rel_ext_dir, 'baike_static_info.tsv'))
+    # entity_linker = TopRelatedEntityLinker(os.path.join(rel_ext_dir, 'baike_static_info.tsv'))
 
-    rel_linker = MatchRelLinker()
-    linker = SeparatedLinker(entity_linker, rel_linker)
-    ltp_extractor = SimpleLTPExtractor(ner, rel_extractor, linker)
+    # rel_linker = MatchRelLinker()
+    # linker = SeparatedLinker(entity_linker, rel_linker)
+    # ltp_extractor = SimpleLTPExtractor(ner, rel_extractor, linker)
 
-    triples, ltp_result = ltp_extractor.parse_sentence(s, page_info, stf_results_map[s], True)
+    # triples, ltp_result = ltp_extractor.parse_sentence(s, page_info, stf_results_map[s], True)
 
-    for triple in triples:
-        print triple.info(ltp_result)
+    # for triple in triples:
+    #     print triple.info(ltp_result)
 
 
     # knowledges = extractor.parse_sentence(s)

@@ -164,7 +164,7 @@ class LinkedTriple:
         rel = ltp_result.text(self.fb_rel.st, self.fb_rel.ed)
         fb_prop = self.fb_rel.fb_prop
         score = self.score()
-        return  "%s:%s\t%s:%s\t%s:%s %f" %(subj, subj_url, rel, fb_prop, obj, obj_url, score)
+        return  "%s:%s\t%s:%s\t%s:%s\t%f" %(subj, subj_url, rel, fb_prop, obj, obj_url, score)
 
     def knowledge(self):
         return "%s\t%s\t%s" %(self.baike_subj.baike_url, self.fb_rel.fb_prop, self.baike_obj.baike_url)

@@ -208,7 +208,7 @@ def test_ltp_extractor(datas_map, ner, rel_extractor, linker, ltp, schema):
             #     continue
             print sentence
             stf_result = stf_results_map[sentence]
-            triples, half_linked_triples, ltp_result,  = ltp_extractor.parse_sentence(sentence, page_info, stf_result, link_maps)
+            triples, ltp_result,  = ltp_extractor.parse_sentence(sentence, page_info, stf_result, link_maps)
             
             kl_set = set()
             str_set = set()

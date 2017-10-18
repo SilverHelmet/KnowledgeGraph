@@ -11,7 +11,7 @@ def split_sentences(text):
     pos = 0
     ed = len(text)
     while pos < ed:
-        if text[pos] in end_puncs or pos - st >= 100:
+        if text[pos] in end_puncs or pos - st >= 150:
             lines.append((text[st:pos+1]))
             st = pos+1
         pos += 1
