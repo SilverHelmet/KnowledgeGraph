@@ -233,7 +233,7 @@ def top_cnt_keys(keys_cnt):
     max_cnt = reduce(max, keys_cnt.values())
     top_keys = []
     for key in keys_cnt:
-        if keys_cnt[key] >= max_cnt - 0.5:
+        if keys_cnt[key] >= max_cnt - 1:
             top_keys.append(key)
     return top_keys
 
@@ -261,7 +261,6 @@ class PageMemoryEntityLinker:
                 if url not in baike_urls_cnt:
                     baike_urls_cnt[url] = 0
                 baike_urls_cnt[url] += score
-
         if len(baike_urls_cnt) != 0:
             return top_cnt_keys(baike_urls_cnt)
 
@@ -306,7 +305,10 @@ class PageMemoryEntityLinker:
             pop = bk_info.pop
             url_names = self.url2names[bk_url]
             summary = self.summary_map.get(bk_url, "")
-            summary_score = summary_related_score(summary, page_info, url_names)
+            if page_info.url == bk_url:
+                summary_score = 100
+            else:
+                summary_score = summary_related_score(summary, page_info, url_names)
             type_score = type_related_score(bk_info.types, page_info)
             
             # print name, bk_url, pop, summary_score, type_score
