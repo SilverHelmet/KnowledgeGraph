@@ -124,12 +124,12 @@ def load_summary_and_infobox(summary_path, infobox_path, lowercase):
 def summary_related_score(summary, page_info, summary_names):
     max_cnt = 0
     for name in page_info.names:
-        flag = True
-        for summary_name in summary_names:
-            if summary_name.find(name) != -1:
-                flag = False
-        if not flag:
-            continue
+        # flag = True
+        # for summary_name in summary_names:
+        #     if summary_name.find(name) != -1:
+        #         flag = False
+        # if not flag:
+        #     continue
         max_cnt = max(max_cnt, len(re.findall(name, summary)))
 
     
@@ -305,7 +305,7 @@ class PageMemoryEntityLinker:
             pop = bk_info.pop
             url_names = self.url2names[bk_url]
             summary = self.summary_map.get(bk_url, "")
-            if page_info.url == bk_url:
+            if page_info.url == bk_url and name == page_info.ename:
                 summary_score = 100
             else:
                 summary_score = summary_related_score(summary, page_info, url_names)

@@ -4,7 +4,8 @@
 #         self.ename = ename
 
 class PageInfo:
-    def __init__(self, names, url, domains):
+    def __init__(self, ename, names, url, domains):
+        self.ename = ename
         self.names = names
         self.url = url
         self.domains = domains

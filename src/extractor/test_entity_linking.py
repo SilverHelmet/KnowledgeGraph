@@ -82,7 +82,7 @@ if __name__ == "__main__":
         names = entity_linker.url2names[url]
         types = entity_linker.bk_info_map[url].types
         domains = get_url_domains(types, important_domains)
-        page_info = PageInfo(names, url, domains)
+        page_info = PageInfo(ename, names, url, domains)
         # page_info = PageInfo(ename)
         # if ename != "冰与火之歌":
             # continue
@@ -90,9 +90,10 @@ if __name__ == "__main__":
             entities = data.entities
             bk_urls = data.bk_urls
             sentence = data.sentence.encode('utf-8')
-            if sentence != "任天堂株式会社(日文:任天堂株式会社，平假名:にんてんどうかぶしきがいしゃ)于1947年11月20日成立 。电子游戏业三巨头之一，是具有全球影响力的游戏生产商。":
-                continue
-            print domains
+            # if sentence != "2011年，《冰与火之歌》被美国HBO电视网改编成了电视剧《权力的游戏》。":
+            #     continue
+            # print domains
+            # print url
             link_map, ner_names = testor.test(sentence, page_info, stf_results_map[sentence])
 
 
