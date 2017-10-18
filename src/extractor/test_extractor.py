@@ -172,7 +172,7 @@ def test_ltp_extractor(datas_map, ner, rel_extractor, linker, ltp, schema):
     stf_results_map = load_stanford_result(os.path.join(base_dir, 'sentences.txt'), os.path.join(base_dir, 'sentences_stanf_nlp.json'))
 
     link_maps = None
-    link_maps = load_links_map(os.path.join(cache_dir, 'link_map.json'))
+    # link_maps = load_links_map(os.path.join(cache_dir, 'link_map.json'))
     ltp_extractor = SimpleLTPExtractor(ner, rel_extractor, linker, ltp, link_maps is None)
 
     url2names = linker.entity_linker.url2names
@@ -204,7 +204,7 @@ def test_ltp_extractor(datas_map, ner, rel_extractor, linker, ltp, schema):
         linker.entity_linker.start_new_page()
         for data in datas:
             sentence = data.sentence.encode('utf-8')
-            # if sentence != '1985年，与叶德娴主演的法庭剧情片《法外情》是其早期主演的影片中的一部作品，刘德华扮演一位年轻的律师。':
+            # if sentence != '2008年6月23日，刘德华与朱丽倩在美国拉斯维加斯注册结婚 。':
             #     continue
             print sentence
             stf_result = stf_results_map[sentence]
