@@ -64,9 +64,6 @@ class SimpleLTPExtractor:
 
 
     def parse_sentence(self, sentence, page_info, stf_result, out_link_map = None, debug = False):
-
-        
-
         ltp_result = self.ltp.parse(sentence)
 
         if out_link_map:
@@ -109,7 +106,7 @@ class SimpleLTPExtractor:
             self.link_map_outf.write('%s\t%s\n' %(sentence, json.dumps(link_map, ensure_ascii = False)))
 
         mst_triples = mst_select_triple(linked_triples)
-        return mst_triples, ltp_result
+        return mst_triples, half_linked_triples, ltp_result
 
     def finish(self):
         if self.link_map_outf:

@@ -30,7 +30,10 @@ def load_predicate_map(filepath = None, extra_path = None):
                 continue
             p = line.split('\t')
             infobox_pred = p[0]
+            if not infobox_pred in predicate_map:
+                predicate_map[infobox_pred] = {}
             fb_props = json.loads(p[1])
+
             probs = predicate_map[infobox_pred]
             for prop in fb_props:
                 if not prop in probs:

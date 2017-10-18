@@ -55,6 +55,10 @@ class FBRelation:
         self.fb_prop = fb_prop
         self.prob = prob
 
+    @staticmethod
+    def null_relation(str_rel):
+        return FBRelation(str_rel, 'None', 0.01)
+
 class SPO:
     def __init__(self, e1, rel, e2, score, type):
         self.e1 = e1

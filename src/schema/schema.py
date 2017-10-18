@@ -69,7 +69,16 @@ class Schema:
             return False
     
     def reverse_property(self, fb_property):
-        return self.reverse_prop_map.get(fb_property, None)
+        props = fb_property.split('^')
+        props.reverse()
+        reverse_props = []
+        
+        for prop in props:
+            reverse_prop = self.reverse_prop_map.get(prop, None)
+            if reverse_prop is None:
+                return None
+            reverse_props.append(reverse_prop)
+        return "^".join(reverse_props)
 
     def expected_type(self, fb_property):
         return self.property_attrs[fb_property.split("^")[-1]]['fb:type.property.expected_type']
