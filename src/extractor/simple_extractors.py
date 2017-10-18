@@ -54,8 +54,12 @@ class SimpleLTPExtractor:
     def parse_triples(self, ltp_result, baike_entities, entity_pool):
         triples = []
         for e1 in baike_entities:
+            name1 = ltp_result.text(e1.st, e1.ed)
             for e2 in baike_entities:
                 if e1.st == e2.st:
+                    continue
+                name2 = ltp_result.text(e2.st, e2.ed)
+                if name1 == name2:
                     continue
                 rels = self.rel_extractor.find_relation(ltp_result, e1, e2 , entity_pool)
                 for rel_st, rel_ed in rels:

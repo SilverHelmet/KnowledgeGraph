@@ -35,22 +35,18 @@ def work(inpath, sentences_path, stanford_results_path, outpath):
     for line in file(inpath):
         obj = json.loads(line)
         url = obj['url']
-        texts = obj['texts']
+        
         if not url in url2names:
             print 'error url %s' %(url)
             continue
 
+        sentences = [s.encode('utf-8') for s in obj['sentences']]
         outf.write('###%s\n' %url)
         Print('process %s' %url)
         names = url2names[url]
         types = bk_info_map[url].types
         page_info = PageInfo(names[0], names, url, get_url_domains(types, important_domains))
         
-
-        sentences = []
-        for _, chapter_sentences in texts:
-            for sentence in chapter_sentences:
-                sentences.append(sentence.encode('utf-8'))
         
         entity_linker.start_new_page()
         for sentence in sentences:

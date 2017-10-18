@@ -1,3 +1,4 @@
+#encoding: utf-8
 import sys
 from .parse import parse_text, strip_url
 from ..IOUtil import Print
