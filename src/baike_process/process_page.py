@@ -41,6 +41,7 @@ def work(inpath, sentence_out_path, docuemnt_out_path):
         doc_outf.write('\n')
 
         for sentence in sentences:
+            print type(sentence)
             sentence_outf.write(sentence + '\n')    
     doc_outf.close()
     sentence_outf.close()
