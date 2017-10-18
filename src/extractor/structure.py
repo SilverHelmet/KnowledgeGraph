@@ -38,10 +38,10 @@ class BaikeEntity:
             'types': self.types
         }
 
-    @classmethod
-    def load_from_obj(o):
-        str_entity = StrEntity(o['st'], o['ed'], None)
-        return BaikeEntity(str_entity, o['baike_url'], o['pop'], o['types'])
+    @staticmethod
+    def load_from_obj(obj):
+        str_entity = StrEntity(obj['st'], obj['ed'], None)
+        return BaikeEntity(str_entity, obj['baike_url'], obj['pop'], obj['types'])
 
 class StrRelation:
     def __init__(self, st, ed):
@@ -94,6 +94,9 @@ class Knowledge:
 
     def knowledge(self):
         return "%s\t%s\t%s" %(self.subj_url, self.prop_uri, self.obj_url)
+
+    def info(self):
+        return "%s:%s\t%s:%s\t%s:%s" %(self.subj, self.subj_url, self.prop, self.prop_uri, self.obj, self.obj_url)
 
 
     @staticmethod

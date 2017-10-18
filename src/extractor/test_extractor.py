@@ -1,13 +1,13 @@
 #encoding: utf-8
 import glob
 import os
-from ..IOUtil import data_dir, rel_ext_dir, Print
+from ..IOUtil import data_dir, rel_ext_dir, Print, cache_dir
 import pandas as pd
 import json
 import numpy as np 
 from ..IOUtil import doc_dir
 import os
-from .structure import Knowledge, PageInfo
+from .structure import Knowledge, PageInfo, BaikeEntity
 from .entity.naive_ner import NaiveNer
 from .entity.ner import NamedEntityReg
 # from dependency.relation_extractors import RelTagExtractor
@@ -40,7 +40,17 @@ def load_url_map():
             url_map[p[0]] = p[1]
     return url_map
 
-
+def load_links_map(filepath):
+    link_maps = {}
+    for line in file(filepath):
+        p = line.strip().split('\t')
+        sentence = p[0]
+        links = json.loads(p[1])
+        m = {}
+        for name in links:
+            m[name.encode('utf-8')] = BaikeEntity.load_from_obj(links[name])
+        link_maps[sentence] = m
+    return link_maps
 
 
 def decode(text):
@@ -55,9 +65,16 @@ class Data:
 
     
     def add(self, subj, prop, obj):
+
         subj = decode(subj)
         prop = decode(prop)
         obj = decode(obj)
+        if subj.startswith('https://'):
+            subj = subj[len('https://'):]
+        if obj.startswith('https://'):
+            obj = obj[len('https://'):]
+
+
 
         if self.half_add:
             self.knowledges.append(Knowledge(self.subj, self.prop, self.obj, subj, prop, obj))
@@ -154,11 +171,15 @@ def test_ltp_extractor(datas_map, ner, rel_extractor, linker, ltp, schema):
     base_dir = os.path.join(data_dir, '标注数据')
     stf_results_map = load_stanford_result(os.path.join(base_dir, 'sentences.txt'), os.path.join(base_dir, 'sentences_stanf_nlp.json'))
 
-    ltp_extractor = SimpleLTPExtractor(ner, rel_extractor, linker, ltp, True)
+    link_maps = None
+    # link_maps = load_links_map(os.path.join(cache_dir, 'link_map.json'))
+    ltp_extractor = SimpleLTPExtractor(ner, rel_extractor, linker, ltp, link_maps is None)
+
     url2names = linker.entity_linker.url2names
     bk_info_map = linker.entity_linker.bk_info_map
     url_map = load_url_map()
     important_domains = load_important_domains()
+    same_link_map = load_same_linkings()
 
     estimation = {
         "total output": 0,
@@ -181,15 +202,17 @@ def test_ltp_extractor(datas_map, ner, rel_extractor, linker, ltp, schema):
                 # continue
             print sentence
             stf_result = stf_results_map[sentence]
-            triples, ltp_result = ltp_extractor.parse_sentence(sentence, page_info, stf_result)
+            triples, ltp_result = ltp_extractor.parse_sentence(sentence, page_info, stf_result, link_maps)
             
             kl_set = set()
             for kl in data.knowledges:
                 # kl_set.add(kl.knowledge())
-                kl_set.add("%s\t%s\t%s" %(kl.subj, kl.prop_uri, kl.obj))
+                kl.subj_url = same_link_map.get(kl.subj_url, kl.subj_url)
+                kl.obj_url = same_link_map.get(kl.obj_url, kl.obj_url)
+                kl_set.add("%s\t%s\t%s" %(kl.subj_url, kl.prop_uri, kl.obj_url))
                 reverse_prop_uri = schema.reverse_property(kl.prop_uri)
                 if reverse_prop_uri:
-                    kl_set.add("%s\t%s\t%s" %(kl.obj, reverse_prop_uri, kl.subj))
+                    kl_set.add("%s\t%s\t%s" %(kl.obj_url, reverse_prop_uri, kl.subj_url))
 
             estimation['total labeled'] += len(data.knowledges)
 
@@ -200,16 +223,18 @@ def test_ltp_extractor(datas_map, ner, rel_extractor, linker, ltp, schema):
                 obj = ltp_result.text(triple.baike_obj.st, triple.baike_obj.ed)
                 prop = triple.fb_rel.fb_prop
 
+                subj_url = same_link_map.get(triple.baike_subj.baike_url, triple.baike_subj.baike_url)
+                obj_url = same_link_map.get(triple.baike_obj.baike_url, triple.baike_obj.baike_url)
                 
                 estimation['total output'] += 1
-                if "%s\t%s\t%s" %(subj, prop, obj) in kl_set:
+                if "%s\t%s\t%s" %(subj_url, prop, obj_url) in kl_set:
                     estimation['right output'] += 1
-                    print '\t%s' %info, 'right'
+                    print '\t%s\t%s' %(info, 'right')
                 else:
-                    print '\t%s' %info
+                    print '\t%s\t%s' %(info, 'error')
 
             for kl in data.knowledges:
-                print '\t\t%s' %kl
+                print '\t\t%s' %kl.info()
     print estimation
     ltp_extractor.finish()
 

@@ -41,7 +41,7 @@ class SimpleLTPExtractor:
         self.rel_extractor = rel_extractor
         self.linker = linker
         if link_map_out:
-            self.link_map_outf = file(os.path.join(cache_dir, 'link_map.jsons'), 'w')
+            self.link_map_outf = file(os.path.join(cache_dir, 'link_map.json'), 'w')
         else:
             self.link_map_outf = None
         # self.ner = NaiveNer()
@@ -63,21 +63,29 @@ class SimpleLTPExtractor:
         return triples
 
 
-    def parse_sentence(self, sentence, page_info, stf_result, debug = False):
+    def parse_sentence(self, sentence, page_info, stf_result, out_link_map = None, debug = False):
 
         
 
         ltp_result = self.ltp.parse(sentence)
 
+        if out_link_map:
+            sentence_link_map = out_link_map[sentence]
+
         str_entites = self.ner.recognize(sentence, ltp_result, page_info, stf_result)
-        link_map = {}
         baike_entities = []
+        link_map = {}
         for str_entity in str_entites:
-            baike_entity_list = self.linker.entity_linker.link(ltp_result, str_entity, page_info)
-            if len(baike_entity_list) > 0:
-                baike_entity = baike_entity_list[0]
-                baike_entities.append(baike_entity)
-                link_map[ltp_result.text(str_entity.st, str_entity.ed)] = baike_entity.to_obj()
+            if out_link_map:
+                baike_entity = sentence_link_map.get(ltp_result.text(str_entity.st, str_entity.ed), None)
+                if baike_entity:
+                    baike_entities.append(baike_entity)
+            else:
+                baike_entity_list = self.linker.entity_linker.link(ltp_result, str_entity, page_info)
+                if len(baike_entity_list) > 0:
+                    baike_entity = baike_entity_list[0]
+                    baike_entities.append(baike_entity)
+                    link_map[ltp_result.text(str_entity.st, str_entity.ed)] = baike_entity.to_obj()
 
         if debug:
             print "#str entities:", len(str_entites)
