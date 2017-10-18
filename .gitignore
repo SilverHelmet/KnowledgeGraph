@@ -5,6 +5,7 @@
 /log
 /lib
 /src/test
+/java
 .DS_Store
 # database
 vdb
