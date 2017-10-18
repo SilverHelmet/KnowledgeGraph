@@ -59,6 +59,7 @@ def work(inpath, sentences_path, stanford_results_path, outpath):
                 outf.write("\t%s\n" %sentence)
                 for triple in triples:
                     outf.write("\t\t%s\n" %triple.info(ltp_result))
+    Print('finished')
     outf.close()
 
 
