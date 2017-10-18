@@ -198,8 +198,8 @@ def test_ltp_extractor(datas_map, ner, rel_extractor, linker, ltp, schema):
         linker.entity_linker.start_new_page()
         for data in datas:
             sentence = data.sentence.encode('utf-8')
-            if sentence != '1993年，主演刘镇伟执导的浪漫剧情片《天长地久》，刘德华与刘锦玲和吴家丽合作诠释了一段悲剧爱情故事。':
-                continue
+            # if sentence != '1985年，与叶德娴主演的法庭剧情片《法外情》是其早期主演的影片中的一部作品，刘德华扮演一位年轻的律师。':
+            #     continue
             print sentence
             stf_result = stf_results_map[sentence]
             triples, ltp_result = ltp_extractor.parse_sentence(sentence, page_info, stf_result, link_maps)
@@ -227,7 +227,7 @@ def test_ltp_extractor(datas_map, ner, rel_extractor, linker, ltp, schema):
                 obj_url = same_link_map.get(triple.baike_obj.baike_url, triple.baike_obj.baike_url)
                 
                 estimation['total output'] += 1
-                if "%s\t%s\t%s" %(subj_url, prop, obj_url) in kl_set:
+                if "%s\t%s\t%s" %(subj_url, prop, obj_url) in kl_set or "%s\t%s\t%s" %(subj_url, prop.split("^")[0], obj_url) in kl_set or "%s\t%s\t%s" %(subj_url, prop.split("^")[-1], obj_url) in kl_set:
                     estimation['right output'] += 1
                     print '\t%s\t%s' %(info, 'right')
                 else:
