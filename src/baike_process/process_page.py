@@ -29,7 +29,7 @@ def work(inpath, sentence_out_path, docuemnt_out_path):
         b64content = p[1]
         texts = parse_text(url, b64content)
         sentences = []
-        for text in texts:
+        for _, text in texts:
             for paragraph in text:
                 sentences.extend(split_sentences(paragraph))
         obj = {
@@ -41,7 +41,6 @@ def work(inpath, sentence_out_path, docuemnt_out_path):
         doc_outf.write('\n')
 
         for sentence in sentences:
-            print type(sentence)
             sentence_outf.write(sentence + '\n')    
     doc_outf.close()
     sentence_outf.close()
