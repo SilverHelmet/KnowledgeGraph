@@ -9,3 +9,5 @@ for path in $paths
 do
     scp lhr@dlib:~/KnowledgeGraph/${path}.sample ${path}
 done
+
+uniq result/rel_extraction/baike_names.tsv > result/rel_extraction/baike_names.tsv

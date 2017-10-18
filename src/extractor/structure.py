@@ -29,6 +29,20 @@ class BaikeEntity:
         self.pop = pop
         self.types = types
 
+    def to_obj(self):
+        return {
+            'st': self.st,
+            'ed': self.ed,
+            "baike_url": self.baike_url,
+            'pop': self.pop,
+            'self.types': self.types
+        }
+
+    @classmethod
+    def load_from_obj(o):
+        str_entity = StrEntity(o['st'], o['ed'], None)
+        return BaikeEntity(str_entity, o['baike_url'], o['pop'], o['types'])
+
 class StrRelation:
     def __init__(self, st, ed):
         self.st = st
@@ -100,8 +114,14 @@ class ChapterInfo:
 class Triple:
     def __init__(self, str_e1, str_rel, str_e2):
         self.e1 = str_e1
-        self.rel = str_rel
+        self.str_rel = str_rel
         self.e2 = str_e2
+
+class HalfLinkedTriple:
+    def __init__(self,baike_subj, str_rel, baike_obj):
+        self.baike_subj = baike_subj
+        self.str_rel = str_rel
+        self.baike_obj = baike_obj       
 
 class LinkedTriple:
     def __init__(self, baike_subj, fb_rel, baike_obj):
@@ -115,7 +135,8 @@ class LinkedTriple:
         return schema_type in self.baike_subj.types and expected_type in self.baike_obj.types
 
     def score(self):
-        return (self.baike_subj.pop + self.baike_obj.pop) * self.fb_rel.prob * self. position_coef()
+        # return (self.baike_subj.pop + self.baike_obj.pop) * self.fb_rel.prob * self. position_coef()
+        return (self.baike_subj.pop + self.baike_obj.pop) / 2.0 * self.fb_rel.prob
 
     def position_coef(self):
         pos_diff = min(abs(self.baike_subj.st - self.baike_obj.ed), abs(self.baike_obj.st - self.baike_subj.ed) )

@@ -21,7 +21,7 @@ class SeparatedLinker:
         e1_entities = self.entity_linker.link(ltp_result, triple.e1, page_info)
         e2_entities = self.entity_linker.link(ltp_result, triple.e2, page_info)
 
-        fb_rels = self.rel_linker.link(ltp_result, triple.rel)
+        fb_rels = self.rel_linker.link(ltp_result, triple.str_rel)
     
         linked_triples = []
         for e1 in e1_entities:
@@ -30,6 +30,19 @@ class SeparatedLinker:
                     ltriple = LinkedTriple(e1, rel, e2)
                     if ltriple.check_type(self.schema):
                         linked_triples.append(ltriple)
+                        
+        return linked_triples
+
+    def only_link_rel(self, ltp_result, half_linked_triple, page_info):
+        fb_rels = self.rel_linker.link(ltp_result, half_linked_triple.str_rel)
+    
+        linked_triples = []
+        e1 = half_linked_triple.baike_subj
+        e2 = half_linked_triple.baike_obj
+        for rel in fb_rels:
+            ltriple = LinkedTriple(e1, rel, e2)
+            if ltriple.check_type(self.schema):
+                linked_triples.append(ltriple)
                         
         return linked_triples
 

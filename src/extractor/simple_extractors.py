@@ -46,41 +46,45 @@ class SimpleLTPExtractor:
         # self.linker = SeparatedLinker(entity_linker, rel_linker)
 
 
-    def parse_triples(self, ltp_result, str_entites, entity_pool):
+    def parse_triples(self, ltp_result, baike_entities, entity_pool):
         triples = []
-        for e1 in str_entites:
-            for e2 in str_entites:
+        for e1 in baike_entities:
+            for e2 in baike_entities:
                 if e1.st == e2.st:
                     continue
                 rels = self.rel_extractor.find_relation(ltp_result, e1, e2 , entity_pool)
                 for rel_st, rel_ed in rels:
-                    
-                    triples.append(Triple(e1, StrRelation(rel_st, rel_ed), e2))
+                    triples.append(HalfLinkedTriple(e1, StrRelation(rel_st, rel_ed), e2))
         return triples
+
 
     def parse_sentence(self, sentence, page_info, stf_result, debug = False):
         ltp_result = self.ltp.parse(sentence)
 
         str_entites = self.ner.recognize(sentence, ltp_result, page_info, stf_result)
+        link_map = {}
+        baike_entities = []
+        for str_entity in str_entites:
+            baike_entity_list = self.linker.entity_linker.link(ltp_result, str_entity, page_info)
+            if len(baike_entity_list) > 0:
+                baike_entity = baike_entity_list[0]
+                baike_entities.append(baike_entity)
+                link_map[ltp_result.text(str_entity.st, str_entity.ed)] = baike_entity
 
         if debug:
             print "#str entities:", len(str_entites)
+            print "#baike entities:", len(baike_entities)
+        
 
         entity_pool = fill_entity_pool(ltp_result.length, str_entites)
 
         
-        triples = self.parse_triples(ltp_result, str_entites, entity_pool)
+        half_linked_triples = self.parse_triples(ltp_result, baike_entities, entity_pool)
 
-        if debug:
-            print "#triples:", len(triples)
-            for triple in triples:
-                subj = ltp_result.text(triple.e1.st, triple.e1.ed)
-                rel = ltp_result.text(triple.rel.st, triple.rel.ed)
-                obj = ltp_result.text(triple.e2.st, triple.e2.ed)
 
         linked_triples = []
-        for triple in triples:
-            linked_triples.extend(self.linker.link(ltp_result, triple, page_info))        
+        for half_linked_triple in half_linked_triples:
+            linked_triples.extend(self.linker.only_link_rel(ltp_result, half_linked_triple, page_info))        
 
         if debug:
             print "#linked triples", len(linked_triples)

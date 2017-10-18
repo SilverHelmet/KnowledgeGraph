@@ -172,8 +172,10 @@ def test_ltp_extractor(datas_map, ner, rel_extractor, linker, ltp):
         names = url2names[url]
         types = bk_info_map[url].types
         page_info = PageInfo(baike_name, names, url, get_url_domains(types, important_domains))
+        linker.entity_linker.start_new_page()
         for data in datas:
             sentence = data.sentence.encode('utf-8')
+            if sentence != ''
             print sentence
             stf_result = stf_results_map[sentence]
             triples, ltp_result = ltp_extractor.parse_sentence(sentence, page_info, stf_result)
@@ -199,12 +201,12 @@ def test_ltp_extractor(datas_map, ner, rel_extractor, linker, ltp):
                 estimation['total output'] += 1
                 if "%s\t%s\t%s" %(subj, prop, obj) in kl_set:
                     estimation['right output'] += 1
-                    print info, 'right'
+                    print '\t%s' %info, 'right'
                 else:
-                    print info
+                    print '\t%s' %info
 
             for kl in data.knowledges:
-                print '\t', kl
+                print '\t\t%s' %kl
     print estimation
 
     

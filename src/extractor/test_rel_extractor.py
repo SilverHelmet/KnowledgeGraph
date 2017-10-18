@@ -39,7 +39,7 @@ class RelExtractorTestor():
         self.ltp = ltp
         self.use_advanced_ner = use_advanced_ner
         if use_advanced_ner:
-            self.ner = NamedEntityReg()
+            self.ner = NamedEntityReg(ltp)
             base_dir = os.path.join(data_dir, '标注数据')
             self.stf_results_map = load_stanford_result(os.path.join(base_dir, 'sentences.txt'), os.path.join(base_dir, 'sentences_stanf_nlp.json'))
         else:
