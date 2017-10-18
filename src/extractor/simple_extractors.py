@@ -34,7 +34,7 @@ def fill_entity_pool(length, str_entites):
     return pool
 
 class SimpleLTPExtractor:
-    def __init__(self, ner, rel_extractor, linker, ltp`):
+    def __init__(self, ner, rel_extractor, linker, ltp):
         self.ltp = ltp
         self.ner = ner
         self.rel_extractor = rel_extractor
