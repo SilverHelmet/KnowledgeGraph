@@ -204,15 +204,20 @@ class VerbRelationExtractor:
             self.debuger.debug("second eneity: find by ATT rule!")
             advanced_res.append((ATT_rule_res2.idx,ATT_rule_res2.idx + 1))
         for res in advanced_res:
-            if entity_pool[res[0]] == 1:
+            if entity_pool[res[0]] == True:
                 self.debuger.debug('found verb', ltp_result.words[res[0]] ,'is an entity! error!')
         return advanced_res
+
+    def judge_title_tag(self, node):
+        if node.postag in ['n', 'ns']:
+            return True
+        return False
 
     def find_all_COO_title(self, node):
         res = []
         path = self.find_path_to_root(node)
         for p in path:
-            if p.rel == 'COO' and p.father.postag == 'n':
+            if p.rel == 'COO' and self.judge_title_tag(p.father) == True:
                 res.append(p.father)
         for child in node.children:
             res += self.trace_down_title_rule2(child)
@@ -221,13 +226,13 @@ class VerbRelationExtractor:
     def find_COO_or_ATT_title(self, node):
         res = []
         for child in node.children:
-            if child.rel == 'ATT' and child.postag == 'n':
+            if child.rel == 'ATT' and self.judge_title_tag(child) == True:
                 res += self.trace_down_title_rule1(child)
         return res
 
     def trace_down_title_rule2(self, node):
         res = []
-        if node.rel == 'COO' and node.postag == 'n':
+        if node.rel == 'COO' and self.judge_title_tag(node) == True:
             res.append(node)
         for child in node.children:
             self.trace_down_title_rule2(child)
@@ -235,49 +240,73 @@ class VerbRelationExtractor:
 
     def trace_down_title_rule1(self, node):
         res = []
-        if node.rel in ['ATT', 'COO'] and node.postag == 'n':
+        if node.rel in ['ATT', 'COO'] and self.judge_title_tag(node) == True:
             res.append(node)
         for child in node.children:
             self.trace_down_title_rule1(child)
         return res
 
-    def find_title(self, ltp_result, e1, e2, entity_pool):
+    def find_title(self, ltp_result, e, entity_pool):
         tree = ParseTree(ltp_result)
-        father1, near_verb1, verb1 = self.find_2_verbs(tree, e1)
-        father2, near_verb2, verb2 = self.find_2_verbs(tree, e2)
-        res1 = self.find_all_COO_title(father1)
-        res2 = self.find_all_COO_title(father2)
-        res3 = self.find_COO_or_ATT_title(father1)
-        res4 = self.find_COO_or_ATT_title(father2)
-        res = res1 + res2 + res3 + res4
-        tmp_res = []
+        father, near_verb, verb = self.find_2_verbs(tree, e)
+        res1 = self.find_all_COO_title(father)
+        res2 = self.find_COO_or_ATT_title(father)
+        new_res_1 = new_res_2 = []
+        for words in res1:
+            if entity_pool[words.idx] == False:
+                new_res_1.append(words)
+        for words in res2:
+            if entity_pool[words.idx] == False:
+                new_res_2.append(words)
+        new_res = new_res_1 + new_res_2
+        new_res = set(new_res)
+        final_res = []
+        for i in new_res:
+            final_res.append((i.idx, i.idx + 1))
+        '''
         final_res = []
         for i in res:
-            tmp_res.append(i.idx)
-        tmp_res = set(tmp_res)
-        for j in tmp_res:
-            final_res.append((tree.nodes[j].idx, tree.nodes[j + 1].idx + 1))
+            final_res.append((res.idx, res.idx + 1))
+        '''
         return final_res
 
 if __name__ == "__main__":
     ltp = LTP(None)
-    sentence = '1993年，主演刘镇伟执导的浪漫剧情片《天长地久》，刘德华与刘锦玲和吴家丽合作诠释了一段悲剧爱情故事。'
-    ltp_result = ltp.parse(sentence)
-    info = PrintInfo()
-    info.print_ltp(ltp_result)
-    e1 = '刘镇伟'
-    e2 = '天长地久'
-    st, ed = ltp_result.search_word(e1)
-    e1 = StrEntity(st, ed, None)
-    st, ed = ltp_result.search_word(e2)
-    e2 = StrEntity(st, ed, None)
-    entity_pool = []
-    for i in range(ltp_result.length):
-        entity_pool.append(0)
-    res = VerbRelationExtractor(True)
-    tmp1 = res.find_relation(ltp_result, e1, e2, entity_pool)
-    for ans in tmp1:
-        print ltp_result.words[ans[0]]
-    tmp2 = res.find_title(ltp_result, e1, e2, entity_pool)
-    for ans in tmp2:
-        print ltp_result.words[ans[0]]
+    f = open("src/extractor/dependency/noverb_err.txt", "r")
+    item = f.readlines()
+    f.close()
+    hit = 0
+    k = 0
+    while k < len(item):
+        sentence = item[k]
+        e_tmp = item[k+1].strip().split('\t')
+        ltp_result = ltp.parse(sentence)
+        info = PrintInfo()
+        info.print_ltp(ltp_result)
+        st, ed = ltp_result.search_word(e_tmp[0])
+        e1 = StrEntity(st, ed, None)
+        st, ed = ltp_result.search_word(e_tmp[2])
+        e2 = StrEntity(st, ed, None)
+        entity_pool = []
+        for i in range(ltp_result.length):
+            entity_pool.append(0)
+        res = VerbRelationExtractor(True)
+        '''
+        tmp1 = res.find_relation(ltp_result, e1, e2, entity_pool)
+        for ans in tmp1:
+            print ltp_result.words[ans[0]]
+        '''
+        title_res_1 = res.find_title(ltp_result, e1, entity_pool)
+        title_res_2 = res.find_title(ltp_result, e2, entity_pool)
+        
+        print e_tmp[0], 'have titles:'
+        for ans in title_res_1:
+            print ans[0]
+        print e_tmp[2], 'have titles:'
+        for ans in title_res_2:
+            print ans[0]
+        
+        print '-'*50
+        k += 2
+
+

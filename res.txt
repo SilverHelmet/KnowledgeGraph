@@ -1,0 +1,49 @@
+乔治·雷蒙德·理查德·马丁（George Raymond Richard Martin，简称GRRM），美国作家和编剧，奇幻小说大师。
+
+0 : 乔治·雷蒙德·理查德·马丁 nh
+1 : （ wp
+2 : George ws
+3 : Raymond ws
+4 : Richard ws
+5 : Martin ws
+6 : ， wp
+7 : 简称 v
+8 : GRRM ws
+9 : ） wp
+10 : ， wp
+11 : 美国 ns
+12 : 作家 n
+13 : 和 c
+14 : 编剧 n
+15 : ， wp
+16 : 奇幻 a
+17 : 小说 n
+18 : 大师 n
+19 : 。 wp
+ROOT -- HED -- 乔治·雷蒙德·理查德·马丁 ( nh )
+Martin ( ws ) -- WP -- （ ( wp )
+Raymond ( ws ) -- ATT -- George ( ws )
+Richard ( ws ) -- ATT -- Raymond ( ws )
+Martin ( ws ) -- ATT -- Richard ( ws )
+乔治·雷蒙德·理查德·马丁 ( nh ) -- COO -- Martin ( ws )
+Martin ( ws ) -- WP -- ， ( wp )
+Martin ( ws ) -- COO -- 简称 ( v )
+简称 ( v ) -- VOB -- GRRM ( ws )
+简称 ( v ) -- WP -- ） ( wp )
+乔治·雷蒙德·理查德·马丁 ( nh ) -- WP -- ， ( wp )
+作家 ( n ) -- ATT -- 美国 ( ns )
+乔治·雷蒙德·理查德·马丁 ( nh ) -- COO -- 作家 ( n )
+编剧 ( n ) -- LAD -- 和 ( c )
+作家 ( n ) -- COO -- 编剧 ( n )
+作家 ( n ) -- WP -- ， ( wp )
+小说 ( n ) -- ATT -- 奇幻 ( a )
+大师 ( n ) -- ATT -- 小说 ( n )
+作家 ( n ) -- COO -- 大师 ( n )
+乔治·雷蒙德·理查德·马丁 ( nh ) -- WP -- 。 ( wp )
+乔治·雷蒙德·理查德·马丁 have titles:
+12
+作家 have titles:
+18
+11
+14
+--------------------------------------------------

@@ -1,0 +1,811 @@
+刘德华（Andy Lau），1961年9月出生于中国香港，中国知名演员、歌手、词作人、制片人、电影人，影视歌多栖发展的代表艺人之一。
+
+0 : 刘德华 nh
+1 : （ wp
+2 : Andy ws
+3 : Lau ws
+4 : ） wp
+5 : ， wp
+6 : 1961年 nt
+7 : 9月 nt
+8 : 出生 v
+9 : 于 p
+10 : 中国 ns
+11 : 香港 ns
+12 : ， wp
+13 : 中国 ns
+14 : 知名演员 n
+15 : 、 wp
+16 : 歌手 n
+17 : 、 wp
+18 : 词作人 n
+19 : 、 wp
+20 : 制片人 n
+21 : 、 wp
+22 : 电影 n
+23 : 人 n
+24 : ， wp
+25 : 影视 b
+26 : 歌 n
+27 : 多 d
+28 : 栖 v
+29 : 发展 v
+30 : 的 u
+31 : 代表 n
+32 : 艺人 n
+33 : 之一 r
+34 : 。 wp
+出生 ( v ) -- SBV -- 刘德华 ( nh )
+Lau ( ws ) -- WP -- （ ( wp )
+Lau ( ws ) -- ATT -- Andy ( ws )
+刘德华 ( nh ) -- COO -- Lau ( ws )
+Lau ( ws ) -- WP -- ） ( wp )
+刘德华 ( nh ) -- WP -- ， ( wp )
+9月 ( nt ) -- ATT -- 1961年 ( nt )
+出生 ( v ) -- ADV -- 9月 ( nt )
+ROOT -- HED -- 出生 ( v )
+出生 ( v ) -- CMP -- 于 ( p )
+香港 ( ns ) -- ATT -- 中国 ( ns )
+于 ( p ) -- POB -- 香港 ( ns )
+出生 ( v ) -- WP -- ， ( wp )
+知名演员 ( n ) -- ATT -- 中国 ( ns )
+出生 ( v ) -- COO -- 知名演员 ( n )
+知名演员 ( n ) -- WP -- 、 ( wp )
+知名演员 ( n ) -- COO -- 歌手 ( n )
+词作人 ( n ) -- WP -- 、 ( wp )
+知名演员 ( n ) -- COO -- 词作人 ( n )
+制片人 ( n ) -- WP -- 、 ( wp )
+知名演员 ( n ) -- COO -- 制片人 ( n )
+人 ( n ) -- WP -- 、 ( wp )
+人 ( n ) -- ATT -- 电影 ( n )
+知名演员 ( n ) -- COO -- 人 ( n )
+知名演员 ( n ) -- WP -- ， ( wp )
+歌 ( n ) -- ATT -- 影视 ( b )
+发展 ( v ) -- SBV -- 歌 ( n )
+发展 ( v ) -- ADV -- 多 ( d )
+发展 ( v ) -- ATT -- 栖 ( v )
+艺人 ( n ) -- ATT -- 发展 ( v )
+发展 ( v ) -- RAD -- 的 ( u )
+艺人 ( n ) -- ATT -- 代表 ( n )
+之一 ( r ) -- ATT -- 艺人 ( n )
+知名演员 ( n ) -- COO -- 之一 ( r )
+出生 ( v ) -- WP -- 。 ( wp )
+刘德华 have titles:
+电影人 have titles:
+知名演员
+--------------------------------------------------
+刘德华（Andy Lau），1961年9月出生于中国香港，中国知名演员、歌手、词作人、制片人、电影人，影视歌多栖发展的代表艺人之一。
+
+0 : 刘德华 nh
+1 : （ wp
+2 : Andy ws
+3 : Lau ws
+4 : ） wp
+5 : ， wp
+6 : 1961年 nt
+7 : 9月 nt
+8 : 出生 v
+9 : 于 p
+10 : 中国 ns
+11 : 香港 ns
+12 : ， wp
+13 : 中国 ns
+14 : 知名演员 n
+15 : 、 wp
+16 : 歌手 n
+17 : 、 wp
+18 : 词作人 n
+19 : 、 wp
+20 : 制片人 n
+21 : 、 wp
+22 : 电影 n
+23 : 人 n
+24 : ， wp
+25 : 影视 b
+26 : 歌 n
+27 : 多 d
+28 : 栖 v
+29 : 发展 v
+30 : 的 u
+31 : 代表 n
+32 : 艺人 n
+33 : 之一 r
+34 : 。 wp
+出生 ( v ) -- SBV -- 刘德华 ( nh )
+Lau ( ws ) -- WP -- （ ( wp )
+Lau ( ws ) -- ATT -- Andy ( ws )
+刘德华 ( nh ) -- COO -- Lau ( ws )
+Lau ( ws ) -- WP -- ） ( wp )
+刘德华 ( nh ) -- WP -- ， ( wp )
+9月 ( nt ) -- ATT -- 1961年 ( nt )
+出生 ( v ) -- ADV -- 9月 ( nt )
+ROOT -- HED -- 出生 ( v )
+出生 ( v ) -- CMP -- 于 ( p )
+香港 ( ns ) -- ATT -- 中国 ( ns )
+于 ( p ) -- POB -- 香港 ( ns )
+出生 ( v ) -- WP -- ， ( wp )
+知名演员 ( n ) -- ATT -- 中国 ( ns )
+出生 ( v ) -- COO -- 知名演员 ( n )
+知名演员 ( n ) -- WP -- 、 ( wp )
+知名演员 ( n ) -- COO -- 歌手 ( n )
+词作人 ( n ) -- WP -- 、 ( wp )
+知名演员 ( n ) -- COO -- 词作人 ( n )
+制片人 ( n ) -- WP -- 、 ( wp )
+知名演员 ( n ) -- COO -- 制片人 ( n )
+人 ( n ) -- WP -- 、 ( wp )
+人 ( n ) -- ATT -- 电影 ( n )
+知名演员 ( n ) -- COO -- 人 ( n )
+知名演员 ( n ) -- WP -- ， ( wp )
+歌 ( n ) -- ATT -- 影视 ( b )
+发展 ( v ) -- SBV -- 歌 ( n )
+发展 ( v ) -- ADV -- 多 ( d )
+发展 ( v ) -- ATT -- 栖 ( v )
+艺人 ( n ) -- ATT -- 发展 ( v )
+发展 ( v ) -- RAD -- 的 ( u )
+艺人 ( n ) -- ATT -- 代表 ( n )
+之一 ( r ) -- ATT -- 艺人 ( n )
+知名演员 ( n ) -- COO -- 之一 ( r )
+出生 ( v ) -- WP -- 。 ( wp )
+刘德华 have titles:
+歌手 have titles:
+知名演员
+--------------------------------------------------
+刘德华（Andy Lau），1961年9月出生于中国香港，中国知名演员、歌手、词作人、制片人、电影人，影视歌多栖发展的代表艺人之一。
+
+0 : 刘德华 nh
+1 : （ wp
+2 : Andy ws
+3 : Lau ws
+4 : ） wp
+5 : ， wp
+6 : 1961年 nt
+7 : 9月 nt
+8 : 出生 v
+9 : 于 p
+10 : 中国 ns
+11 : 香港 ns
+12 : ， wp
+13 : 中国 ns
+14 : 知名演员 n
+15 : 、 wp
+16 : 歌手 n
+17 : 、 wp
+18 : 词作人 n
+19 : 、 wp
+20 : 制片人 n
+21 : 、 wp
+22 : 电影 n
+23 : 人 n
+24 : ， wp
+25 : 影视 b
+26 : 歌 n
+27 : 多 d
+28 : 栖 v
+29 : 发展 v
+30 : 的 u
+31 : 代表 n
+32 : 艺人 n
+33 : 之一 r
+34 : 。 wp
+出生 ( v ) -- SBV -- 刘德华 ( nh )
+Lau ( ws ) -- WP -- （ ( wp )
+Lau ( ws ) -- ATT -- Andy ( ws )
+刘德华 ( nh ) -- COO -- Lau ( ws )
+Lau ( ws ) -- WP -- ） ( wp )
+刘德华 ( nh ) -- WP -- ， ( wp )
+9月 ( nt ) -- ATT -- 1961年 ( nt )
+出生 ( v ) -- ADV -- 9月 ( nt )
+ROOT -- HED -- 出生 ( v )
+出生 ( v ) -- CMP -- 于 ( p )
+香港 ( ns ) -- ATT -- 中国 ( ns )
+于 ( p ) -- POB -- 香港 ( ns )
+出生 ( v ) -- WP -- ， ( wp )
+知名演员 ( n ) -- ATT -- 中国 ( ns )
+出生 ( v ) -- COO -- 知名演员 ( n )
+知名演员 ( n ) -- WP -- 、 ( wp )
+知名演员 ( n ) -- COO -- 歌手 ( n )
+词作人 ( n ) -- WP -- 、 ( wp )
+知名演员 ( n ) -- COO -- 词作人 ( n )
+制片人 ( n ) -- WP -- 、 ( wp )
+知名演员 ( n ) -- COO -- 制片人 ( n )
+人 ( n ) -- WP -- 、 ( wp )
+人 ( n ) -- ATT -- 电影 ( n )
+知名演员 ( n ) -- COO -- 人 ( n )
+知名演员 ( n ) -- WP -- ， ( wp )
+歌 ( n ) -- ATT -- 影视 ( b )
+发展 ( v ) -- SBV -- 歌 ( n )
+发展 ( v ) -- ADV -- 多 ( d )
+发展 ( v ) -- ATT -- 栖 ( v )
+艺人 ( n ) -- ATT -- 发展 ( v )
+发展 ( v ) -- RAD -- 的 ( u )
+艺人 ( n ) -- ATT -- 代表 ( n )
+之一 ( r ) -- ATT -- 艺人 ( n )
+知名演员 ( n ) -- COO -- 之一 ( r )
+出生 ( v ) -- WP -- 。 ( wp )
+刘德华 have titles:
+词作人 have titles:
+知名演员
+--------------------------------------------------
+《冰与火之歌》(A Song of Ice and Fire)是由美国作家乔治·R·R·马丁所著的严肃奇幻小说系列。
+
+0 : 《 wp
+1 : 冰 n
+2 : 与 c
+3 : 火 n
+4 : 之 u
+5 : 歌 n
+6 : 》 wp
+7 : ( wp
+8 : A ws
+9 : Song ws
+10 : of ws
+11 : Ice ws
+12 : and ws
+13 : Fire ws
+14 : ) wp
+15 : 是 v
+16 : 由 p
+17 : 美国 ns
+18 : 作家 n
+19 : 乔治· nh
+20 : R ws
+21 : · wp
+22 : R ws
+23 : · wp
+24 : 马丁 nh
+25 : 所 u
+26 : 著 v
+27 : 的 u
+28 : 严肃 a
+29 : 奇幻 a
+30 : 小说 n
+31 : 系列 n
+32 : 。 wp
+歌 ( n ) -- WP -- 《 ( wp )
+歌 ( n ) -- ATT -- 冰 ( n )
+火 ( n ) -- LAD -- 与 ( c )
+冰 ( n ) -- COO -- 火 ( n )
+冰 ( n ) -- RAD -- 之 ( u )
+是 ( v ) -- SBV -- 歌 ( n )
+歌 ( n ) -- WP -- 》 ( wp )
+Fire ( ws ) -- WP -- ( ( wp )
+Song ( ws ) -- ATT -- A ( ws )
+Fire ( ws ) -- ATT -- Song ( ws )
+Fire ( ws ) -- ATT -- of ( ws )
+Fire ( ws ) -- ATT -- Ice ( ws )
+Fire ( ws ) -- ATT -- and ( ws )
+歌 ( n ) -- COO -- Fire ( ws )
+Fire ( ws ) -- WP -- ) ( wp )
+ROOT -- HED -- 是 ( v )
+是 ( v ) -- VOB -- 由 ( p )
+作家 ( n ) -- ATT -- 美国 ( ns )
+乔治· ( nh ) -- ATT -- 作家 ( n )
+R ( ws ) -- ATT -- 乔治· ( nh )
+由 ( p ) -- POB -- R ( ws )
+R ( ws ) -- WP -- · ( wp )
+R ( ws ) -- COO -- R ( ws )
+R ( ws ) -- WP -- · ( wp )
+著 ( v ) -- SBV -- 马丁 ( nh )
+著 ( v ) -- LAD -- 所 ( u )
+严肃 ( a ) -- ATT -- 著 ( v )
+著 ( v ) -- RAD -- 的 ( u )
+R ( ws ) -- COO -- 严肃 ( a )
+严肃 ( a ) -- COO -- 奇幻 ( a )
+严肃 ( a ) -- COO -- 小说 ( n )
+严肃 ( a ) -- COO -- 系列 ( n )
+是 ( v ) -- WP -- 。 ( wp )
+乔治·R·R·马丁 have titles:
+美国 have titles:
+--------------------------------------------------
+《冰与火之歌》(A Song of Ice and Fire)是由美国作家乔治·R·R·马丁所著的严肃奇幻小说系列。
+
+0 : 《 wp
+1 : 冰 n
+2 : 与 c
+3 : 火 n
+4 : 之 u
+5 : 歌 n
+6 : 》 wp
+7 : ( wp
+8 : A ws
+9 : Song ws
+10 : of ws
+11 : Ice ws
+12 : and ws
+13 : Fire ws
+14 : ) wp
+15 : 是 v
+16 : 由 p
+17 : 美国 ns
+18 : 作家 n
+19 : 乔治· nh
+20 : R ws
+21 : · wp
+22 : R ws
+23 : · wp
+24 : 马丁 nh
+25 : 所 u
+26 : 著 v
+27 : 的 u
+28 : 严肃 a
+29 : 奇幻 a
+30 : 小说 n
+31 : 系列 n
+32 : 。 wp
+歌 ( n ) -- WP -- 《 ( wp )
+歌 ( n ) -- ATT -- 冰 ( n )
+火 ( n ) -- LAD -- 与 ( c )
+冰 ( n ) -- COO -- 火 ( n )
+冰 ( n ) -- RAD -- 之 ( u )
+是 ( v ) -- SBV -- 歌 ( n )
+歌 ( n ) -- WP -- 》 ( wp )
+Fire ( ws ) -- WP -- ( ( wp )
+Song ( ws ) -- ATT -- A ( ws )
+Fire ( ws ) -- ATT -- Song ( ws )
+Fire ( ws ) -- ATT -- of ( ws )
+Fire ( ws ) -- ATT -- Ice ( ws )
+Fire ( ws ) -- ATT -- and ( ws )
+歌 ( n ) -- COO -- Fire ( ws )
+Fire ( ws ) -- WP -- ) ( wp )
+ROOT -- HED -- 是 ( v )
+是 ( v ) -- VOB -- 由 ( p )
+作家 ( n ) -- ATT -- 美国 ( ns )
+乔治· ( nh ) -- ATT -- 作家 ( n )
+R ( ws ) -- ATT -- 乔治· ( nh )
+由 ( p ) -- POB -- R ( ws )
+R ( ws ) -- WP -- · ( wp )
+R ( ws ) -- COO -- R ( ws )
+R ( ws ) -- WP -- · ( wp )
+著 ( v ) -- SBV -- 马丁 ( nh )
+著 ( v ) -- LAD -- 所 ( u )
+严肃 ( a ) -- ATT -- 著 ( v )
+著 ( v ) -- RAD -- 的 ( u )
+R ( ws ) -- COO -- 严肃 ( a )
+严肃 ( a ) -- COO -- 奇幻 ( a )
+严肃 ( a ) -- COO -- 小说 ( n )
+严肃 ( a ) -- COO -- 系列 ( n )
+是 ( v ) -- WP -- 。 ( wp )
+乔治·R·R·马丁 have titles:
+作家 have titles:
+--------------------------------------------------
+乔治·雷蒙德·理查德·马丁（George Raymond Richard Martin，简称GRRM），美国作家和编剧，奇幻小说大师。
+
+0 : 乔治·雷蒙德·理查德·马丁 nh
+1 : （ wp
+2 : George ws
+3 : Raymond ws
+4 : Richard ws
+5 : Martin ws
+6 : ， wp
+7 : 简称 v
+8 : GRRM ws
+9 : ） wp
+10 : ， wp
+11 : 美国 ns
+12 : 作家 n
+13 : 和 c
+14 : 编剧 n
+15 : ， wp
+16 : 奇幻 a
+17 : 小说 n
+18 : 大师 n
+19 : 。 wp
+ROOT -- HED -- 乔治·雷蒙德·理查德·马丁 ( nh )
+Martin ( ws ) -- WP -- （ ( wp )
+Raymond ( ws ) -- ATT -- George ( ws )
+Richard ( ws ) -- ATT -- Raymond ( ws )
+Martin ( ws ) -- ATT -- Richard ( ws )
+乔治·雷蒙德·理查德·马丁 ( nh ) -- COO -- Martin ( ws )
+Martin ( ws ) -- WP -- ， ( wp )
+Martin ( ws ) -- COO -- 简称 ( v )
+简称 ( v ) -- VOB -- GRRM ( ws )
+简称 ( v ) -- WP -- ） ( wp )
+乔治·雷蒙德·理查德·马丁 ( nh ) -- WP -- ， ( wp )
+作家 ( n ) -- ATT -- 美国 ( ns )
+乔治·雷蒙德·理查德·马丁 ( nh ) -- COO -- 作家 ( n )
+编剧 ( n ) -- LAD -- 和 ( c )
+作家 ( n ) -- COO -- 编剧 ( n )
+作家 ( n ) -- WP -- ， ( wp )
+小说 ( n ) -- ATT -- 奇幻 ( a )
+大师 ( n ) -- ATT -- 小说 ( n )
+作家 ( n ) -- COO -- 大师 ( n )
+乔治·雷蒙德·理查德·马丁 ( nh ) -- WP -- 。 ( wp )
+乔治·雷蒙德·理查德·马丁 have titles:
+作家
+编剧 have titles:
+作家
+--------------------------------------------------
+乔治·雷蒙德·理查德·马丁（George Raymond Richard Martin，简称GRRM），美国作家和编剧，奇幻小说大师。
+
+0 : 乔治·雷蒙德·理查德·马丁 nh
+1 : （ wp
+2 : George ws
+3 : Raymond ws
+4 : Richard ws
+5 : Martin ws
+6 : ， wp
+7 : 简称 v
+8 : GRRM ws
+9 : ） wp
+10 : ， wp
+11 : 美国 ns
+12 : 作家 n
+13 : 和 c
+14 : 编剧 n
+15 : ， wp
+16 : 奇幻 a
+17 : 小说 n
+18 : 大师 n
+19 : 。 wp
+ROOT -- HED -- 乔治·雷蒙德·理查德·马丁 ( nh )
+Martin ( ws ) -- WP -- （ ( wp )
+Raymond ( ws ) -- ATT -- George ( ws )
+Richard ( ws ) -- ATT -- Raymond ( ws )
+Martin ( ws ) -- ATT -- Richard ( ws )
+乔治·雷蒙德·理查德·马丁 ( nh ) -- COO -- Martin ( ws )
+Martin ( ws ) -- WP -- ， ( wp )
+Martin ( ws ) -- COO -- 简称 ( v )
+简称 ( v ) -- VOB -- GRRM ( ws )
+简称 ( v ) -- WP -- ） ( wp )
+乔治·雷蒙德·理查德·马丁 ( nh ) -- WP -- ， ( wp )
+作家 ( n ) -- ATT -- 美国 ( ns )
+乔治·雷蒙德·理查德·马丁 ( nh ) -- COO -- 作家 ( n )
+编剧 ( n ) -- LAD -- 和 ( c )
+作家 ( n ) -- COO -- 编剧 ( n )
+作家 ( n ) -- WP -- ， ( wp )
+小说 ( n ) -- ATT -- 奇幻 ( a )
+大师 ( n ) -- ATT -- 小说 ( n )
+作家 ( n ) -- COO -- 大师 ( n )
+乔治·雷蒙德·理查德·马丁 ( nh ) -- WP -- 。 ( wp )
+乔治·雷蒙德·理查德·马丁 have titles:
+作家
+作家 have titles:
+编剧
+大师
+--------------------------------------------------
+乔治·雷蒙德·理查德·马丁（George Raymond Richard Martin，简称GRRM），美国作家和编剧，奇幻小说大师。
+
+0 : 乔治·雷蒙德·理查德·马丁 nh
+1 : （ wp
+2 : George ws
+3 : Raymond ws
+4 : Richard ws
+5 : Martin ws
+6 : ， wp
+7 : 简称 v
+8 : GRRM ws
+9 : ） wp
+10 : ， wp
+11 : 美国 ns
+12 : 作家 n
+13 : 和 c
+14 : 编剧 n
+15 : ， wp
+16 : 奇幻 a
+17 : 小说 n
+18 : 大师 n
+19 : 。 wp
+ROOT -- HED -- 乔治·雷蒙德·理查德·马丁 ( nh )
+Martin ( ws ) -- WP -- （ ( wp )
+Raymond ( ws ) -- ATT -- George ( ws )
+Richard ( ws ) -- ATT -- Raymond ( ws )
+Martin ( ws ) -- ATT -- Richard ( ws )
+乔治·雷蒙德·理查德·马丁 ( nh ) -- COO -- Martin ( ws )
+Martin ( ws ) -- WP -- ， ( wp )
+Martin ( ws ) -- COO -- 简称 ( v )
+简称 ( v ) -- VOB -- GRRM ( ws )
+简称 ( v ) -- WP -- ） ( wp )
+乔治·雷蒙德·理查德·马丁 ( nh ) -- WP -- ， ( wp )
+作家 ( n ) -- ATT -- 美国 ( ns )
+乔治·雷蒙德·理查德·马丁 ( nh ) -- COO -- 作家 ( n )
+编剧 ( n ) -- LAD -- 和 ( c )
+作家 ( n ) -- COO -- 编剧 ( n )
+作家 ( n ) -- WP -- ， ( wp )
+小说 ( n ) -- ATT -- 奇幻 ( a )
+大师 ( n ) -- ATT -- 小说 ( n )
+作家 ( n ) -- COO -- 大师 ( n )
+乔治·雷蒙德·理查德·马丁 ( nh ) -- WP -- 。 ( wp )
+乔治·雷蒙德·理查德·马丁 have titles:
+作家
+美国 have titles:
+--------------------------------------------------
+乔治·雷蒙德·理查德·马丁(George Raymond Richard Martin)欧美奇幻小说大师。
+
+0 : 乔治·雷蒙德·理查德·马丁 nh
+1 : ( wp
+2 : George ws
+3 : Raymond ws
+4 : Richard ws
+5 : Martin ws
+6 : ) wp
+7 : 欧 j
+8 : 美 j
+9 : 奇幻 a
+10 : 小说 n
+11 : 大师 n
+12 : 。 wp
+大师 ( n ) -- ATT -- 乔治·雷蒙德·理查德·马丁 ( nh )
+Martin ( ws ) -- WP -- ( ( wp )
+Raymond ( ws ) -- ATT -- George ( ws )
+Richard ( ws ) -- ATT -- Raymond ( ws )
+Martin ( ws ) -- ATT -- Richard ( ws )
+大师 ( n ) -- ATT -- Martin ( ws )
+Martin ( ws ) -- WP -- ) ( wp )
+大师 ( n ) -- ATT -- 欧 ( j )
+欧 ( j ) -- COO -- 美 ( j )
+小说 ( n ) -- ATT -- 奇幻 ( a )
+大师 ( n ) -- ATT -- 小说 ( n )
+ROOT -- HED -- 大师 ( n )
+大师 ( n ) -- WP -- 。 ( wp )
+乔治·雷蒙德·理查德·马丁 have titles:
+小说大师 have titles:
+--------------------------------------------------
+自认为是花花公子的Howard Wolowitz，他称自己是加州理工学院的"卡萨诺瓦"（1725-1798，意大利冒险家，以所写的包括他的许多风流韵事的《自传》而著称，后来该词被引申为"风流浪子，好色之徒")，能用六种语言泡妞，参与负责美国的火星探索计划（喜欢邀请看上的女孩去火星兜风，也因此在第二季引发一场事故，遗憾地与“火星生命发现者”的称号失之交臂），其实Howard不过是个喜欢拿一些过时的手段把妹的家伙，很多时候他的把妹手法都让对方感到恶心。
+
+0 : 自 r
+1 : 认为 v
+2 : 是 v
+3 : 花花公子 n
+4 : 的 u
+5 : Howard ws
+6 : Wolowitz ws
+7 : ， wp
+8 : 他 r
+9 : 称 v
+10 : 自己 r
+11 : 是 v
+12 : 加州 ns
+13 : 理工学院 n
+14 : 的 u
+15 : " wp
+16 : 卡萨诺瓦 ns
+17 : " wp
+18 : （ wp
+19 : 1725-1798 m
+20 : ， wp
+21 : 意大利 ns
+22 : 冒险家 n
+23 : ， wp
+24 : 以 p
+25 : 所 u
+26 : 写 v
+27 : 的 u
+28 : 包括 v
+29 : 他 r
+30 : 的 u
+31 : 许多 m
+32 : 风流 a
+33 : 韵事 n
+34 : 的 u
+35 : 《 wp
+36 : 自传 n
+37 : 》 wp
+38 : 而 c
+39 : 著称 v
+40 : ， wp
+41 : 后来 nt
+42 : 该 r
+43 : 词 n
+44 : 被 p
+45 : 引申 v
+46 : 为 v
+47 : " wp
+48 : 风 n
+49 : 流浪子 n
+50 : ， wp
+51 : 好色 n
+52 : 之 u
+53 : 徒 n
+54 : " wp
+55 : ) wp
+56 : ， wp
+57 : 能 v
+58 : 用 p
+59 : 六 m
+60 : 种 q
+61 : 语言 n
+62 : 泡妞 n
+63 : ， wp
+64 : 参与 v
+65 : 负责 v
+66 : 美国 ns
+67 : 的 u
+68 : 火星 n
+69 : 探索 v
+70 : 计划 n
+71 : （ wp
+72 : 喜欢 v
+73 : 邀请 v
+74 : 看上 v
+75 : 的 u
+76 : 女孩 n
+77 : 去 v
+78 : 火星 n
+79 : 兜风 n
+80 : ， wp
+81 : 也 d
+82 : 因此 c
+83 : 在 p
+84 : 第二 m
+85 : 季 n
+86 : 引发 v
+87 : 一 m
+88 : 场 q
+89 : 事故 n
+90 : ， wp
+91 : 遗憾 a
+92 : 地 u
+93 : 与 p
+94 : “ wp
+95 : 火星 n
+96 : 生命 n
+97 : 发现者 n
+98 : ” wp
+99 : 的 u
+100 : 称号 n
+101 : 失之交臂 i
+102 : ） wp
+103 : ， wp
+104 : 其实 d
+105 : Howard ws
+106 : 不过 d
+107 : 是 v
+108 : 个 q
+109 : 喜欢 v
+110 : 拿 v
+111 : 一些 m
+112 : 过时 a
+113 : 的 u
+114 : 手段 n
+115 : 把 p
+116 : 妹 n
+117 : 的 u
+118 : 家伙 n
+119 : ， wp
+120 : 很多 m
+121 : 时候 n
+122 : 他 r
+123 : 的 u
+124 : 把妹 n
+125 : 手法 n
+126 : 都 d
+127 : 让 v
+128 : 对方 n
+129 : 感到 v
+130 : 恶心 a
+131 : 。 wp
+认为 ( v ) -- SBV -- 自 ( r )
+ROOT -- HED -- 认为 ( v )
+认为 ( v ) -- VOB -- 是 ( v )
+Wolowitz ( ws ) -- ATT -- 花花公子 ( n )
+花花公子 ( n ) -- RAD -- 的 ( u )
+Wolowitz ( ws ) -- ATT -- Howard ( ws )
+是 ( v ) -- VOB -- Wolowitz ( ws )
+认为 ( v ) -- WP -- ， ( wp )
+称 ( v ) -- SBV -- 他 ( r )
+认为 ( v ) -- COO -- 称 ( v )
+是 ( v ) -- SBV -- 自己 ( r )
+称 ( v ) -- VOB -- 是 ( v )
+理工学院 ( n ) -- ATT -- 加州 ( ns )
+卡萨诺瓦 ( ns ) -- ATT -- 理工学院 ( n )
+理工学院 ( n ) -- RAD -- 的 ( u )
+卡萨诺瓦 ( ns ) -- WP -- " ( wp )
+是 ( v ) -- VOB -- 卡萨诺瓦 ( ns )
+卡萨诺瓦 ( ns ) -- WP -- " ( wp )
+1725-1798 ( m ) -- WP -- （ ( wp )
+包括 ( v ) -- ADV -- 1725-1798 ( m )
+1725-1798 ( m ) -- WP -- ， ( wp )
+冒险家 ( n ) -- ATT -- 意大利 ( ns )
+包括 ( v ) -- SBV -- 冒险家 ( n )
+冒险家 ( n ) -- WP -- ， ( wp )
+写 ( v ) -- ADV -- 以 ( p )
+写 ( v ) -- LAD -- 所 ( u )
+包括 ( v ) -- ATT -- 写 ( v )
+写 ( v ) -- RAD -- 的 ( u )
+是 ( v ) -- COO -- 包括 ( v )
+韵事 ( n ) -- ATT -- 他 ( r )
+他 ( r ) -- RAD -- 的 ( u )
+韵事 ( n ) -- ATT -- 许多 ( m )
+韵事 ( n ) -- ATT -- 风流 ( a )
+自传 ( n ) -- ATT -- 韵事 ( n )
+韵事 ( n ) -- RAD -- 的 ( u )
+自传 ( n ) -- WP -- 《 ( wp )
+包括 ( v ) -- VOB -- 自传 ( n )
+自传 ( n ) -- WP -- 》 ( wp )
+著称 ( v ) -- ADV -- 而 ( c )
+包括 ( v ) -- COO -- 著称 ( v )
+包括 ( v ) -- WP -- ， ( wp )
+引申 ( v ) -- ADV -- 后来 ( nt )
+词 ( n ) -- ATT -- 该 ( r )
+引申 ( v ) -- FOB -- 词 ( n )
+引申 ( v ) -- ADV -- 被 ( p )
+包括 ( v ) -- COO -- 引申 ( v )
+引申 ( v ) -- CMP -- 为 ( v )
+流浪子 ( n ) -- WP -- " ( wp )
+流浪子 ( n ) -- ATT -- 风 ( n )
+引申 ( v ) -- VOB -- 流浪子 ( n )
+流浪子 ( n ) -- WP -- ， ( wp )
+徒 ( n ) -- ATT -- 好色 ( n )
+好色 ( n ) -- RAD -- 之 ( u )
+流浪子 ( n ) -- COO -- 徒 ( n )
+徒 ( n ) -- WP -- " ( wp )
+引申 ( v ) -- WP -- ) ( wp )
+包括 ( v ) -- WP -- ， ( wp )
+用 ( p ) -- ADV -- 能 ( v )
+包括 ( v ) -- COO -- 用 ( p )
+种 ( q ) -- ATT -- 六 ( m )
+泡妞 ( n ) -- ATT -- 种 ( q )
+泡妞 ( n ) -- ATT -- 语言 ( n )
+用 ( p ) -- VOB -- 泡妞 ( n )
+用 ( p ) -- WP -- ， ( wp )
+用 ( p ) -- COO -- 参与 ( v )
+参与 ( v ) -- VOB -- 负责 ( v )
+计划 ( n ) -- ATT -- 美国 ( ns )
+美国 ( ns ) -- RAD -- 的 ( u )
+探索 ( v ) -- ATT -- 火星 ( n )
+计划 ( n ) -- ATT -- 探索 ( v )
+负责 ( v ) -- VOB -- 计划 ( n )
+喜欢 ( v ) -- WP -- （ ( wp )
+负责 ( v ) -- COO -- 喜欢 ( v )
+喜欢 ( v ) -- VOB -- 邀请 ( v )
+女孩 ( n ) -- ATT -- 看上 ( v )
+看上 ( v ) -- RAD -- 的 ( u )
+邀请 ( v ) -- DBL -- 女孩 ( n )
+邀请 ( v ) -- VOB -- 去 ( v )
+去 ( v ) -- VOB -- 火星 ( n )
+去 ( v ) -- COO -- 兜风 ( n )
+喜欢 ( v ) -- WP -- ， ( wp )
+引发 ( v ) -- ADV -- 也 ( d )
+引发 ( v ) -- ADV -- 因此 ( c )
+引发 ( v ) -- ADV -- 在 ( p )
+季 ( n ) -- ATT -- 第二 ( m )
+在 ( p ) -- POB -- 季 ( n )
+喜欢 ( v ) -- COO -- 引发 ( v )
+场 ( q ) -- ATT -- 一 ( m )
+事故 ( n ) -- ATT -- 场 ( q )
+引发 ( v ) -- VOB -- 事故 ( n )
+引发 ( v ) -- WP -- ， ( wp )
+失之交臂 ( i ) -- ADV -- 遗憾 ( a )
+遗憾 ( a ) -- RAD -- 地 ( u )
+失之交臂 ( i ) -- ADV -- 与 ( p )
+发现者 ( n ) -- WP -- “ ( wp )
+生命 ( n ) -- ATT -- 火星 ( n )
+发现者 ( n ) -- ATT -- 生命 ( n )
+称号 ( n ) -- ATT -- 发现者 ( n )
+发现者 ( n ) -- WP -- ” ( wp )
+发现者 ( n ) -- RAD -- 的 ( u )
+与 ( p ) -- POB -- 称号 ( n )
+引发 ( v ) -- COO -- 失之交臂 ( i )
+失之交臂 ( i ) -- WP -- ） ( wp )
+喜欢 ( v ) -- WP -- ， ( wp )
+是 ( v ) -- ADV -- 其实 ( d )
+是 ( v ) -- SBV -- Howard ( ws )
+是 ( v ) -- ADV -- 不过 ( d )
+喜欢 ( v ) -- COO -- 是 ( v )
+喜欢 ( v ) -- ATT -- 个 ( q )
+是 ( v ) -- VOB -- 喜欢 ( v )
+喜欢 ( v ) -- VOB -- 拿 ( v )
+手段 ( n ) -- ATT -- 一些 ( m )
+手段 ( n ) -- ATT -- 过时 ( a )
+过时 ( a ) -- RAD -- 的 ( u )
+拿 ( v ) -- VOB -- 手段 ( n )
+让 ( v ) -- ADV -- 把 ( p )
+家伙 ( n ) -- ATT -- 妹 ( n )
+妹 ( n ) -- RAD -- 的 ( u )
+把 ( p ) -- POB -- 家伙 ( n )
+把 ( p ) -- WP -- ， ( wp )
+时候 ( n ) -- ATT -- 很多 ( m )
+手法 ( n ) -- ATT -- 时候 ( n )
+手法 ( n ) -- ATT -- 他 ( r )
+他 ( r ) -- RAD -- 的 ( u )
+手法 ( n ) -- ATT -- 把妹 ( n )
+让 ( v ) -- SBV -- 手法 ( n )
+让 ( v ) -- ADV -- 都 ( d )
+拿 ( v ) -- COO -- 让 ( v )
+让 ( v ) -- DBL -- 对方 ( n )
+让 ( v ) -- VOB -- 感到 ( v )
+感到 ( v ) -- VOB -- 恶心 ( a )
+认为 ( v ) -- WP -- 。 ( wp )
+Howard Wolowitz have titles:
+加州理工学院 have titles:
+--------------------------------------------------
