@@ -179,6 +179,7 @@ class NamedEntityReg:
 		self.__optimize_entitys(ltp_result)
 		if stanford_result:
 			self.__blend_with_stanford(ltp_result,stanford_result)
+
 		self.__combine(ltp_result)
 		str_entities = self.__entity_tuples(ltp_result.ner_tags)
 
@@ -238,7 +239,8 @@ class NamedEntityReg:
 						first = -1
 
 			new_words.append(word)
-			if b:
+			# modifies by lihaoran, use postag nh for person
+			if b or en == 'S-Nh':
 				new_postag.append(pos)
 			else:
 				new_postag.append("nz")				
