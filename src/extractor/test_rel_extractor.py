@@ -1,4 +1,4 @@
-
+#encoding:utf-8
 from .test_extractor import process_labeled_data
 from .util import load_stanford_result
 from .structure import StrEntity
@@ -138,7 +138,7 @@ class RelExtractorTestor():
         return ret, ltp_result
 
 def test(extractor, ltp):
-    datas_map, nb_data, nb_kl = process_labeled_data(ignore_subj_miss = True, ignore_verb_miss = False)
+    datas_map, nb_data, nb_kl = process_labeled_data(ignore_subj_miss = True, ignore_verb_miss = True)
 
     print "#sentence: %d, #labeled: %d" %(nb_data, nb_kl)
 
@@ -147,7 +147,6 @@ def test(extractor, ltp):
         datas = datas_map[url]
         for data in datas:
             ret, ltp_result = testor.add(data)
-            
             for labeled in ret:
                 out = ret[labeled]
                 if out[1] == 'noverb error':

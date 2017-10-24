@@ -66,9 +66,9 @@ class Data:
     
     def add(self, subj, prop, obj):
 
-        subj = decode(subj)
-        prop = decode(prop)
-        obj = decode(obj)
+        subj = decode(subj).strip()
+        prop = decode(prop).strip()
+        obj = decode(obj).strip()
         if subj.startswith('https://'):
             subj = subj[len('https://'):]
         if obj.startswith('https://'):
@@ -172,7 +172,7 @@ def test_ltp_extractor(datas_map, ner, rel_extractor, linker, ltp, schema):
     stf_results_map = load_stanford_result(os.path.join(base_dir, 'sentences.txt'), os.path.join(base_dir, 'sentences_stanf_nlp.json'))
 
     link_maps = None
-    # link_maps = load_links_map(os.path.join(cache_dir, 'link_map.json'))
+    link_maps = load_links_map(os.path.join(cache_dir, 'link_map.json'))
     ltp_extractor = SimpleLTPExtractor(ner, rel_extractor, linker, ltp, link_maps is None)
 
     url2names = linker.entity_linker.url2names
@@ -204,7 +204,7 @@ def test_ltp_extractor(datas_map, ner, rel_extractor, linker, ltp, schema):
         linker.entity_linker.start_new_page()
         for data in datas:
             sentence = data.sentence.encode('utf-8')
-            # if sentence != '2008年6月23日，刘德华与朱丽倩在美国拉斯维加斯注册结婚 。':
+            # if sentence != '1982年马拉多纳加盟巴萨，但是因为肝炎和一连串伤病，马拉多纳在巴萨并没有取得预想中的成绩。':
             #     continue
             print sentence
             stf_result = stf_results_map[sentence]
@@ -213,12 +213,14 @@ def test_ltp_extractor(datas_map, ner, rel_extractor, linker, ltp, schema):
             kl_set = set()
             str_set = set()
             for kl in data.knowledges:
-                
+
+
                 kl.subj_url = same_link_map.get(kl.subj_url, kl.subj_url)
                 kl.obj_url = same_link_map.get(kl.obj_url, kl.obj_url)
 
-                str_set.add("%s\t%s\t%s" %(kl.subj_url, kl.prop, kl.obj_url))
-                str_set.add("%s\t%s\t%s" %(kl.obj_url, kl.prop, kl.subj_url))
+                str_set.add("%s\t%s\t%s" %(kl.subj.encode('utf-8'), kl.prop.encode('utf-8'), kl.obj.encode('utf-8')))
+                str_set.add("%s\t%s\t%s" %(kl.obj.encode('utf-8'), kl.prop.encode('utf-8'), kl.subj.encode('utf-8')))
+
 
                 kl_set.add("%s\t%s\t%s" %(kl.subj_url, kl.prop_uri, kl.obj_url))
                 reverse_prop_uri = schema.reverse_property(kl.prop_uri)
@@ -226,7 +228,6 @@ def test_ltp_extractor(datas_map, ner, rel_extractor, linker, ltp, schema):
                 
                 if reverse_prop_uri:
                     kl_set.add("%s\t%s\t%s" %(kl.obj_url, reverse_prop_uri, kl.subj_url))
-
             estimation['total labeled'] += len(data.knowledges)
             str_estimation['total labeled'] += len(data.knowledges)
             for triple in triples:
@@ -241,7 +242,7 @@ def test_ltp_extractor(datas_map, ner, rel_extractor, linker, ltp, schema):
                 obj_url = same_link_map.get(triple.baike_obj.baike_url, triple.baike_obj.baike_url)
                 prop = triple.fb_rel.fb_prop
                 
-                triple_str = "%s\t%s\t%s" %(subj_url, rel, obj_url)
+                triple_str = "%s\t%s\t%s" %(subj, rel, obj)
 
                 if triple_str in str_set:
                     flag_str = 'str_right'

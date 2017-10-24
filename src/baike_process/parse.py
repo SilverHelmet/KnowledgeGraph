@@ -224,14 +224,19 @@ def parse_text(url, b64_content):
 
 if __name__ == "__main__":
     # s = "eyJpbmZvX21vZGVsIjpbeyJtb2R1bGVfbmFtZSI6IiIsIm1vZHVsZV9zb3J0IjowLCJuYW1lIjoiXHU0ZTJkXHU2NTg3XHU1NDBkXHU3OWYwIiwibmlja19uYW1lIjoibmFtZUMiLCJ2YWx1ZSI6WyJcdTlhNmNcdTZiNDdcdTVjMTRcdTUzYmYiXX0seyJtb2R1bGVfbmFtZSI6IiIsIm1vZHVsZV9zb3J0IjowLCJuYW1lIjoiXHU1OTE2XHU2NTg3XHU1NDBkXHU3OWYwIiwibmlja19uYW1lIjoibmFtZUUiLCJ2YWx1ZSI6WyJNYXJzaGFsbCBDb3VudHkiXX0seyJuYW1lIjoiXHU1NzMwXHU3NDA2XHU0ZjRkXHU3ZjZlIiwibmlja19uYW1lIjoibW9kZWxDdXN0b20iLCJ2YWx1ZSI6WyIgXHU3ZjhlXHU1NmZkXHU1YmM2XHU4OTdmXHU4OTdmXHU2YmQ0XHU1ZGRlXHU1MzE3XHU5MGU4ICJdfSx7Im5hbWUiOiJcdTk3NjJcdTc5ZWYiLCJuaWNrX25hbWUiOiJtb2RlbEN1c3RvbSIsInZhbHVlIjpbIiAxLDgzOFx1NWU3M1x1NjViOVx1NTE2Y1x1OTFjYyAiXX1dLCJpbnRyb19pbmZvIjp7InRpdGxlIjoiXHU5YTZjXHU2YjQ3XHU1YzE0XHU1M2JmIiwiZW50cnlUeXBlIjoiMSIsInN1bW1hcnkiOiJcdTlhNmNcdTZiNDdcdTVjMTRcdTUzYmYoTWFyc2hhbGwgQ291bnR5LCBNaXNzaXNzaXBwaSlcdTY2MmZcdTdmOGVcdTU2ZmRcdTViYzZcdTg5N2ZcdTg5N2ZcdTZiZDRcdTVkZGVcdTUzMTdcdTkwZThcdTc2ODRcdTRlMDBcdTRlMmFcd"
+    line = file('data/360_sample.data').readlines()[0]
+    baike_url, s = line.strip().split('\t')
+    print baike_url
     # content = json.loads(base64.b64decode(s))
+    text = parse_text(baike_url, s)
+    print text[0]
     # print content['intro_info']['summary']
-    out_path = os.path.join(result_dir, '360/360_entity_info.json')
-    if not os.path.exists(os.path.dirname(out_path)):
-        os.mkdir(os.path.dirname(out_path))
-    outf = file(out_path, 'w')
-    for filepath in glob.glob('data/360/*finish'):
-        parse(filepath, outf)
-    outf.close()
+    # out_path = os.path.join(result_dir, '360/360_entity_info.json')
+    # if not os.path.exists(os.path.dirname(out_path)):
+    #     os.mkdir(os.path.dirname(out_path))
+    # outf = file(out_path, 'w')
+    # for filepath in glob.glob('data/360/*finish'):
+    #     parse(filepath, outf)
+    # outf.close()
 
     
