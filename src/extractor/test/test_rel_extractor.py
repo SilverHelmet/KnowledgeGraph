@@ -3,7 +3,7 @@ from .test_extractor import process_labeled_data
 from ..util import load_stanford_result
 from ..structure import StrEntity
 from ..ltp import LTP
-from ..dependency.verb_relation_advanced_extractor import VerbRelationExtractor
+from ..dependency.verb_title_relation_extractor.py import VerbRelationExtractor
 from ..entity.naive_ner import NaiveNer
 from ..entity.ner import NamedEntityReg
 from ...IOUtil import data_dir
