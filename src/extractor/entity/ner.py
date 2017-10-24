@@ -35,13 +35,13 @@ class NamedEntityPostProcessor:
 			st = ed
 		return new_str_entities
 				
-	def get_ATT_common_father(self, is_leaf, arcs, st, ed):
+	def get_ATT_common_father(self, is_leaf, arcs, st, ed):	
 		father = arcs[st].head
 		if father < ed:
 			return []
 		for i in range(st, father):
 			if not is_leaf[i]:
-				continue
+				return []
 			if arcs[i].head != father:
 				return []
 			if arcs[i].relation != "ATT":
@@ -49,8 +49,13 @@ class NamedEntityPostProcessor:
 		
 		if arcs[father].relation == "ATT":
 			ff = arcs[father].head
-			if ff == father + 1:
-				return [ff, father]
+			if ff <= father + 2 and ff > father:
+				valid = True
+				for i in range(father+1, ff):
+					if not arcs[i].relation == "ATT" or not arcs[i].head == ff:
+						valid = False
+				if valid:
+					return [ff, father]
 		return [father]
 
 	def ATT_extension(self, ltp_result, str_entities):
@@ -66,13 +71,24 @@ class NamedEntityPostProcessor:
 				continue
 
 			ancestors = self.get_ATT_common_father(is_leaf, ltp_result.arcs, st, ed)
+			extension = False
 			for ancestor in ancestors:
 				text = ltp_result.text(st, ancestor + 1)
 				if text in self.dict:
 					ed = ancestor + 1
 					etype = 'Ni'
-					# print text, st, ed
+					# print ltp_result.sentence
+					# print "ATT", text, st, ed
+					extension = True
 					break
+			if not extension and etype == "Ns":
+				for ancestor in ancestors:
+					if ltp_result.tags[ancestor] != 'nh':
+						ed = ancestor + 1
+						etype = "Ns-ATT"
+						# print 'Ns-ATT', ltp_result.text(st, ed), st, ed
+						break
+			
 			for i in range(st, ed):
 				entity_pool[i] = True
 			new_str_entities.append((st, ed, etype))

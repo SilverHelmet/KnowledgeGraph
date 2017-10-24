@@ -27,7 +27,10 @@ class BaikeEntity:
         self.ed = str_entity.ed
         self.baike_url = baike_url
         self.pop = pop
-        self.types = types
+        if types is not None:
+            self.types = types[:]
+        else:
+            self.types = None
 
     def to_obj(self):
         return {

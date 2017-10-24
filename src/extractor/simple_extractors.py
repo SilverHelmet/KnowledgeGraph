@@ -80,7 +80,8 @@ class SimpleLTPExtractor:
             if out_link_map:
                 baike_entity = sentence_link_map.get(ltp_result.text(str_entity.st, str_entity.ed), None)
                 if baike_entity:
-                    baike_entities.append(baike_entity)
+                    new_baike_entity = BaikeEntity(str_entity, baike_entity.baike_url, baike_entity.pop, baike_entity.types)
+                    baike_entities.append(new_baike_entity)
             else:
                 baike_entity_list = self.linker.entity_linker.link(ltp_result, str_entity, page_info)
                 if len(baike_entity_list) > 0:
@@ -94,10 +95,12 @@ class SimpleLTPExtractor:
         
 
         entity_pool = fill_entity_pool(ltp_result.length, str_entites)
-
         
         half_linked_triples = self.parse_triples(ltp_result, baike_entities, entity_pool)
-
+        for half_linked_triple in half_linked_triples:
+            subj = ltp_result.text(half_linked_triple.baike_subj.st, half_linked_triple.baike_subj.ed)
+            obj = ltp_result.text(half_linked_triple.baike_obj.st, half_linked_triple.baike_obj.ed)
+            rel = ltp_result.text(half_linked_triple.str_rel.st, half_linked_triple.str_rel.ed)
 
         linked_triples = []
         for half_linked_triple in half_linked_triples:
