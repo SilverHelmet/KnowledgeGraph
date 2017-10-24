@@ -1,14 +1,13 @@
 #encoding: utf-8
-from entity.linkers import TopRelatedEntityLinker
 from .test_ner import read_data
-from entity.linkers import SeparatedLinker, MatchRelLinker, TopRelatedEntityLinker, PageMemoryEntityLinker
-from .entity.ner import NamedEntityReg
-from ..IOUtil import data_dir, rel_ext_dir, Print
-from .structure import *
-from .ltp import LTP
-from .util import load_stanford_result, load_important_domains, get_url_domains
+from ..entity.linkers import SeparatedLinker, MatchRelLinker, TopRelatedEntityLinker, PageMemoryEntityLinker
+from ..entity.ner import NamedEntityReg
+from ...IOUtil import data_dir, rel_ext_dir, Print
+from ..structure import *
+from ..ltp import LTP
+from ..util import load_stanford_result, load_important_domains, get_url_domains
 from .test_extractor import load_same_linkings, load_url_map
-from ..rel_extraction.util import load_url2names
+from ...rel_extraction.util import load_url2names
 import os
 
 

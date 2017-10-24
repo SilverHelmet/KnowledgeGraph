@@ -1,8 +1,8 @@
 #encoding: utf-8
-from ..IOUtil import data_dir, load_file, rel_ext_dir
-from .entity.ner import NamedEntityReg, NamedEntityPostProcessor
-from .util import load_stanford_result
-from .ltp import LTP
+from ...IOUtil import data_dir, load_file, rel_ext_dir
+from ..entity.ner import NamedEntityReg, NamedEntityPostProcessor
+from ..util import load_stanford_result
+from ..ltp import LTP
 import os
 import glob
 
