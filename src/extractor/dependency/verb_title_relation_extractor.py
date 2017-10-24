@@ -253,11 +253,11 @@ class VerbRelationExtractor:
         res2 = self.find_COO_or_ATT_title(father)
         new_res_1 = new_res_2 = []
         for words in res1:
-            if entity_pool[words.idx] == False:
-                new_res_1.append(words)
+            #if entity_pool[words.idx] == False:
+            new_res_1.append(words)
         for words in res2:
-            if entity_pool[words.idx] == False:
-                new_res_2.append(words)
+            #if entity_pool[words.idx] == False:
+            new_res_2.append(words)
         new_res = new_res_1 + new_res_2
         new_res = set(new_res)
         final_res = []
@@ -272,7 +272,7 @@ class VerbRelationExtractor:
 
 if __name__ == "__main__":
     ltp = LTP(None)
-    f = open("noverb.txt", "r")
+    f = open("../noverb.txt", "r")
     item = f.readlines()
     f.close()
     hit = 0
@@ -281,8 +281,8 @@ if __name__ == "__main__":
         sentence = item[k]
         e_tmp = item[k+1].strip().split('\t')
         ltp_result = ltp.parse(sentence)
-        #info = PrintInfo()
-        #info.print_ltp(ltp_result)
+        info = PrintInfo()
+        info.print_ltp(ltp_result)
         print sentence
         st, ed = ltp_result.search_word(e_tmp[0])
         if st == -1 and ed == -1:
