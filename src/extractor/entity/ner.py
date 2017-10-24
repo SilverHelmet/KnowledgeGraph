@@ -77,8 +77,6 @@ class NamedEntityPostProcessor:
 				if text in self.dict:
 					ed = ancestor + 1
 					etype = 'Ni'
-					# print ltp_result.sentence
-					# print "ATT", text, st, ed
 					extension = True
 					break
 			if not extension and etype == "Ns":
@@ -466,6 +464,6 @@ def is_other(uchar):
 
 
 if __name__ == "__main__":
-	ner = NamedEntityReg()
+	ner = NamedEntityReg(LTP(None))
 
 	
