@@ -272,7 +272,7 @@ class VerbRelationExtractor:
 
 if __name__ == "__main__":
     ltp = LTP(None)
-    f = open("src/extractor/dependency/noverb_err.txt", "r")
+    f = open("noverb.txt", "r")
     item = f.readlines()
     f.close()
     hit = 0
@@ -281,11 +281,22 @@ if __name__ == "__main__":
         sentence = item[k]
         e_tmp = item[k+1].strip().split('\t')
         ltp_result = ltp.parse(sentence)
-        info = PrintInfo()
-        info.print_ltp(ltp_result)
+        #info = PrintInfo()
+        #info.print_ltp(ltp_result)
+        print sentence
         st, ed = ltp_result.search_word(e_tmp[0])
+        if st == -1 and ed == -1:
+            k += 2
+            print "cannot find word!!"
+            print '-'*50
+            continue
         e1 = StrEntity(st, ed, None)
         st, ed = ltp_result.search_word(e_tmp[2])
+        if st == -1 and ed == -1:
+            k += 2
+            print "cannot find word!!"
+            print '-'*50
+            continue
         e2 = StrEntity(st, ed, None)
         entity_pool = []
         for i in range(ltp_result.length):
@@ -301,12 +312,9 @@ if __name__ == "__main__":
         
         print e_tmp[0], 'have titles:'
         for ans in title_res_1:
-            print ans[0]
+            print ltp_result.words[ans[0]]
         print e_tmp[2], 'have titles:'
         for ans in title_res_2:
-            print ans[0]
-        
+            print ltp_result.words[ans[0]]
         print '-'*50
         k += 2
-
-
