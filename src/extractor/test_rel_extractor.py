@@ -33,7 +33,7 @@ class Estimation():
 
 
 class RelExtractorTestor():
-    def __init__(self, extractor, ltp = None, use_advanced_ner = False):
+    def __init__(self, extractor, ltp = None, use_advanced_ner = True):
         if ltp is None:
             ltp = LTP(None)
         self.ltp = ltp
