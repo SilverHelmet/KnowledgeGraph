@@ -1,5 +1,5 @@
 #encoding:utf-8
-from ..test_extractor import process_labeled_data
+from .test_extractor import process_labeled_data
 from ..util import load_stanford_result
 from ..structure import StrEntity
 from ..ltp import LTP
@@ -137,6 +137,40 @@ class RelExtractorTestor():
             ret[kl_str] = (rels_str, 'error')
         return ret, ltp_result
 
+    def test_all(self, data):
+        sentence = data.sentence.encode('utf-8')
+        ltp_result = ltp.parse(sentence)
+    
+        if self.use_advanced_ner:
+            stf_result = self.stf_results_map[sentence]
+            
+            entities = self.ner.recognize(sentence, ltp_result, None, stf_result)
+            entities = [(e.st, e.ed)for e in entities]
+        else:
+            entities = self.ner.recognize(sentence, ltp_result, None)
+
+        entity_pool = [False] * ltp_result.length
+        for st, ed in entities:
+            for i in range(st, ed):
+                entity_pool[i] = True
+
+        ret = []
+        for i in range(len(entities)):
+            for j in range(i + 1, len(entities)):
+                e1 = entities[i]
+                e2 = entities[j]
+                e1_text = ltp_result.text(e1[0], e1[1])
+                e2_text = ltp_result.text(e2[0], e2[1])
+                rels = self.extractor.find_relation(ltp_result, StrEntity(e1[0], e1[1], None), StrEntity(e2[0], e2[1], None), entity_pool)
+                rels = [ltp_result.text(st, ed) for st, ed in rels]
+                if len(rels) > 0:
+                    rel = " ".join(rels)
+                    ret.append((e1_text, rel, e2_text))
+        return ret
+                
+                
+        
+                
 def test(extractor, ltp):
     datas_map, nb_data, nb_kl = process_labeled_data(ignore_subj_miss = True, ignore_verb_miss = True)
 
@@ -156,12 +190,28 @@ def test(extractor, ltp):
                     
     testor.estimation.print_info()
 
+def print_all(extractor, ltp):
+    datas_map, nb_data, nb_kl = process_labeled_data(ignore_subj_miss = True, ignore_verb_miss = True)
+
+    print "#sentence: %d, #labeled: %d" %(nb_data, nb_kl)
+
+    testor = RelExtractorTestor(extractor, ltp, use_advanced_ner = True)
+    for url in datas_map:
+        datas = datas_map[url]
+        for data in datas:
+            triples = testor.test_all(data)
+            print data.sentence
+            for triple in triples:
+                print '\t%s' %('\t'.join(triple))
+            for kl in data.knowledges:
+                print "\t\t%s" %(kl.triple())
+
 
 
 if __name__ == "__main__":
     extractor = VerbRelationExtractor()
     ltp = LTP(None)
-    test(extractor, ltp)
+    print_all(extractor, ltp)
     
 
 
