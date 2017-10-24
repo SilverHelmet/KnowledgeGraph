@@ -52,7 +52,7 @@ class RelExtractorTestor():
         sentence = data.sentence.encode('utf-8')
         ltp_result = ltp.parse(sentence)
 
-        entity_pool = [False] * ltp_result.length
+        
         if self.use_advanced_ner:
             stf_result = self.stf_results_map[sentence]
             
@@ -61,7 +61,7 @@ class RelExtractorTestor():
             ltp_result.update_parsing_tree(self.ltp)
         else:
             entities = self.ner.recognize(sentence, ltp_result, None)
-
+        entity_pool = [False] * ltp_result.length
         for st, ed in entities:
             for i in range(st, ed):
                 entity_pool[i] = True

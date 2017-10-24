@@ -1,22 +1,20 @@
 #encoding: utf-8
 import glob
 import os
-from ..IOUtil import data_dir, rel_ext_dir, Print, cache_dir
+from src.IOUtil import data_dir, rel_ext_dir, Print, cache_dir, doc_dir
+from src.schema.schema import Schema
+from  src.extractor.ltp import LTP
 import pandas as pd
 import json
 import numpy as np 
-from ..IOUtil import doc_dir
 import os
-from .structure import Knowledge, PageInfo, BaikeEntity
-from .entity.naive_ner import NaiveNer
-from .entity.ner import NamedEntityReg
-# from dependency.relation_extractors import RelTagExtractor
-from dependency.verb_relation_advanced_extractor import VerbRelationExtractor
-from entity.linkers import SeparatedLinker, MatchRelLinker, PageMemoryEntityLinker
-from .simple_extractors import SimpleLTPExtractor
-from ..schema.schema import Schema
-from .util import load_stanford_result, get_url_domains, load_important_domains
-from .ltp import LTP
+from ..structure import Knowledge, PageInfo, BaikeEntity
+from ..entity.naive_ner import NaiveNer
+from ..entity.ner import NamedEntityReg
+from ..dependency.verb_title_relation_extractor import VerbRelationExtractor
+from ..entity.linkers import SeparatedLinker, MatchRelLinker, PageMemoryEntityLinker
+from ..simple_extractors import SimpleLTPExtractor
+from ..util import load_stanford_result, get_url_domains, load_important_domains
 
 def load_same_linkings():
     path = os.path.join(doc_dir, 'same_links.tsv')
