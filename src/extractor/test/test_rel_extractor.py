@@ -123,7 +123,7 @@ class RelExtractorTestor():
                 ret[kl_str] = (rels_str, 'partial right')
                 continue
 
-            if prop == '*':
+            if prop.strip() == '*':
                 if len(rels) > 0:
                     self.estimation.noverb_right += 1
                     ret[kl_str] = (rels_str, 'noverb right')
@@ -172,7 +172,7 @@ class RelExtractorTestor():
         
                 
 def test(extractor, ltp):
-    datas_map, nb_data, nb_kl = process_labeled_data(ignore_subj_miss = True, ignore_verb_miss = True)
+    datas_map, nb_data, nb_kl = process_labeled_data(ignore_subj_miss = True, ignore_verb_miss = False)
 
     print "#sentence: %d, #labeled: %d" %(nb_data, nb_kl)
 
@@ -183,7 +183,7 @@ def test(extractor, ltp):
             ret, ltp_result = testor.add(data)
             for labeled in ret:
                 out = ret[labeled]
-                if out[1] == 'noverb error':
+                if out[1] == 'noverb right':
                     print data.sentence
                     print '\t%s' %out[0]
                     print '\t%s' %labeled
@@ -191,7 +191,7 @@ def test(extractor, ltp):
     testor.estimation.print_info()
 
 def print_all(extractor, ltp):
-    datas_map, nb_data, nb_kl = process_labeled_data(ignore_subj_miss = True, ignore_verb_miss = True)
+    datas_map, nb_data, nb_kl = process_labeled_data(ignore_subj_miss = True, ignore_verb_miss = True, clear = False)
 
     print "#sentence: %d, #labeled: %d" %(nb_data, nb_kl)
 
@@ -200,6 +200,8 @@ def print_all(extractor, ltp):
         datas = datas_map[url]
         for data in datas:
             triples = testor.test_all(data)
+            # if data.sentence != u'《青花瓷》是方文山作词，周杰伦作曲并演唱的歌曲，收录于2007年11月2日周杰伦制作发行音乐专辑《我很忙》中。':
+            #     continue
             print data.sentence
             for triple in triples:
                 print '\t%s' %('\t'.join(triple))
