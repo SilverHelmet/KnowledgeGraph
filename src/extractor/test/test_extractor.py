@@ -135,7 +135,7 @@ def load_labeled_data(filepath):
             data.add(subj, prop, obj)
     return datas
 
-def process_labeled_data(ignore_subj_miss, ignore_verb_miss):
+def process_labeled_data(ignore_subj_miss, ignore_verb_miss, clear = True):
     datas_map = {}
     nb_data = 0
     nb_kl = 0
@@ -147,7 +147,7 @@ def process_labeled_data(ignore_subj_miss, ignore_verb_miss):
             new_datas = []
             for data in datas:
                 data.clear_miss_data(ignore_subj_miss, ignore_verb_miss)
-                if len(data.knowledges) > 0:
+                if len(data.knowledges) > 0 or not clear:
                     new_datas.append(data)
             datas = new_datas
 
