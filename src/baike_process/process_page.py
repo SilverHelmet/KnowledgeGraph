@@ -1,7 +1,7 @@
 #encoding: utf-8
 import sys
 from .parse import parse_text, strip_url
-from ..IOUtil import Print
+from ..IOUtil import Print, nb_lines_of
 import json
 
 end_puncs = set([u'。', u'？',u'?', u'!', u'！', u';', u'；'])
@@ -24,7 +24,7 @@ def work(inpath, sentence_out_path, docuemnt_out_path):
     Print('process page information')
     doc_outf = file(docuemnt_out_path, 'w')
     sentence_outf = file(sentence_out_path, 'w')
-    for line in file(inpath):
+    for line in tqdm(file(inpath), total = nb_lines_of(inpath)):
         p = line.strip().split('\t')
         url = strip_url(p[0])
         b64content = p[1]
