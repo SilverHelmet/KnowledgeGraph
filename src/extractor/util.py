@@ -51,14 +51,13 @@ def load_stanford_result(sentence_path, stanford_result_path):
         sentence = sentence_inf.readline().strip()
         if sentence == "":
             break
-        sentence = sentence.strip()
+        stanford_result_line = stanford_inf.readline().strip()
+        if stanford_result_line == "":
+            break
         sentences.append(sentence)
-
-        stanford_result_line = stanford_inf.readline()
         results.append(json.loads(stanford_result_line))
     sentence_inf.close()
     stanford_inf.close()
-
     result_map = {}
     results = extract_stanford_result(results, sentences)
     for idx in range(len(sentences)):

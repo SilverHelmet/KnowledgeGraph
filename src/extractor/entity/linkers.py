@@ -147,7 +147,10 @@ def summary_related_score(summary, page_info, summary_names):
         #         flag = False
         # if not flag:
         #     continue
-        max_cnt = max(max_cnt, len(re.findall(name, summary)))
+        if summary.find(name) != -1:
+            max_cnt = 1
+            break
+        # max_cnt = max(max_cnt, len(re.findall(name, summary)))
 
     
     score = max_cnt * 2

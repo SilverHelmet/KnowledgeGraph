@@ -74,6 +74,8 @@ class SimpleLTPExtractor:
             sentence_link_map = out_link_map[sentence]
 
         str_entites = self.ner.recognize(sentence, ltp_result, page_info, stf_result)
+        str_entites = [e for e in str_entites if not e.etype == 'Nm']
+
         baike_entities = []
         link_map = {}
         for str_entity in str_entites:

@@ -118,23 +118,31 @@ class NamedEntityPostProcessor:
 
 		in_bracket = [False] * ltp_result.length
 		for left, right in brackets:
+			left_entity_pos = -1
+			if left - 1 >= 0:
+				left_entity_pos = word_pos2entity_pos[left - 1]
+			if ltp_result.tags[left-1] == 'wp'and left -2 >= 0:
+				left_entity_pos = word_pos2entity_pos[left - 2]
+
+			right_entity_pos = -1
+			if right + 1 < ltp_result.length:
+				right_entity_pos = word_pos2entity_pos[right + 1]
+
+			if left_entity_pos != -1 and (right_entity_pos == left_entity_pos or right + 1 == ltp_result.length):
+				continue
 			entity_pos_set = set()
 			for i in range(left, right + 1):
 				in_bracket[i] = True
 				if word_pos2entity_pos[i] != -1:
 					entity_pos_set.add(word_pos2entity_pos[i])
 			
-			left_entity_pos = -1
-			if left - 1 >= 0:
-				left_entity_pos = word_pos2entity_pos[left - 1]
-			if ltp_result.tags[left-1] == 'wp'and left -2 >= 0:
-				left_entity_pos = word_pos2entity_pos[left - 2]
-			
 			if left_entity_pos != -1:
 				left_entity = str_entities[left_entity_pos]
-				for e_pos in entity_pos_set:
-					bracket_entity = str_entities[e_pos]
-					left_entity.add_name(ltp_result.text(bracket_entity.st, bracket_entity.ed))
+				if left_entity_pos != right_entity_pos:
+					for e_pos in entity_pos_set:
+						bracket_entity = str_entities[e_pos]
+						left_entity.add_name(ltp_result.text(bracket_entity.st, bracket_entity.ed))
+
 		
 		new_words = []
 		new_postags = []
@@ -152,8 +160,12 @@ class NamedEntityPostProcessor:
 				if entity_pos != -1 and str_entities[entity_pos].st == i:
 					entity = str_entities[entity_pos]
 					entity.st -= bias
-					entity.ed -= bias
+					# entity.ed -= bias
 					new_str_entities.append(entity)
+				if entity_pos != -1 and str_entities[entity_pos].ed - 1 == i:
+					entity = str_entities[entity_pos]
+					entity.ed -= bias
+
 			else:
 				bias += 1
 
@@ -198,7 +210,11 @@ class NamedEntityReg:
 		str_entities = self.__entity_tuples(ltp_result.ner_tags)
 
 		ltp_result.update_parsing_tree(self.ltp)
+		if len(ltp_result.arcs) == 0:
+			return []
 		str_entities = self.post_processor.process(ltp_result, str_entities, self.ltp)
+		if len(ltp_result.arcs) == 0:
+			return []
 		return str_entities
 
 
@@ -211,9 +227,9 @@ class NamedEntityReg:
 					tuples.append((index,index+1,entitys[index].split("-")[1]))
 				elif entitys[index].split("-")[0] == "B":
 					begin = index
-					while entitys[index].split("-")[0] != "E":
+					while index + 1 < len(entitys) and entitys[index].split("-")[0] != "E":
 						index += 1
-					tuples.append((begin,index+1,entitys[index].split("-")[1]))
+					tuples.append((begin,index+1,entitys[begin].split("-")[1]))
 					
 			index += 1
 		return tuples
@@ -368,6 +384,21 @@ class NamedEntityReg:
 
 		return
 
+	# check whether can make [first, last) as a new entity 
+	def valid_new_entity(self, ltp_result, st, ed):
+		cnts = {"B": 0, "E": 0, "I": 0}
+		for i in range(st, ed):
+			tag = ltp_result.ner_tags[i][0]
+			if tag in cnts:
+				cnts[tag] += 1
+		if cnts["B"] != cnts["E"]:
+			return False
+		if cnts['I'] > 0 and cnts['B'] == 0:
+			return False
+		return True
+
+
+
 	def __reg_pos_ws_entitys(self,ltp_result):
 		index = 0
 		first = -1
@@ -375,27 +406,32 @@ class NamedEntityReg:
 			if ltp_result.tags[index] == "ws":
 				first = index
 				while index < len(ltp_result.tags) and (ltp_result.tags[index] == "ws" or self.re_eng.match(ltp_result.words[index])):
-					ltp_result.ner_tags[index] = "I-Nf"
+					# ltp_result.ner_tags[index] = "I-Nf"
 					index += 1
 
 				# Nintendo 64
 				if index < len(ltp_result.tags) and ltp_result.tags[index] == "m":
-					ltp_result.ner_tags[index] = "I-Nf"
+					# ltp_result.ner_tags[index] = "I-Nf"
 					index += 1
 
 				if index < len(ltp_result.tags) and  (ltp_result.words[index] in ["'", '.', ':']):
 					ltp_result.tags[index] = "ws"
 					while index < len(ltp_result.tags) and (ltp_result.tags[index] == "ws" or self.re_eng.match(ltp_result.words[index])):
-						ltp_result.ner_tags[index] = "I-Nf"
+						# ltp_result.ner_tags[index] = "I-Nf"
 						index += 1
 
 				last = index
-				if last - first == 1:
-					if len(ltp_result.words[first].decode("utf-8")) >= 3:
-						ltp_result.ner_tags[first] = "S-Nf"
-				else:
-					ltp_result.ner_tags[first] = "B-Nf"
-					ltp_result.ner_tags[last - 1] = "E-Nf"
+
+				# add by lihaoran
+				if self.valid_new_entity(ltp_result, first, last):
+					for i in range(first, last):
+						ltp_result.ner_tags[i] == "I-Nf"
+					if last - first == 1:
+						if len(ltp_result.words[first].decode("utf-8")) >= 3:
+							ltp_result.ner_tags[first] = "S-Nf"
+					else:
+						ltp_result.ner_tags[first] = "B-Nf"
+						ltp_result.ner_tags[last - 1] = "E-Nf"
 				index = last
 			index += 1
 

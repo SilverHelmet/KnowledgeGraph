@@ -1,5 +1,5 @@
 from .simple_extractors import SimpleLTPExtractor
-from .test_extractor import load_stanford_result, load_important_domains
+from test.test_extractor import load_stanford_result, load_important_domains
 from .entity.ner import NamedEntityReg
 from ..schema.schema import Schema
 from .util import get_url_domains
@@ -9,7 +9,7 @@ import sys
 import os
 import json
 from .ltp import LTP
-from .dependency.verb_relation_advanced_extractor import VerbRelationExtractor
+from .dependency.verb_title_relation_extractor import VerbRelationExtractor
 from entity.linkers import SeparatedLinker, MatchRelLinker, PageMemoryEntityLinker
 
 def work(inpath, sentences_path, stanford_results_path, outpath):
@@ -40,7 +40,7 @@ def work(inpath, sentences_path, stanford_results_path, outpath):
             print 'error url %s' %(url)
             continue
 
-        sentences = [s.encode('utf-8') for s in obj['sentences']]
+        sentences = [s.encode('utf-8').strip() for s in obj['sentences']]
         outf.write('%s\n' %url)
         Print('process %s' %url)
         names = url2names[url]
