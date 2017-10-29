@@ -362,14 +362,19 @@ def infer_type():
         outf.write('%s\t%s\t%d\t%s\n' %(baike_url, fb_uri, nb_names, json.dumps(inffered_types)))
     
     outf.close()
-    print 'finish inferring'
+    print 'finish inferring '
     Print('baike classes hit = %d' %cls_hit)
 
 def load_and_write_extra_types():
+    print 'a'
     fb_prop_path = os.path.join(classify_dir, 'mapped_fb_entity_info.json')
+    print 'b'
     total = 6282988
+    print 'c'
     extra_type_map = load_extra_type(fb_prop_path, total)
+    print 'd'
     write_json_map(os.path.join(classify_dir, 'extra_type.json'), extra_type_map, sort = True)
+    print 'e'
 
 def test():
     infobox_path = os.path.join(result_dir, '360/mapping/final_predicates_map.json')
