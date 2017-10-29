@@ -291,6 +291,7 @@ def load_extra_type(fb_prop_path, total):
 
 def infer_type():
 
+    print "start reading"
     bk2fb_map = load_match_result(filepath = os.path.join(rel_ext_dir, 'mapping_result.tsv'))
     baike_cls_map = load_baike_entity_class()
     baike_title_map = load_baike_entity_title()
@@ -315,6 +316,7 @@ def infer_type():
     cls_hit = 0
     schema = Schema()
     schema.init()
+    print "start inferring"
     Print("type infer")
     for line in tqdm(file(baike_info_path), total = total):
         p = line.split('\t')
@@ -360,6 +362,7 @@ def infer_type():
         outf.write('%s\t%s\t%d\t%s\n' %(baike_url, fb_uri, nb_names, json.dumps(inffered_types)))
     
     outf.close()
+    print 'finish inferring'
     Print('baike classes hit = %d' %cls_hit)
 
 def load_and_write_extra_types():
@@ -398,8 +401,11 @@ def test():
 
 
 if __name__ == "__main__":
+    print 'start loading and writing extra types'
     load_and_write_extra_types()
+    print 'start inferring types'
     infer_type()
+    print 'finish inferring types'
 
     #debug
     #test()
