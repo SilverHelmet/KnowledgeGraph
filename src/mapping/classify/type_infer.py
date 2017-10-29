@@ -76,12 +76,15 @@ class InfoTypeInfer:
             info_sum = 0
             info_maximum = 0
             for info_tuple in mapping_pairs:
-            	if info_count == 0:
-            		info_sum = info_tuple[1]
+                if info_tuple[0] == 'sum':
+                    info_sum = info_tuple[1]
+                    break
+            for info_tuple in mapping_pairs:
+            	if info_tuple[0] == 'sum':
             		info_count += 1
             		continue
             	info_count += 1
-                print info_tuple[0], info_tuple[1], info_sum
+                #print info_tuple[0], info_tuple[1], info_sum
                 mapping = Mapping((info_tuple[0], str(info_tuple[1]) + '/' + str(info_sum)))
                 if (info_count <= 3 or mapping.hit >= 50) and mapping.hit >= 3:
                     mappings.append(mapping)
@@ -155,8 +158,11 @@ class TitleTypeInfer:
             title_sum = 0
             title_maximum = 0
             for title_tuple in mapping_pairs:
-            	if title_count == 0:
-            		title_sum = title_tuple[1]
+                if title_tuple[0] == 'sum':
+                    title_sum = title_tuple[1]
+                    break
+            for title_tuple in mapping_pairs:
+            	if title_tuple[0] == 'sum':
             		title_count += 1
             		continue
             	title_count += 1
