@@ -49,7 +49,6 @@ if __name__ == "__main__":
             fb_uri, baike_url, fb_property, baike_info, fb_value, baike_value, score = line.strip().decode('utf-8').split("\t")
         except:
             print line
-            while True:
         map_result.add(baike_info, fb_property)
 
     if len(sys.argv) >= 3:
