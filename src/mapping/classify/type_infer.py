@@ -173,7 +173,7 @@ class TitleTypeInfer:
             mappings = self.baike_title_map[attr]
             for mapping in mappings:
                 fb_type = mapping.fb_type()
-                prob = mapping.prob()
+                prob = mapping.prob() * 2
                 if not fb_type in prob_map:
                     prob_map[fb_type] = prob
                 else:
@@ -243,7 +243,7 @@ def decide_type(type_probs, schema):
         return []
     types = []
     for fb_type in type_probs:
-        if type_probs[fb_type] >= 0.8:
+        if type_probs[fb_type] >= 2:
             types.append(fb_type)
     if len(types) == 0:
         # types = topk_key(type_probs, 1)
@@ -332,8 +332,11 @@ def infer_type():
                     fb_types.append(ext_type)
             fb_types = list(set(fb_types))
             # outf.write('%s\t%s\t%d\t%s\n' %(baike_url, fb_uri, nb_names * 2 + 3, json.dumps(fb_types)))
-            outf.write('%s\t%s\t%d\t%s\n' %(baike_url, fb_uri, nb_names, json.dumps(fb_types)))
-            continue
+            #outf.write('%s\t%s\t%d\t%s\n' %(baike_url, fb_uri, nb_names, json.dumps(fb_types)))
+            #continue
+        else:
+            fb_uri = "None"
+            fb_types = []
 
         obj = json.loads(p[1])
         names = obj.get('info', {}).keys()
@@ -349,8 +352,10 @@ def infer_type():
         type_probs = type_infer.infer(names, clses, titles) 
         type_infer.choose_music_type(type_probs, 0.8)
         inffered_types = decide_type(type_probs, schema)
-        outf.write('%s\t%s\t%d\t%s\n' %(baike_url, "None", nb_names, json.dumps(inffered_types)))
-
+        for fb_type_origin in fb_types:
+            if not fb_type_origin in inffered_types:
+                inffered_types.append(fb_type_origin)
+        outf.write('%s\t%s\t%d\t%s\n' %(baike_url, fb_uri, nb_names, json.dumps(inffered_types)))
     
     outf.close()
     Print('baike classes hit = %d' %cls_hit)
