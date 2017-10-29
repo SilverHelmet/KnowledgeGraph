@@ -20,7 +20,6 @@ class Mapping:
 
     def fb_type(self):
         return get_type(self.fb_prop)
-    
     def __str__(self):
         return ' '.join([self.fb_prop, '%d/%d' %(self.hit, self.total)])
 
