@@ -238,12 +238,12 @@ def topk_key(key_map, k):
     keys = sorted(key_map.keys(), key = lambda x: key_map[x], reverse = True)[:k]
     return keys
   
-def decide_type(type_probs, schema):
+def decide_type(type_probs, schema, chosen_prob):
     if len(type_probs) == 0:
         return []
     types = []
     for fb_type in type_probs:
-        if type_probs[fb_type] >= 2:
+        if type_probs[fb_type] >= chosen_prob:
             types.append(fb_type)
     if len(types) == 0:
         # types = topk_key(type_probs, 1)
@@ -331,12 +331,14 @@ def infer_type():
                 for ext_type in extra_types:
                     fb_types.append(ext_type)
             fb_types = list(set(fb_types))
+            chosen_prob = 3
             # outf.write('%s\t%s\t%d\t%s\n' %(baike_url, fb_uri, nb_names * 2 + 3, json.dumps(fb_types)))
             #outf.write('%s\t%s\t%d\t%s\n' %(baike_url, fb_uri, nb_names, json.dumps(fb_types)))
             #continue
         else:
             fb_uri = "None"
             fb_types = []
+            chosen_prob = 2
 
         obj = json.loads(p[1])
         names = obj.get('info', {}).keys()
@@ -351,7 +353,7 @@ def infer_type():
             titles = []
         type_probs = type_infer.infer(names, clses, titles) 
         type_infer.choose_music_type(type_probs, 0.8)
-        inffered_types = decide_type(type_probs, schema)
+        inffered_types = decide_type(type_probs, schema, chosen_prob)
         for fb_type_origin in fb_types:
             if not fb_type_origin in inffered_types:
                 inffered_types.append(fb_type_origin)
