@@ -46,9 +46,9 @@ def load_baike_entity_title():
         if title == '':
             continue
         if url in bk2tls:
-            bk2tls[url].append(cls[0])
+            bk2tls[url].append(title)
         else:
-            bk2tls[url] = [cls[0]]
+            bk2tls[url] = [title]
     return bk2tls
 
 def load_mappings_witd_score(filepath, threshold):
