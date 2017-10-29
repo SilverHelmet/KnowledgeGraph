@@ -18,7 +18,7 @@ def get_type(uri):
         p = fb_uri.split('.')
         return '.'.join(p[:2])
     else:
-        raise Exception("error uri")
+        raise Exception("error uri %s" % fb_uri)
 
 def encode(uri):
     if type(uri) == unicode:
