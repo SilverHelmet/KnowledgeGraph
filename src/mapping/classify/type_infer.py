@@ -1,7 +1,7 @@
 #encoding:utf-8
 import os
-from .util import load_match_result, load_baike_entity_class, load_fb_type
-from ...IOUtil import result_dir, Print, classify_dir, rel_ext_dir, write_json_map, load_json_map
+from .util import load_match_result, load_baike_entity_class, load_fb_type, load_baike_entity_title
+from ...IOUtil import data_dir, result_dir, Print, classify_dir, rel_ext_dir, write_json_map, load_json_map
 from ...fb_process.extract_util import get_type
 import json
 from .gen_baike_class_to_fb import BaikeClassCount
@@ -293,7 +293,7 @@ def infer_type():
 
     print "start reading"
     bk2fb_map = load_match_result(filepath = os.path.join(rel_ext_dir, 'mapping_result.tsv'))
-    baike_cls_map = load_baike_entity_class()
+    baike_cls_map = load_baike_entity_class(os.path.join(data_dir, '360_final_type_url.json'))
     baike_title_map = load_baike_entity_title()
     fb_type_map = load_fb_type(fb_uris = set(bk2fb_map.values()) )
 
