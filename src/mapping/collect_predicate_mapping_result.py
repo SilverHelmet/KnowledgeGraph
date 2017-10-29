@@ -45,10 +45,13 @@ if __name__ == "__main__":
         predict_map_result_path = os.path.join(result_dir, '360/mapping/one2one_info_predicate_mapping.tsv')
     map_result = MappingResult()
     for line in file(predict_map_result_path):
-        try:
-            fb_uri, baike_url, fb_property, baike_info, fb_value, baike_value, score = line.strip().decode('utf-8').split("\t")
-        except:
-            print line
+        reading_list = line.strip().decode('utf-8').split("\t")
+        complete_list = []
+        for item in reading_list:
+            if item == "":
+                continue
+            complete_list.append(item)
+        fb_uri, baike_url, fb_property, baike_info, fb_value, baike_value, score = complete_list
         map_result.add(baike_info, fb_property)
 
     if len(sys.argv) >= 3:
