@@ -22,7 +22,7 @@ class Mapping:
         return get_type(self.fb_prop)
     def __str__(self):
         return ' '.join([self.fb_prop, '%d/%d' %(self.hit, self.total)])
-
+'''
 class InfoboxTypeInfer:
     def __init__(self, path):
         self.baikeattr2fb_type = self.init(path)
@@ -57,6 +57,7 @@ class InfoboxTypeInfer:
                 else:
                     prob_map[fb_type] += prob
         return prob_map
+'''
 
 class InfoTypeInfer:
     def __init__(self, path):
@@ -80,6 +81,7 @@ class InfoTypeInfer:
             		info_count += 1
             		continue
             	info_count += 1
+                print info_tuple[0], info_tuple[1], info_sum
                 mapping = Mapping((info_tuple[0], str(info_tuple[1]) + '/' + str(info_sum)))
                 if (info_count <= 3 or mapping.hit >= 50) and mapping.hit >= 3:
                     mappings.append(mapping)
