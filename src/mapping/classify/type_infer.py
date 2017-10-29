@@ -293,7 +293,7 @@ def infer_type():
 
     print "start reading"
     bk2fb_map = load_match_result(filepath = os.path.join(rel_ext_dir, 'mapping_result.tsv'))
-    baike_cls_map = load_baike_entity_class(os.path.join(data_dir, '360_final_type_url.json'))
+    baike_cls_map = load_baike_entity_class(os.path.join(data_dir, '360_final_type_url.json'), simple=True)
     baike_title_map = load_baike_entity_title()
     fb_type_map = load_fb_type(fb_uris = set(bk2fb_map.values()) )
 
