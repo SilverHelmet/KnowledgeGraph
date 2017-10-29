@@ -22,7 +22,7 @@ predicate_collect_out='result/360/mapping/final_predicates_map.json'
 python -u -m src.mapping.collect_predicate_mapping_result $predicate_out $predicate_collect_out 
 
 # type infer
-python -u -m src.mapping.classify.type_infer >& log/type_infer.log
+#python -u -m src.mapping.classify.type_infer >& log/type_infer.log
 
 
 # extract mapped baike doc
