@@ -45,7 +45,7 @@ def load_baike_entity_title():
         url, title = line.strip().split('\t')
         if title == '':
             continue
-        if url in bk2tl:
+        if url in bk2tls:
             bk2tls[url].append(cls[0])
         else:
             bk2tls[url] = [cls[0]]
