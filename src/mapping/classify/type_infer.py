@@ -362,6 +362,11 @@ def infer_type():
             titles = []
         type_probs = type_infer.infer(names, clses, titles) 
         type_infer.choose_music_type(type_probs, 0.8)
+        type_probs_assumed = []
+        for fb_type_in in type_probs:
+            if type_probs[fb_type_in] >= chosen_prob:
+                type_probs_assumed.append((fb_type, type_probs[fb_type_in])
+        print baike_url, type_probs_assumed
         inffered_types = decide_type(type_probs, schema, chosen_prob)
         for fb_type_origin in fb_types:
             if not fb_type_origin in inffered_types:
