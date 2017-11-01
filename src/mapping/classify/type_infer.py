@@ -92,7 +92,7 @@ class InfoTypeInfer:
 
         return baike_info_map
 
-    def infer(self, baike_attrs, prob_map):
+    def infer(self, baike_attrs, prob_map, sep_prob_map):
         for attr in baike_attrs:
             if not attr in self.baike_info_map:
                 continue
@@ -104,6 +104,9 @@ class InfoTypeInfer:
                     prob_map[fb_type] = prob
                 else:
                     prob_map[fb_type] += prob
+                if not fb_type in sep_prob_map:
+                    sep_prob_map[fb_type] = (0, 0, 0)
+                sep_prob_map[fb_type][0] = prob
         return prob_map
 
 class BKClassTypeInfer:
@@ -129,7 +132,7 @@ class BKClassTypeInfer:
         self.baike_cls_cnt_map[baike_cls] = baike_cls_cnt
 
 
-    def infer(self, baike_clses, prob):
+    def infer(self, baike_clses, prob, sep_prob_map):
         for cls in baike_clses:
             if cls not in self.baike_cls_cnt_map:
                 continue
@@ -139,6 +142,9 @@ class BKClassTypeInfer:
                 if not fb_type in prob:
                     prob[fb_type] = 0
                 prob[fb_type] += cls_prob[fb_type]
+                if not fb_type in sep_prob_map:
+                    sep_prob_map[fb_type] = (0, 0, 0)
+                sep_prob_map[fb_type][1] = cls_prob[fb_type]
         return prob
 
 class TitleTypeInfer:
@@ -173,7 +179,7 @@ class TitleTypeInfer:
 
         return baike_title_map
 
-    def infer(self, baike_attrs, prob_map):
+    def infer(self, baike_attrs, prob_map, sep_prob_map):
         for attr in baike_attrs:
             if not attr in self.baike_title_map:
                 continue
@@ -185,6 +191,9 @@ class TitleTypeInfer:
                     prob_map[fb_type] = prob
                 else:
                     prob_map[fb_type] += prob
+                if not fb_type in sep_prob_map:
+                    sep_prob_map[fb_type] = (0, 0, 0)
+                sep_prob_map[fb_type][2] = prob
         return prob_map
 
 class TypeInfer:
@@ -199,10 +208,11 @@ class TypeInfer:
     
     def infer(self, info, baike_clses, baike_title):
         prob = {}
+        sep_prob = {}
         self.info_type_infer.infer(info, prob)
         self.baike_cls_infer.infer(baike_clses, prob)
         self.title_type_infer.infer(baike_title, prob)
-        return prob
+        return prob, sep_prob
 
     def choose_one_music_type(self, type_probs, threshold):
         types = set(type_probs.keys())
@@ -360,12 +370,12 @@ def infer_type():
             titles = baike_title_map[baike_url]
         else:
             titles = []
-        type_probs = type_infer.infer(names, clses, titles) 
+        type_probs, sep_type_probs = type_infer.infer(names, clses, titles) 
         type_infer.choose_music_type(type_probs, 0.8)
         type_probs_assumed = []
         for fb_type_in in type_probs:
             if type_probs[fb_type_in] >= chosen_prob:
-                type_probs_assumed.append((fb_type_in, type_probs[fb_type_in]))
+                type_probs_assumed.append((fb_type_in, type_probs[fb_type_in], sep_type_probs[fb_type_in]))
         print baike_url, type_probs_assumed
         inffered_types = decide_type(type_probs, schema, chosen_prob)
         for fb_type_origin in fb_types:
