@@ -105,7 +105,7 @@ class InfoTypeInfer:
                 else:
                     prob_map[fb_type] += prob
                 if not fb_type in sep_prob_map:
-                    sep_prob_map[fb_type] = (0, 0, 0)
+                    sep_prob_map[fb_type] = [0, 0, 0]
                 sep_prob_map[fb_type][0] = prob
         return prob_map
 
@@ -143,7 +143,7 @@ class BKClassTypeInfer:
                     prob[fb_type] = 0
                 prob[fb_type] += cls_prob[fb_type]
                 if not fb_type in sep_prob_map:
-                    sep_prob_map[fb_type] = (0, 0, 0)
+                    sep_prob_map[fb_type] = [0, 0, 0]
                 sep_prob_map[fb_type][1] = cls_prob[fb_type]
         return prob
 
@@ -192,7 +192,7 @@ class TitleTypeInfer:
                 else:
                     prob_map[fb_type] += prob
                 if not fb_type in sep_prob_map:
-                    sep_prob_map[fb_type] = (0, 0, 0)
+                    sep_prob_map[fb_type] = [0, 0, 0]
                 sep_prob_map[fb_type][2] = prob
         return prob_map
 
