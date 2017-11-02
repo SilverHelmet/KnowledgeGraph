@@ -209,9 +209,9 @@ class TypeInfer:
     def infer(self, info, baike_clses, baike_title):
         prob = {}
         sep_prob = {}
-        self.info_type_infer.infer(info, prob)
-        self.baike_cls_infer.infer(baike_clses, prob)
-        self.title_type_infer.infer(baike_title, prob)
+        self.info_type_infer.infer(info, prob, sep_prob)
+        self.baike_cls_infer.infer(baike_clses, prob, sep_prob)
+        self.title_type_infer.infer(baike_title, prob, sep_prob)
         return prob, sep_prob
 
     def choose_one_music_type(self, type_probs, threshold):
