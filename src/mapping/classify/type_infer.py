@@ -376,7 +376,7 @@ def infer_type():
         for fb_type_in in type_probs:
             if type_probs[fb_type_in] >= chosen_prob:
                 type_probs_assumed.append((fb_type_in, type_probs[fb_type_in], sep_type_probs[fb_type_in]))
-        print baike_url, type_probs_assumed, str(names).decode('utf-8').encode('gbk'), clses, str(titles).decode('utf-8').encode('gbk')
+        print baike_url, type_probs_assumed, str(names).encode('gb2312'), clses, str(titles).decode('utf8').encode('gb2312')
         inffered_types = decide_type(type_probs, schema, chosen_prob)
         for fb_type_origin in fb_types:
             if not fb_type_origin in inffered_types:
