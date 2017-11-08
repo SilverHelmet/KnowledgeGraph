@@ -338,20 +338,22 @@ class VerbRelationExtractor:
     def find_all_ATT(self, entity_lis):
         for entity in entity_lis:
             path = self.find_path_to_root(entity)
-            for node in path:
-                if node.rel in ['ATT', 'ADV', 'CMP']:
-                    if node.father.postag == 'v':
-                        node.father.att.apppend(entity)
-                        break
+            for node in path[:-1]:
+                if node.father.postag == 'v':
+                    if node.rel in ['ATT', 'ADV', 'CMP']:
+                        if entity not in node.father.att:
+                            node.father.att.apppend(entity)
+                break
 
     def find_all_OBJ(self, entity_lis):
         for entity in entity_lis:
             path = self.find_path_to_root(entity)
-            for node in path:
-                if node.rel in ['VOB', 'FOB']:
-                    if node.father.postag == 'v' and entity not in node.father.obj:
-                        node.father.obj.append(entity)
-                        break
+            for node in path[:-1]:
+                if node.father.postag == 'v':
+                    if node.rel in ['VOB', 'FOB']:
+                        if entity not in node.father.obj:
+                            node.father.obj.append(entity)
+                    break
 
     def find_special_OBJ(self, entity_lis, verb):
         for child in verb.children:
@@ -410,7 +412,7 @@ class VerbRelationExtractor:
             for j in range(i + 1, len(entity_lis)):
                 tmp_verb = self.find_noun_relation(entity_lis[i], entity_lis[j]);
                 if(tmp_verb != None):
-                    res.append((entity_lis[i], tmp_verb, entity_lis[j]))
+                    res.append((entity_lis[i].idx, tmp_verb.idx, entity_lis[j].idx))
         #step one: mark sub
         #for each verb mark
         for verb in verb_lis:
@@ -425,7 +427,8 @@ class VerbRelationExtractor:
         #concept_sub => actual_sub
         for verb in verb_lis:
             for concept_sub in verb.concept_sub:
-                verb.actual_sub.append(concept_sub)
+                if concept_sub not in verb.actual_sub:
+                    verb.actual_sub.append(concept_sub)
         #is relation
         for verb in verb_lis:
             if verb.word == '是' and len(verb.actual_sub) != 0:
@@ -433,10 +436,20 @@ class VerbRelationExtractor:
                     if child.rel in ['VOB', 'FOB'] and child not in verb.actual_sub:
                         verb.actual_sub.append(child)
         #step three: confirm the obj, att, target part
-        #obj:
+        #obj&debug:
         for verb in verb_lis:
             self.find_special_OBJ(entity_lis, verb)
+            print '#'*30
+            self.debuger.debug("verb", verb.word, "has obj:")
+            for obj in verb.obj:
+                self.debuger.debug(obj.word)
+            print '#'*30
         self.find_all_OBJ(entity_lis)
+        for verb in verb_lis:
+            self.debuger.debug("verb", verb.word, "has obj:")
+            for obj in verb.obj:
+                self.debuger.debug(obj.word)
+            print '#'*30
         #att:
         self.find_all_ATT(entity_lis)
         #target:
@@ -445,62 +458,63 @@ class VerbRelationExtractor:
         for verb in verb_lis:
             for sub in verb.actual_sub:
                 for obj in verb.obj:
-                    res.append((sub, verb, obj))
+                    res.append((sub.idx, verb.idx, obj.idx))
                 for att in verb.att:
-                    res.append((sub, verb, att))
+                    res.append((sub.idx, verb.idx, att.idx))
                 for target in verb.target:
-                    res.append((sub, verb, target))
+                    res.append((sub.idx, verb.idx, target.idx))
             for obj in verb.obj:
                 for target in verb.target:
-                    res.append((obj, verb, target))
+                    res.append((obj.idx, verb.idx, target.idx))
             for att in verb.att:
                 for target in verb.target:
-                    res.append((att, verb, target))
-
+                    res.append((att.idx, verb.idx, target.idx))
+        #debug
         for verb in verb_lis:
             self.debuger.debug("verb", verb.word, "has actual_sub:")
-        for actual_sub in verb.actual_sub:
-            self.debuger.debug(actual_sub.word)
-        self.debuger.debug("verb", verb.word, "has concept_sub:")
-        for concept_sub in verb.concept_sub:
-            self.debuger.debug(concept_sub.word)
-        self.debuger.debug("verb", verb.word, "has obj:")
-        for obj in verb.obj:
-            self.debuger.debug(obj.word)
-        self.debuger.debug("verb", verb.word, "has att:")
-        for att in verb.att:
-            self.debuger.debug(att.word)
-        self.debuger.debug("verb", verb.word, "has target:")
-        for target in verb.target:
-            self.debuger.debug(target.word)
-        self.debuger.debug('-'*40)
+            for actual_sub in verb.actual_sub:
+                self.debuger.debug(actual_sub.word)
+            self.debuger.debug("verb", verb.word, "has concept_sub:")
+            for concept_sub in verb.concept_sub:
+                self.debuger.debug(concept_sub.word)
+            self.debuger.debug("verb", verb.word, "has obj:")
+            for obj in verb.obj:
+                self.debuger.debug(obj.word)
+            self.debuger.debug("verb", verb.word, "has att:")
+            for att in verb.att:
+                self.debuger.debug(att.word)
+            self.debuger.debug("verb", verb.word, "has target:")
+            for target in verb.target:
+                self.debuger.debug(target.word)
+            self.debuger.debug('-'*40)
 
         return res
 
 if __name__ == "__main__":
     ltp = LTP(None)
-    ltp_result = ltp.parse("在08-09赛季，巴萨在瓜迪奥拉的带领下获得了联赛冠军、欧洲冠军和国王杯冠军，并在09-10赛季前半段（2009年）又获得了欧洲超级杯赛、西班牙超级杯和世俱杯，在09年获得了史无前例的六冠王称号，这也标志着巴萨梦三王朝的诞生。")
+    ltp_result = ltp.parse("1993年，主演刘镇伟执导的浪漫剧情片《天长地久》，刘德华与刘锦玲和吴家丽合作诠释了一段悲剧爱情故事。")
     info = PrintInfo()
     info.print_ltp(ltp_result)
-    st, ed = ltp_result.search_word("巴萨")
+    tree = ParseTree(ltp_result)
+    st, ed = ltp_result.search_word("刘德华")
     if st == -1 and ed == -1:
-        print "cannot find word!!", "巴萨"
+        print "cannot find word!!", "刘德华"
     e1 = StrEntity(st, ed, None)
-    st, ed = ltp_result.search_word("国王杯")
+    st, ed = ltp_result.search_word("刘锦玲")
     if st == -1 and ed == -1:
-        print "cannot find word!!", "国王杯"
+        print "cannot find word!!", "刘锦玲"
     e2 = StrEntity(st, ed, None)
-    st, ed = ltp_result.search_word("西班牙超级杯")
+    st, ed = ltp_result.search_word("吴家丽")
     if st == -1 and ed == -1:
-        print "cannot find word!!", "西班牙超级杯赛"
+        print "cannot find word!!", "吴家丽"
     e3 = StrEntity(st, ed, None)
-    st, ed = ltp_result.search_word("欧洲超级杯赛")
+    st, ed = ltp_result.search_word("刘镇伟")
     if st == -1 and ed == -1:
-        print "cannot find word!!", "欧洲超级杯"
+        print "cannot find word!!", "刘镇伟"
     e4 = StrEntity(st, ed, None)
-    st, ed = ltp_result.search_word("世俱杯")
+    st, ed = ltp_result.search_word("天长地久")
     if st == -1 and ed == -1:
-        print "cannot find word!!", "世俱杯"
+        print "cannot find word!!", "天长地久"
     e5 = StrEntity(st, ed, None)
     entity_pool = []
     e_lis = [e1, e2, e3, e4, e5]
@@ -511,6 +525,6 @@ if __name__ == "__main__":
     for k, item in enumerate(tripple_res):
         print 'tripple', k, 'is:'
         if item[1] == None:
-            print '(', item[0].word, ',', '是', ',', item[2].word, ')'
+            print '(', tree.nodes[item[0]].word, ',', '是', ',', tree.nodes[item[2]].word, ')'
         else:
-            print '(', item[0].word, ',', item[1].word, ',', item[2].word, ')'
+            print '(', tree.nodes[item[0]].word, ',', tree.nodes[item[1]].word, ',', tree.nodes[item[2]].word, ')'
