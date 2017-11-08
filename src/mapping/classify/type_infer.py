@@ -196,22 +196,72 @@ class TitleTypeInfer:
                 sep_prob_map[fb_type][2] = prob
         return prob_map
 
+class ExtraTypeInfer:
+    def __init__(self, path):
+        self.baike_extra_map = self.init(path)
+
+    def init(self, mapping_path):
+        Print('load mapping result from [%s]' %mapping_path)
+
+        baike_extra_map = {}
+        for line in file(mapping_path):
+            p = line.decode('utf-8').split('\t')
+            baikeattr = p[0]
+            mapping_pairs = eval(p[1])
+            mappings = []
+            extra_count = 0
+            extra_sum = 0
+            extra_maximum = 0
+            for extra_tuple in mapping_pairs:
+                if extra_tuple[0] == 'sum':
+                    extra_sum = extra_tuple[1]
+                    break
+            for extra_tuple in mapping_pairs:
+                if extra_tuple[0] == 'sum':
+                    extra_count += 1
+                    continue
+                extra_count += 1
+                mapping = Mapping((extra_tuple[0], str(extra_tuple[1]) + '/' + str(extra_sum)))
+                if (extra_count <= 3 or mapping.hit >= 50) and mapping.hit >= 3:
+                    mappings.append(mapping)
+            baike_extra_map[baikeattr] = mappings
+
+        return baike_extra_map
+
+    def infer(self, baike_attrs, prob_map, sep_prob_map):
+        for attr in baike_attrs:
+            if not attr in self.baike_extra_map:
+                continue
+            mappings = self.baike_extra_map[attr]
+            for mapping in mappings:
+                fb_type = mapping.fb_type()
+                prob = mapping.prob() * 2
+                if not fb_type in prob_map:
+                    prob_map[fb_type] = prob
+                else:
+                    prob_map[fb_type] += prob
+                if not fb_type in sep_prob_map:
+                    sep_prob_map[fb_type] = [0, 0, 0]
+                sep_prob_map[fb_type][2] = prob
+        return prob_map
+
 class TypeInfer:
-    def __init__(self, baike_info_path, baike_cls_path, baike_title_path):
+    def __init__(self, baike_info_path, baike_cls_path, baike_title_path, extra_info_path):
         #self.infobox_type_infer = InfoboxTypeInfer(path = infobox_path)
         self.info_type_infer = InfoTypeInfer(path = baike_info_path)
         self.baike_cls_infer = BKClassTypeInfer(path = baike_cls_path)
         Print("Baike Class Infer: add mapping type_person -> fb:people.person")
         self.baike_cls_infer.add_map('type_person', 'fb:people.person')
         self.title_type_infer = TitleTypeInfer(path = baike_title_path)
-
+        self.extra_type_infer = ExtraTypeInfer(path = extra_info_path)
     
-    def infer(self, info, baike_clses, baike_title):
+    def infer(self, info, baike_clses, baike_title, extra_info):
         prob = {}
         sep_prob = {}
         self.info_type_infer.infer(info, prob, sep_prob)
         self.baike_cls_infer.infer(baike_clses, prob, sep_prob)
         self.title_type_infer.infer(baike_title, prob, sep_prob)
+        self.extra_type_infer.infer(extra_info, prob, sep_prob)
         return prob, sep_prob
 
     def choose_one_music_type(self, type_probs, threshold):
@@ -317,10 +367,11 @@ def infer_type():
 
 
     #predicates_map_path = os.path.join(result_dir, '360/mapping/final_predicates_map.json')
+    extra_info_path = os.path.join(result_dir, '360/extra_info.json')
     baike_title_path = os.path.join(result_dir, '360/title_type.txt')
     baike_infobox_path = os.path.join(result_dir, '360/info_type.txt')
     baike_cls2tpe_path = os.path.join(classify_dir, 'final_baike_cls2fb_type.json')
-    type_infer = TypeInfer(baike_info_path = baike_infobox_path, baike_cls_path = baike_cls2tpe_path, baike_title_path=baike_title_path)
+    type_infer = TypeInfer(baike_info_path = baike_infobox_path, baike_cls_path = baike_cls2tpe_path, baike_title_path = baike_title_path, extra_info_path = extra_info_path)
     
     extra_type_path = os.path.join(classify_dir, 'extra_type.json')
     extra_type_map = load_json_map(extra_type_path)
@@ -361,6 +412,11 @@ def infer_type():
 
         obj = json.loads(p[1])
         names = obj.get('info', {}).keys()
+        extra_info = []
+        if '职业' in obj['info']:
+            extra_info += obj['info']['职业']
+        if '运动项目' in obj['info']:
+            extra_info += obj['info']['运动项目']
         if baike_url in baike_cls_map:
             cls_hit += 1
             clses = baike_cls_map[baike_url]
@@ -370,7 +426,7 @@ def infer_type():
             titles = baike_title_map[baike_url]
         else:
             titles = []
-        type_probs, sep_type_probs = type_infer.infer(names, clses, titles) 
+        type_probs, sep_type_probs = type_infer.infer(names, clses, titles, extra_info) 
         type_infer.choose_music_type(type_probs, 0.8)
         type_probs_assumed = []
         for fb_type_in in type_probs:
