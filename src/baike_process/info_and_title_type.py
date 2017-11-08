@@ -66,21 +66,22 @@ for line in f4:
             key = key[1:len(key) - 1]
             if key == "intro_summary":
                 continue
-            title = key.split("_")
-            for k in title:
-                if len(k) == 0:
+            #title = key.split("_")
+            #for k in title:
+            k = key
+            if len(k) == 0:
+                continue
+            if title_type_dict.has_key(k):
+                if len(title_type_dict[k]) >= 100:
                     continue
-                if title_type_dict.has_key(k):
-                    if len(title_type_dict[k]) >= 100:
-                        continue
-                    title_type_dict[k]["sum"] += 1
-                    if title_type_dict[k].has_key(t):
-                        title_type_dict[k][t] += 1
-                    else:
-                        title_type_dict[k].update({t: 1})
+                title_type_dict[k]["sum"] += 1
+                if title_type_dict[k].has_key(t):
+                    title_type_dict[k][t] += 1
                 else:
-                    title_type_dict.update({k: {t: 1}})
-                    title_type_dict[k]["sum"] = 1
+                    title_type_dict[k].update({t: 1})
+            else:
+                title_type_dict.update({k: {t: 1}})
+                title_type_dict[k]["sum"] = 1
 info_tmp = dict()
 title_tmp = dict()
 for key in info_type_dict:
