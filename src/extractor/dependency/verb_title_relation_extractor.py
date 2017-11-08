@@ -289,11 +289,11 @@ class VerbRelationExtractor:
         for child in node.children:
             if child.rel == 'COO':
                 res.append(child)
-                res += find_all_COO_child(child)
+                res += self.find_all_COO_child(child)
         return res
 
     def find_all_COO(self, node):
-        res = find_all_COO_father(self, node) + find_all_COO_child(self, node)
+        res = self.find_all_COO_father(node) + self.find_all_COO_child(node)
         return res
 
     def find_rel_sub(self, verb, entity_lis):
@@ -309,14 +309,14 @@ class VerbRelationExtractor:
                     ret = 'concept'
         if ret == 'actual':
             if len(verb.actual_sub) != 1:
-                 self.debuger.debug('more than one actual sub!')
+                self.debuger.debug('more than one actual sub!')
                 return None
             coo_act_lis = self.find_all_COO(verb.actual_sub[0])
             for coo_act_sub in coo_act_lis:
                 if coo_act_sub != verb.actual_sub[0]:
                     verb.actual_sub.append(coo_act_sub)
         if ret == 'concept':
-            for concept_verb in verb.concept_sub:
+            for concept_sub in verb.concept_sub:
                 coo_concept_lis = self.find_all_COO(concept_sub)
                 for coo_concept_sub in coo_concept_lis:
                     if coo_concept_sub not in verb.concept_sub:
@@ -350,8 +350,8 @@ class VerbRelationExtractor:
             for node in path:
                 if node.rel in ['VOB', 'FOB']:
                     if node.father.postag == 'v' and entity not in node.father.obj:
-                        node.father.obj.apppend(entity)
-                            break
+                        node.father.obj.append(entity)
+                        break
 
     def find_special_OBJ(self, entity_lis, verb):
         for child in verb.children:
@@ -359,12 +359,12 @@ class VerbRelationExtractor:
                 if len(child.actual_sub) != 0:
                     verb.obj += child.actual_sub
                 else:
-                    verb.obj += self.find_special_OBJ(self, entity_lis, child)
+                    verb.obj += self.find_special_OBJ(entity_lis, child)
                     break
         return verb.obj
 
     def mark_subject(self, verb, entity_lis, tree):
-        if find_rel_sub(verb, entity_lis) == 'actual':
+        if self.find_rel_sub(verb, entity_lis) == 'actual':
             return
         else:
             path = self.find_path_to_root(verb)
@@ -372,7 +372,7 @@ class VerbRelationExtractor:
                 if node.rel not in ['COO', 'VOB']:
                     break
                 if node.father.postag == 'v':
-                    if find_rel_sub(node, entity_lis) == 'actual':
+                    if self.find_rel_sub(node, entity_lis) == 'actual':
                         return
         res = []
         res_depth = []
@@ -380,7 +380,7 @@ class VerbRelationExtractor:
         for concept_sub in verb.concept_sub:
             for entity in entity_lis:
                 path1, path2 = tree.find_path(verb.idx, entity.idx)
-                if len(path1) == 1 and judge_all_ATT(path2) == True:
+                if len(path1) == 1 and self.judge_all_ATT(path2) == True:
                     res.append(entity)
                     res_depth.append(entity.depth)
         if len(res_depth) != 0:
@@ -398,9 +398,9 @@ class VerbRelationExtractor:
         res = []
         entity_lis = []
         verb_lis = []
-        tree = self.ParseTree(ltp_result)
+        tree = ParseTree(ltp_result)
         for node in tree.nodes:
-            if ndoe.postag == 'v':
+            if node.postag == 'v':
                 verb_lis.append(node)
         for e in e_lis:
             entity, near_verb, verb = self.find_2_verbs(tree, e)
@@ -456,53 +456,61 @@ class VerbRelationExtractor:
             for att in verb.att:
                 for target in verb.target:
                     res.append((att, verb, target))
+
+        for verb in verb_lis:
+            self.debuger.debug("verb", verb.word, "has actual_sub:")
+        for actual_sub in verb.actual_sub:
+            self.debuger.debug(actual_sub.word)
+        self.debuger.debug("verb", verb.word, "has concept_sub:")
+        for concept_sub in verb.concept_sub:
+            self.debuger.debug(concept_sub.word)
+        self.debuger.debug("verb", verb.word, "has obj:")
+        for obj in verb.obj:
+            self.debuger.debug(obj.word)
+        self.debuger.debug("verb", verb.word, "has att:")
+        for att in verb.att:
+            self.debuger.debug(att.word)
+        self.debuger.debug("verb", verb.word, "has target:")
+        for target in verb.target:
+            self.debuger.debug(target.word)
+        self.debuger.debug('-'*40)
+
         return res
 
 if __name__ == "__main__":
     ltp = LTP(None)
-    f = open("../noverb.txt", "r")
-    item = f.readlines()
-    f.close()
-    hit = 0
-    k = 0
-    while k < len(item):
-        sentence = item[k]
-        e_tmp = item[k+1].strip().split('\t')
-        ltp_result = ltp.parse(sentence)
-        info = PrintInfo()
-        info.print_ltp(ltp_result)
-        print sentence
-        st, ed = ltp_result.search_word(e_tmp[0])
-        if st == -1 and ed == -1:
-            k += 2
-            print "cannot find word!!"
-            print '-'*50
-            continue
-        e1 = StrEntity(st, ed, None)
-        st, ed = ltp_result.search_word(e_tmp[2])
-        if st == -1 and ed == -1:
-            k += 2
-            print "cannot find word!!"
-            print '-'*50
-            continue
-        e2 = StrEntity(st, ed, None)
-        entity_pool = []
-        for i in range(ltp_result.length):
-            entity_pool.append(0)
-        res = VerbRelationExtractor(True)
-        '''
-        tmp1 = res.find_relation(ltp_result, e1, e2, entity_pool)
-        for ans in tmp1:
-            print ltp_result.words[ans[0]]
-        '''
-        title_res_1 = res.find_title(ltp_result, e1, entity_pool)
-        title_res_2 = res.find_title(ltp_result, e2, entity_pool)
-        
-        print e_tmp[0], 'have titles:'
-        for ans in title_res_1:
-            print ltp_result.words[ans[0]]
-        print e_tmp[2], 'have titles:'
-        for ans in title_res_2:
-            print ltp_result.words[ans[0]]
-        print '-'*50
-        k += 2
+    ltp_result = ltp.parse("在08-09赛季，巴萨在瓜迪奥拉的带领下获得了联赛冠军、欧洲冠军和国王杯冠军，并在09-10赛季前半段（2009年）又获得了欧洲超级杯赛、西班牙超级杯和世俱杯，在09年获得了史无前例的六冠王称号，这也标志着巴萨梦三王朝的诞生。")
+    info = PrintInfo()
+    info.print_ltp(ltp_result)
+    st, ed = ltp_result.search_word("巴萨")
+    if st == -1 and ed == -1:
+        print "cannot find word!!", "巴萨"
+    e1 = StrEntity(st, ed, None)
+    st, ed = ltp_result.search_word("国王杯")
+    if st == -1 and ed == -1:
+        print "cannot find word!!", "国王杯"
+    e2 = StrEntity(st, ed, None)
+    st, ed = ltp_result.search_word("西班牙超级杯")
+    if st == -1 and ed == -1:
+        print "cannot find word!!", "西班牙超级杯赛"
+    e3 = StrEntity(st, ed, None)
+    st, ed = ltp_result.search_word("欧洲超级杯赛")
+    if st == -1 and ed == -1:
+        print "cannot find word!!", "欧洲超级杯"
+    e4 = StrEntity(st, ed, None)
+    st, ed = ltp_result.search_word("世俱杯")
+    if st == -1 and ed == -1:
+        print "cannot find word!!", "世俱杯"
+    e5 = StrEntity(st, ed, None)
+    entity_pool = []
+    e_lis = [e1, e2, e3, e4, e5]
+    for i in range(ltp_result.length):
+        entity_pool.append(0)
+    res = VerbRelationExtractor(True)
+    tripple_res = res.find_tripple(ltp_result, e_lis, entity_pool)
+    for k, item in enumerate(tripple_res):
+        print 'tripple', k, 'is:'
+        if item[1] == None:
+            print '(', item[0].word, ',', '是', ',', item[2].word, ')'
+        else:
+            print '(', item[0].word, ',', item[1].word, ',', item[2].word, ')'
