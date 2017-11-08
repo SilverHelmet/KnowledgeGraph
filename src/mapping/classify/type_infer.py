@@ -218,7 +218,7 @@ class ExtraTypeInfer:
             for extra_key in mapping_dict:
                 if extra_key == 'sum':
                     continue
-                mapping_pairs.append(extra_key, mapping_dict[extra_key])
+                mapping_pairs.append((extra_key, mapping_dict[extra_key]))
             sorted(mapping_pairs, key=lambda pairs: pairs[1]) 
             for extra_tuple in mapping_pairs:
                 extra_count += 1
