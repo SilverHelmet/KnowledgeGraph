@@ -87,6 +87,11 @@ class Node:
         self.nertag = nertag
         self.father = None
         self.mark = None
+        self.actual_sub = []
+        self.concept_sub = []
+        self.obj = []
+        self.att = []
+        self.target = []
         self.depth = -1
         self.children = []
 

@@ -117,7 +117,7 @@ class VerbRelationExtractor:
             if e2.rel == 'ATT' and e2.father.rel == 'ATT' and e2.father.father == e1:
                 for child in e2.children:
                     if child.rel == 'RAD' and child.word == '的':
-                        return e1.father
+                        return e2.father
         return None
 
     def judge_entity_relation(self, near_verb, verb):
@@ -234,16 +234,20 @@ class VerbRelationExtractor:
         res = []
         if node.rel == 'COO' and self.judge_title_tag(node) == True:
             res.append(node)
+        else:
+            return []
         for child in node.children:
-            self.trace_down_title_rule2(child)
+            res += self.trace_down_title_rule2(child)
         return res
 
     def trace_down_title_rule1(self, node):
         res = []
         if node.rel in ['ATT', 'COO'] and self.judge_title_tag(node) == True:
             res.append(node)
+        else:
+            return []
         for child in node.children:
-            self.trace_down_title_rule1(child)
+            res += self.trace_down_title_rule1(child)
         return res
 
     def find_title(self, ltp_result, e, entity_pool):
@@ -269,6 +273,190 @@ class VerbRelationExtractor:
             final_res.append((res.idx, res.idx + 1))
         '''
         return final_res
+
+    def find_all_COO_father(self, node):
+        res = []
+        path = self.find_path_to_root(node)
+        for node in path:
+            if node.rel == 'COO':
+                res.append(node.faher)
+            else:
+                break
+        return res
+
+    def find_all_COO_child(self, node):
+        res = []
+        for child in node.children:
+            if child.rel == 'COO':
+                res.append(child)
+                res += find_all_COO_child(child)
+        return res
+
+    def find_all_COO(self, node):
+        res = find_all_COO_father(self, node) + find_all_COO_child(self, node)
+        return res
+
+    def find_rel_sub(self, verb, entity_lis):
+        ret = None
+        for verb_child in verb.children:
+            if verb_child.rel == 'SBV':
+                if verb_child in entity_lis:
+                    verb.actual_sub.append(verb_child)
+                    ret = 'actual'
+                    break
+                elif verb_child not in entity_lis:
+                    verb.concept_sub.append(verb_child)
+                    ret = 'concept'
+        if ret == 'actual':
+            if len(verb.actual_sub) != 1:
+                 self.debuger.debug('more than one actual sub!')
+                return None
+            coo_act_lis = self.find_all_COO(verb.actual_sub[0])
+            for coo_act_sub in coo_act_lis:
+                if coo_act_sub != verb.actual_sub[0]:
+                    verb.actual_sub.append(coo_act_sub)
+        if ret == 'concept':
+            for concept_verb in verb.concept_sub:
+                coo_concept_lis = self.find_all_COO(concept_sub)
+                for coo_concept_sub in coo_concept_lis:
+                    if coo_concept_sub not in verb.concept_sub:
+                        verb.concept_sub.append(coo_concept_sub)
+
+        return ret
+
+    def judge_all_ATT(self, path):
+        for node in path:
+            if node.rel != 'ATT':
+                return False
+        return True
+
+    def find_all_TARGET(self, verb_lis):
+        for verb in verb_lis:
+            if verb.rel == 'ATT':
+                verb.target.append(verb.father)
+
+    def find_all_ATT(self, entity_lis):
+        for entity in entity_lis:
+            path = self.find_path_to_root(entity)
+            for node in path:
+                if node.rel in ['ATT', 'ADV', 'CMP']:
+                    if node.father.postag == 'v':
+                        node.father.att.apppend(entity)
+                        break
+
+    def find_all_OBJ(self, entity_lis):
+        for entity in entity_lis:
+            path = self.find_path_to_root(entity)
+            for node in path:
+                if node.rel in ['VOB', 'FOB']:
+                    if node.father.postag == 'v' and entity not in node.father.obj:
+                        node.father.obj.apppend(entity)
+                            break
+
+    def find_special_OBJ(self, entity_lis, verb):
+        for child in verb.children:
+            if child.rel in ['VOB', 'FOB'] and child.postag == 'v':
+                if len(child.actual_sub) != 0:
+                    verb.obj += child.actual_sub
+                else:
+                    verb.obj += self.find_special_OBJ(self, entity_lis, child)
+                    break
+        return verb.obj
+
+    def mark_subject(self, verb, entity_lis, tree):
+        if find_rel_sub(verb, entity_lis) == 'actual':
+            return
+        else:
+            path = self.find_path_to_root(verb)
+            for node in path:
+                if node.rel not in ['COO', 'VOB']:
+                    break
+                if node.father.postag == 'v':
+                    if find_rel_sub(node, entity_lis) == 'actual':
+                        return
+        res = []
+        res_depth = []
+        final_res = None
+        for concept_sub in verb.concept_sub:
+            for entity in entity_lis:
+                path1, path2 = tree.find_path(verb.idx, entity.idx)
+                if len(path1) == 1 and judge_all_ATT(path2) == True:
+                    res.append(entity)
+                    res_depth.append(entity.depth)
+        if len(res_depth) != 0:
+            min_depth = min(res_depth)
+            final_res = res[res_depth.index(min_depth)]
+        if final_res != None:
+            verb.actual_sub.append(final_res)
+            coo_final_lis = self.find_all_COO(final_res)
+            for coo_final in coo_final_lis:
+                if coo_final != final_res:
+                    verb.actual_sub.append(coo_final)
+        return
+
+    def find_tripple(self, ltp_result, e_lis, entity_pool):
+        res = []
+        entity_lis = []
+        verb_lis = []
+        tree = self.ParseTree(ltp_result)
+        for node in tree.nodes:
+            if ndoe.postag == 'v':
+                verb_lis.append(node)
+        for e in e_lis:
+            entity, near_verb, verb = self.find_2_verbs(tree, e)
+            entity_lis.append(entity)
+        #judge noun relation
+        for i in range(len(entity_lis)):
+            for j in range(i + 1, len(entity_lis)):
+                tmp_verb = self.find_noun_relation(entity_lis[i], entity_lis[j]);
+                if(tmp_verb != None):
+                    res.append((entity_lis[i], tmp_verb, entity_lis[j]))
+        #step one: mark sub
+        #for each verb mark
+        for verb in verb_lis:
+            self.mark_subject(verb, entity_lis, tree)
+        #(actual_sub, is, concept_sub)
+        for verb in verb_lis:
+            if len(verb.actual_sub) != 0 and len(verb.concept_sub) != 0:
+                for actual_sub in verb.actual_sub:
+                    for concept_sub in verb.concept_sub:
+                        res.append((actual_sub.idx, None, concept_sub.idx))
+        #step two: renew sub mark
+        #concept_sub => actual_sub
+        for verb in verb_lis:
+            for concept_sub in verb.concept_sub:
+                verb.actual_sub.append(concept_sub)
+        #is relation
+        for verb in verb_lis:
+            if verb.word == '是' and len(verb.actual_sub) != 0:
+                for child in verb.children:
+                    if child.rel in ['VOB', 'FOB'] and child not in verb.actual_sub:
+                        verb.actual_sub.append(child)
+        #step three: confirm the obj, att, target part
+        #obj:
+        for verb in verb_lis:
+            self.find_special_OBJ(entity_lis, verb)
+        self.find_all_OBJ(entity_lis)
+        #att:
+        self.find_all_ATT(entity_lis)
+        #target:
+        self.find_all_TARGET(verb_lis)
+        #step four: return tripple
+        for verb in verb_lis:
+            for sub in verb.actual_sub:
+                for obj in verb.obj:
+                    res.append((sub, verb, obj))
+                for att in verb.att:
+                    res.append((sub, verb, att))
+                for target in verb.target:
+                    res.append((sub, verb, target))
+            for obj in verb.obj:
+                for target in verb.target:
+                    res.append((obj, verb, target))
+            for att in verb.att:
+                for target in verb.target:
+                    res.append((att, verb, target))
+        return res
 
 if __name__ == "__main__":
     ltp = LTP(None)
