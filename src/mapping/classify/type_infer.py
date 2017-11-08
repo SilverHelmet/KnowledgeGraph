@@ -207,19 +207,20 @@ class ExtraTypeInfer:
         for line in file(mapping_path):
             p = line.decode('utf-8').split('\t')
             baikeattr = p[0]
-            mapping_pairs = eval(p[1])
+            mapping_dict = eval(p[1])
             mappings = []
             extra_count = 0
             extra_sum = 0
             extra_maximum = 0
-            for extra_tuple in mapping_pairs:
-                if extra_tuple[0] == 'sum':
-                    extra_sum = extra_tuple[1]
-                    break
-            for extra_tuple in mapping_pairs:
-                if extra_tuple[0] == 'sum':
-                    extra_count += 1
+            extra_sum = mapping_dict['sum']
+
+            mapping_pairs = []
+            for extra_key in mapping_dict:
+                if extra_key == 'sum':
                     continue
+                mapping_pairs.append(extra_key, mapping_dict[extra_key])
+            sorted(mapping_pairs, key=lambda pairs: pairs[1]) 
+            for extra_tuple in mapping_pairs:
                 extra_count += 1
                 mapping = Mapping((extra_tuple[0], str(extra_tuple[1]) + '/' + str(extra_sum)))
                 if (extra_count <= 3 or mapping.hit >= 50) and mapping.hit >= 3:
