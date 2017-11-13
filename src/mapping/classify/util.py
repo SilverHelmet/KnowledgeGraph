@@ -51,7 +51,7 @@ def load_baike_entity_title():
             bk2tls[url] = [title]
         if title.find("_") == -1:
             continue
-        pos = title_find("_")
+        pos = title.find("_")
         title_first = title[0:pos]
         if title_first not in bk2tls[url]:
             bk2tls[url].append(title_first)
