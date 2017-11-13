@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 
 import sys
-from ..ltp import LTP,LTPResult
-from ... import IOUtil
+from ..ltp import LTPResult
+from src import IOUtil
+from src.extractor.resource import Resource
 import copy
 import json
 import re
 from ..structure import StrEntity
+
 
 class NamedEntityPostProcessor:
 	def __init__(self, name_dict):
@@ -192,12 +194,11 @@ stf_ltp_en_dist = {"PERSON":"Nh" , "LOCATION":"Ns" , "ORGANIZATION":"Ni" ,"MISC"
 class NamedEntityReg:
 	re_eng = re.compile(r"^[a-zA-Z.]+$")
 
-	def __init__(self, ltp, name_dict = None):
+	def __init__(self, name_dict = None):
+		resource = Resource()
 		if name_dict is None:
-			path = IOUtil.base_dir + "/lib/ltp_data_v3.4.0/vertical_domain_baike_dict.txt"
-			IOUtil.Print("load name dict from [%s]" %path)
-			name_dict = IOUtil.load_file(path)
-		self.ltp = ltp
+			name_dict = resource.get_vertical_domain_baike_dict()
+		self.ltp = resource.get_ltp()
 		self.post_processor = NamedEntityPostProcessor(name_dict)
 		
 

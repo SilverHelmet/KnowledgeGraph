@@ -1,19 +1,11 @@
 #encoding: utf-8
 import os
 from ..IOUtil import result_dir, rel_ext_dir, data_dir, cache_dir
-from ..rel_extraction.util import load_bk_entity_pop, load_bk_types
 from ..rel_extraction.parse_baike_entity import split_sentences
 from .structure import *
-from .dataset import load_name2bk
-from .util import load_predicate_map
-from ..schema.schema import Schema
-from .ltp import LTP
-from entity.naive_ner import NaiveNer
-from dependency.relation_extractors import RelTagExtractor
 from dependency.verb_relation_simple_extractor import VerbRelationExtractor
-from .entity.linkers import SeparatedLinker, MatchRelLinker, TopPopEntityLinker, TopRelatedEntityLinker
-from .entity.ner import NamedEntityReg
 from .mst import perform_MST, Edge
+from src.extractor.resource import Resource
 import json
 
     
@@ -35,8 +27,8 @@ def fill_entity_pool(length, str_entites):
     return pool
 
 class SimpleLTPExtractor:
-    def __init__(self, ner, rel_extractor, linker, ltp, link_map_out = False):
-        self.ltp = ltp
+    def __init__(self, ner, rel_extractor, linker, link_map_out = False):
+        self.ltp = Resource.get_singleton().get_ltp()
         self.ner = ner
         self.rel_extractor = rel_extractor
         self.linker = linker

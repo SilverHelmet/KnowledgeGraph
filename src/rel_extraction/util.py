@@ -3,11 +3,6 @@ import os
 import json
 from tqdm import tqdm
 
-class BaikeInfo:
-    def __init__(self, pop, types):
-        self.pop = pop
-        self.types = types
-
 def load_mappings(filepath = None):
     if filepath is None:
         filepath = os.path.join(rel_ext_dir, 'mapping_result.tsv')
@@ -50,54 +45,8 @@ def load_bk_types(filepath = None):
         type_map[bk_url] = types
     return type_map
 
-def load_bk_static_info(filepath):
-    total = nb_lines_of(filepath)
-    info_map = {}
-    Print("load baike static info from [%s]" %filepath)
-    for line in tqdm(file(filepath), total = nb_lines_of(filepath)):
-        p = line.strip().split('\t')
-        bk_url = p[0]
-        pop = int(p[2])
-        types = json.loads(p[3])
-        info = BaikeInfo(pop, types)
-        info_map[bk_url] = info
-    return info_map
 
 
-def load_name2baike(filepath = None, lowercase = False):
-    if filepath is None:
-        filepath = os.path.join(rel_ext_dir, 'baike_names.tsv')
-        total = nb_lines_of(filepath)
-    else:
-        total = nb_lines_of(filepath)
-    name2bk = {}
-    Print('load name -> baike from %s' %filepath)
-    for line in tqdm(file(filepath), total = total):
-        # p = line.strip().decode('utf-8').split('\t')
-        p = line.strip().split('\t')
-        bk_url = p[0]
-        names = p[1:]
-        for name in names:
-            if lowercase:
-                name = name.lower()
-            if not name in name2bk:
-                name2bk[name] = []
-            name2bk[name].append(bk_url)
-    return name2bk
-
-def load_url2names():
-    filepath = os.path.join(rel_ext_dir, 'baike_names.tsv')
-    total = nb_lines_of(filepath)
-
-    Print('load url -> names from [%s]' %filepath)
-
-    url2names = {}
-    for line in tqdm(file(filepath), total = total):
-        p = line.strip().split('\t')
-        bk_url = p[0]
-        names = p[1:]
-        url2names[bk_url] = p[1:]
-    return url2names
 
 
 
