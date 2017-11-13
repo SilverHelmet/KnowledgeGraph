@@ -377,7 +377,7 @@ def infer_type():
     extra_type_path = os.path.join(classify_dir, 'extra_type.json')
     extra_type_map = load_json_map(extra_type_path)
     
-    out_path = os.path.join(rel_ext_dir, 'baike_static_info.tsv')
+    out_path = os.path.join(rel_ext_dir, 'test_baike_static_info.tsv')
     outf = file(out_path, 'w')
     
     baike_info_path = os.path.join(result_dir, '360/360_entity_info_processed.json')
