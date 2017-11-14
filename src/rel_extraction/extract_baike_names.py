@@ -7,6 +7,7 @@ import json
 import os
 from tqdm import tqdm
 from ..mapping.one2one_mapping_cnt import load_baike_name_attrs
+from src.baike_process.process_entity_info import unfold
 
 def load_mapping_names(bk2fb):
     fb_uris = set(bk2fb.values())
@@ -72,10 +73,48 @@ def load_and_write_baike_name(bk_name_map, out_path):
         outf.write("%s\t%s\n" %(bk_url, "\t".join(names)))
     outf.close()
 
+def count_bracket_names():
+    baike_entity_info_path = os.path.join(result_dir, '360/360_entity_info.json')
+    total = 21710208
+    Print('count names in bracket from [%s]' %baike_entity_info_path)
+    baike_name_attrs = load_baike_name_attrs()
+    bracket_value_cnt = {}
+    for line in tqdm(file(baike_entity_info_path), total = total):
+        url, obj = line.split('\t')
+        obj = json.loads(obj)
+        names = set([obj['ename'], obj['title']])
+        info = obj['info']
+        bracket_values = []
+        for baike_name in baike_name_attrs:
+            if not baike_name in info:
+                continue
+            info_values = info[baike_name]
+            for info_value in info_values:
+                if info_value in names:
+                    continue
+                unfold(info_value, bracket_values)
+
+        bracket_values = set(bracket_values)
+        for bracket_value in bracket_values:
+            if not bracket_value in bracket_value_cnt:
+                bracket_value_cnt[bracket_value] = 0
+            bracket_value_cnt[bracket_value] += 1
+    return bracket_value_cnt
+
+def process_bracket_names(outpath):
+    bracket_value_cnt = count_bracket_names()
+    outf = file(outpath, 'w')
+    for key in sorted(bracket_value_cnt.keys(), key = lambda x: bracket_value_cnt[x], reverse = True):
+        outf.write("%s\t%s\n" %(key, bracket_value_cnt[key]))
+    outf.close()
+
 
 if __name__ == "__main__":
-    bk2fb = load_mappings()
-    bk_name_map = load_mapping_names(bk2fb)
+    process_bracket_names(outpath = os.path.join(rel_ext_dir, 'bracket_names_cnt.tsv'))
 
-    out_path = os.path.join(rel_ext_dir, 'baike_names.tsv')
-    load_and_write_baike_name(bk_name_map, out_path)
+
+    # bk2fb = load_mappings()
+    # bk_name_map = load_mapping_names(bk2fb)
+
+    # out_path = os.path.join(rel_ext_dir, 'baike_names.tsv')
+    # load_and_write_baike_name(bk_name_map, out_path)

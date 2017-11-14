@@ -12,13 +12,15 @@ html_parser = HTMLParser.HTMLParser()
 bracket_pattern = re.compile(ur'（.*）|\(.*\)')
 digits = set([u'0', u'1', u'2', u'3', u'4', u'5', u'6', u'7', u'8', u'9'])
 text = u'2,627,000'
-def unfold_bracket(value):
+def unfold_bracket(value, bracket_values):
     global bracket_pattern
     match = bracket_pattern.search(value)
     if match:
         st, ed  = match.span(0)
         v1 = value[:st] + value[ed:]
         v2 = value[st+1:ed-1]
+        if bracket_values is not None:
+            bracket_values.append(v2)
         return [v1, v2]
     else:
         return [value]
@@ -65,7 +67,7 @@ def remove_etc(text):
         text = text[0:-1]
     return text
 
-def unfold(text):
+def unfold(text, bracket_values = None):
     global delimeters, html_parser
     text = html_parser.unescape(text)
     max_sep = delimeters[0]
@@ -93,7 +95,7 @@ def unfold(text):
 
     values_2 = []
     for value in values:
-        values_2.extend(unfold_bracket(value))
+        values_2.extend(unfold_bracket(value, bracket_values))
     values = values_2
 
     # values = [del_book_bracket(x) for x in values]
