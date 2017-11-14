@@ -1,6 +1,6 @@
 #encoding: utf-8
 from .test_ner import read_data
-from ..entity.linkers import SeparatedLinker, MatchRelLinker, TopRelatedEntityLinker, PageMemoryEntityLinker
+from ..entity.linkers import SeparatedLinker, MatchRelLinker, PageMemoryEntityLinker
 from ..entity.ner import NamedEntityReg
 from ...IOUtil import data_dir, rel_ext_dir, Print
 from ..structure import *
@@ -52,7 +52,6 @@ if __name__ == "__main__":
 
     ltp = LTP(None)
     ner = NamedEntityReg(ltp, process_bracket = False)    
-    # entity_linker = TopRelatedEntityLinker(os.path.join(rel_ext_dir, 'baike_static_info.tsv'), lowercase = True)
     entity_linker = PageMemoryEntityLinker(lowercase = True)
 
     base_dir = os.path.join(data_dir, '实体标注')
