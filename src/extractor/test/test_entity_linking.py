@@ -51,9 +51,9 @@ if __name__ == "__main__":
 
 
     ltp = LTP(None)
-    ner = NamedEntityReg(ltp)    
+    ner = NamedEntityReg(ltp, process_bracket = False)    
     # entity_linker = TopRelatedEntityLinker(os.path.join(rel_ext_dir, 'baike_static_info.tsv'), lowercase = True)
-    entity_linker = PageMemoryEntityLinker(os.path.join(rel_ext_dir, 'baike_static_info.tsv'), lowercase = True)
+    entity_linker = PageMemoryEntityLinker(lowercase = True)
 
     base_dir = os.path.join(data_dir, '实体标注')
     stf_results_map = load_stanford_result(os.path.join(base_dir, 'sentences.txt'), os.path.join(base_dir, 'sentences_stanf_nlp.json'))

@@ -11,8 +11,9 @@ from ..structure import StrEntity
 
 
 class NamedEntityPostProcessor:
-	def __init__(self, name_dict):
+	def __init__(self, name_dict, process_bracket):
 		self.dict = name_dict
+		self.process_bracket = process_bracket
 
 	def decide_etype(self, str_entities, st, ed):
 		etype = str_entities[st][2]
@@ -183,7 +184,8 @@ class NamedEntityPostProcessor:
 		str_entities = self.ATT_extension(ltp_result, str_entities)
 
 		str_entities = [StrEntity(st, ed, etype) for st, ed, etype in str_entities]
-		str_entities = self.process_bracket(ltp_result, str_entities, ltp)
+		if self.process_bracket:
+			str_entities = self.process_bracket(ltp_result, str_entities, ltp)
 		return str_entities
 
 
@@ -194,12 +196,12 @@ stf_ltp_en_dist = {"PERSON":"Nh" , "LOCATION":"Ns" , "ORGANIZATION":"Ni" ,"MISC"
 class NamedEntityReg:
 	re_eng = re.compile(r"^[a-zA-Z.]+$")
 
-	def __init__(self, name_dict = None):
+	def __init__(self, name_dict = None, process_bracket = True):
 		resource = Resource()
 		if name_dict is None:
 			name_dict = resource.get_vertical_domain_baike_dict()
 		self.ltp = resource.get_ltp()
-		self.post_processor = NamedEntityPostProcessor(name_dict)
+		self.post_processor = NamedEntityPostProcessor(name_dict, process_bracket)
 		
 
 	def recognize(self,sentence,ltp_result,page_info,stanford_result=None):
