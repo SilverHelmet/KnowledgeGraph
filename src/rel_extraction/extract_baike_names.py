@@ -71,6 +71,7 @@ def load_and_write_baike_name(bk_name_map, error_bracket_names, out_path):
     art_work_types = set(['fb:film.film', 'fb:book.book', 'fb:book.written_work', 'fb:cvg.computer_videogame', 'fb:tv.tv_program'])
 
     outf = file(out_path, 'w')
+    error_f = file('log/error.log', 'a')
     for line in tqdm(file(baike_entity_info_path), total = total):
         p = line.split('\t')
         bk_url = p[0].decode('utf-8')
@@ -109,6 +110,8 @@ def load_and_write_baike_name(bk_name_map, error_bracket_names, out_path):
         fb_names = bk_name_map.get(bk_url), []
         if len(fb_names) < 10:
             names.extend(fb_names)
+        else:
+            error_f.write('%s\t%s\t%s' %('long_baike_names', bk_url, ' '.join(fb_names)))
 
         names = list(set(names))
         names = [html_unescape(x.replace('\n',"")).strip() for x in names]
@@ -123,6 +126,7 @@ def load_and_write_baike_name(bk_name_map, error_bracket_names, out_path):
 
         outf.write("%s\t%s\n" %(bk_url, "\t".join(names)))
     outf.close()
+    error_f.close()
 
 def count_bracket_names():
     baike_entity_info_path = os.path.join(result_dir, '360/360_entity_info.json')
