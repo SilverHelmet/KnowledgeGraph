@@ -112,6 +112,7 @@ def load_and_write_baike_name(bk_name_map, error_bracket_names, out_path):
 
         names.extend(info_names)
         fb_names = bk_name_map.get(bk_url, [])
+        fb_names = [x for x in fb_names if not x in names]
         if len(fb_names) < 10:
             names.extend(fb_names)
         else:
