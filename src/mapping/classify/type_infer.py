@@ -92,7 +92,7 @@ class InfoTypeInfer:
 
         return baike_info_map
 
-    def infer(self, baike_attrs, prob_map):
+    def infer(self, baike_attrs, prob_map, sep_prob_map):
         for attr in baike_attrs:
             if not attr in self.baike_info_map:
                 continue
@@ -104,6 +104,9 @@ class InfoTypeInfer:
                     prob_map[fb_type] = prob
                 else:
                     prob_map[fb_type] += prob
+                if not fb_type in sep_prob_map:
+                    sep_prob_map[fb_type] = [0, 0, 0]
+                sep_prob_map[fb_type][0] = prob
         return prob_map
 
 class BKClassTypeInfer:
@@ -129,7 +132,7 @@ class BKClassTypeInfer:
         self.baike_cls_cnt_map[baike_cls] = baike_cls_cnt
 
 
-    def infer(self, baike_clses, prob):
+    def infer(self, baike_clses, prob, sep_prob_map):
         for cls in baike_clses:
             if cls not in self.baike_cls_cnt_map:
                 continue
@@ -139,6 +142,9 @@ class BKClassTypeInfer:
                 if not fb_type in prob:
                     prob[fb_type] = 0
                 prob[fb_type] += cls_prob[fb_type]
+                if not fb_type in sep_prob_map:
+                    sep_prob_map[fb_type] = [0, 0, 0]
+                sep_prob_map[fb_type][1] = cls_prob[fb_type]
         return prob
 
 class TitleTypeInfer:
@@ -173,7 +179,7 @@ class TitleTypeInfer:
 
         return baike_title_map
 
-    def infer(self, baike_attrs, prob_map):
+    def infer(self, baike_attrs, prob_map, sep_prob_map):
         for attr in baike_attrs:
             if not attr in self.baike_title_map:
                 continue
@@ -185,24 +191,79 @@ class TitleTypeInfer:
                     prob_map[fb_type] = prob
                 else:
                     prob_map[fb_type] += prob
+                if not fb_type in sep_prob_map:
+                    sep_prob_map[fb_type] = [0, 0, 0]
+                sep_prob_map[fb_type][2] = prob
+        return prob_map
+
+class ExtraTypeInfer:
+    def __init__(self, path):
+        self.baike_extra_map = self.init(path)
+
+    def init(self, mapping_path):
+        Print('load mapping result from [%s]' %mapping_path)
+
+        baike_extra_map = {}
+        for line in file(mapping_path):
+            p = line.decode('utf-8').split('\t')
+            baikeattr = p[0]
+            mapping_dict = eval(p[1])
+            mappings = []
+            extra_count = 0
+            extra_sum = 0
+            extra_maximum = 0
+            extra_sum = mapping_dict['sum']
+
+            mapping_pairs = []
+            for extra_key in mapping_dict:
+                if extra_key == 'sum':
+                    continue
+                mapping_pairs.append((extra_key, mapping_dict[extra_key]))
+            sorted(mapping_pairs, key=lambda pairs: pairs[1]) 
+            for extra_tuple in mapping_pairs:
+                extra_count += 1
+                mapping = Mapping((extra_tuple[0], str(extra_tuple[1]) + '/' + str(extra_sum)))
+                if (extra_count <= 3 or mapping.hit >= 50) and mapping.hit >= 3:
+                    mappings.append(mapping)
+            baike_extra_map[baikeattr] = mappings
+
+        return baike_extra_map
+
+    def infer(self, baike_attrs, prob_map, sep_prob_map):
+        for attr in baike_attrs:
+            if not attr in self.baike_extra_map:
+                continue
+            mappings = self.baike_extra_map[attr]
+            for mapping in mappings:
+                fb_type = mapping.fb_type()
+                prob = mapping.prob() * 2
+                if not fb_type in prob_map:
+                    prob_map[fb_type] = prob
+                else:
+                    prob_map[fb_type] += prob
+                if not fb_type in sep_prob_map:
+                    sep_prob_map[fb_type] = [0, 0, 0]
+                sep_prob_map[fb_type][2] = prob
         return prob_map
 
 class TypeInfer:
-    def __init__(self, baike_info_path, baike_cls_path, baike_title_path):
+    def __init__(self, baike_info_path, baike_cls_path, baike_title_path, extra_info_path):
         #self.infobox_type_infer = InfoboxTypeInfer(path = infobox_path)
         self.info_type_infer = InfoTypeInfer(path = baike_info_path)
         self.baike_cls_infer = BKClassTypeInfer(path = baike_cls_path)
         Print("Baike Class Infer: add mapping type_person -> fb:people.person")
         self.baike_cls_infer.add_map('type_person', 'fb:people.person')
         self.title_type_infer = TitleTypeInfer(path = baike_title_path)
-
+        self.extra_type_infer = ExtraTypeInfer(path = extra_info_path)
     
-    def infer(self, info, baike_clses, baike_title):
+    def infer(self, info, baike_clses, baike_title, extra_info):
         prob = {}
-        self.info_type_infer.infer(info, prob)
-        self.baike_cls_infer.infer(baike_clses, prob)
-        self.title_type_infer.infer(baike_title, prob)
-        return prob
+        sep_prob = {}
+        self.info_type_infer.infer(info, prob, sep_prob)
+        self.baike_cls_infer.infer(baike_clses, prob, sep_prob)
+        self.title_type_infer.infer(baike_title, prob, sep_prob)
+        self.extra_type_infer.infer(extra_info, prob, sep_prob)
+        return prob, sep_prob
 
     def choose_one_music_type(self, type_probs, threshold):
         types = set(type_probs.keys())
@@ -307,15 +368,16 @@ def infer_type():
 
 
     #predicates_map_path = os.path.join(result_dir, '360/mapping/final_predicates_map.json')
+    extra_info_path = os.path.join(result_dir, '360/extra_info.json')
     baike_title_path = os.path.join(result_dir, '360/title_type.txt')
     baike_infobox_path = os.path.join(result_dir, '360/info_type.txt')
     baike_cls2tpe_path = os.path.join(classify_dir, 'final_baike_cls2fb_type.json')
-    type_infer = TypeInfer(baike_info_path = baike_infobox_path, baike_cls_path = baike_cls2tpe_path, baike_title_path=baike_title_path)
+    type_infer = TypeInfer(baike_info_path = baike_infobox_path, baike_cls_path = baike_cls2tpe_path, baike_title_path = baike_title_path, extra_info_path = extra_info_path)
     
     extra_type_path = os.path.join(classify_dir, 'extra_type.json')
     extra_type_map = load_json_map(extra_type_path)
     
-    out_path = os.path.join(rel_ext_dir, 'baike_static_info.tsv')
+    out_path = os.path.join(rel_ext_dir, 'test_baike_static_info.tsv')
     outf = file(out_path, 'w')
     
     baike_info_path = os.path.join(result_dir, '360/360_entity_info_processed.json')
@@ -340,17 +402,22 @@ def infer_type():
                 for ext_type in extra_types:
                     fb_types.append(ext_type)
             fb_types = list(set(fb_types))
-            chosen_prob = 3
+            chosen_prob = 2
             # outf.write('%s\t%s\t%d\t%s\n' %(baike_url, fb_uri, nb_names * 2 + 3, json.dumps(fb_types)))
             #outf.write('%s\t%s\t%d\t%s\n' %(baike_url, fb_uri, nb_names, json.dumps(fb_types)))
             #continue
         else:
             fb_uri = "None"
             fb_types = []
-            chosen_prob = 2
+            chosen_prob = 1
 
         obj = json.loads(p[1])
         names = obj.get('info', {}).keys()
+        extra_info = []
+        if '职业' in obj['info']:
+            extra_info += obj['info']['职业']
+        if '运动项目' in obj['info']:
+            extra_info += obj['info']['运动项目']
         if baike_url in baike_cls_map:
             cls_hit += 1
             clses = baike_cls_map[baike_url]
@@ -360,8 +427,13 @@ def infer_type():
             titles = baike_title_map[baike_url]
         else:
             titles = []
-        type_probs = type_infer.infer(names, clses, titles) 
+        type_probs, sep_type_probs = type_infer.infer(names, clses, titles, extra_info) 
         type_infer.choose_music_type(type_probs, 0.8)
+        type_probs_assumed = []
+        for fb_type_in in type_probs:
+            if type_probs[fb_type_in] >= chosen_prob:
+                type_probs_assumed.append((fb_type_in, type_probs[fb_type_in], sep_type_probs[fb_type_in]))
+        print baike_url, type_probs_assumed, json.dumps(names, ensure_ascii = False), clses, json.dumps(titles, ensure_ascii = False)
         inffered_types = decide_type(type_probs, schema, chosen_prob)
         for fb_type_origin in fb_types:
             if not fb_type_origin in inffered_types:
