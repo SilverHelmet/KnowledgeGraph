@@ -40,25 +40,29 @@ def person_extra_names(name):
 
     return names
 
-re_english = re.compile(r'\w+$')
+re_english = re.compile(r'[\w ]+$')
 def is_abbre(names, abbre_name):
-    for one_name in names:
-        tokens = one_name.split(' ')
-        if len(tokens) != len(abbre_name):
-            continue
-        flag = True
-        for i in range(len(tokens)):
-            token = tokens[i]
-            print token, abbre_name[i]
-            if re_english.match(token) is None:
-                flag = False
-                print 'error'
-                continue
-            if token[0] != abbre_name[i]:
-                flag = False
-        if flag:
+    if len(names) == 1 and re_english.match(abbre_name) is not None:
+        if re_english.match(names[0]) is not None and abbre_name.upper() == abbre_name:
             return True
     return False
+    # for one_name in names:
+    #     tokens = one_name.split(' ')
+    #     if len(tokens) != len(abbre_name):
+    #         continue
+    #     flag = True
+    #     for i in range(len(tokens)):
+    #         token = tokens[i]
+    #         print token, abbre_name[i]
+    #         if re_english.match(token) is None:
+    #             flag = False
+    #             print 'error'
+    #             continue
+    #         if token[0] != abbre_name[i]:
+    #             flag = False
+    #     if flag:
+    #         return True
+    # return False
 
 def load_and_write_baike_name(bk_name_map, error_bracket_names, out_path):
     resource = Resource.get_singleton()
@@ -107,7 +111,7 @@ def load_and_write_baike_name(bk_name_map, error_bracket_names, out_path):
                     info_names.add(info_value_name)
 
         names.extend(info_names)
-        fb_names = bk_name_map.get(bk_url), []
+        fb_names = bk_name_map.get(bk_url, [])
         if len(fb_names) < 10:
             names.extend(fb_names)
         else:
