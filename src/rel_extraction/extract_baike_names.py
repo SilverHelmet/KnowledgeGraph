@@ -40,11 +40,14 @@ def person_extra_names(name):
 
     return names
 
-re_english = re.compile(r'[\w ]+$')
+re_english = re.compile(r'[\w\. ]+$')
 def is_abbre(names, abbre_name):
-    if len(names) == 1 and re_english.match(abbre_name) is not None:
-        if re_english.match(names[0]) is not None and abbre_name.upper() == abbre_name:
-            return True
+    if len(names) == 2 and re_english.match(abbre_name) is not None and abbre_name.upper() == abbre_name:
+        for name in names:
+            if name == abbre_name:
+                continue
+            if re_english.match(name) is not None:
+                return True
     return False
     # for one_name in names:
     #     tokens = one_name.split(' ')
