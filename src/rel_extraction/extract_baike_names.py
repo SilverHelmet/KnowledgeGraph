@@ -115,7 +115,7 @@ def load_and_write_baike_name(bk_name_map, error_bracket_names, out_path):
         if len(fb_names) < 10:
             names.extend(fb_names)
         else:
-            error_f.write('%s\t%s\t%s' %('long_baike_names', bk_url, ' '.join(fb_names)))
+            error_f.write('%s\t%s\t%s\n' %('long_baike_names', bk_url, ' '.join(fb_names)))
 
         names = list(set(names))
         names = [html_unescape(x.replace('\n',"")).strip() for x in names]
