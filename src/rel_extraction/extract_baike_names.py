@@ -2,12 +2,14 @@
 from ..IOUtil import rel_ext_dir, Print, result_dir
 from ..mapping.predicate_mapping import load_name_attr
 from ..baike_process.parse import html_unescape
-from util import load_mappings, load_bk_types
+from util import load_mappings
 import json
 import os
 from tqdm import tqdm
 from ..mapping.one2one_mapping_cnt import load_baike_name_attrs
 from src.baike_process.process_entity_info import unfold
+from src.extractor.resource import Resource
+import re
 
 def load_mapping_names(bk2fb):
     fb_uris = set(bk2fb.values())
@@ -38,37 +40,86 @@ def person_extra_names(name):
 
     return names
 
-def load_and_write_baike_name(bk_name_map, out_path):
-    bk_types_map = load_bk_types()
-    baike_entity_info_path = os.path.join(result_dir, '360/360_entity_info_processed.json')
+re_english = re.compile(r'\w+$')
+def is_abbre(names, abbre_name):
+    for one_name in names:
+        tokens = one_name.split(' ')
+        if len(tokens) != len(abbre_name):
+            continue
+        flag = True
+        for i in range(len(tokens)):
+            token = tokens[i]
+            print token, abbre_name[i]
+            if re_english.match(token) is None:
+                flag = False
+                print 'error'
+                continue
+            if token[0] != abbre_name[i]:
+                flag = False
+        if flag:
+            return True
+    return False
+
+def load_and_write_baike_name(bk_name_map, error_bracket_names, out_path):
+    resource = Resource.get_singleton()
+    bk_info_map = resource.get_baike_info()
+    baike_entity_info_path = os.path.join(result_dir, '360/360_entity_info.json')
     total = 21710208
     Print('load and write baike name to [%s]' %out_path)
     baike_name_attrs = load_baike_name_attrs()
+
+    art_work_types = set(['fb:film.film', 'fb:book.book', 'fb:book.written_work', 'fb:cvg.computer_videogame', 'fb:tv.tv_program'])
+
     outf = file(out_path, 'w')
     for line in tqdm(file(baike_entity_info_path), total = total):
         p = line.split('\t')
         bk_url = p[0].decode('utf-8')
-        
-        names = bk_name_map.get(bk_url, [])
-        obj = json.loads(p[1])
-        names.append(obj['ename'])
-        names.append(obj['title'])
 
-        info = obj.get('info', {})
-        for attr in info:
-            if attr in baike_name_attrs:
-                names.extend(info[attr])
+        static_info = bk_info_map[bk_url]
+        bk_types = static_info.types
+        is_art_work = False
+        for bk_type in bk_types:
+            if bk_type in art_work_types:
+                is_art_work = True
 
-        
-        names = [html_unescape(x.replace('\n',"")).strip() for x in names]
+        obj = json.loads(obj)
+        names = [obj['ename'], obj['title']]
+        info_names = set()
 
-        is_person = "fb:people.person" in bk_types_map[bk_url]
-        if is_person:
-            extra_names = []
-            for name in names:
-                extra_names = person_extra_names(name)
-            names.extend(extra_names)
+        info = obj['info']
+        for baike_name in baike_name_attrs:
+            if not baike_name in info:
+                continue
+            info_values = info[baike_name]
+            for info_value in info_values:
+                if info_value in names:
+                    continue
+                info_bracket_names = []
+                info_value_names = extend(unfold(info_value, info_bracket_names))
+                for info_value_name in info_value_names:
+                    
+                    in_bracket = info_value_name in info_bracket_names
+                    if in_bracket and info_value_name in error_bracket_names and not is_abbre(info_value_names, info_value_name):
+                        continue
+                    if in_bracket and is_art_work:
+                        continue
+                    info_names.add(info_value_name)
+
+        names.extend(info_names)
+        fb_names = bk_name_map.get(bk_url), []
+        if len(fb_names) < 10:
+            names.extend(fb_names)
+
         names = list(set(names))
+        names = [html_unescape(x.replace('\n',"")).strip() for x in names]
+        outf.write("%s\t%s\n" %(bk_url, "\t".join(names)))
+
+        # is_person = "fb:people.person" in bk_types_map[bk_url]
+        # if is_person:
+        #     extra_names = []
+        #     for name in names:
+        #         extra_names = person_extra_names(name)
+        #     names.extend(extra_names)
 
         outf.write("%s\t%s\n" %(bk_url, "\t".join(names)))
     outf.close()
@@ -108,13 +159,23 @@ def process_bracket_names(outpath):
         outf.write("%s\t%s\n" %(key, bracket_value_cnt[key]))
     outf.close()
 
+def load_bracket_names(bracket_names_cnt_path, error_cnt):
+    error_bracket_names = set()
+    for line in file(bracket_names_cnt_path):
+        name, cnt = line.split('\t')
+        cnt = int(cnt)
+        error_bracket_names.add(name.decode('utf-8'))
+        if cnt < error_cnt:
+            continue
+    return error_bracket_names
 
 if __name__ == "__main__":
-    process_bracket_names(outpath = os.path.join(rel_ext_dir, 'bracket_names_cnt.tsv'))
+    bracket_names_cnt_path = os.path.join(rel_ext_dir, 'bracket_names_cnt.tsv')
+    process_bracket_names(outpath = bracket_names_cnt_path)
+    error_bracket_names = load_bracket_names(bracket_names_cnt_path, 4)
 
+    bk2fb = load_mappings()
+    bk_name_map = load_mapping_names(bk2fb)
 
-    # bk2fb = load_mappings()
-    # bk_name_map = load_mapping_names(bk2fb)
-
-    # out_path = os.path.join(rel_ext_dir, 'baike_names.tsv')
-    # load_and_write_baike_name(bk_name_map, out_path)
+    out_path = os.path.join(rel_ext_dir, 'baike_names.tsv')
+    load_and_write_baike_name(bk_name_map, out_path)

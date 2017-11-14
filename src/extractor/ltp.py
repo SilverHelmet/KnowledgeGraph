@@ -118,6 +118,10 @@ class LTP:
         arcs = list(self.parser.parse(words, tags))
         result = LTPResult(words, tags, ner_tags, arcs, sentence)
         return result
+
+    def cut(self, sentence):
+        words = self.segmentor.segment(sentence)
+        return words
         
 if __name__ == "__main__":
     sentence = '《新媒体》，美国电影，J.J. Adler导演'
