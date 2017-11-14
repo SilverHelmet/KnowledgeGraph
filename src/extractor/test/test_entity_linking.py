@@ -51,7 +51,7 @@ if __name__ == "__main__":
 
 
     ltp = LTP(None)
-    ner = NamedEntityReg(ltp, process_bracket = False)    
+    ner = NamedEntityReg(ltp, process_bracket_flag = False)    
     entity_linker = PageMemoryEntityLinker(lowercase = True)
 
     base_dir = os.path.join(data_dir, '实体标注')

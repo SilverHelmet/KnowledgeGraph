@@ -11,9 +11,9 @@ from ..structure import StrEntity
 
 
 class NamedEntityPostProcessor:
-	def __init__(self, name_dict, process_bracket):
+	def __init__(self, name_dict, process_bracket_flag):
 		self.dict = name_dict
-		self.process_bracket = process_bracket
+		self.process_bracket_flag = process_bracket_flag
 
 	def decide_etype(self, str_entities, st, ed):
 		etype = str_entities[st][2]
@@ -184,7 +184,7 @@ class NamedEntityPostProcessor:
 		str_entities = self.ATT_extension(ltp_result, str_entities)
 
 		str_entities = [StrEntity(st, ed, etype) for st, ed, etype in str_entities]
-		if self.process_bracket:
+		if self.process_bracket_flag:
 			str_entities = self.process_bracket(ltp_result, str_entities, ltp)
 		return str_entities
 
