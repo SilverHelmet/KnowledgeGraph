@@ -73,8 +73,8 @@ def load_and_write_baike_name(bk_name_map, error_bracket_names, out_path):
     outf = file(out_path, 'w')
     error_f = file('log/error.log', 'a')
     for line in tqdm(file(baike_entity_info_path), total = total):
-        p = line.split('\t')
-        bk_url = p[0].decode('utf-8')
+        bk_url, obj = line.split('\t')
+        bk_url = bk_url.decode('utf-8')
 
         static_info = bk_info_map[bk_url]
         bk_types = static_info.types
@@ -174,8 +174,8 @@ def load_bracket_names(bracket_names_cnt_path, error_cnt):
     return error_bracket_names
 
 if __name__ == "__main__":
-    bracket_names_cnt_path = os.path.join(rel_ext_dir, 'bracket_names_cnt.tsv')
-    process_bracket_names(outpath = bracket_names_cnt_path)
+    # bracket_names_cnt_path = os.path.join(rel_ext_dir, 'bracket_names_cnt.tsv')
+    # process_bracket_names(outpath = bracket_names_cnt_path)
     error_bracket_names = load_bracket_names(bracket_names_cnt_path, 4)
 
     bk2fb = load_mappings()
