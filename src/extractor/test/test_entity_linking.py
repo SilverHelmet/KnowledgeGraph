@@ -5,7 +5,8 @@ from ..entity.ner import NamedEntityReg
 from ...IOUtil import data_dir, rel_ext_dir, Print
 from ..structure import *
 from ..ltp import LTP
-from ..util import load_stanford_result, load_important_domains, get_url_domains
+from ..util import load_stanford_result, get_url_domains
+from src.extractor.resource import Resource
 from .test_extractor import load_same_linkings, load_url_map
 from ...rel_extraction.util import load_url2names
 import os
@@ -58,7 +59,7 @@ if __name__ == "__main__":
     stf_results_map = load_stanford_result(os.path.join(base_dir, 'sentences.txt'), os.path.join(base_dir, 'sentences_stanf_nlp.json'))
 
     testor = EntityLinkingTestor(ner, entity_linker, ltp)
-    important_domains = load_important_domains()
+    important_domains = Resource.get_singleton().get_important_domains()
 
     same_link_map = load_same_linkings()
     url_map = load_url_map()
