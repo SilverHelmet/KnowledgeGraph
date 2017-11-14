@@ -96,7 +96,7 @@ def load_and_write_baike_name(bk_name_map, error_bracket_names, out_path):
                 if info_value in names:
                     continue
                 info_bracket_names = []
-                info_value_names = extend(unfold(info_value, info_bracket_names))
+                info_value_names = unfold(info_value, info_bracket_names)
                 for info_value_name in info_value_names:
                     
                     in_bracket = info_value_name in info_bracket_names
@@ -124,7 +124,6 @@ def load_and_write_baike_name(bk_name_map, error_bracket_names, out_path):
         #         extra_names = person_extra_names(name)
         #     names.extend(extra_names)
 
-        outf.write("%s\t%s\n" %(bk_url, "\t".join(names)))
     outf.close()
     error_f.close()
 
@@ -183,4 +182,4 @@ if __name__ == "__main__":
     bk_name_map = load_mapping_names(bk2fb)
 
     out_path = os.path.join(rel_ext_dir, 'baike_names.tsv')
-    load_and_write_baike_name(bk_name_map, out_path)
+    load_and_write_baike_name(bk_name_map, error_bracket_names, out_path)
