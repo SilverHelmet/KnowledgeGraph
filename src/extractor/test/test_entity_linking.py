@@ -8,7 +8,6 @@ from ..ltp import LTP
 from ..util import load_stanford_result, get_url_domains
 from src.extractor.resource import Resource
 from .test_extractor import load_same_linkings, load_url_map
-from ...rel_extraction.util import load_url2names
 import os
 
 
