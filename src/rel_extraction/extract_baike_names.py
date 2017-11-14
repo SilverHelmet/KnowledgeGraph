@@ -166,8 +166,9 @@ def process_bracket_names(outpath):
 def load_bracket_names(bracket_names_cnt_path, error_cnt):
     error_bracket_names = set()
     for line in file(bracket_names_cnt_path):
-        name, cnt = line.split('\t')
-        cnt = int(cnt)
+        p = line.split('\t')
+        name = "\t".join(p[:-1])
+        cnt = int(p[-1])
         error_bracket_names.add(name.decode('utf-8'))
         if cnt < error_cnt:
             continue
