@@ -86,7 +86,8 @@ class Node:
         self.word = word
         self.nertag = nertag
         self.father = None
-        self.mark = None
+        self.entity = None
+        self.mark = []
         self.actual_sub = []
         self.concept_sub = []
         self.obj = []

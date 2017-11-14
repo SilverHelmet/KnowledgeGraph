@@ -2,6 +2,7 @@
 from tree import ParseTree, Debug, PrintInfo
 from ..ltp import LTP
 from ..structure import StrEntity
+import types
 
 class VerbRelationExtractor:
     def __init__(self, debug_flag = False):
@@ -279,7 +280,7 @@ class VerbRelationExtractor:
         path = self.find_path_to_root(node)
         for node in path:
             if node.rel == 'COO':
-                res.append(node.faher)
+                res.append(node.father)
             else:
                 break
         return res
@@ -342,7 +343,7 @@ class VerbRelationExtractor:
                 if node.father.postag == 'v':
                     if node.rel in ['ATT', 'ADV', 'CMP']:
                         if entity not in node.father.att:
-                            node.father.att.apppend(entity)
+                            node.father.att.append(entity)
                 break
 
     def find_all_OBJ(self, entity_lis):
@@ -374,7 +375,8 @@ class VerbRelationExtractor:
                 if node.rel not in ['COO', 'VOB']:
                     break
                 if node.father.postag == 'v':
-                    if self.find_rel_sub(node, entity_lis) == 'actual':
+                    if self.find_rel_sub(node.father, entity_lis) == 'actual':
+                        verb.actual_sub.append(node.father.actual_sub[0])
                         return
         res = []
         res_depth = []
@@ -396,11 +398,45 @@ class VerbRelationExtractor:
                     verb.actual_sub.append(coo_final)
         return
 
-    def find_tripple(self, ltp_result, e_lis, entity_pool):
+    def deal_with_res(self, res, verb, e1, e2):
+        op1 = []
+        op2 = []
+        res1 = []
+        res2 = []
+        if len(e1.mark) != 0:
+            op1 = e1.mark
+        else:
+            op1 = [e1]
+        if len(e2.mark) != 0:
+            op2 = e2.mark
+        else:
+            op2 = [e2]
+        for i in op1:
+            if i.entity != None:
+                res1.append(i.entity)
+            else:
+                res1.append(i.idx)
+        for i in op2:
+            if i.entity != None:
+                res2.append(i.entity)
+            else:
+                res2.append(i.idx)
+        for i in res1:
+            for j in res2:
+                res.append((i, verb.idx, j))
+
+    def premark_entity(self, tree, e_lis):
+        for e in e_lis:
+            node_list = tree.nodes[e.st : e.ed]
+            for node in node_list:
+                node.entity = e
+
+    def find_tripple(self, ltp_result, e_lis):
         res = []
         entity_lis = []
         verb_lis = []
         tree = ParseTree(ltp_result)
+        self.premark_entity(tree, e_lis)#mark every word in entity
         for node in tree.nodes:
             if node.postag == 'v':
                 verb_lis.append(node)
@@ -412,7 +448,8 @@ class VerbRelationExtractor:
             for j in range(i + 1, len(entity_lis)):
                 tmp_verb = self.find_noun_relation(entity_lis[i], entity_lis[j]);
                 if(tmp_verb != None):
-                    res.append((entity_lis[i].idx, tmp_verb.idx, entity_lis[j].idx))
+                    res.append((entity_lis[i].entity, tmp_verb.idx, entity_lis[j].entity))
+                    self.debuger.debug("noun relation found!")
         #step one: mark sub
         #for each verb mark
         for verb in verb_lis:
@@ -422,34 +459,36 @@ class VerbRelationExtractor:
             if len(verb.actual_sub) != 0 and len(verb.concept_sub) != 0:
                 for actual_sub in verb.actual_sub:
                     for concept_sub in verb.concept_sub:
-                        res.append((actual_sub.idx, None, concept_sub.idx))
+                        res.append((actual_sub.entity, None, concept_sub.idx))
+                        self.debuger.debug("is relation found!")
         #step two: renew sub mark
+        
         #concept_sub => actual_sub
         for verb in verb_lis:
             for concept_sub in verb.concept_sub:
-                if concept_sub not in verb.actual_sub:
-                    verb.actual_sub.append(concept_sub)
+                concept_sub.mark = verb.actual_sub
+        
         #is relation
         for verb in verb_lis:
             if verb.word == '是' and len(verb.actual_sub) != 0:
                 for child in verb.children:
-                    if child.rel in ['VOB', 'FOB'] and child not in verb.actual_sub:
-                        verb.actual_sub.append(child)
+                    if child.rel in ['VOB', 'FOB'] and child != verb.actual_sub:
+                        child.mark = verb.actual_sub
         #step three: confirm the obj, att, target part
         #obj&debug:
         for verb in verb_lis:
             self.find_special_OBJ(entity_lis, verb)
-            print '#'*30
+            self.debuger.debug('#'*30)
             self.debuger.debug("verb", verb.word, "has obj:")
             for obj in verb.obj:
                 self.debuger.debug(obj.word)
-            print '#'*30
+            self.debuger.debug('#'*30)
         self.find_all_OBJ(entity_lis)
         for verb in verb_lis:
             self.debuger.debug("verb", verb.word, "has obj:")
             for obj in verb.obj:
                 self.debuger.debug(obj.word)
-            print '#'*30
+            self.debuger.debug('#'*30)
         #att:
         self.find_all_ATT(entity_lis)
         #target:
@@ -458,17 +497,22 @@ class VerbRelationExtractor:
         for verb in verb_lis:
             for sub in verb.actual_sub:
                 for obj in verb.obj:
-                    res.append((sub.idx, verb.idx, obj.idx))
+                    self.deal_with_res(res, verb, sub, obj)
+                    self.debuger.debug("sub-verb-obj relation found!")
                 for att in verb.att:
-                    res.append((sub.idx, verb.idx, att.idx))
+                    self.deal_with_res(res, verb, sub, att)
+                    self.debuger.debug("sub-verb-att relation found!")
                 for target in verb.target:
-                    res.append((sub.idx, verb.idx, target.idx))
+                    self.deal_with_res(res, verb, sub, target)
+                    self.debuger.debug("sub-verb-target relation found!")
             for obj in verb.obj:
                 for target in verb.target:
-                    res.append((obj.idx, verb.idx, target.idx))
+                    self.deal_with_res(res, verb, obj, target)
+                    self.debuger.debug("obj-verb-target relation found!")
             for att in verb.att:
                 for target in verb.target:
-                    res.append((att.idx, verb.idx, target.idx))
+                    self.deal_with_res(res, verb, att, target)
+                    self.debuger.debug("att-verb-target relation found!")
         #debug
         for verb in verb_lis:
             self.debuger.debug("verb", verb.word, "has actual_sub:")
@@ -492,39 +536,32 @@ class VerbRelationExtractor:
 
 if __name__ == "__main__":
     ltp = LTP(None)
-    ltp_result = ltp.parse("1993年，主演刘镇伟执导的浪漫剧情片《天长地久》，刘德华与刘锦玲和吴家丽合作诠释了一段悲剧爱情故事。")
+    ltp_result = ltp.parse("1981年，新艺城电影公司决定启用新人阵容拍摄《彩云曲》，刘德华等无线艺人训练班的新人纷纷报名去甄选主角，但包括关之琳等人都败下阵来，最后决定的男主角是来自台湾的吴少刚，女主角是徐杰和庄静而，刘德华虽然落选，但仍和很多TVB的演员们合力客串完成了本片。")
     info = PrintInfo()
     info.print_ltp(ltp_result)
     tree = ParseTree(ltp_result)
-    st, ed = ltp_result.search_word("刘德华")
-    if st == -1 and ed == -1:
-        print "cannot find word!!", "刘德华"
-    e1 = StrEntity(st, ed, None)
-    st, ed = ltp_result.search_word("刘锦玲")
-    if st == -1 and ed == -1:
-        print "cannot find word!!", "刘锦玲"
-    e2 = StrEntity(st, ed, None)
-    st, ed = ltp_result.search_word("吴家丽")
-    if st == -1 and ed == -1:
-        print "cannot find word!!", "吴家丽"
-    e3 = StrEntity(st, ed, None)
-    st, ed = ltp_result.search_word("刘镇伟")
-    if st == -1 and ed == -1:
-        print "cannot find word!!", "刘镇伟"
-    e4 = StrEntity(st, ed, None)
-    st, ed = ltp_result.search_word("天长地久")
-    if st == -1 and ed == -1:
-        print "cannot find word!!", "天长地久"
-    e5 = StrEntity(st, ed, None)
-    entity_pool = []
-    e_lis = [e1, e2, e3, e4, e5]
-    for i in range(ltp_result.length):
-        entity_pool.append(0)
+    string = ["刘德华", "吴少刚", "徐杰", "庄静而", "彩云曲"]
+    e_lis = []
+    for s in string:
+        st, ed = ltp_result.search_word(s)
+        if st == -1 and ed == -1:
+            print "cannot find word!!", s
+        else:
+            e_lis.append(StrEntity(st, ed, None))
     res = VerbRelationExtractor(True)
-    tripple_res = res.find_tripple(ltp_result, e_lis, entity_pool)
+    tripple_res = res.find_tripple(ltp_result, e_lis)
+    r1 = r2 = None
     for k, item in enumerate(tripple_res):
         print 'tripple', k, 'is:'
-        if item[1] == None:
-            print '(', tree.nodes[item[0]].word, ',', '是', ',', tree.nodes[item[2]].word, ')'
+        if isinstance(item[0], int) == False:
+            r1 = ltp_result.text(item[0].st, item[0].ed)
         else:
-            print '(', tree.nodes[item[0]].word, ',', tree.nodes[item[1]].word, ',', tree.nodes[item[2]].word, ')'
+            r1 = tree.nodes[item[0]].word
+        if isinstance(item[2], int) == False:
+            r2 = ltp_result.text(item[2].st, item[2].ed)
+        else:
+            r2 = tree.nodes[item[2]].word
+        if item[1] == None:
+            print '(', r1, ',', '是', ',', r2, ')'
+        else:
+            print '(', r1, ',', tree.nodes[item[1]].word, ',', r2, ')'
