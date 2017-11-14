@@ -196,12 +196,12 @@ stf_ltp_en_dist = {"PERSON":"Nh" , "LOCATION":"Ns" , "ORGANIZATION":"Ni" ,"MISC"
 class NamedEntityReg:
 	re_eng = re.compile(r"^[a-zA-Z.]+$")
 
-	def __init__(self, name_dict = None, process_bracket = True):
+	def __init__(self, name_dict = None, process_bracket_flag = True):
 		resource = Resource()
 		if name_dict is None:
 			name_dict = resource.get_vertical_domain_baike_dict()
 		self.ltp = resource.get_ltp()
-		self.post_processor = NamedEntityPostProcessor(name_dict, process_bracket)
+		self.post_processor = NamedEntityPostProcessor(name_dict, process_bracket_flag)
 		
 
 	def recognize(self,sentence,ltp_result,page_info,stanford_result=None):
