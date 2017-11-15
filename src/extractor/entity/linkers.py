@@ -220,9 +220,9 @@ class PageMemoryEntityLinker:
         self.lowercase = lowercase
         self.memory = None
 
-        self.adjust_pop_by_summar()
+        self.adjust_pop_by_summary()
 
-    def adjust_pop_by_summar(self):
+    def adjust_pop_by_summary(self):
         Print('adjust entity popularity according to its summary length')
         for bk_url in tqdm(self.bk_info_map, total = len(self.bk_info_map)):
             summary_length = len(self.summary_map.get(bk_url, "")) / 100
@@ -292,8 +292,8 @@ class PageMemoryEntityLinker:
                 summary_score = summary_related_score(summary, page_info, url_names)
             type_score = type_related_score(bk_info.types, page_info)
             
-            # if name == '哥伦比亚广播公司':
-            #     print name, bk_url, pop, summary_score, type_score, mapping_score
+            if name == '冰与火之歌' or True:
+                print name, bk_url, pop, summary_score, type_score, mapping_score
             baike_entities.append(BaikeEntity(str_entity, bk_url, bk_info.pop + summary_score + type_score + mapping_score, bk_info.types))
 
 
