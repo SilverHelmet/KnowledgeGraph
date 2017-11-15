@@ -169,7 +169,7 @@ def load_bk_static_info(filepath):
         bk_url = p[0]
         pop = int(p[2])
         if p[1] != "None":
-            pop = pop * 2
+            pop = pop + 5
         types = json.loads(p[3])
         info = BaikeInfo(pop, types)
         info_map[bk_url] = info

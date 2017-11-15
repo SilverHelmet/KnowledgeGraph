@@ -203,7 +203,7 @@ def top_cnt_keys(keys_cnt):
     for key in keys_cnt:
         if keys_cnt[key] >= max_cnt - 1:
             top_keys.append(key)
-            mapping_scores[key] = 10 * (1 - max_cnt + keys_cnt[key])
+            mapping_scores[key] = 15 * (1 - max_cnt + keys_cnt[key])
     return top_keys, mapping_scores
 
 class PageMemoryEntityLinker:
@@ -292,8 +292,8 @@ class PageMemoryEntityLinker:
                 summary_score = summary_related_score(summary, page_info, url_names)
             type_score = type_related_score(bk_info.types, page_info)
             
-            if name == '冰与火之歌' or True:
-                print name, bk_url, pop, summary_score, type_score, mapping_score
+            # if name == '冰与火之歌':
+            #     print name, bk_url, pop, summary_score, type_score, mapping_score
             baike_entities.append(BaikeEntity(str_entity, bk_url, bk_info.pop + summary_score + type_score + mapping_score, bk_info.types))
 
 
