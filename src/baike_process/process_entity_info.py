@@ -78,7 +78,7 @@ def remove_etc(text):
 def unfold(text, bracket_values = None, ename = u""):
     global delimeters, html_parser, ec_transform
     text = html_parser.unescape(text)
-    max_sep = delimeters[0]
+    
     pos = text.find(u',')
     if pos != -1 and not_digit(text, pos-1) and not_digit(text, pos+1):
         if not_number(text):
@@ -92,12 +92,15 @@ def unfold(text, bracket_values = None, ename = u""):
         else:
             candidate = delimeters[:-2]
 
+    nofold = False
+    max_sep = candidate[0]
     for sep in candidate:
         if sep in ename or ec_transform[sep] in ename:
+            nofold = True
             continue
         if len(text.split(sep)) > len(text.split(max_sep)):
             max_sep = sep
-    if max_sep in ename or ec_transform[max_sep] in ename:
+    if nofold:
         values = [text]
     else:
         values = text.split(max_sep)

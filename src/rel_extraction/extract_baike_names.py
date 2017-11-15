@@ -182,6 +182,7 @@ def load_bracket_names(bracket_names_cnt_path, error_cnt):
     return error_bracket_names
 
 if __name__ == "__main__":
+    print unfold(u'', None, u'日本:爱恨物语')
     bracket_names_cnt_path = os.path.join(rel_ext_dir, 'bracket_names_cnt.tsv')
     # process_bracket_names(outpath = bracket_names_cnt_path)
     error_bracket_names = load_bracket_names(bracket_names_cnt_path, 4)
