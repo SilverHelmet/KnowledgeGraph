@@ -344,7 +344,7 @@ class VerbRelationExtractor:
                     if node.rel in ['ATT', 'ADV', 'CMP']:
                         if entity not in node.father.att:
                             node.father.att.append(entity)
-                break
+                    break
 
     def find_all_OBJ(self, entity_lis):
         for entity in entity_lis:
@@ -542,11 +542,11 @@ class VerbRelationExtractor:
 
 if __name__ == "__main__":
     ltp = LTP(None)
-    ltp_result = ltp.parse("刘德华（Andy Lau），1961年9月出生于中国香港，中国知名演员、歌手、词作人、制片人、电影人，影视歌多栖发展的代表艺人之一。")
+    ltp_result = ltp.parse("后来在周润发主演的《鳄鱼潭》里演一个杀手，并且获得周润发的鼓励。")
     info = PrintInfo()
     info.print_ltp(ltp_result)
     tree = ParseTree(ltp_result)
-    string = ["刘德华", "中国香港", "中国知名演员"]
+    string = ["周润发", "鳄鱼潭"]
     e_lis = []
     for s in string:
         st, ed = ltp_result.search_word(s)
