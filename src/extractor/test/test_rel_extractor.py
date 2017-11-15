@@ -2,6 +2,7 @@
 from .test_extractor import process_labeled_data
 from ..util import load_stanford_result
 from ..structure import StrEntity
+from src.extractor.resource import Resource
 from ..ltp import LTP
 from ..dependency.verb_title_relation_extractor import VerbRelationExtractor
 from ..entity.naive_ner import NaiveNer
@@ -39,7 +40,7 @@ class RelExtractorTestor():
         self.ltp = ltp
         self.use_advanced_ner = use_advanced_ner
         if use_advanced_ner:
-            self.ner = NamedEntityReg(ltp)
+            self.ner = NamedEntityReg()
             base_dir = os.path.join(data_dir, '标注数据')
             self.stf_results_map = load_stanford_result(os.path.join(base_dir, 'sentences.txt'), os.path.join(base_dir, 'sentences_stanf_nlp.json'))
         else:
@@ -212,7 +213,7 @@ def print_all(extractor, ltp):
 
 if __name__ == "__main__":
     extractor = VerbRelationExtractor()
-    ltp = LTP(None)
+    ltp = Resource.get_singleton().get_ltp()
     print_all(extractor, ltp)
     
 

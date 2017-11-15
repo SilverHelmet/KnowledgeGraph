@@ -197,7 +197,7 @@ class NamedEntityReg:
 	re_eng = re.compile(r"^[a-zA-Z.]+$")
 
 	def __init__(self, name_dict = None, process_bracket_flag = True):
-		resource = Resource()
+		resource = Resource.get_singleton()
 		if name_dict is None:
 			name_dict = resource.get_vertical_domain_baike_dict()
 		self.ltp = resource.get_ltp()
@@ -417,7 +417,7 @@ class NamedEntityReg:
 					# ltp_result.ner_tags[index] = "I-Nf"
 					index += 1
 
-				if index < len(ltp_result.tags) and  (ltp_result.words[index] in ["'", '.', ':']):
+				if index < len(ltp_result.tags) and  (ltp_result.words[index] in ["'", '.', ':', '&']):
 					ltp_result.tags[index] = "ws"
 					while index < len(ltp_result.tags) and (ltp_result.tags[index] == "ws" or self.re_eng.match(ltp_result.words[index])):
 						# ltp_result.ner_tags[index] = "I-Nf"
