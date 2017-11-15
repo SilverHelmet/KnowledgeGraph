@@ -8,6 +8,14 @@ import re
 from tqdm import tqdm
 
 delimeters = [u';', u'；', u'、', u'，', u',', u'/']
+ec_transform = {
+    u';': u'；',
+    u'；': u':',
+    u'、': u'、',
+    u',': u'，',
+    u'，': u',',
+    u'/': u'/'
+}
 html_parser = HTMLParser.HTMLParser()
 bracket_pattern = re.compile(ur'（.*）|\(.*\)')
 digits = set([u'0', u'1', u'2', u'3', u'4', u'5', u'6', u'7', u'8', u'9'])
@@ -68,7 +76,7 @@ def remove_etc(text):
     return text
 
 def unfold(text, bracket_values = None, ename = u""):
-    global delimeters, html_parser
+    global delimeters, html_parser, ec_transform
     text = html_parser.unescape(text)
     max_sep = delimeters[0]
     pos = text.find(u',')
@@ -85,11 +93,11 @@ def unfold(text, bracket_values = None, ename = u""):
             candidate = delimeters[:-2]
 
     for sep in candidate:
-        if sep in ename:
+        if sep in ename or ec_transform[sep] in ename:
             continue
         if len(text.split(sep)) > len(text.split(max_sep)):
             max_sep = sep
-    if max_sep in ename:
+    if max_sep in ename or ec_transform[max_sep] in ename:
         values = [text]
     else:
         values = text.split(max_sep)
