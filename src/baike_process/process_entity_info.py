@@ -67,7 +67,7 @@ def remove_etc(text):
         text = text[0:-1]
     return text
 
-def unfold(text, bracket_values = None):
+def unfold(text, bracket_values = None, ename = u""):
     global delimeters, html_parser
     text = html_parser.unescape(text)
     max_sep = delimeters[0]
@@ -85,9 +85,14 @@ def unfold(text, bracket_values = None):
             candidate = delimeters[:-2]
 
     for sep in candidate:
+        if sep in ename:
+            continue
         if len(text.split(sep)) > len(text.split(max_sep)):
             max_sep = sep
-    values = text.split(max_sep)
+    if max_sep in ename:
+        values = [text]
+    else:
+        values = text.split(max_sep)
     values = [del_space(x) for x in values]
     values = [remove_extra_punc(x) for x in values]
     if len(values) >= 2:

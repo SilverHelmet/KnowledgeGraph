@@ -103,7 +103,7 @@ def load_and_write_baike_name(bk_name_map, error_bracket_names, out_path):
                 if info_value in names:
                     continue
                 info_bracket_names = []
-                info_value_names = unfold(info_value, info_bracket_names)
+                info_value_names = unfold(info_value, info_bracket_names, obj['ename'])
                 for info_value_name in info_value_names:
                     
                     in_bracket = info_value_name in info_bracket_names
