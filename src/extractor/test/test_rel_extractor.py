@@ -145,10 +145,11 @@ class RelExtractorTestor():
         if self.use_advanced_ner:
             stf_result = self.stf_results_map[sentence]
             
-            entities = self.ner.recognize(sentence, ltp_result, None, stf_result)
-            entities = [(e.st, e.ed)for e in entities]
+            str_entities = self.ner.recognize(sentence, ltp_result, None, stf_result)
+            # entities = [(e.st, e.ed)for e in entities]
         else:
             entities = self.ner.recognize(sentence, ltp_result, None)
+            str_entities = [StrEntity(x[0], x[1], None) for x in entities]
 
         entity_pool = [False] * ltp_result.length
         for st, ed in entities:
@@ -156,10 +157,9 @@ class RelExtractorTestor():
                 entity_pool[i] = True
 
         ret = []
-        str_entity = []
-        for i in entities:
-            str_entity.append(StrEntity(i[0], i[1], None))
-        raw_rels = self.extractor.find_tripple(ltp_result, str_entity)
+        # for i in entities:
+        #     str_entity.append(StrEntity(i[0], i[1], None))
+        raw_rels = self.extractor.find_tripple(ltp_result, str_entities)
         r1 = None
         r2 = None
         r3 = None
