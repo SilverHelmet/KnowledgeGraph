@@ -295,7 +295,7 @@ class PageMemoryEntityLinker:
         top_entity = baike_entities[0]
         if total_score > 0:
             top_entity.pop /= (total_score)
-        self.memory.add(ltp_result, str_entity, top_entity)
+        # self.memory.add(ltp_result, str_entity, top_entity)
         return [top_entity]
 
     

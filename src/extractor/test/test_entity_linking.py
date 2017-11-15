@@ -42,7 +42,7 @@ class EntityLinkingTestor:
                 for extra_name in str_entity.extra_names:
                     link_map[extra_name] = baike_entity.baike_url
 
-        # self.linker.add_sentence(ltp_result, str_entites, baike_entities)
+        self.linker.add_sentence(ltp_result, str_entites, baike_entities)
 
         return link_map, names
 
@@ -51,7 +51,7 @@ if __name__ == "__main__":
 
 
     ltp = LTP(None)
-    ner = NamedEntityReg(ltp, process_bracket_flag = False)    
+    ner = NamedEntityReg()    
     entity_linker = PageMemoryEntityLinker(lowercase = True)
 
     base_dir = os.path.join(data_dir, '实体标注')
