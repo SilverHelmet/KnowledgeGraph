@@ -5,6 +5,7 @@ from ...rel_extraction.extract_baike_names import person_extra_names
 import os
 import json
 from src.extractor.resource import Resource
+from src.IOUtil import Print
 from tqdm import tqdm
 import re
 
@@ -195,13 +196,15 @@ class PageMemory:
 
 def top_cnt_keys(keys_cnt):
     if len(keys_cnt) == 0:
-        return []
+        return [], {}
     max_cnt = reduce(max, keys_cnt.values())
     top_keys = []
+    mapping_scores = {}
     for key in keys_cnt:
         if keys_cnt[key] >= max_cnt - 1:
             top_keys.append(key)
-    return top_keys
+            mapping_scores[key] = 10 * (1 - max_cnt + keys_cnt[key])
+    return top_keys, mapping_scores
 
 class PageMemoryEntityLinker:
     def __init__(self, lowercase = True):
@@ -217,6 +220,15 @@ class PageMemoryEntityLinker:
         self.lowercase = lowercase
         self.memory = None
 
+        self.adjust_pop_by_summar()
+
+    def adjust_pop_by_summar(self):
+        Print('adjust entity popularity according to its summary length')
+        for bk_url in tqdm(self.bk_info_map, total = len(self.bk_info_map)):
+            summary_length = len(self.summary_map[bk_url]) / 100
+            self.bk_info_map[bk_url].pop += min(summary_length * 2, 10)
+
+
     def get_candidate_urls(self, names):
         baike_urls_cnt = {}
         for name, score in names: 
@@ -229,9 +241,9 @@ class PageMemoryEntityLinker:
                 baike_urls_cnt[url] += score
         if len(baike_urls_cnt) != 0:
             return top_cnt_keys(baike_urls_cnt)
-
+        
         if not self.lowercase:
-            return []
+            return [], {}
 
         for name, score in names:
             name = name.lower()
@@ -266,22 +278,23 @@ class PageMemoryEntityLinker:
         # if len(baike_urls) == 0 and self.lowercase:
         #     baike_urls = self.lower_name2bk.get(name.lower(), [])
 
-        baike_urls = self.get_candidate_urls(names)
+        baike_urls, mapping_scores = self.get_candidate_urls(names)
         baike_entities = []
-
         for bk_url in baike_urls:
             bk_info = self.bk_info_map[bk_url]
             pop = bk_info.pop
             url_names = self.url2names[bk_url]
             summary = self.summary_map.get(bk_url, "")
+            mapping_score = mapping_scores[bk_url]
             if page_info.url == bk_url and name == page_info.ename:
                 summary_score = 100
             else:
                 summary_score = summary_related_score(summary, page_info, url_names)
             type_score = type_related_score(bk_info.types, page_info)
             
-            # print name, bk_url, pop, summary_score, type_score
-            baike_entities.append(BaikeEntity(str_entity, bk_url, bk_info.pop + summary_score + type_score, bk_info.types))
+            # if name == '哥伦比亚广播公司':
+            #     print name, bk_url, pop, summary_score, type_score, mapping_score
+            baike_entities.append(BaikeEntity(str_entity, bk_url, bk_info.pop + summary_score + type_score + mapping_score, bk_info.types))
 
 
         if len(baike_entities) == 0:
