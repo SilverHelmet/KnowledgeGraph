@@ -542,11 +542,11 @@ class VerbRelationExtractor:
 
 if __name__ == "__main__":
     ltp = LTP(None)
-    ltp_result = ltp.parse("后来在周润发主演的《鳄鱼潭》里演一个杀手，并且获得周润发的鼓励。")
+    ltp_result = ltp.parse("刘德华（Andy Lau），1961年9月出生于中国香港，中国知名演员、歌手、词作人、制片人、电影人，影视歌多栖发展的代表艺人之一。")
     info = PrintInfo()
     info.print_ltp(ltp_result)
     tree = ParseTree(ltp_result)
-    string = ["瓜迪奥拉", "巴萨", "国王杯", "西班牙超级杯", "欧洲超级杯", "世俱杯"]
+    string = ["刘德华", "中国香港", "中国知名演员"]
     e_lis = []
     for s in string:
         st, ed = ltp_result.search_word(s)
