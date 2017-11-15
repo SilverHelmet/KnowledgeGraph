@@ -152,7 +152,9 @@ class RelExtractorTestor():
             str_entities = [StrEntity(x[0], x[1], None) for x in entities]
 
         entity_pool = [False] * ltp_result.length
-        for st, ed in entities:
+        for x in str_entities:
+            st = x.st
+            ed = x.ed
             for i in range(st, ed):
                 entity_pool[i] = True
 
