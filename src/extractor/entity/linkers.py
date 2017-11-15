@@ -225,7 +225,7 @@ class PageMemoryEntityLinker:
     def adjust_pop_by_summar(self):
         Print('adjust entity popularity according to its summary length')
         for bk_url in tqdm(self.bk_info_map, total = len(self.bk_info_map)):
-            summary_length = len(self.summary_map[bk_url]) / 100
+            summary_length = len(self.summary_map.get(bk_url], "") / 100
             self.bk_info_map[bk_url].pop += min(summary_length * 2, 10)
 
 
