@@ -156,6 +156,29 @@ class RelExtractorTestor():
                 entity_pool[i] = True
 
         ret = []
+        str_entity = []
+        for i in entities:
+            str_entity.append(StrEntity(i[0], i[1], None))
+        raw_rels = self.extractor.find_tripple(ltp_result, str_entity)
+        r1 = None
+        r2 = None
+        r3 = None
+        for k, item in enumerate(raw_rels):
+            if isinstance(item[0], int) == False:
+                r1 = ltp_result.text(item[0].st, item[0].ed)
+            else:
+                r1 = ltp_result.text(item[0], item[0] + 1)
+            if isinstance(item[2], int) == False:
+                r3 = ltp_result.text(item[2].st, item[2].ed)
+            else:
+                r3 = ltp_result.text(item[2], item[2] + 1)
+            if item[1] == None:
+                r2 = "是"
+            else:
+                r2 = ltp_result.text(item[1], item[1] + 1)
+            ret.append((r1, r2, r3))
+        ret = set(ret)
+        '''
         for i in range(len(entities)):
             for j in range(i + 1, len(entities)):
                 e1 = entities[i]
@@ -167,6 +190,7 @@ class RelExtractorTestor():
                 if len(rels) > 0:
                     rel = " ".join(rels)
                     ret.append((e1_text, rel, e2_text))
+        '''
         return ret
                 
                 
@@ -204,6 +228,7 @@ def print_all(extractor, ltp):
             # if data.sentence != u'《青花瓷》是方文山作词，周杰伦作曲并演唱的歌曲，收录于2007年11月2日周杰伦制作发行音乐专辑《我很忙》中。':
             #     continue
             print data.sentence
+            print "tripple num:", len(triples)
             for triple in triples:
                 print '\t%s' %('\t'.join(triple))
             for kl in data.knowledges:

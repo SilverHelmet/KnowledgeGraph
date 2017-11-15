@@ -536,11 +536,11 @@ class VerbRelationExtractor:
 
 if __name__ == "__main__":
     ltp = LTP(None)
-    ltp_result = ltp.parse("1981年，新艺城电影公司决定启用新人阵容拍摄《彩云曲》，刘德华等无线艺人训练班的新人纷纷报名去甄选主角，但包括关之琳等人都败下阵来，最后决定的男主角是来自台湾的吴少刚，女主角是徐杰和庄静而，刘德华虽然落选，但仍和很多TVB的演员们合力客串完成了本片。")
+    ltp_result = ltp.parse("2006年，主演导演张之亮执导的中日韩合拍古装片《墨攻》[8]。")
     info = PrintInfo()
     info.print_ltp(ltp_result)
     tree = ParseTree(ltp_result)
-    string = ["刘德华", "吴少刚", "徐杰", "庄静而", "彩云曲"]
+    string = ["中日韩", "墨攻", "张之亮"]
     e_lis = []
     for s in string:
         st, ed = ltp_result.search_word(s)
@@ -550,6 +550,7 @@ if __name__ == "__main__":
             e_lis.append(StrEntity(st, ed, None))
     res = VerbRelationExtractor(True)
     tripple_res = res.find_tripple(ltp_result, e_lis)
+    tripple_res = set(tripple_res)
     r1 = r2 = None
     for k, item in enumerate(tripple_res):
         print 'tripple', k, 'is:'
