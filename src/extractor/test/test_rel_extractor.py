@@ -157,8 +157,10 @@ class RelExtractorTestor():
 
         ret = []
         str_entity = []
+        str_entity_word = []
         for i in entities:
             str_entity.append(StrEntity(i[0], i[1], None))
+            str_entity_word.append(ltp_result.text(i[0], i[1]))
         raw_rels = self.extractor.find_tripple(ltp_result, str_entity)
         r1 = None
         r2 = None
@@ -191,7 +193,7 @@ class RelExtractorTestor():
                     rel = " ".join(rels)
                     ret.append((e1_text, rel, e2_text))
         '''
-        return ret
+        return ret, str_entity_word
                 
                 
         
@@ -224,15 +226,20 @@ def print_all(extractor, ltp):
     for url in datas_map:
         datas = datas_map[url]
         for data in datas:
-            triples = testor.test_all(data)
+            triples, ner_res = testor.test_all(data)
             # if data.sentence != u'《青花瓷》是方文山作词，周杰伦作曲并演唱的歌曲，收录于2007年11月2日周杰伦制作发行音乐专辑《我很忙》中。':
             #     continue
             print data.sentence
-            print "tripple num:", len(triples)
+            print "this sentence has named entity:"
+            ner_tmp = '\t'.join(ner_res)
+            print ner_tmp
+            print "the tripple num we can extract from the sentence:", len(triples)
             for triple in triples:
                 print '\t%s' %('\t'.join(triple))
+            print "the standard tripple num of the sentence:", len(data.knowledges)
             for kl in data.knowledges:
                 print "\t\t%s" %(kl.triple())
+            print '-'*40
 
 
 

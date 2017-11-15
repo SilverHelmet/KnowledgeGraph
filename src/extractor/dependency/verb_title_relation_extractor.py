@@ -459,7 +459,12 @@ class VerbRelationExtractor:
             if len(verb.actual_sub) != 0 and len(verb.concept_sub) != 0:
                 for actual_sub in verb.actual_sub:
                     for concept_sub in verb.concept_sub:
-                        res.append((actual_sub.entity, None, concept_sub.idx))
+                        if concept_sub not in ['n', 'nd', 'nh', 'ni', 'nl', 'ns', 'nt', 'nz']:
+                            continue
+                        if actual_sub.entity != None:
+                            res.append((actual_sub.entity, None, concept_sub.idx))
+                        else:
+                            res.append((actual_sub.idx, None, concept_sub.idx))
                         self.debuger.debug("is relation found!")
         #step two: renew sub mark
         
@@ -483,6 +488,7 @@ class VerbRelationExtractor:
             for obj in verb.obj:
                 self.debuger.debug(obj.word)
             self.debuger.debug('#'*30)
+        self.debuger.debug('#'*30)
         self.find_all_OBJ(entity_lis)
         for verb in verb_lis:
             self.debuger.debug("verb", verb.word, "has obj:")
@@ -536,11 +542,11 @@ class VerbRelationExtractor:
 
 if __name__ == "__main__":
     ltp = LTP(None)
-    ltp_result = ltp.parse("2006年，主演导演张之亮执导的中日韩合拍古装片《墨攻》[8]。")
+    ltp_result = ltp.parse("后来在周润发主演的《鳄鱼潭》里演一个杀手，并且获得周润发的鼓励。")
     info = PrintInfo()
     info.print_ltp(ltp_result)
     tree = ParseTree(ltp_result)
-    string = ["中日韩", "墨攻", "张之亮"]
+    string = ["瓜迪奥拉", "巴萨", "国王杯", "西班牙超级杯", "欧洲超级杯", "世俱杯"]
     e_lis = []
     for s in string:
         st, ed = ltp_result.search_word(s)
