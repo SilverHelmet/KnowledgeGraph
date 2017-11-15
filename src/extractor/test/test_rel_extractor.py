@@ -159,18 +159,10 @@ class RelExtractorTestor():
                 entity_pool[i] = True
 
         ret = []
-<<<<<<< HEAD
-        str_entity = []
-        str_entity_word = []
-        for i in entities:
-            str_entity.append(StrEntity(i[0], i[1], None))
-            str_entity_word.append(ltp_result.text(i[0], i[1]))
-        raw_rels = self.extractor.find_tripple(ltp_result, str_entity)
-=======
-        # for i in entities:
-        #     str_entity.append(StrEntity(i[0], i[1], None))
+        str_entities_word = []
+        for str_entity in str_entities:
+            str_entities_word.append(ltp_result.text(str_entity.st, str_entity.ed))
         raw_rels = self.extractor.find_tripple(ltp_result, str_entities)
->>>>>>> 6467417896358152a20f661cb704ba2d3ac21569
         r1 = None
         r2 = None
         r3 = None
@@ -202,7 +194,7 @@ class RelExtractorTestor():
                     rel = " ".join(rels)
                     ret.append((e1_text, rel, e2_text))
         '''
-        return ret, str_entity_word
+        return ret, str_entities_word
                 
                 
         
