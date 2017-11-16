@@ -287,7 +287,7 @@ class TypeInfer:
             if type_probs[max_key] >= threshold:
                 type_probs.pop(other_key)
 
-    def choose_music_type(self, type_probs, threshold):
+    def choose_music_type(self, type_probs, sep_type_probs, threshold):
         composition_prob = type_probs.get('fb:music.composition', 0)
         recording_prob = type_probs.get("fb:music.recording", 0)
         album_prob = type_probs.get("fb:music.album", 0)
@@ -303,12 +303,15 @@ class TypeInfer:
             if type_probs.get(max_key, 0) >= threshold:
                 if other_key in type_probs:
                     type_probs.pop(other_key)
+                    sep_type_probs.pop(other_key)
         elif recording_prob >= threshold or album_prob >= threshold:
             if other_key in type_probs:
                 type_probs.pop(other_key)
+                sep_prob_map.pop(other_key)
             type_probs['fb:music.composition'] = threshold + 0.01
+            sep_type_probs['fb:music.composition'] = [threshold + 0.01, 0, 0, 0]
     
-    def choose_tv_or_film(self, type_probs, names, titles, threshold):
+    def choose_tv_or_film(self, type_probs, sep_type_probs, names, titles, threshold):
         film_prob = type_probs.get('fb:film.film', 0)
         tv_prob = type_probs.get('fb:tv.tv_program', 0)
         flag = False
@@ -328,10 +331,13 @@ class TypeInfer:
             flag = True
         if other_key in type_probs:
             type_probs.pop(other_key)
+            sep_type_probs.pop(other_key)
         if flag:
             if max_key not in type_probs:
                 type_probs[max_key] = 0
+                sep_type_probs[max_key] = [0, 0, 0, 0]
             type_probs[max_key] += threshold
+            sep_type_probs[max_key][0] = threshold
 
 def topk_key(key_map, k):
     keys = sorted(key_map.keys(), key = lambda x: key_map[x], reverse = True)[:k]
@@ -426,8 +432,8 @@ def infer_type():
         names = obj.get('info', {}).keys()
         nb_names = len(names)
         mega_count += 1
-        if mega_count > 1000:
-            break
+        #if mega_count > 1000:
+        #    break
 
         if baike_url in bk2fb_map:
             fb_uri = bk2fb_map[baike_url]
@@ -466,7 +472,7 @@ def infer_type():
         else:
             titles = []
         type_probs, sep_type_probs = type_infer.infer(names, clses, titles, extra_info) 
-        type_infer.choose_music_type(type_probs, chosen_prob)
+        type_infer.choose_music_type(type_probs, sep_type_probs, chosen_prob)
         type_infer.choose_tv_or_film(type_probs, names, titles, chosen_prob)
         type_probs_assumed = []
         for fb_type_in in type_probs:
