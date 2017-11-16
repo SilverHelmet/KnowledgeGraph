@@ -123,7 +123,7 @@ etype_match_map = {
     'Nh': ['fb:people.person', 'fb:fictional_universe.fictional_character', 'fb:fictional_universe.person_in_fiction'],
     'Ns': ['fb:location.location', 'fb:fictional_universe.fictional_setting', 'fb:organization.organization', 'fb:fictional_universe.fictional_organization'],
     "Ni": ['fb:organization.organization', 'fb:fictional_universe.fictional_organization'],
-    "Nb": ['fb:film.film', 'fb:book.written_work', 'fb:tv.tv_program', 'fb:cvg.computer_videogame', 'fb:cvg.game_series'],
+    "Nb": ['fb:film.film', 'fb:book.written_work', 'fb:tv.tv_program', 'fb:cvg.computer_videogame', 'fb:cvg.game_series', 'fb:music.recording', "fb:music.album"],
     "Nz": [],
     "Nf": [],
     "Nm": [],
@@ -323,8 +323,8 @@ class PageMemoryEntityLinker:
             entity_type_score = entity_type_related_score(str_entity.etype, bk_info.types)
             
             
-            # if name == '冰与火之歌':
-            #     print name, bk_url, pop, summary_score, type_score, mapping_score
+            if name == '冰与火之歌' or True:
+                print name, bk_url, pop, summary_score, page_type_score, entity_type_score, mapping_score
             baike_entities.append(BaikeEntity(str_entity, bk_url, bk_info.pop + summary_score + page_type_score + entity_type_score + mapping_score, bk_info.types))
 
 
