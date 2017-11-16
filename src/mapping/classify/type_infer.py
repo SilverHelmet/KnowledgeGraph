@@ -94,7 +94,7 @@ class InfoTypeInfer:
 
     def infer(self, baike_attrs, prob_map, sep_prob_map):
         for attr in baike_attrs:
-            if not attr in self.baike_info_map:
+            if attr not in self.baike_info_map:
                 continue
             mappings = self.baike_info_map[attr]
             for mapping in mappings:
@@ -184,8 +184,10 @@ class TitleTypeInfer:
         return baike_title_map
 
     def infer(self, baike_attrs, prob_map, sep_prob_map):
+        print 'title_infer'
         for attr in baike_attrs:
-            if not attr in self.baike_title_map:
+            print attr, self.baike_title_map.size()
+            if attr not in self.baike_title_map:
                 continue
             mappings = self.baike_title_map[attr]
             for mapping in mappings:
@@ -306,10 +308,23 @@ class TypeInfer:
                 type_probs.pop(other_key)
             type_probs['fb:music.composition'] = threshold + 0.01
     
-    def choose_tv_or_film(self, type_probs, names, titles):
+    def choose_tv_or_film(self, type_probs, names, titles, threshold):
         film_prob = type_probs.get('fb:film.film', 0)
         tv_prob = type_probs.get('fb:tv.tv_program', 0)
-
+        if film_prob <= tv_prob:
+            max_key = 'fb:tv.tv_program'
+            other_key = 'fb:film.film'
+        else:
+            max_key = 'fb:film.film'
+            other_key = 'fb:tv.tv_program'
+        if u'集数' in names or u'每集长度' in names:
+            max_key = 'fb:tv.tv_program'
+            other_key = 'fb:film.film'
+        if u'分集介绍' in titles:
+            max_key = 'fb:tv.tv_program'
+            other_key = 'fb:film.film'
+        if other_key in type_probs:
+            type_probs.pop(other_key)        
 
 def topk_key(key_map, k):
     keys = sorted(key_map.keys(), key = lambda x: key_map[x], reverse = True)[:k]
@@ -444,8 +459,8 @@ def infer_type():
         else:
             titles = []
         type_probs, sep_type_probs = type_infer.infer(names, clses, titles, extra_info) 
-        type_infer.choose_music_type(type_probs, 0.8)
-        #type_infer.choose_tv_or_film(type_probs, names, titles)
+        type_infer.choose_music_type(type_probs, chosen_prob)
+        #type_infer.choose_tv_or_film(type_probs, names, titles, chosen_prob)
         type_probs_assumed = []
         for fb_type_in in type_probs:
             if type_probs[fb_type_in] >= chosen_prob:
@@ -454,7 +469,6 @@ def infer_type():
         for j in names:
             st_ad += j + " "
         st_ad += "]["
-        print 'class'
         for j in clses:
             st_ad += j + " "
         st_ad += "]["
