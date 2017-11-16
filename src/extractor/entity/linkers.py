@@ -144,7 +144,6 @@ def entity_type_related_score(etype, types):
     for bk_type in types:
         if bk_type in matched_types:
             return 30
-
     return 0
 
 
