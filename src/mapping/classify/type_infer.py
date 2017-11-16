@@ -167,26 +167,26 @@ class TitleTypeInfer:
                 if title_tuple[0] == 'sum':
                     title_sum = title_tuple[1]
                     break
-            print_str = "["
+            #print_str = "["
             for title_tuple in mapping_pairs:
             	if title_tuple[0] == 'sum':
             		title_count += 1
             		continue
             	title_count += 1
                 mapping = Mapping((title_tuple[0], str(title_tuple[1]) + '/' + str(title_sum)))
-                print_str += "(" + title_tuple[0] + "," + str(title_tuple[1]) + ")"
+                #print_str += "(" + title_tuple[0] + "," + str(title_tuple[1]) + ")"
                 if (title_count <= 4 or mapping.hit >= 50) and mapping.hit >= 3:
                     mappings.append(mapping)
             baike_title_map[baikeattr] = mappings
-            print_str += "]"
-            print baikeattr, print_str
+            #print_str += "]"
+            #print baikeattr, print_str
 
         return baike_title_map
 
     def infer(self, baike_attrs, prob_map, sep_prob_map):
-        print 'title_infer'
+        #print 'title_infer'
         for attr in baike_attrs:
-            print attr, len(self.baike_title_map), attr in self.baike_title_map
+            #print attr, len(self.baike_title_map), attr in self.baike_title_map
             if attr not in self.baike_title_map:
                 continue
             mappings = self.baike_title_map[attr]
@@ -311,6 +311,7 @@ class TypeInfer:
     def choose_tv_or_film(self, type_probs, names, titles, threshold):
         film_prob = type_probs.get('fb:film.film', 0)
         tv_prob = type_probs.get('fb:tv.tv_program', 0)
+        flag = False
         if film_prob <= tv_prob:
             max_key = 'fb:tv.tv_program'
             other_key = 'fb:film.film'
@@ -320,11 +321,17 @@ class TypeInfer:
         if u'集数' in names or u'每集长度' in names:
             max_key = 'fb:tv.tv_program'
             other_key = 'fb:film.film'
+            flag = True
         if u'分集介绍' in titles:
             max_key = 'fb:tv.tv_program'
             other_key = 'fb:film.film'
+            flag = True
         if other_key in type_probs:
-            type_probs.pop(other_key)        
+            type_probs.pop(other_key)
+        if flag:
+            if max_key not in type_probs:
+                type_probs[max_key] = 0
+            type_probs[max_key] += threshold
 
 def topk_key(key_map, k):
     keys = sorted(key_map.keys(), key = lambda x: key_map[x], reverse = True)[:k]
@@ -430,14 +437,14 @@ def infer_type():
                 for ext_type in extra_types:
                     fb_types.append(ext_type)
             fb_types = list(set(fb_types))
-            chosen_prob = 2
+            chosen_prob = 3
             # outf.write('%s\t%s\t%d\t%s\n' %(baike_url, fb_uri, nb_names * 2 + 3, json.dumps(fb_types)))
             #outf.write('%s\t%s\t%d\t%s\n' %(baike_url, fb_uri, nb_names, json.dumps(fb_types)))
             #continue
         else:
             fb_uri = "None"
             fb_types = []
-            chosen_prob = 1
+            chosen_prob = 1.5
 
         obj = json.loads(p[1])
         names = obj.get('info', {}).keys()
@@ -460,7 +467,7 @@ def infer_type():
             titles = []
         type_probs, sep_type_probs = type_infer.infer(names, clses, titles, extra_info) 
         type_infer.choose_music_type(type_probs, chosen_prob)
-        #type_infer.choose_tv_or_film(type_probs, names, titles, chosen_prob)
+        type_infer.choose_tv_or_film(type_probs, names, titles, chosen_prob)
         type_probs_assumed = []
         for fb_type_in in type_probs:
             if type_probs[fb_type_in] >= chosen_prob:
