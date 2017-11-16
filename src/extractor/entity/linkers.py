@@ -123,7 +123,7 @@ etype_match_map = {
     'Nh': ['fb:people.person', 'fb:fictional_universe.fictional_character', 'fb:fictional_universe.person_in_fiction'],
     'Ns': ['fb:location.location', 'fb:fictional_universe.fictional_setting', 'fb:organization.organization', 'fb:fictional_universe.fictional_organization'],
     "Ni": ['fb:organization.organization', 'fb:fictional_universe.fictional_organization'],
-    "Nb": ['fb:film.film', 'fb:book.written_work', 'fb:tv.tv_program', 'fb:cvg.computer_videogame', 'fb:cvg.game_series'],
+    "Nb": ['fb:film.film', 'fb:book.written_work', 'fb:tv.tv_program', 'fb:cvg.computer_videogame', 'fb:cvg.game_series', 'fb:music.recording', "fb:music.album"],
     "Nz": [],
     "Nf": [],
     "Nm": [],
@@ -139,12 +139,11 @@ def entity_type_related_score(etype, types):
             if bk_type in matched_types:
                 return -30
     if "fb:location:location" in types and etype != "Ns":
-        return -30
+        return -40
 
     for bk_type in types:
         if bk_type in matched_types:
             return 30
-
     return 0
 
 
@@ -206,8 +205,8 @@ class PageMemory:
         self.link_map[text] = baike_entity
         if str_entity.etype == 'Nh' or str_entity.etype == 'Nf':
             self.add_person(text, baike_entity)
-        # if str_entity.etype == 'Ni':
-        #     self.add_organzition(ltp_result, str_entity, baike_entity)
+        if str_entity.etype == 'Ni':
+            self.add_organzition(ltp_result, str_entity, baike_entity)
 
     def add_person(self, text, baike_entity):
         person_names = person_extra_names(text)
@@ -324,8 +323,8 @@ class PageMemoryEntityLinker:
             entity_type_score = entity_type_related_score(str_entity.etype, bk_info.types)
             
             
-            # if name == '冰与火之歌':
-            #     print name, bk_url, pop, summary_score, type_score, mapping_score
+            # if name == '冰与火之歌' or True:
+            #     print name, bk_url, pop, summary_score, page_type_score, entity_type_score, mapping_score
             baike_entities.append(BaikeEntity(str_entity, bk_url, bk_info.pop + summary_score + page_type_score + entity_type_score + mapping_score, bk_info.types))
 
 
