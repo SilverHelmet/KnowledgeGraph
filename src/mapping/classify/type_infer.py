@@ -186,7 +186,7 @@ class TitleTypeInfer:
     def infer(self, baike_attrs, prob_map, sep_prob_map):
         print 'title_infer'
         for attr in baike_attrs:
-            print attr, self.baike_title_map.size()
+            print attr, len(self.baike_title_map)
             if attr not in self.baike_title_map:
                 continue
             mappings = self.baike_title_map[attr]
