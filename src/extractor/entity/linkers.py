@@ -140,13 +140,13 @@ def entity_type_related_score(etype, types):
         matched_types = etype_match_map['Nb']
         for bk_type in types:
             if bk_type in matched_types:
-                return -40
+                return -20
     if "fb:location:location" in types and etype != "Ns":
-        return -40
+        return -20
 
     for bk_type in types:
         if bk_type in matched_types:
-            return 40
+            return 30
     return 0
 
 
@@ -327,7 +327,7 @@ class PageMemoryEntityLinker:
             
             
             # if name == '冰与火之歌' or True:
-                # print name, bk_url, pop, summary_score, page_type_score, entity_type_score, mapping_score
+            #     print name, bk_url, pop, summary_score, page_type_score, entity_type_score, mapping_score
             baike_entities.append(BaikeEntity(str_entity, bk_url, bk_info.pop + summary_score + page_type_score + entity_type_score + mapping_score, bk_info.types))
 
 
@@ -337,7 +337,7 @@ class PageMemoryEntityLinker:
         baike_entities.sort(key = lambda x: x.pop, reverse = True)
         total_score = 0.000
         for e in baike_entities:
-            total_score += e.pop
+            total_score += max(e.pop, 0)
 
         top_entity = baike_entities[0]
         if total_score > 0:

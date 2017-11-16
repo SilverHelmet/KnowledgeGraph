@@ -39,6 +39,7 @@ class EntityLinkingTestor:
             baike_entities.append(baike_entity)
             if baike_entity:
                 link_map[ltp_result.text(str_entity.st, str_entity.ed)] = baike_entity.baike_url
+                print "add", ltp_result.text(str_entity.st, str_entity.ed), baike_entity.baike_url
                 for extra_name in str_entity.extra_names:
                     link_map[extra_name] = baike_entity.baike_url
 
