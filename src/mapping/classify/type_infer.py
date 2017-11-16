@@ -395,8 +395,8 @@ def infer_type():
         names = obj.get('info', {}).keys()
         nb_names = len(names)
         mega_count += 1
-        #if mega_count > 1000:
-            #break
+        if mega_count > 1000:
+            break
 
         if baike_url in bk2fb_map:
             fb_uri = bk2fb_map[baike_url]
