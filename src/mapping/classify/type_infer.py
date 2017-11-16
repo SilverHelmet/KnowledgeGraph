@@ -387,12 +387,16 @@ def infer_type():
     schema.init()
     print "start inferring"
     Print("type infer")
+    mega_count = 0
     for line in tqdm(file(baike_info_path), total = total):
         p = line.split('\t')
         baike_url = p[0].decode('utf-8')
         obj = json.loads(p[1])
         names = obj.get('info', {}).keys()
         nb_names = len(names)
+        mega_count += 1
+        if mega_count > 1000:
+            break
 
         if baike_url in bk2fb_map:
             fb_uri = bk2fb_map[baike_url]
@@ -433,7 +437,7 @@ def infer_type():
         for fb_type_in in type_probs:
             if type_probs[fb_type_in] >= chosen_prob:
                 type_probs_assumed.append((fb_type_in, type_probs[fb_type_in], sep_type_probs[fb_type_in]))
-        print baike_url, type_probs_assumed, json.dumps(names, ensure_ascii = False), clses, json.dumps(titles, ensure_ascii = False)
+        print baike_url, type_probs_assumed, names.encode('utf-8'), clses, titles.encode('utf-8'), extra_info.encode('utf-8')
         inffered_types = decide_type(type_probs, schema, chosen_prob)
         for fb_type_origin in fb_types:
             if not fb_type_origin in inffered_types:
