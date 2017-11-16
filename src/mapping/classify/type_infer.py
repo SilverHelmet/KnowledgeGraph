@@ -86,7 +86,7 @@ class InfoTypeInfer:
             	info_count += 1
                 #print info_tuple[0], info_tuple[1], info_sum
                 mapping = Mapping((info_tuple[0], str(info_tuple[1]) + '/' + str(info_sum)))
-                if (info_count <= 3 or mapping.hit >= 50) and mapping.hit >= 3:
+                if (info_count <= 4 or mapping.hit >= 50) and mapping.hit >= 3:
                     mappings.append(mapping)
             baike_info_map[baikeattr] = mappings
 
@@ -167,15 +167,19 @@ class TitleTypeInfer:
                 if title_tuple[0] == 'sum':
                     title_sum = title_tuple[1]
                     break
+            print_str = "["
             for title_tuple in mapping_pairs:
             	if title_tuple[0] == 'sum':
             		title_count += 1
             		continue
             	title_count += 1
                 mapping = Mapping((title_tuple[0], str(title_tuple[1]) + '/' + str(title_sum)))
-                if (title_count <= 3 or mapping.hit >= 50) and mapping.hit >= 3:
+                print_str += "(" + title_tuple[0] + "," + str(title_tuple[1]) + ")"
+                if (title_count <= 4 or mapping.hit >= 50) and mapping.hit >= 3:
                     mappings.append(mapping)
             baike_title_map[baikeattr] = mappings
+            print_str += "]"
+            print baikeattr, print_str
 
         return baike_title_map
 
@@ -223,7 +227,7 @@ class ExtraTypeInfer:
             for extra_tuple in mapping_pairs:
                 extra_count += 1
                 mapping = Mapping((extra_tuple[0], str(extra_tuple[1]) + '/' + str(extra_sum)))
-                if (extra_count <= 3 or mapping.hit >= 50) and mapping.hit >= 3:
+                if (extra_count <= 4 or mapping.hit >= 50) and mapping.hit >= 3:
                     mappings.append(mapping)
             baike_extra_map[baikeattr] = mappings
 
@@ -301,6 +305,11 @@ class TypeInfer:
             if other_key in type_probs:
                 type_probs.pop(other_key)
             type_probs['fb:music.composition'] = threshold + 0.01
+    
+    def choose_tv_or_film(self, type_probs, names, titles):
+        film_prob = type_probs.get('fb:film.film', 0)
+        tv_prob = type_probs.get('fb:tv.tv_program', 0)
+
 
 def topk_key(key_map, k):
     keys = sorted(key_map.keys(), key = lambda x: key_map[x], reverse = True)[:k]
