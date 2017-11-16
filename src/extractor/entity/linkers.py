@@ -205,8 +205,8 @@ class PageMemory:
         self.link_map[text] = baike_entity
         if str_entity.etype == 'Nh' or str_entity.etype == 'Nf':
             self.add_person(text, baike_entity)
-        # if str_entity.etype == 'Ni':
-        #     self.add_organzition(ltp_result, str_entity, baike_entity)
+        if str_entity.etype == 'Ni':
+            self.add_organzition(ltp_result, str_entity, baike_entity)
 
     def add_person(self, text, baike_entity):
         person_names = person_extra_names(text)
