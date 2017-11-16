@@ -419,10 +419,10 @@ def infer_type():
         names = obj.get('info', {}).keys()
         extra_info = []
         print json.dumps(obj['info'], ensure_ascii = False)
-        if '职业' in obj['info']:
-            extra_info += obj['info']['职业']
-        if '运动项目' in obj['info']:
-            extra_info += obj['info']['运动项目']
+        if u'职业' in obj['info']:
+            extra_info += obj['info'][u'职业']
+        if u'运动项目' in obj['info']:
+            extra_info += obj['info'][u'运动项目']
         for j in extra_info:
             print extra_info
         if baike_url in baike_cls_map:
