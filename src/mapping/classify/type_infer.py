@@ -105,8 +105,8 @@ class InfoTypeInfer:
                 else:
                     prob_map[fb_type] += prob
                 if fb_type not in sep_prob_map:
-                    sep_prob_map[fb_type] = [0, 0, 0]
-                sep_prob_map[fb_type][0] = prob
+                    sep_prob_map[fb_type] = [0, 0, 0, 0]
+                sep_prob_map[fb_type][0] = prob_map[fb_type]
         return prob_map
 
 class BKClassTypeInfer:
@@ -143,8 +143,8 @@ class BKClassTypeInfer:
                     prob[fb_type] = 0
                 prob[fb_type] += cls_prob[fb_type]
                 if fb_type not in sep_prob_map:
-                    sep_prob_map[fb_type] = [0, 0, 0]
-                sep_prob_map[fb_type][1] = cls_prob[fb_type]
+                    sep_prob_map[fb_type] = [0, 0, 0, 0]
+                sep_prob_map[fb_type][1] = prob[fb_type]
         return prob
 
 class TitleTypeInfer:
@@ -192,8 +192,8 @@ class TitleTypeInfer:
                 else:
                     prob_map[fb_type] += prob
                 if fb_type not in sep_prob_map:
-                    sep_prob_map[fb_type] = [0, 0, 0]
-                sep_prob_map[fb_type][2] = prob
+                    sep_prob_map[fb_type] = [0, 0, 0, 0]
+                sep_prob_map[fb_type][2] = prob_map[fb_type]
         return prob_map
 
 class ExtraTypeInfer:
@@ -236,14 +236,14 @@ class ExtraTypeInfer:
             mappings = self.baike_extra_map[attr]
             for mapping in mappings:
                 fb_type = mapping.fb_type()
-                prob = mapping.prob() * 2
+                prob = mapping.prob()
                 if not fb_type in prob_map:
                     prob_map[fb_type] = prob
                 else:
                     prob_map[fb_type] += prob
                 if not fb_type in sep_prob_map:
-                    sep_prob_map[fb_type] = [0, 0, 0]
-                sep_prob_map[fb_type][2] = prob
+                    sep_prob_map[fb_type] = [0, 0, 0, 0]
+                sep_prob_map[fb_type][3] = prob_map[fb_type]
         return prob_map
 
 class TypeInfer:
@@ -436,6 +436,7 @@ def infer_type():
             titles = []
         type_probs, sep_type_probs = type_infer.infer(names, clses, titles, extra_info) 
         type_infer.choose_music_type(type_probs, 0.8)
+        #type_infer.choose_tv_or_film(type_probs, names, titles)
         type_probs_assumed = []
         for fb_type_in in type_probs:
             if type_probs[fb_type_in] >= chosen_prob:
