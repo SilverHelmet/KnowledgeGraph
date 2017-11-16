@@ -43,18 +43,20 @@ def load_baike_entity_title():
     bk2tls = {}
     for line in tqdm(file(filepath), total = nb_lines_of(filepath)):
         url, title = line.strip().split('\t')
-        if title == '':
-            continue
-        if url in bk2tls:
-            bk2tls[url].append(title)
-        else:
-            bk2tls[url] = [title]
-        if title.find("_") == -1:
-            continue
-        pos = title.find("_")
-        title_first = title[0:pos]
-        if title_first not in bk2tls[url]:
-            bk2tls[url].append(title_first)
+        title = eval(title)
+        for j in title:
+            if j == '':
+                continue
+            if url in bk2tls:
+                bk2tls[url].append(title)
+            else:
+                bk2tls[url] = [j]
+            if j.find("_") == -1:
+                continue
+            pos = j.find("_")
+            title_first = j[0:pos]
+            if title_first not in bk2tls[url]:
+                bk2tls[url].append(title_first)
     return bk2tls
 
 def load_mappings_witd_score(filepath, threshold):
