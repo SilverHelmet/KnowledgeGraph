@@ -1,3 +1,4 @@
+#encoding:utf-8
 import os
 from ...IOUtil import result_dir, Print, data_dir, nb_lines_of, classify_dir
 from tqdm import tqdm
