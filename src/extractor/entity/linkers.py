@@ -121,7 +121,7 @@ def page_type_related_score(types, page_info):
 
 etype_match_map = {
     'Nh': ['fb:people.person', 'fb:fictional_universe.fictional_character', 'fb:fictional_universe.person_in_fiction'],
-    'Ns': ['fb:location.location', 'fb:fictional_universe.fictional_setting', 'fb:organization.organization', 'fb:fictional_universe.fictional_organization'],
+    'Ns': ['fb:location.location', 'fb:fictional_universe.fictional_setting'],
     "Ni": ['fb:organization.organization', 'fb:fictional_universe.fictional_organization'],
     "Nb": ['fb:film.film', 'fb:book.written_work', 'fb:tv.tv_program', 'fb:cvg.computer_videogame', 'fb:cvg.game_series', 'fb:music.recording', "fb:music.album"],
     "Nz": [],
