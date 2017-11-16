@@ -478,7 +478,7 @@ def infer_type():
         for j in  extra_info:
             st_ad += j + " "
         st_ad += "]"
-        print baike_url, type_probs_assumed, st_ad.encode('utf-8'), names, titles
+        print baike_url, type_probs_assumed, st_ad.encode('utf-8'), names, titles, extra_info
         inffered_types = decide_type(type_probs, schema, chosen_prob)
         for fb_type_origin in fb_types:
             if not fb_type_origin in inffered_types:
