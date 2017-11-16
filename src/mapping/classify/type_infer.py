@@ -100,11 +100,11 @@ class InfoTypeInfer:
             for mapping in mappings:
                 fb_type = mapping.fb_type()
                 prob = mapping.prob()
-                if not fb_type in prob_map:
+                if fb_type not in prob_map:
                     prob_map[fb_type] = prob
                 else:
                     prob_map[fb_type] += prob
-                if not fb_type in sep_prob_map:
+                if fb_type not in sep_prob_map:
                     sep_prob_map[fb_type] = [0, 0, 0]
                 sep_prob_map[fb_type][0] = prob
         return prob_map
@@ -139,10 +139,10 @@ class BKClassTypeInfer:
             cls_cnt = self.baike_cls_cnt_map[cls]
             cls_prob = cls_cnt.fb_type_prob
             for fb_type in cls_prob:
-                if not fb_type in prob:
+                if fb_type not in prob:
                     prob[fb_type] = 0
                 prob[fb_type] += cls_prob[fb_type]
-                if not fb_type in sep_prob_map:
+                if fb_type not in sep_prob_map:
                     sep_prob_map[fb_type] = [0, 0, 0]
                 sep_prob_map[fb_type][1] = cls_prob[fb_type]
         return prob
@@ -187,11 +187,11 @@ class TitleTypeInfer:
             for mapping in mappings:
                 fb_type = mapping.fb_type()
                 prob = mapping.prob() * 2
-                if not fb_type in prob_map:
+                if fb_type not in prob_map:
                     prob_map[fb_type] = prob
                 else:
                     prob_map[fb_type] += prob
-                if not fb_type in sep_prob_map:
+                if fb_type not in sep_prob_map:
                     sep_prob_map[fb_type] = [0, 0, 0]
                 sep_prob_map[fb_type][2] = prob
         return prob_map
@@ -418,10 +418,13 @@ def infer_type():
         obj = json.loads(p[1])
         names = obj.get('info', {}).keys()
         extra_info = []
+        print obj['info']
         if '职业' in obj['info']:
             extra_info += obj['info']['职业']
         if '运动项目' in obj['info']:
             extra_info += obj['info']['运动项目']
+        for j in extra_info:
+            print extra_info
         if baike_url in baike_cls_map:
             cls_hit += 1
             clses = baike_cls_map[baike_url]
