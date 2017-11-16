@@ -418,7 +418,7 @@ def infer_type():
         obj = json.loads(p[1])
         names = obj.get('info', {}).keys()
         extra_info = []
-        print obj['info']
+        print json.dumps(obj['info'], ensure_ascii = False)
         if '职业' in obj['info']:
             extra_info += obj['info']['职业']
         if '运动项目' in obj['info']:
