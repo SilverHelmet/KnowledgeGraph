@@ -186,7 +186,7 @@ class TitleTypeInfer:
     def infer(self, baike_attrs, prob_map, sep_prob_map):
         print 'title_infer'
         for attr in baike_attrs:
-            print attr, len(self.baike_title_map)
+            print attr, len(self.baike_title_map), attr in self.baike_title_map
             if attr not in self.baike_title_map:
                 continue
             mappings = self.baike_title_map[attr]
@@ -478,7 +478,7 @@ def infer_type():
         for j in  extra_info:
             st_ad += j + " "
         st_ad += "]"
-        print baike_url, type_probs_assumed, st_ad.encode('utf-8')
+        print baike_url, type_probs_assumed, st_ad.encode('utf-8'), names, titles
         inffered_types = decide_type(type_probs, schema, chosen_prob)
         for fb_type_origin in fb_types:
             if not fb_type_origin in inffered_types:
