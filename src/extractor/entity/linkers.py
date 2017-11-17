@@ -112,16 +112,19 @@ def summary_related_score(summary, page_info, summary_names):
         score += 60
     return score
 
-def page_type_related_score(types, page_info):               
+def page_type_related_score(etype, types, page_info):               
+    if etype in ['Ns']:
+        return 0
     domains = page_info.domains
     for fb_type in types:
-        if get_domain(fb_type) in domains:
+        domain = get_domain(fb_type)
+        if domain != "fb:organization.organization" and domain in domains:
             return 30
     return 0
 
 etype_match_map = {
     'Nh': ['fb:people.person', 'fb:fictional_universe.fictional_character', 'fb:fictional_universe.person_in_fiction'],
-    'Ns': ['fb:location.location', 'fb:fictional_universe.fictional_setting', 'fb:organization.organization', 'fb:fictional_universe.fictional_organization'],
+    'Ns': ['fb:location.location', 'fb:fictional_universe.fictional_setting'],
     "Ni": ['fb:organization.organization', 'fb:fictional_universe.fictional_organization'],
     "Nb": ['fb:film.film', 'fb:book.written_work', 'fb:tv.tv_program', 'fb:cvg.computer_videogame', 'fb:cvg.game_series', 'fb:music.recording', "fb:music.album"],
     "Nz": [],
@@ -137,9 +140,9 @@ def entity_type_related_score(etype, types):
         matched_types = etype_match_map['Nb']
         for bk_type in types:
             if bk_type in matched_types:
-                return -30
+                return -20
     if "fb:location:location" in types and etype != "Ns":
-        return -40
+        return -20
 
     for bk_type in types:
         if bk_type in matched_types:
@@ -319,7 +322,7 @@ class PageMemoryEntityLinker:
                 summary_score = 200
             else:
                 summary_score = summary_related_score(summary, page_info, url_names)
-            page_type_score = page_type_related_score(bk_info.types, page_info)
+            page_type_score = page_type_related_score(str_entity.etype, bk_info.types, page_info)
             entity_type_score = entity_type_related_score(str_entity.etype, bk_info.types)
             
             
@@ -334,7 +337,7 @@ class PageMemoryEntityLinker:
         baike_entities.sort(key = lambda x: x.pop, reverse = True)
         total_score = 0.000
         for e in baike_entities:
-            total_score += e.pop
+            total_score += max(e.pop, 0)
 
         top_entity = baike_entities[0]
         if total_score > 0:
