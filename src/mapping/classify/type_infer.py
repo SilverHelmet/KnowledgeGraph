@@ -321,14 +321,19 @@ class TypeInfer:
         else:
             max_key = 'fb:film.film'
             other_key = 'fb:tv.tv_program'
-        if u'集数' in names or u'每集长度' in names:
-            max_key = 'fb:tv.tv_program'
-            other_key = 'fb:film.film'
-            flag = True
-        if u'分集介绍' in titles:
-            max_key = 'fb:tv.tv_program'
-            other_key = 'fb:film.film'
-            flag = True
+        tv_list = [u'集数', u'每集长度', u'分集介绍', u'分集剧情']
+        for j in names:
+            if j in tv_list:
+                max_key = 'fb:tv.tv_program'
+                other_key = 'fb:film.film'
+                flag = True
+                break
+        for j in titles:
+            if j in tv_list:
+                max_key = 'fb:tv.tv_program'
+                other_key = 'fb:film.film'
+                flag = True
+                break
         if other_key in type_probs:
             type_probs.pop(other_key)
             sep_type_probs.pop(other_key)
@@ -472,8 +477,8 @@ def infer_type():
         else:
             titles = []
         type_probs, sep_type_probs = type_infer.infer(names, clses, titles, extra_info) 
-        #type_infer.choose_music_type(type_probs, sep_type_probs, chosen_prob)
-        #type_infer.choose_tv_or_film(type_probs, sep_type_probs, names, titles, chosen_prob)
+        type_infer.choose_music_type(type_probs, sep_type_probs, chosen_prob)
+        type_infer.choose_tv_or_film(type_probs, sep_type_probs, names, titles, chosen_prob)
         type_probs_assumed = []
         for fb_type_in in type_probs:
             if type_probs[fb_type_in] >= chosen_prob:
