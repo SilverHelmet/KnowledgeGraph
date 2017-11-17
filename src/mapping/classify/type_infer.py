@@ -307,7 +307,7 @@ class TypeInfer:
         elif recording_prob >= threshold or album_prob >= threshold:
             if other_key in type_probs:
                 type_probs.pop(other_key)
-                sep_prob_map.pop(other_key)
+                sep_type_probs.pop(other_key)
             type_probs['fb:music.composition'] = threshold + 0.01
             sep_type_probs['fb:music.composition'] = [threshold + 0.01, 0, 0, 0]
     
@@ -321,14 +321,19 @@ class TypeInfer:
         else:
             max_key = 'fb:film.film'
             other_key = 'fb:tv.tv_program'
-        if u'集数' in names or u'每集长度' in names:
-            max_key = 'fb:tv.tv_program'
-            other_key = 'fb:film.film'
-            flag = True
-        if u'分集介绍' in titles:
-            max_key = 'fb:tv.tv_program'
-            other_key = 'fb:film.film'
-            flag = True
+        tv_list = [u'集数', u'每集长度', u'分集介绍', u'分集剧情']
+        for j in names:
+            if j in tv_list:
+                max_key = 'fb:tv.tv_program'
+                other_key = 'fb:film.film'
+                flag = True
+                break
+        for j in titles:
+            if j in tv_list:
+                max_key = 'fb:tv.tv_program'
+                other_key = 'fb:film.film'
+                flag = True
+                break
         if other_key in type_probs:
             type_probs.pop(other_key)
             sep_type_probs.pop(other_key)
@@ -443,14 +448,14 @@ def infer_type():
                 for ext_type in extra_types:
                     fb_types.append(ext_type)
             fb_types = list(set(fb_types))
-            chosen_prob = 3
+            chosen_prob = 2
             # outf.write('%s\t%s\t%d\t%s\n' %(baike_url, fb_uri, nb_names * 2 + 3, json.dumps(fb_types)))
             #outf.write('%s\t%s\t%d\t%s\n' %(baike_url, fb_uri, nb_names, json.dumps(fb_types)))
             #continue
         else:
             fb_uri = "None"
             fb_types = []
-            chosen_prob = 1.5
+            chosen_prob = 1
 
         obj = json.loads(p[1])
         names = obj.get('info', {}).keys()
