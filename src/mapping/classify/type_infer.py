@@ -443,14 +443,14 @@ def infer_type():
                 for ext_type in extra_types:
                     fb_types.append(ext_type)
             fb_types = list(set(fb_types))
-            chosen_prob = 3
+            chosen_prob = 2
             # outf.write('%s\t%s\t%d\t%s\n' %(baike_url, fb_uri, nb_names * 2 + 3, json.dumps(fb_types)))
             #outf.write('%s\t%s\t%d\t%s\n' %(baike_url, fb_uri, nb_names, json.dumps(fb_types)))
             #continue
         else:
             fb_uri = "None"
             fb_types = []
-            chosen_prob = 1.5
+            chosen_prob = 1
 
         obj = json.loads(p[1])
         names = obj.get('info', {}).keys()
@@ -472,8 +472,8 @@ def infer_type():
         else:
             titles = []
         type_probs, sep_type_probs = type_infer.infer(names, clses, titles, extra_info) 
-        type_infer.choose_music_type(type_probs, sep_type_probs, chosen_prob)
-        type_infer.choose_tv_or_film(type_probs, sep_type_probs, names, titles, chosen_prob)
+        #type_infer.choose_music_type(type_probs, sep_type_probs, chosen_prob)
+        #type_infer.choose_tv_or_film(type_probs, sep_type_probs, names, titles, chosen_prob)
         type_probs_assumed = []
         for fb_type_in in type_probs:
             if type_probs[fb_type_in] >= chosen_prob:
