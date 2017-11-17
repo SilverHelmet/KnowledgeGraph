@@ -473,7 +473,7 @@ def infer_type():
             titles = []
         type_probs, sep_type_probs = type_infer.infer(names, clses, titles, extra_info) 
         type_infer.choose_music_type(type_probs, sep_type_probs, chosen_prob)
-        type_infer.choose_tv_or_film(type_probs, names, titles, chosen_prob)
+        type_infer.choose_tv_or_film(type_probs, sep_type_probs, names, titles, chosen_prob)
         type_probs_assumed = []
         for fb_type_in in type_probs:
             if type_probs[fb_type_in] >= chosen_prob:
