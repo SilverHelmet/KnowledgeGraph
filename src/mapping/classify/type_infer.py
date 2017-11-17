@@ -307,7 +307,7 @@ class TypeInfer:
         elif recording_prob >= threshold or album_prob >= threshold:
             if other_key in type_probs:
                 type_probs.pop(other_key)
-                sep_prob_map.pop(other_key)
+                sep_type_probs.pop(other_key)
             type_probs['fb:music.composition'] = threshold + 0.01
             sep_type_probs['fb:music.composition'] = [threshold + 0.01, 0, 0, 0]
     
