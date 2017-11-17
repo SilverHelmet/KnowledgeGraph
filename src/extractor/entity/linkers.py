@@ -1,5 +1,5 @@
 #encoding: utf-8
-from ..structure import BaikeEntity, FBRelation, LinkedTriple
+from ..structure import BaikeEntity, FBRelation, LinkedTriple, StrEntity
 from ..util import  get_domain
 from ...rel_extraction.extract_baike_names import person_extra_names
 import os
@@ -211,6 +211,10 @@ class PageMemory:
         if str_entity.etype == 'Ni':
             self.add_organzition(ltp_result, str_entity, baike_entity)
 
+    def add_map(self, text, baike_entity):
+        self.link_map[texst] = baike_entity
+
+
     def add_person(self, text, baike_entity):
         person_names = person_extra_names(text)
         for name in person_names:
@@ -350,9 +354,15 @@ class PageMemoryEntityLinker:
         return [top_entity]
 
     
-    def start_new_page(self):
+    def start_new_page(self, baike_url):
         self.memory = PageMemory()
-
+        types = self.bk_info_map[baike_url].types
+        if 'fb:people.person' in types:
+            baike_entity = BaikeEntity(StrEntity(0, 0, "Nh"), baike_url, 200, types)
+            names = self.url2names[baike_url]
+            for name in names:
+                self.memory.add_map(name, baike_entity)
+                self.memory.add_person(name, baike_entity)
 
     def add_sentence(self, ltp_result, str_entities, baike_entities):
         for i in range(len(str_entities)):
