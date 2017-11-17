@@ -291,7 +291,7 @@ class PageMemoryEntityLinker:
         name = ltp_result.text(str_entity.st, str_entity.ed)
 
         if str_entity.etype == 'Ns':
-            for st in range(str_entity.ed - 1, str_entity.st, -1):
+            for st in range(str_entity.st, str_entity.ed):
                 location_name = ltp_result.text(st, str_entity.ed)
                 if location_name in self.name2bk:
                     name = location_name
