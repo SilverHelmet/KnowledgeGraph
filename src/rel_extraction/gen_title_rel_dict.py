@@ -61,7 +61,7 @@ if __name__ == "__main__":
     base_dir = os.path.join(rel_ext_dir, 'dict')
     if not os.path.exists(base_dir):
         os.mkdir(base_dir)
-    gen_title_rel_dict("fb:location.country", os.path.join(count_dir, '国籍_cnt.tsv'), os.path.join(base_dir, 'nationality.txt'), 10)
+    gen_title_rel_dict("fb:location.country", os.path.join(count_dir, '国籍_cnt.tsv'), os.path.join(base_dir, 'nationality.txt'), 5)
     gen_title_rel_dict("fb:people.profession", os.path.join(count_dir, '职业_cnt.tsv'), os.path.join(base_dir, 'profession.txt'), 10)
     gen_title_rel_dict("fb:language.human_language", None, os.path.join(base_dir, 'langauge.txt'), 0, os.path.join(doc_dir, 'human_add_language.txt'))
 
