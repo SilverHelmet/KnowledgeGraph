@@ -61,11 +61,11 @@ class Resource:
         return self.dict['lower_name2bk']
 
     def get_summary_with_infobox(self):
-        if not 'baike_summary' in self.dict:
+        if not 'baike_summary_with_infobox' in self.dict:
             summary_path = os.path.join(rel_ext_dir, 'baike_summary.json')
             infobox_path = os.path.join(result_dir, '360/360_entity_info_processed.json')
-            self.dict['baike_summary'] = load_summary_and_infobox(summary_path, infobox_path)
-        return self.dict['baike_summary']
+            self.dict['baike_summary_with_infobox'] = load_summary_and_infobox(summary_path, infobox_path)
+        return self.dict['baike_summary_with_infobox']
 
     def get_predicate_map(self):
         if not "predicate_map" in self.dict:
@@ -80,6 +80,11 @@ class Resource:
             Print("load name dict from [%s]" %path)
             self.dict['vt_domain_bk_dict'] = load_file(path)
         return self.dict['vt_domain_bk_dict']
+
+    def get_baike_ename_title(self):
+        if not "baike_ename_title" in self.dict:
+            self.dict['baike_ename_title'] = load_baike_ename_title()
+        return self.dict['baike_ename_title']
 
 
     @staticmethod
@@ -248,6 +253,20 @@ def load_predicate_map(filepath = None, extra_path = None):
                     probs[prop] = 0
                 probs[prop] += 1.0
     return predicate_map
+
+def load_baike_ename_title():
+    path = os.path.join(result_dir, '360/360_entity_info.json')
+    Print('load baike\'s ename and title from [%s]' %path)
+    ename_title_map = {}
+    for line in tqmd(file(path), total = nb_lines_of(path)):
+        bk_url, obj = line.split('\t')
+        ename, title = obj['ename'].encode('utf-8'), obj['title'].encode('utf-8')
+        if title != ename:
+            ename_title_map[bk_url] = [ename, title]
+        else:
+            ename_title_map[bk_url] = [ename]
+    return ename_title_map
+
 
 
 if __name__ == "__main__":
