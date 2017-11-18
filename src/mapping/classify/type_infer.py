@@ -86,7 +86,7 @@ class InfoTypeInfer:
             	info_count += 1
                 #print info_tuple[0], info_tuple[1], info_sum
                 mapping = Mapping((info_tuple[0], str(info_tuple[1]) + '/' + str(info_sum)))
-                if (info_count <= 3 or mapping.hit >= 50) and mapping.hit >= 3:
+                if (info_count <= 4 or mapping.hit >= 50) and mapping.hit >= 3:
                     mappings.append(mapping)
             baike_info_map[baikeattr] = mappings
 
@@ -94,7 +94,7 @@ class InfoTypeInfer:
 
     def infer(self, baike_attrs, prob_map, sep_prob_map):
         for attr in baike_attrs:
-            if not attr in self.baike_info_map:
+            if attr not in self.baike_info_map:
                 continue
             mappings = self.baike_info_map[attr]
             for mapping in mappings:
@@ -105,8 +105,8 @@ class InfoTypeInfer:
                 else:
                     prob_map[fb_type] += prob
                 if fb_type not in sep_prob_map:
-                    sep_prob_map[fb_type] = [0, 0, 0]
-                sep_prob_map[fb_type][0] = prob
+                    sep_prob_map[fb_type] = [0, 0, 0, 0]
+                sep_prob_map[fb_type][0] = prob_map[fb_type]
         return prob_map
 
 class BKClassTypeInfer:
@@ -143,8 +143,8 @@ class BKClassTypeInfer:
                     prob[fb_type] = 0
                 prob[fb_type] += cls_prob[fb_type]
                 if fb_type not in sep_prob_map:
-                    sep_prob_map[fb_type] = [0, 0, 0]
-                sep_prob_map[fb_type][1] = cls_prob[fb_type]
+                    sep_prob_map[fb_type] = [0, 0, 0, 0]
+                sep_prob_map[fb_type][1] = prob[fb_type]
         return prob
 
 class TitleTypeInfer:
@@ -167,21 +167,27 @@ class TitleTypeInfer:
                 if title_tuple[0] == 'sum':
                     title_sum = title_tuple[1]
                     break
+            #print_str = "["
             for title_tuple in mapping_pairs:
             	if title_tuple[0] == 'sum':
             		title_count += 1
             		continue
             	title_count += 1
                 mapping = Mapping((title_tuple[0], str(title_tuple[1]) + '/' + str(title_sum)))
-                if (title_count <= 3 or mapping.hit >= 50) and mapping.hit >= 3:
+                #print_str += "(" + title_tuple[0] + "," + str(title_tuple[1]) + ")"
+                if (title_count <= 4 or mapping.hit >= 50) and mapping.hit >= 3:
                     mappings.append(mapping)
             baike_title_map[baikeattr] = mappings
+            #print_str += "]"
+            #print baikeattr, print_str
 
         return baike_title_map
 
     def infer(self, baike_attrs, prob_map, sep_prob_map):
+        #print 'title_infer'
         for attr in baike_attrs:
-            if not attr in self.baike_title_map:
+            #print attr, len(self.baike_title_map), attr in self.baike_title_map
+            if attr not in self.baike_title_map:
                 continue
             mappings = self.baike_title_map[attr]
             for mapping in mappings:
@@ -192,8 +198,8 @@ class TitleTypeInfer:
                 else:
                     prob_map[fb_type] += prob
                 if fb_type not in sep_prob_map:
-                    sep_prob_map[fb_type] = [0, 0, 0]
-                sep_prob_map[fb_type][2] = prob
+                    sep_prob_map[fb_type] = [0, 0, 0, 0]
+                sep_prob_map[fb_type][2] = prob_map[fb_type]
         return prob_map
 
 class ExtraTypeInfer:
@@ -223,7 +229,7 @@ class ExtraTypeInfer:
             for extra_tuple in mapping_pairs:
                 extra_count += 1
                 mapping = Mapping((extra_tuple[0], str(extra_tuple[1]) + '/' + str(extra_sum)))
-                if (extra_count <= 3 or mapping.hit >= 50) and mapping.hit >= 3:
+                if (extra_count <= 4 or mapping.hit >= 50) and mapping.hit >= 3:
                     mappings.append(mapping)
             baike_extra_map[baikeattr] = mappings
 
@@ -236,14 +242,14 @@ class ExtraTypeInfer:
             mappings = self.baike_extra_map[attr]
             for mapping in mappings:
                 fb_type = mapping.fb_type()
-                prob = mapping.prob() * 2
+                prob = mapping.prob()
                 if not fb_type in prob_map:
                     prob_map[fb_type] = prob
                 else:
                     prob_map[fb_type] += prob
                 if not fb_type in sep_prob_map:
-                    sep_prob_map[fb_type] = [0, 0, 0]
-                sep_prob_map[fb_type][2] = prob
+                    sep_prob_map[fb_type] = [0, 0, 0, 0]
+                sep_prob_map[fb_type][3] = prob_map[fb_type]
         return prob_map
 
 class TypeInfer:
@@ -281,7 +287,7 @@ class TypeInfer:
             if type_probs[max_key] >= threshold:
                 type_probs.pop(other_key)
 
-    def choose_music_type(self, type_probs, threshold):
+    def choose_music_type(self, type_probs, sep_type_probs, threshold):
         composition_prob = type_probs.get('fb:music.composition', 0)
         recording_prob = type_probs.get("fb:music.recording", 0)
         album_prob = type_probs.get("fb:music.album", 0)
@@ -297,10 +303,46 @@ class TypeInfer:
             if type_probs.get(max_key, 0) >= threshold:
                 if other_key in type_probs:
                     type_probs.pop(other_key)
+                    sep_type_probs.pop(other_key)
         elif recording_prob >= threshold or album_prob >= threshold:
             if other_key in type_probs:
                 type_probs.pop(other_key)
+                sep_type_probs.pop(other_key)
             type_probs['fb:music.composition'] = threshold + 0.01
+            sep_type_probs['fb:music.composition'] = [threshold + 0.01, 0, 0, 0]
+    
+    def choose_tv_or_film(self, type_probs, sep_type_probs, names, titles, threshold):
+        film_prob = type_probs.get('fb:film.film', 0)
+        tv_prob = type_probs.get('fb:tv.tv_program', 0)
+        flag = False
+        if film_prob <= tv_prob:
+            max_key = 'fb:tv.tv_program'
+            other_key = 'fb:film.film'
+        else:
+            max_key = 'fb:film.film'
+            other_key = 'fb:tv.tv_program'
+        tv_list = [u'集数', u'每集长度', u'分集介绍', u'分集剧情']
+        for j in names:
+            if j in tv_list:
+                max_key = 'fb:tv.tv_program'
+                other_key = 'fb:film.film'
+                flag = True
+                break
+        for j in titles:
+            if j in tv_list:
+                max_key = 'fb:tv.tv_program'
+                other_key = 'fb:film.film'
+                flag = True
+                break
+        if other_key in type_probs:
+            type_probs.pop(other_key)
+            sep_type_probs.pop(other_key)
+        if flag:
+            if max_key not in type_probs:
+                type_probs[max_key] = 0
+                sep_type_probs[max_key] = [0, 0, 0, 0]
+            type_probs[max_key] += threshold
+            sep_type_probs[max_key][0] = threshold
 
 def topk_key(key_map, k):
     keys = sorted(key_map.keys(), key = lambda x: key_map[x], reverse = True)[:k]
@@ -395,8 +437,8 @@ def infer_type():
         names = obj.get('info', {}).keys()
         nb_names = len(names)
         mega_count += 1
-        if mega_count > 1000:
-            break
+        #if mega_count > 1000:
+        #    break
 
         if baike_url in bk2fb_map:
             fb_uri = bk2fb_map[baike_url]
@@ -435,7 +477,8 @@ def infer_type():
         else:
             titles = []
         type_probs, sep_type_probs = type_infer.infer(names, clses, titles, extra_info) 
-        type_infer.choose_music_type(type_probs, 0.8)
+        type_infer.choose_music_type(type_probs, sep_type_probs, chosen_prob)
+        type_infer.choose_tv_or_film(type_probs, sep_type_probs, names, titles, chosen_prob)
         type_probs_assumed = []
         for fb_type_in in type_probs:
             if type_probs[fb_type_in] >= chosen_prob:
@@ -444,7 +487,6 @@ def infer_type():
         for j in names:
             st_ad += j + " "
         st_ad += "]["
-        print 'class'
         for j in clses:
             st_ad += j + " "
         st_ad += "]["
@@ -454,7 +496,7 @@ def infer_type():
         for j in  extra_info:
             st_ad += j + " "
         st_ad += "]"
-        print baike_url, type_probs_assumed, st_ad.encode('utf-8')
+        print baike_url, type_probs_assumed, st_ad.encode('utf-8'), names, titles, extra_info
         inffered_types = decide_type(type_probs, schema, chosen_prob)
         for fb_type_origin in fb_types:
             if not fb_type_origin in inffered_types:

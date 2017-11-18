@@ -1,3 +1,4 @@
+#encoding:utf-8
 import os
 from ...IOUtil import result_dir, Print, data_dir, nb_lines_of, classify_dir
 from tqdm import tqdm
@@ -45,6 +46,7 @@ def load_baike_entity_title():
         url, title = line.strip().split('\t')
         title = eval(title)
         for j in title:
+            j = j.decode('utf-8')
             if j == '':
                 continue
             if url in bk2tls:

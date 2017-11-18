@@ -1,7 +1,9 @@
+#encoding: utf-8
 from ..IOUtil import rel_ext_dir, Print, nb_lines_of
 import os
 import json
 from tqdm import tqdm
+import re
 
 def load_mappings(filepath = None):
     if filepath is None:
@@ -28,15 +30,3 @@ def load_bk_entity_pop(filepath = None):
         pop = int(p[2])
         pop_map[bk_url] = pop
     return pop_map
-
-
-
-
-
-
-
-
-
-
-
-
