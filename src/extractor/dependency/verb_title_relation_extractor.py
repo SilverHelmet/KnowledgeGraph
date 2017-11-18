@@ -108,19 +108,6 @@ class VerbRelationExtractor:
         verb = self.find_nearest_verb(p)[1]
         return tree.nodes[w], near_verb, verb
 
-    def find_noun_relation(self, e1, e2):
-        if e1.depth - e2.depth == 2:
-            if e1.rel == 'ATT' and e1.father.rel == 'ATT' and e1.father.father == e2:
-                for child in e1.children:
-                    if child.rel == 'RAD' and child.word == '的':
-                        return e1.father
-        elif e2.depth - e1.depth == 2:
-            if e2.rel == 'ATT' and e2.father.rel == 'ATT' and e2.father.father == e1:
-                for child in e2.children:
-                    if child.rel == 'RAD' and child.word == '的':
-                        return e2.father
-        return None
-
     def judge_entity_relation(self, near_verb, verb):
         if verb == None and near_verb == None:
             return None
@@ -275,6 +262,34 @@ class VerbRelationExtractor:
         '''
         return final_res
 
+    def find_noun_relation(self, e1, e2):
+        if e1.depth - e2.depth == 2:
+            if e1.rel == 'ATT' and e1.father.rel == 'ATT' and e1.father.father == e2:
+                for child in e1.children:
+                    if child.rel == 'RAD' and child.word == '的':
+                        self.debuger.debug("-"*20)
+                        self.debuger.debug("find noun relation!")
+                        self.debuger.debug(e1.word, e1.father.word, e2.word)
+                        self.debuger.debug("-"*20)
+                        return e1.father
+        elif e2.depth - e1.depth == 2:
+            if e2.rel == 'ATT' and e2.father.rel == 'ATT' and e2.father.father == e1:
+                for child in e2.children:
+                    if child.rel == 'RAD' and child.word == '的':
+                        self.debuger.debug("-"*20)
+                        self.debuger.debug("find noun relation!")
+                        self.debuger.debug(e2.word, e2.father.word, e1.word)
+                        self.debuger.debug("-"*20)
+                        return e2.father
+        return None
+
+    def find_all_direct_SBV(self, verb):
+        res = []
+        for child in verb.children:
+            if child.rel == 'SBV':
+                res.append(child)
+        return res
+
     def find_all_COO_father(self, node):
         res = []
         path = self.find_path_to_root(node)
@@ -297,34 +312,6 @@ class VerbRelationExtractor:
         res = self.find_all_COO_father(node) + self.find_all_COO_child(node)
         return res
 
-    def find_rel_sub(self, verb, entity_lis):
-        ret = None
-        for verb_child in verb.children:
-            if verb_child.rel == 'SBV':
-                if verb_child in entity_lis:
-                    verb.actual_sub.append(verb_child)
-                    ret = 'actual'
-                    break
-                elif verb_child not in entity_lis:
-                    verb.concept_sub.append(verb_child)
-                    ret = 'concept'
-        if ret == 'actual':
-            if len(verb.actual_sub) != 1:
-                self.debuger.debug('more than one actual sub!')
-                return None
-            coo_act_lis = self.find_all_COO(verb.actual_sub[0])
-            for coo_act_sub in coo_act_lis:
-                if coo_act_sub != verb.actual_sub[0]:
-                    verb.actual_sub.append(coo_act_sub)
-        if ret == 'concept':
-            for concept_sub in verb.concept_sub:
-                coo_concept_lis = self.find_all_COO(concept_sub)
-                for coo_concept_sub in coo_concept_lis:
-                    if coo_concept_sub not in verb.concept_sub:
-                        verb.concept_sub.append(coo_concept_sub)
-
-        return ret
-
     def judge_all_ATT(self, path):
         for node in path:
             if node.rel != 'ATT':
@@ -346,7 +333,16 @@ class VerbRelationExtractor:
                             node.father.att.append(entity)
                     break
 
-    def find_all_OBJ(self, entity_lis):
+    def find_normal_verb_OBJ(self, verb, entity_lis):
+        res = []
+        for child in verb.children:
+            if child.rel in ['VOB', 'FOB'] and child.postag != 'v':
+                if child in entity_lis:
+                    res.append(child)
+                res += self.find_normal_verb_OBJ(child, entity_lis)
+        return res
+
+    #def find_all_OBJ(self, entity_lis):
         for entity in entity_lis:
             path = self.find_path_to_root(entity)
             for node in path[:-1]:
@@ -355,32 +351,77 @@ class VerbRelationExtractor:
                         if entity not in node.father.obj:
                             node.father.obj.append(entity)
                     break
+    def find_verb_OBJ(self, verb, entity_lis):
+        if verb.search_obj_mark == True:
+            return verb.obj
+        obj_res = []
+        if_special_obj = False
+        for child in verb.children:
+            if child.postag == 'v' and child.rel in ['VOB', 'FOB']:
+                if_special_obj = True
+                direct_sub = self.find_all_direct_SBV(child)
+                if len(direct_sub) != 0:
+                    obj_res += direct_sub
+                else:
+                    obj_res += self.find_verb_OBJ(child, entity_lis)
+        if if_special_obj == False:
+            obj_res = self.find_normal_verb_OBJ(verb, entity_lis)
+        verb.search_obj_mark = True
+        verb.obj = obj_res
+        return obj_res
 
     def find_special_OBJ(self, entity_lis, verb):
         for child in verb.children:
             if child.rel in ['VOB', 'FOB'] and child.postag == 'v':
-                if len(child.actual_sub) != 0:
-                    verb.obj += child.actual_sub
+                tmp = self.find_all_direct_SBV(child)
+                if len(tmp) != 0:
+                    verb.obj += tmp
                 else:
                     verb.obj += self.find_special_OBJ(entity_lis, child)
                     break
         return verb.obj
 
-    def mark_subject(self, verb, entity_lis, tree):
-        if self.find_rel_sub(verb, entity_lis) == 'actual':
-            return
-        else:
+    def find_rel_sub(self, verb, entity_lis):
+        if verb.search_sub_mark == True:
+            return verb.concept_sub, verb.actual_sub
+        concept_res = []
+        actual_res = []
+        #find all actual sub
+        for child in verb.children:
+            if child.rel == 'SBV' and child in entity_lis:
+                actual_res.append(child)
+        for actual_sub in actual_res:
+            coo_act_lis = self.find_all_COO(actual_sub)
+            for coo_act_sub in coo_act_lis:
+                if coo_act_sub not in actual_res:
+                    actual_res.append(coo_act_sub)
+        #find all concept sub
+        for child in verb.children:
+            if child.rel == 'SBV' and child not in entity_lis:
+                concept_res.append(child)
+        for concept_sub in concept_res:
+            coo_con_lis = self.find_all_COO(concept_sub)
+            for coo_con_sub in coo_con_lis:
+                if coo_con_sub not in concept_res:
+                    concept_res.append(coo_con_sub)
+        #recursion 
+        if len(actual_res) == 0:
             path = self.find_path_to_root(verb)
             for node in path:
                 if node.rel not in ['COO', 'VOB']:
                     break
                 if node.father.postag == 'v':
-                    if self.find_rel_sub(node.father, entity_lis) == 'actual':
-                        verb.actual_sub.append(node.father.actual_sub[0])
-                        return
-        res = []
-        res_depth = []
-        final_res = None
+                    con_res, act_res = self.find_rel_sub(node.father, entity_lis)
+                    if len(act_res) != 0:
+                        actual_res = act_res
+                        break
+        #renew
+        verb.search_sub_mark = True
+        verb.actual_sub = actual_res
+        verb.concept_sub = concept_res
+        return concept_res, actual_res
+
+    #def find_final_actualsub(self, verb, entity_lis, tree):
         for concept_sub in verb.concept_sub:
             for entity in entity_lis:
                 path1, path2 = tree.find_path(verb.idx, entity.idx)
@@ -398,11 +439,15 @@ class VerbRelationExtractor:
                     verb.actual_sub.append(coo_final)
         return
 
-    def deal_with_res(self, res, verb, e1, e2):
+    def deal_with_res(self, verb, e1, e2, ltp_result):
         op1 = []
         op2 = []
         res1 = []
         res2 = []
+        res = []
+        r1 = []
+        r2 = verb.word
+        r3 = []
         if len(e1.mark) != 0:
             op1 = e1.mark
         else:
@@ -414,16 +459,22 @@ class VerbRelationExtractor:
         for i in op1:
             if i.entity != None:
                 res1.append(i.entity)
+                r1.append(ltp_result.text(i.entity.st, i.entity.ed))
             else:
                 res1.append(i.idx)
+                r1.append(i.word)
         for i in op2:
             if i.entity != None:
                 res2.append(i.entity)
+                r3.append(ltp_result.text(i.entity.st, i.entity.ed))
             else:
                 res2.append(i.idx)
-        for i in res1:
-            for j in res2:
-                res.append((i, verb.idx, j))
+                r3.append(i.word)
+        for i in range(len(res1)):
+            for j in range(len(res2)):
+                res.append((res1[i], verb.idx, res2[j]))
+                self.debuger.debug(r1[i], r2, r3[j])
+        return res
 
     def premark_entity(self, tree, e_lis):
         for e in e_lis:
@@ -453,7 +504,7 @@ class VerbRelationExtractor:
         #step one: mark sub
         #for each verb mark
         for verb in verb_lis:
-            self.mark_subject(verb, entity_lis, tree)
+            self.find_rel_sub(verb, entity_lis)
         #(actual_sub, is, concept_sub)
         for verb in verb_lis:
             if len(verb.actual_sub) != 0 and len(verb.concept_sub) != 0:
@@ -482,43 +533,47 @@ class VerbRelationExtractor:
         #step three: confirm the obj, att, target part
         #obj&debug:
         for verb in verb_lis:
-            self.find_special_OBJ(entity_lis, verb)
-            self.debuger.debug('#'*30)
-            self.debuger.debug("verb", verb.word, "has obj:")
-            for obj in verb.obj:
-                self.debuger.debug(obj.word)
-            self.debuger.debug('#'*30)
-        self.debuger.debug('#'*30)
-        self.find_all_OBJ(entity_lis)
-        for verb in verb_lis:
-            self.debuger.debug("verb", verb.word, "has obj:")
-            for obj in verb.obj:
-                self.debuger.debug(obj.word)
-            self.debuger.debug('#'*30)
+            self.find_verb_OBJ(verb, entity_lis)
         #att:
         self.find_all_ATT(entity_lis)
         #target:
         self.find_all_TARGET(verb_lis)
         #step four: return tripple
         for verb in verb_lis:
-            for sub in verb.actual_sub:
+            if len(verb.actual_sub) != 0:
+                for sub in verb.actual_sub:
+                    if len(verb.obj) != 0:
+                        for obj in verb.obj:
+                            self.debuger.debug("-"*20)
+                            self.debuger.debug("sub-verb-obj relation found!")
+                            res += self.deal_with_res(verb, sub, obj, ltp_result)
+                            self.debuger.debug("-"*20)
+                    if len(verb.att) != 0:
+                        for att in verb.att:
+                            self.debuger.debug("-"*20)
+                            self.debuger.debug("sub-verb-att relation found!")
+                            res += self.deal_with_res(verb, sub, att, ltp_result)
+                            self.debuger.debug("-"*20)
+                    if len(verb.target) != 0:
+                        for target in verb.target:
+                            self.debuger.debug("-"*20)
+                            self.debuger.debug("sub-verb-target relation found!")
+                            res += self.deal_with_res(verb, sub, target, ltp_result)
+                            self.debuger.debug("-"*20)
+            if len(verb.obj) != 0 and len(verb.target) != 0:
                 for obj in verb.obj:
-                    self.deal_with_res(res, verb, sub, obj)
-                    self.debuger.debug("sub-verb-obj relation found!")
+                    for target in verb.target:
+                        self.debuger.debug("-"*20)
+                        self.debuger.debug("obj-verb-target relation found!")
+                        res += self.deal_with_res(verb, obj, target, ltp_result)
+                        self.debuger.debug("-"*20)
+            if len(verb.att) != 0 and len(verb.target) != 0:
                 for att in verb.att:
-                    self.deal_with_res(res, verb, sub, att)
-                    self.debuger.debug("sub-verb-att relation found!")
-                for target in verb.target:
-                    self.deal_with_res(res, verb, sub, target)
-                    self.debuger.debug("sub-verb-target relation found!")
-            for obj in verb.obj:
-                for target in verb.target:
-                    self.deal_with_res(res, verb, obj, target)
-                    self.debuger.debug("obj-verb-target relation found!")
-            for att in verb.att:
-                for target in verb.target:
-                    self.deal_with_res(res, verb, att, target)
-                    self.debuger.debug("att-verb-target relation found!")
+                    for target in verb.target:
+                        self.debuger.debug("-"*20)
+                        self.debuger.debug("att-verb-target relation found!")
+                        res += self.deal_with_res(verb, att, target, ltp_result)
+                        self.debuger.debug("-"*20)
         #debug
         for verb in verb_lis:
             self.debuger.debug("verb", verb.word, "has actual_sub:")
@@ -537,16 +592,16 @@ class VerbRelationExtractor:
             for target in verb.target:
                 self.debuger.debug(target.word)
             self.debuger.debug('-'*40)
-
+        res = set(res)
         return res
 
 if __name__ == "__main__":
     ltp = LTP(None)
-    ltp_result = ltp.parse("后来在周润发主演的《鳄鱼潭》里演一个杀手，并且获得周润发的鼓励。")
+    ltp_result = ltp.parse("Howard是加州理工大学应用物理系的科学家，有麻省理工学院工程硕士学位，是个犹太人。")
     info = PrintInfo()
     info.print_ltp(ltp_result)
     tree = ParseTree(ltp_result)
-    string = ["周润发", "鳄鱼潭"]
+    string = ["Howard", "加州理工大学应用物理系", "麻省理工学院", "犹太人"]
     e_lis = []
     for s in string:
         st, ed = ltp_result.search_word(s)

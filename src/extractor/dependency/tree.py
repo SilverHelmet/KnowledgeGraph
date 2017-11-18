@@ -95,6 +95,8 @@ class Node:
         self.target = []
         self.depth = -1
         self.children = []
+        self.search_sub_mark = False
+        self.search_obj_mark = False
 
     def search_depth(self):
         if self.depth != -1:
