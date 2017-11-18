@@ -2,6 +2,7 @@
 from ..IOUtil import rel_ext_dir, Print, result_dir, doc_dir
 from tqdm import tqdm
 import os 
+from src.util import is_chinese
 from src.extractor.resource import Resource
 
 def gen_title_rel_dict(fb_type, count_filepath, out_path, cnt_threshold, extra_name_filepath = None):
@@ -45,7 +46,8 @@ def gen_title_rel_dict(fb_type, count_filepath, out_path, cnt_threshold, extra_n
             title_names.add(line.rstrip())
     outf = file(out_path, 'w')
     for title_name in sorted(title_names):
-        outf.write(title_name + '\n')
+        if is_chinese(title_name):
+            outf.write(title_name + '\n')
     outf.close()
         
 
