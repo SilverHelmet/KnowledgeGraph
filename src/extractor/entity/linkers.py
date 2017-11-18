@@ -118,7 +118,7 @@ def page_type_related_score(etype, types, page_info):
     domains = page_info.domains
     for fb_type in types:
         domain = get_domain(fb_type)
-        if domain != "fb:organization.organization" and domain in domains:
+        if domain != "fb:organization" and domain != "fb:people" and domain in domains:
             return 30
     return 0
 
