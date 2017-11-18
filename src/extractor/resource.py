@@ -258,8 +258,9 @@ def load_baike_ename_title():
     path = os.path.join(result_dir, '360/360_entity_info.json')
     Print('load baike\'s ename and title from [%s]' %path)
     ename_title_map = {}
-    for line in tqmd(file(path), total = nb_lines_of(path)):
+    for line in tqdm(file(path), total = nb_lines_of(path)):
         bk_url, obj = line.split('\t')
+        obj = json.loads(obj)
         ename, title = obj['ename'].encode('utf-8'), obj['title'].encode('utf-8')
         if title != ename:
             ename_title_map[bk_url] = [ename, title]

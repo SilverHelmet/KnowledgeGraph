@@ -11,8 +11,8 @@ def gen_title_rel_dict(fb_type, count_filepath, out_path, cnt_threshold):
     baike_static_info_map = resource.get_baike_info()
     Print("gen candidate profession entity")
     for bk_url in tqdm(baike_static_info_map, total = len(baike_static_info_map)):
-        types = baike_static_info_map[bk_url]
-        if 'fb:people.profession' in bk_url:
+        types = baike_static_info_map[bk_url].types
+        if fb_type in types:
             candidate_urls.add(bk_url)
 
     candidate_names = set()
@@ -21,9 +21,9 @@ def gen_title_rel_dict(fb_type, count_filepath, out_path, cnt_threshold):
         if len(p) == 2:
             name, cnt = p
             cnt = int(cnt)
-            if cnt >= threshold:
+            if cnt >= cnt_threshold:
                 candidate_names.add(name)
-
+    Print('#candidate urls = %d, #candidate names = %d' %(len(candidate_urls), len(candidate_names)))
     ename_title_map = resource.get_baike_ename_title()
 
     title_names = set()
@@ -55,6 +55,6 @@ if __name__ == "__main__":
     if not os.path.exists(base_dir):
         os.mkdir(base_dir)
     gen_title_rel_dict("fb.location.country", os.path.join(count_dir, '国籍_cnt.tsv'), os.path.join(base_dir, 'nationality.txt'), 10)
-    gen_title_rel_dict("fb:people.profession", os.path.join(count_dir), '职业_cnt.tsv', os.path.join(base_dir, 'profession.txt'), 10)
+    gen_title_rel_dict("fb:people.profession", os.path.join(count_dir, '职业_cnt.tsv'), os.path.join(base_dir, 'profession.txt'), 10)
 
 
