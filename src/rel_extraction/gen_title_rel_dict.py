@@ -1,5 +1,5 @@
 #encoding: utf-8
-from ..IOUtil import rel_ext_dir, Print, result_dir
+from ..IOUtil import rel_ext_dir, Print, result_dir, doc_dir
 from tqdm import tqdm
 import os 
 from src.extractor.resource import Resource
