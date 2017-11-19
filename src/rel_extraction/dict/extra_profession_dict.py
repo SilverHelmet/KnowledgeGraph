@@ -3,6 +3,7 @@ from src.IOUtil import infobox_cnt_dir, dict_dir, load_file, Print
 import os
 from src.extractor.resource import Resource
 from src.util import is_chinese
+from src.extractor.util import get_domain
 
 if __name__ == "__main__":
     prof_cnt_path = os.path.join(infobox_cnt_dir, '职业_cnt.tsv')
@@ -17,7 +18,7 @@ if __name__ == "__main__":
         if len(p) == 2:
             prof = p[0]
             cnt = int(p[1])
-            if cnt >= prof_cnt_threshold and is_chinese(prof) and prof not in prof_dict:
+            if cnt >= prof_cnt_threshold and is_chinese(prof) and prof not in prof_dict and len(prof.decode('utf-8')) >= 2:
                 candidate_profs.add(prof)
 
     Print("#candidate name = %d" %len(candidate_profs))
@@ -36,7 +37,9 @@ if __name__ == "__main__":
     prof_outf = file(os.path.join(dict_dir, 'extra_profession.txt'), 'w')
     prof_type_outf = file(os.path.join(dict_dir, 'extra_profession_types.tsv'), 'w')
     baike_info_map = resource.get_baike_info()
-    error_types = ['fb:people.person', 'fb:film.film', 'fb:book.book', 'fb:book.written_work', 'fb:cvg.computer_videogame', 'fb:tv.tv_program']
+    error_types = ['fb:people.person', 'fb:film.film', 'fb:book.book', 'fb:book.written_work', 'fb:cvg.computer_videogame', 'fb:tv.tv_program', 'fb:book.periodical', 'fb:comic_books.comic_book_series']
+    error_domains = set([get_domain(bk_type) for bk_type in error_types])
+    error_domains.add('fb:award')
     for prof in prof2bk:
         bk_urls = prof2bk[prof]
         valid_bk_urls = []
@@ -45,7 +48,7 @@ if __name__ == "__main__":
             info = baike_info_map[bk_url]
             types = info.types
             for bk_type in types:
-                if bk_type in error_types:
+                if get_domain(bk_type) in error_domains:
                     valid = False
             if valid:
                 valid_bk_urls.append(bk_url)
@@ -57,10 +60,3 @@ if __name__ == "__main__":
     prof_outf.close()
     prof_type_outf.close()
 
-
-    
-
-
-
-
-    prof_dict_path = os.path.join()
