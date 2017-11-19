@@ -37,7 +37,7 @@ def gen_title_rel_dict(fb_type, count_filepath, out_path, cnt_threshold, extra_n
                     print "duplicate title name:", ename
                 # assert ename not in title_names
                 title_names.add(ename)
-            if ename not in candidate_names:
+            else:
                 print "%s: miss name: %s" %(fb_type, ename)
     
     if extra_name_filepath is not None:
