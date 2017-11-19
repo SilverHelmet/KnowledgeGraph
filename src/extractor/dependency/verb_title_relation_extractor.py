@@ -368,7 +368,11 @@ class VerbRelationExtractor:
                     obj_res += self.find_verb_OBJ(child, entity_lis)
         if if_special_obj == False:
             self.debuger.debug("the object of verb", verb.word, "has normal object")
-            obj_res = self.find_normal_verb_OBJ(verb, entity_lis)
+            for child in verb.children:
+                if child.rel in ['VOB', 'FOB']:
+                    if child in entity_lis:
+                        obj_res.append(child)
+                    obj_res += self.find_normal_verb_OBJ(child, entity_lis)
         verb.search_obj_mark = True
         verb.obj = obj_res
         return obj_res
