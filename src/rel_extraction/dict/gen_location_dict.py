@@ -1,4 +1,5 @@
-from src.IOUtil import dict_dir
+#encoding: utf-8
+from src.IOUtil import dict_dir, Print
 from src.extractor.resource import Resource
 from src.extractor.util import get_domain
 from tqdm import tqdm
@@ -17,8 +18,8 @@ def gen_province_dict():
     error_domains =  get_error_domains()
     for bk_url in tqdm(ename_title_map, total = len(ename_title_map)):
         enames = ename_title_map[bk_url]
-        # if not bk_url in baike_info_map:
-        #     continue
+        if not bk_url in baike_info_map:
+            continue
         bk_info = baike_info_map[bk_url]
         bk_types = bk_info.types
         if not "fb:location.location" in bk_types:
@@ -60,8 +61,8 @@ def gen_citytown_dict():
     citydown_names = set()
     
     for bk_url in tqdm(baike_info_map, total = len(baike_info_map)):
-        # if not bk_url in baike_info_map:
-        #     continue
+        if not bk_url in baike_info_map or not bk_url in ename_title_map:
+            continue
         bk_types = baike_info_map[bk_url].types
         if not 'fb:location.location' in bk_types:
             continue
