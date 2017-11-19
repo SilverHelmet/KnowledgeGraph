@@ -4,6 +4,7 @@ import os
 from src.extractor.resource import Resource
 from src.util import is_chinese
 from src.extractor.util import get_domain
+import commands
 
 if __name__ == "__main__":
     prof_cnt_path = os.path.join(infobox_cnt_dir, '职业_cnt.tsv')
@@ -34,7 +35,8 @@ if __name__ == "__main__":
                 prof2bk[ename].add(bk_url)
 
     Print("#hit candidate name = %d" %len(prof2bk))
-    prof_outf = file(os.path.join(dict_dir, 'extra_profession.txt'), 'w')
+    extra_prof_out_path = os.path.join(dict_dir, 'extra_profession.txt')
+    prof_outf = file(extra_prof_out_path, 'w')
     prof_type_outf = file(os.path.join(dict_dir, 'extra_profession_types.tsv'), 'w')
     baike_info_map = resource.get_baike_info()
     error_types = ['fb:people.person', 'fb:film.film', 'fb:book.book', 'fb:book.written_work', 'fb:cvg.computer_videogame', 'fb:tv.tv_program', 'fb:book.periodical', 'fb:comic_books.comic_book_series']
@@ -60,3 +62,6 @@ if __name__ == "__main__":
     prof_outf.close()
     prof_type_outf.close()
 
+    
+    full_out_path = os.path.join(dict_dir, 'full_profession.txt')
+    commands.getstatus('cat %s %s > %s' %(prof_dict_path, extra_prof_out_path, os.path.join(full_out_path) ))
