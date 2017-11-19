@@ -21,11 +21,13 @@ def gen_province_location():
         is_province = False
         for bk_type in bk_types:
             if get_domain(bk_type) == 'fb:location' and ('state' in bk_type or "province" in bk_type):
+                print "bk_type: %s" %bk_url
                 is_province = True
         
         for ename in enames:
             ename = ename.decode('utf-8')
             if len(ename) >= 2 and (ename.endswith(u'省') or ename.endswith(u"州")) and 'fb:location.administrative_division' in bk_types:
+                print "ename: %s %s" %(ename, bk_url)
                 is_province = True
 
         if is_province:
