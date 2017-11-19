@@ -5,7 +5,7 @@ import os
 from src.util import is_chinese
 from src.extractor.resource import Resource
 
-def gen_title_rel_dict(fb_type, count_filepath, out_path, cnt_threshold, extra_name_filepath = None, error_func):
+def gen_title_rel_dict(fb_type, count_filepath, out_path, cnt_threshold, extra_name_filepath = None, error_func = None):
     Print('gen dict by type [%s]' %fb_type)
     candidate_urls = set()
     resource = Resource.get_singleton()
