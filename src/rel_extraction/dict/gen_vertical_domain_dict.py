@@ -9,7 +9,6 @@ import re
 from src.mapping.fb_date import BaikeDatetime
 from src.baike_process.parse import html_unescape
 import sys
-from src.rel_extraction.util import load_bk_types
 
 def has_punc_eng(name):
     for word, flag in pseg.cut(name):
