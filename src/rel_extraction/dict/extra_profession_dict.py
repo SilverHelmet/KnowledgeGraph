@@ -5,7 +5,7 @@ from src.extractor.resource import Resource
 from src.util import is_chinese
 
 if __name__ == "__main__":
-    prof_cnt_path = os.path.join(infobox_cnt_dir, '职业_cnt'.tsv)
+    prof_cnt_path = os.path.join(infobox_cnt_dir, '职业_cnt.tsv')
     prof_cnt_threshold = 10
     
     prof_dict_path = os.path.join(dict_dir, 'profession.txt')
