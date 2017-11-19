@@ -47,7 +47,7 @@ def gen_title_rel_dict(fb_type, count_filepath, out_path, cnt_threshold, extra_n
     outf = file(out_path, 'w')
     for title_name in sorted(title_names):
         if error_func is not None and error_func(title_name):
-            print "%s: error func name: %s" (%fb_type, ename)
+            print "%s: error func name: %s" %(fb_type, ename)
             continue
         if len(title_name.decode('utf-8')) < 2:
             print "%s: short name: %s" %(fb_type, ename)
