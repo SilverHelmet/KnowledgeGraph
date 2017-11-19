@@ -2,14 +2,14 @@
 import os
 import jieba
 import jieba.posseg as pseg
-from .util import load_bk_entity_pop, load_name2baike
-from ..IOUtil import rel_ext_dir, Print
+from src.rel_extraction.util import load_bk_entity_pop, load_name2baike
+from src.IOUtil import rel_ext_dir, Print
 from tqdm import tqdm
 import re
-from ..mapping.fb_date import BaikeDatetime
-from ..baike_process.parse import html_unescape
+from src.mapping.fb_date import BaikeDatetime
+from src.baike_process.parse import html_unescape
 import sys
-from ..rel_extraction.util import load_bk_types
+from src.rel_extraction.util import load_bk_types
 
 def has_punc_eng(name):
     for word, flag in pseg.cut(name):
