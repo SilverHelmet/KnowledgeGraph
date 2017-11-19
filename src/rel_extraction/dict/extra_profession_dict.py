@@ -69,4 +69,4 @@ if __name__ == "__main__":
 
     
     full_out_path = os.path.join(dict_dir, 'full_profession.txt')
-    commands.getstatus('cat %s %s > %s' %(prof_dict_path, extra_prof_out_path, os.path.join(full_out_path) ))
+    commands.getoutput('cat %s %s > %s' %(prof_dict_path, extra_prof_out_path, os.path.join(full_out_path) ))

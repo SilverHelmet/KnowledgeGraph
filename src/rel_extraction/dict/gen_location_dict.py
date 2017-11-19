@@ -4,17 +4,21 @@ from src.extractor.util import get_domain
 from tqdm import tqdm
 import os
 from src.util import is_chinese
+from extra_profession_dict import get_error_domains
+
 
 def gen_province_dict():
+    Print('generate province dict')
     resource = Resource.get_singleton()
     baike_info_map = resource.get_baike_info()
     ename_title_map = resource.get_baike_ename_title()
     out_path = os.path.join(dict_dir, 'province.txt')
     province_names = set()
+    error_domains =  get_error_domains()
     for bk_url in tqdm(ename_title_map, total = len(ename_title_map)):
         enames = ename_title_map[bk_url]
-        if not bk_url in baike_info_map:
-            continue
+        # if not bk_url in baike_info_map:
+        #     continue
         bk_info = baike_info_map[bk_url]
         bk_types = bk_info.types
         if not "fb:location.location" in bk_types:
@@ -28,9 +32,14 @@ def gen_province_dict():
         
         for ename in enames:
             ename = ename.decode('utf-8')
-            if len(ename) >= 2 and (ename.endswith(u'省') or ename.endswith(u"州")) and 'fb:location.administrative_division' in bk_types:
+            if len(ename) >= 2 and (ename.endswith(u'省') or ename.endswith(u"州")):
                 print "province ename: %s %s" %(ename, bk_url)
                 is_province = True
+
+        for bk_type in bk_types:
+            if get_domain(bk_type) in error_domains:
+                is_province = False
+                print "province error type: %s" %(bk_url)
 
         if is_province:
             province_names.update(enames)
@@ -42,7 +51,8 @@ def gen_province_dict():
         outf.write("%s\n" %(name))
     outf.close()
 
-def gen_citydown_dict():
+def gen_citytown_dict():
+    Print('generate citytown dict')
     resource = Resource.get_singleton()
     baike_info_map = resource.get_baike_info()
     ename_title_map = resource.get_baike_ename_title()
@@ -50,8 +60,8 @@ def gen_citydown_dict():
     citydown_names = set()
     
     for bk_url in tqdm(baike_info_map, total = len(baike_info_map)):
-        if not bk_url in baike_info_map:
-            continue
+        # if not bk_url in baike_info_map:
+        #     continue
         bk_types = baike_info_map[bk_url].types
         if not 'fb:location.location' in bk_types:
             continue
@@ -83,4 +93,4 @@ def gen_citydown_dict():
     
 if __name__ == "__main__":
     gen_province_dict()
-    gen_citydown_dict()
+    gen_citytown_dict()
