@@ -6,6 +6,12 @@ from src.util import is_chinese
 from src.extractor.util import get_domain
 import commands
 
+def get_error_domains():
+    error_types = ['fb:people.person', 'fb:film.film', 'fb:book.book', 'fb:book.written_work', 'fb:cvg.computer_videogame', 'fb:tv.tv_program', 'fb:book.periodical', 'fb:comic_books.comic_book_series']
+    error_domains = set([get_domain(bk_type) for bk_type in error_types])
+    error_domains.add('fb:award')
+    return error_domains
+
 if __name__ == "__main__":
     prof_cnt_path = os.path.join(infobox_cnt_dir, '职业_cnt.tsv')
     prof_cnt_threshold = 10
@@ -39,9 +45,8 @@ if __name__ == "__main__":
     prof_outf = file(extra_prof_out_path, 'w')
     prof_type_outf = file(os.path.join(dict_dir, 'extra_profession_types.tsv'), 'w')
     baike_info_map = resource.get_baike_info()
-    error_types = ['fb:people.person', 'fb:film.film', 'fb:book.book', 'fb:book.written_work', 'fb:cvg.computer_videogame', 'fb:tv.tv_program', 'fb:book.periodical', 'fb:comic_books.comic_book_series']
-    error_domains = set([get_domain(bk_type) for bk_type in error_types])
-    error_domains.add('fb:award')
+    
+    error_domains = get_error_domains()
     for prof in prof2bk:
         bk_urls = prof2bk[prof]
         valid_bk_urls = []

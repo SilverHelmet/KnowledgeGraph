@@ -52,6 +52,7 @@ def gen_title_rel_dict(fb_type, count_filepath, out_path, cnt_threshold, extra_n
             continue
         if len(title_name.decode('utf-8')) < 2:
             print "%s: short name: %s" %(fb_type, title_name)
+            continue
         if is_chinese(title_name):
             outf.write(title_name + '\n')
     outf.close()
