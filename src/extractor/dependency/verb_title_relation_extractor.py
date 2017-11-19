@@ -2,7 +2,6 @@
 from tree import ParseTree, Debug, PrintInfo
 from ..ltp import LTP
 from ..structure import StrEntity
-import types
 
 class VerbRelationExtractor:
     def __init__(self, debug_flag = False):
@@ -336,13 +335,14 @@ class VerbRelationExtractor:
     def find_normal_verb_OBJ(self, verb, entity_lis):
         res = []
         for child in verb.children:
-            if child.rel in ['VOB', 'FOB'] and child.postag != 'v':
+            if child.postag != 'v':
                 if child in entity_lis:
                     res.append(child)
                 res += self.find_normal_verb_OBJ(child, entity_lis)
         return res
 
-    #def find_all_OBJ(self, entity_lis):
+    '''
+    def find_all_OBJ(self, entity_lis):
         for entity in entity_lis:
             path = self.find_path_to_root(entity)
             for node in path[:-1]:
@@ -351,8 +351,10 @@ class VerbRelationExtractor:
                         if entity not in node.father.obj:
                             node.father.obj.append(entity)
                     break
+    '''
     def find_verb_OBJ(self, verb, entity_lis):
         if verb.search_obj_mark == True:
+            self.debuger.debug("the object of verb", verb.word ,"has been found!")
             return verb.obj
         obj_res = []
         if_special_obj = False
@@ -365,6 +367,7 @@ class VerbRelationExtractor:
                 else:
                     obj_res += self.find_verb_OBJ(child, entity_lis)
         if if_special_obj == False:
+            self.debuger.debug("the object of verb", verb.word, "has normal object")
             obj_res = self.find_normal_verb_OBJ(verb, entity_lis)
         verb.search_obj_mark = True
         verb.obj = obj_res
@@ -474,18 +477,21 @@ class VerbRelationExtractor:
                 res.append((res1[i], verb.idx, res2[j]))
                 self.debuger.debug(r1[i], r2, r3[j])
 
-    def premark_entity(self, tree, e_lis):
+    def premark_entity(self, tree, e_lis, ltp_result):
+        self.debuger.debug('|'*40)
         for e in e_lis:
             node_list = tree.nodes[e.st : e.ed]
             for node in node_list:
                 node.entity = e
+                self.debuger.debug("node", node.word ,"mark as entity:", ltp_result.text(e.st, e.ed))
+        self.debuger.debug('|'*40)
 
     def find_tripple(self, ltp_result, e_lis):
         res = []
         entity_lis = []
         verb_lis = []
         tree = ParseTree(ltp_result)
-        self.premark_entity(tree, e_lis)#mark every word in entity
+        self.premark_entity(tree, e_lis, ltp_result)#mark every word in entity
         for node in tree.nodes:
             if node.postag == 'v':
                 verb_lis.append(node)
@@ -557,6 +563,8 @@ class VerbRelationExtractor:
         #step three: confirm the obj, att, target part
         #obj&debug:
         for verb in verb_lis:
+            self.debuger.debug("#"*30)
+            self.debuger.debug("verb", verb.word, "start finding object!")
             self.find_verb_OBJ(verb, entity_lis)
         #att:
         self.find_all_ATT(entity_lis)
@@ -615,11 +623,11 @@ class VerbRelationExtractor:
 
 if __name__ == "__main__":
     ltp = LTP(None)
-    ltp_result = ltp.parse("Howard是加州理工大学应用物理系的科学家，有麻省理工学院工程硕士学位，是个犹太人。")
+    ltp_result = ltp.parse("8月30日吉姆·帕森斯荣获艾美奖喜剧类最佳男主角奖。")
     info = PrintInfo()
     info.print_ltp(ltp_result)
     tree = ParseTree(ltp_result)
-    string = ["Howard", "加州理工大学应用物理系", "麻省理工学院", "犹太人"]
+    string = ["吉姆·帕森斯", "艾美奖"]
     e_lis = []
     for s in string:
         st, ed = ltp_result.search_word(s)
@@ -629,7 +637,29 @@ if __name__ == "__main__":
             e_lis.append(StrEntity(st, ed, None))
     res = VerbRelationExtractor(True)
     tripple_res = res.find_tripple(ltp_result, e_lis)
-    tripple_res = set(tripple_res)
+    #print tripple_res
+    r1 = None
+    r2 = None
+    r3 = None
+    ret = []
+    for k, item in enumerate(tripple_res):
+        if isinstance(item[0], int) == False:
+            r1 = ltp_result.text(item[0].st, item[0].ed)
+        else:
+            r1 = ltp_result.text(item[0], item[0] + 1)
+        if isinstance(item[2], int) == False:
+            r3 = ltp_result.text(item[2].st, item[2].ed)
+        else:
+            r3 = ltp_result.text(item[2], item[2] + 1)
+        if item[1] == None:
+            r2 = "是"
+        else:
+            r2 = ltp_result.text(item[1], item[1] + 1)
+        ret.append((r1, r2, r3))
+    ret = set(ret)
+    for triple in ret:
+        print '\t%s' %('\t'.join(triple))
+    '''
     r1 = r2 = None
     for k, item in enumerate(tripple_res):
         print 'tripple', k, 'is:'
@@ -645,3 +675,4 @@ if __name__ == "__main__":
             print"(", r1, '是', r2,")"
         else:
             print"(", r1, tree.nodes[item[1]].word, r2, ")"
+    '''
