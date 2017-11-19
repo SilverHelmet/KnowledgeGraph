@@ -26,15 +26,14 @@ def gen_title_rel_dict(fb_type, count_filepath, out_path, cnt_threshold, extra_n
                 if cnt >= cnt_threshold:
                     candidate_names.add(name)
     Print('#candidate urls = %d, #candidate names = %d' %(len(candidate_urls), len(candidate_names)))
-    ename_title_map = resource.get_baike_ename_title()
+    # ename_title_map = resource.get_baike_ename_title()
+    url2names = resource.get_url2names()
 
     title_names = set()
     for candidate_url in candidate_urls:
-        enames = ename_title_map[candidate_url]
+        enames = url2names[candidate_url]
         for ename in enames:
             if ename in candidate_names or count_filepath is None:
-                if ename in title_names:
-                    print "duplicate title name:", ename
                 # assert ename not in title_names
                 title_names.add(ename)
             else:
