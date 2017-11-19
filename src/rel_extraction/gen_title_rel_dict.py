@@ -5,7 +5,7 @@ import os
 from src.util import is_chinese
 from src.extractor.resource import Resource
 
-def gen_title_rel_dict(fb_type, count_filepath, out_path, cnt_threshold, extra_name_filepath = None):
+def gen_title_rel_dict(fb_type, count_filepath, out_path, cnt_threshold, extra_name_filepath = None, error_func):
     Print('gen dict by type [%s]' %fb_type)
     candidate_urls = set()
     resource = Resource.get_singleton()
@@ -46,6 +46,11 @@ def gen_title_rel_dict(fb_type, count_filepath, out_path, cnt_threshold, extra_n
             title_names.add(line.rstrip())
     outf = file(out_path, 'w')
     for title_name in sorted(title_names):
+        if error_func is not None and error_func(title_name):
+            print "%s: error func name: %s" (%fb_type, ename)
+            continue
+        if len(title_name.decode('utf-8')) < 2:
+            print "%s: short name: %s" %(fb_type, ename)
         if is_chinese(title_name):
             outf.write(title_name + '\n')
     outf.close()
@@ -65,6 +70,7 @@ if __name__ == "__main__":
         os.mkdir(base_dir)
     gen_title_rel_dict("fb:location.country", os.path.join(count_dir, '国籍_cnt.tsv'), os.path.join(base_dir, 'nationality.txt'), 5)
     gen_title_rel_dict("fb:people.profession", os.path.join(count_dir, '职业_cnt.tsv'), os.path.join(base_dir, 'profession.txt'), 10)
-    gen_title_rel_dict("fb:language.human_language", None, os.path.join(base_dir, 'langauge.txt'), 0, os.path.join(doc_dir, 'human_add_language.txt'))
+
+    gen_title_rel_dict("fb:language.human_language", None, os.path.join(base_dir, 'langauge.txt'), 0, os.path.join(doc_dir, 'human_add_language.txt'), error_lang_func = lambda x:x.endswith('人'))
 
 
