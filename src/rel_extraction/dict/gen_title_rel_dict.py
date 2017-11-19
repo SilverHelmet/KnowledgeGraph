@@ -45,11 +45,13 @@ def gen_title_rel_dict(fb_type, count_filepath, out_path, cnt_threshold, extra_n
             title_names.add(line.rstrip())
     outf = file(out_path, 'w')
     for title_name in sorted(title_names):
+        if title_name == '无':
+            continue
         if error_func is not None and error_func(title_name):
             print "%s: error func name: %s" %(fb_type, title_name)
             continue
         if len(title_name.decode('utf-8')) < 2:
-            print "%s: short name: %s" %(fb_type, ename)
+            print "%s: short name: %s" %(fb_type, title_name)
         if is_chinese(title_name):
             outf.write(title_name + '\n')
     outf.close()
