@@ -105,6 +105,7 @@ def load_name2baike(filepath = None):
         bk_url = p[0]
         names = p[1:]
         for name in names:
+            name = name.strip()
             if not name in name2bk:
                 name2bk[name] = []
             name2bk[name].append(bk_url)

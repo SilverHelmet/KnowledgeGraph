@@ -76,14 +76,13 @@ if __name__ == "__main__":
     outf = file(out_path, 'w')
     Print('write dict to %s' %out_path)
     for name in tqdm(keys, total = len(keys)):
-        name = name.strip()
+        
         
         if not is_valid_dict_name(name):
             continue
         # if has_punc_eng(name):
         #     continue
         bks = name2bk[name]
-
         # pop = 0
         valid = False
         for bk_url in bks:
