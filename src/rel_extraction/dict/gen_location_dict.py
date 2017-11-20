@@ -33,14 +33,15 @@ def gen_province_dict():
         
         for ename in enames:
             ename = ename.decode('utf-8')
-            if len(ename) >= 2 and (ename.endswith(u'省') or ename.endswith(u"州")):
+            if len(ename) > 2 and (ename.endswith(u'省') or ename.endswith(u"州")):
                 print "province ename: %s %s" %(ename, bk_url)
                 is_province = True
 
-        for bk_type in bk_types:
-            if get_domain(bk_type) in error_domains:
-                is_province = False
-                print "province error type: %s" %(bk_url)
+        if is_province:
+            for bk_type in bk_types:
+                if get_domain(bk_type) in error_domains:
+                    is_province = False
+                    print "province error type: %s" %(bk_url)
 
         if is_province:
             province_names.update(enames)
