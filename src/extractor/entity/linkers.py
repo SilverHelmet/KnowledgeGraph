@@ -253,6 +253,8 @@ class PageMemoryEntityLinker:
             self.lower_name2bk = resource.get_lower_name2bk()
         self.summary_map = resource.get_summary_with_infobox()
 
+        self.location
+
         self.lowercase = lowercase
         self.memory = None
 

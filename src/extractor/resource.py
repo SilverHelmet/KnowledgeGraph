@@ -86,6 +86,12 @@ class Resource:
             self.dict['baike_ename_title'] = load_baike_ename_title()
         return self.dict['baike_ename_title']
 
+    def get_location_dcit(self):
+        if not 'location_dict' in self.dict:
+            dicts = ['province.txt', 'citytown.txt', 'nationality.txt']
+            dicts_path = [os.path.join(dict_dir, x) for x in dicts]
+            Print('load location dict from [%s]' %" ".join(dicts))
+            self.dict['location_dict'] = load_dict(dicts_path)
 
     @staticmethod
     def get_singleton():
@@ -269,6 +275,14 @@ def load_baike_ename_title():
             ename_title_map[bk_url] = [ename]
     return ename_title_map
 
+def load_dict(dicts_path):
+    dict_names = set()
+    for dict_path in dicts_path:
+        for line in file(dict_path):
+            name = line.rstrip('\n')
+            dict_names.add(name)
+    return dict_names
+        
 
 
 if __name__ == "__main__":
