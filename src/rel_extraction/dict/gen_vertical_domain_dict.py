@@ -45,11 +45,12 @@ def is_valid_dict_name(name):
 def get_domain(fb_type):
     return fb_type.split('.')[0]
 
-valid_domains = set(['fb:film', 'fb:tv', 'fb:soccer', 'fb:sports', 'fb:astronomy', 'fb:music', 'fb:book', 'fb:award'])
+# valid_domains = set(['fb:film', 'fb:tv', 'fb:soccer', 'fb:sports', 'fb:astronomy', 'fb:music', 'fb:book', 'fb:award'])
+valid_domains = Resource.get_singleton().get_important_domains()
 def is_vertical_domain(types):
     global valid_domains
     for fb_type in types:
-        if get_domain(fb_type) in valid_domains:
+        if get_domain(fb_type) in valid_domains or fb_type in valid_domains:
             return True
     return False
 
