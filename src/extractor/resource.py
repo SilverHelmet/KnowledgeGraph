@@ -86,12 +86,13 @@ class Resource:
             self.dict['baike_ename_title'] = load_baike_ename_title()
         return self.dict['baike_ename_title']
 
-    def get_location_dcit(self):
+    def get_location_dict(self):
         if not 'location_dict' in self.dict:
             dicts = ['province.txt', 'citytown.txt', 'nationality.txt']
             dicts_path = [os.path.join(dict_dir, x) for x in dicts]
             Print('load location dict from [%s]' %" ".join(dicts))
             self.dict['location_dict'] = load_dict(dicts_path)
+        return self.dict['location_dict']
 
     @staticmethod
     def get_singleton():

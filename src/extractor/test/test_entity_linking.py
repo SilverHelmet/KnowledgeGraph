@@ -73,9 +73,9 @@ if __name__ == "__main__":
 
     for ename in datas_map:
         datas = datas_map[ename]
-        entity_linker.start_new_page()
         
         url = url_map[ename]
+        entity_linker.start_new_page(url)
         names = entity_linker.url2names[url]
         types = entity_linker.bk_info_map[url].types
         domains = get_url_domains(types, important_domains)

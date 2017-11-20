@@ -212,7 +212,7 @@ class PageMemory:
             self.add_organzition(ltp_result, str_entity, baike_entity)
 
     def add_map(self, text, baike_entity):
-        self.link_map[texst] = baike_entity
+        self.link_map[text] = baike_entity
 
 
     def add_person(self, text, baike_entity):
@@ -253,7 +253,7 @@ class PageMemoryEntityLinker:
             self.lower_name2bk = resource.get_lower_name2bk()
         self.summary_map = resource.get_summary_with_infobox()
 
-        self.location
+        self.location_dict = resource.get_location_dict()
 
         self.lowercase = lowercase
         self.memory = None
@@ -292,17 +292,23 @@ class PageMemoryEntityLinker:
                 baike_urls_cnt[url] += score
         return top_cnt_keys(baike_urls_cnt)
             
+    def check_is_location(self, ltp_result, str_entity):
+        st = str_entity.st
+        ed =str_entity.ed
+        if ed - st == 1:
+            return False
+        for i in range(st, ed):
+            if not ltp_result.words[i] in self.location_dict:
+                return False
+        return True
 
     def link(self, ltp_result, str_entity, page_info):
         name = ltp_result.text(str_entity.st, str_entity.ed)
 
-        # if str_entity.etype == 'Ns':
-        #     for st in range(str_entity.st, str_entity.ed):
-        #         location_name = ltp_result.text(st, str_entity.ed)
-        #         if location_name in self.name2bk:
-        #             name = location_name
-        #             break
-        # baike_entity =  self.memory.find_link(name)
+        if self.check_is_location(ltp_result, str_entity):
+            name = ltp_result.text(str_entity.ed - 1, str_entity.ed)
+            str_entity.etype = "Ns"
+
         if name in self.memory.link_map:
             baike_entity = self.memory.link_map[name]
             if baike_entity is None:
