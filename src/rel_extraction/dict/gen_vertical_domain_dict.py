@@ -2,13 +2,13 @@
 import os
 import jieba
 import jieba.posseg as pseg
-from src.rel_extraction.util import load_bk_entity_pop, load_name2baike
-from src.IOUtil import rel_ext_dir, Print
+from src.IOUtil import rel_ext_dir, Print, dict_dir
 from tqdm import tqdm
 import re
 from src.mapping.fb_date import BaikeDatetime
 from src.baike_process.parse import html_unescape
 import sys
+from src.extractor.resource import Resource
 
 def has_punc_eng(name):
     for word, flag in pseg.cut(name):
@@ -56,24 +56,19 @@ def is_vertical_domain(types):
 
 
 if __name__ == "__main__":
-    # pop_map = load_bk_entity_pop()
-    # name2bk = load_name2baike(os.path.join(rel_ext_dir, 'baike_names.tsv.sample'))
-    name2bk = load_name2baike()
+    name2bk = Resource.get_singleton().get_name2bk()
     
     keys = sorted(name2bk)
-    out_path = os.path.join(rel_ext_dir, 'baike_dict.txt')
+    
     
     year_pattern = re.compile(ur'(公元前|公元)?\d{1,4}年$')
     re_digit = re.compile(r'^[0-9+\-=!?]+$')
     re_eng = re.compile(r"^[a-zA-Z]+$")
 
-    valid_func = None
-    if len(sys.argv) >= 2 and sys.argv[1] == "vertical":
-        valid_func = is_vertical_domain
-        out_path = os.path.join(rel_ext_dir, 'baike_dict_vertical_domain.txt')
-        Print('use valid_func: valic_domains')
-        # bk_type_map = load_bk_types(os.path.join(rel_ext_dir, 'baike_static_info.tsv.sample'))
-        bk_type_map = load_bk_types()
+    
+    valid_func = is_vertical_domain
+    out_path = os.path.join(dict_dir, 'vertical_domain_baike_dict.txt')
+    Print('use valid_func: valic_domains')
         
         
     outf = file(out_path, 'w')
@@ -90,9 +85,7 @@ if __name__ == "__main__":
         # pop = 0
         valid = False
         for bk_url in bks:
-            # pop = max(pop, pop_map.get(bk_url, 0))
-            # print bk_url, bk_type_map[bk_url], valid_func(bk_type_map[bk_url])
-            if valid_func is None or valid_func(bk_type_map[bk_url]):
+            if valid_func(bk_type_map[bk_url]):
                 valid = True
 
         if BaikeDatetime.parse(name, strict = True) is not None:

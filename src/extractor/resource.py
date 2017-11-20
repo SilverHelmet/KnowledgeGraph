@@ -76,7 +76,7 @@ class Resource:
 
     def get_vertical_domain_baike_dict(self):
         if not "vt_domain_bk_dict" in self.dict:
-            path = base_dir + "/lib/ltp_data_v3.4.0/vertical_domain_baike_dict.txt"
+            path = os.path.join(dict_dir, 'vertical_domain_baike_dict.txt')
             Print("load name dict from [%s]" %path)
             self.dict['vt_domain_bk_dict'] = load_file(path)
         return self.dict['vt_domain_bk_dict']

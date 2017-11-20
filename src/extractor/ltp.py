@@ -93,7 +93,7 @@ class LTP:
         tagger_model = os.path.join(base_dir, 'pos.model')
         ner_model = os.path.join(base_dir, 'ner.model')
         parser_model = os.path.join(base_dir, 'parser.model')
-        custom_seg_dict = os.path.join(base_dir,'vertical_domain_baike_dict.txt')
+        custom_seg_dict = os.path.join(dict_dir,'vertical_domain_baike_dict.txt')
 
         self.segmentor = Segmentor()
         if is_custom_seg_dict:
