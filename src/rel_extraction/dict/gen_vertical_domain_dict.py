@@ -69,6 +69,8 @@ if __name__ == "__main__":
     valid_func = is_vertical_domain
     out_path = os.path.join(dict_dir, 'vertical_domain_baike_dict.txt')
     Print('use valid_func: valic_domains')
+
+    bk_info_map = Resource.get_singleton().get_baike_info()
         
         
     outf = file(out_path, 'w')
@@ -85,7 +87,7 @@ if __name__ == "__main__":
         # pop = 0
         valid = False
         for bk_url in bks:
-            if valid_func(bk_type_map[bk_url]):
+            if valid_func(bk_info_map[bk_url].types):
                 valid = True
 
         if BaikeDatetime.parse(name, strict = True) is not None:
