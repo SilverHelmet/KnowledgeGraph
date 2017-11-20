@@ -58,7 +58,7 @@ def is_vertical_domain(types):
 if __name__ == "__main__":
     name2bk = Resource.get_singleton().get_name2bk()
     
-    keys = sorted(name2bk)
+    keys = sorted(name2bk.keys())
     
     
     year_pattern = re.compile(ur'(公元前|公元)?\d{1,4}年$')
