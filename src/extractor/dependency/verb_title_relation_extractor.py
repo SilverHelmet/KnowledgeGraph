@@ -282,11 +282,21 @@ class VerbRelationExtractor:
                         return e2.father
         return None
 
-    def find_all_direct_SBV(self, verb):
+    def find_direct_SBV_entity(self, verb, entity_lis):
         res = []
         for child in verb.children:
-            if child.rel == 'SBV':
+            if child.rel == 'SBV' and child in entity_lis:
                 res.append(child)
+        return res
+
+    def find_ATT_or_COO_path(self, node):
+        res = []
+        path = self.find_path_to_root(node)
+        for node in path:
+            if node.rel in ['ATT', 'COO']:
+                res.append(node.father)
+            else:
+                break
         return res
 
     def find_all_COO_father(self, node):
@@ -317,10 +327,15 @@ class VerbRelationExtractor:
                 return False
         return True
 
-    def find_all_TARGET(self, verb_lis):
+    def find_all_TARGET(self, verb_lis, entity_lis):
         for verb in verb_lis:
-            if verb.rel == 'ATT':
-                verb.target.append(verb.father)
+            if verb.rel != 'ATT':
+                continue
+            path = [verb.father]
+            path += self.find_ATT_or_COO_path(verb.father)
+            for node in path:
+                if (node.entity != None) or (len(node.mark) != 0 and node.postag == 'n'):
+                    verb.target.append(node)
 
     def find_all_ATT(self, entity_lis):
         for entity in entity_lis:
@@ -361,7 +376,7 @@ class VerbRelationExtractor:
         for child in verb.children:
             if child.postag == 'v' and child.rel in ['VOB', 'FOB']:
                 if_special_obj = True
-                direct_sub = self.find_all_direct_SBV(child)
+                direct_sub = self.find_direct_SBV_entity(child, entity_lis)
                 if len(direct_sub) != 0:
                     obj_res += direct_sub
                 else:
@@ -376,7 +391,7 @@ class VerbRelationExtractor:
         verb.search_obj_mark = True
         verb.obj = obj_res
         return obj_res
-
+    '''
     def find_special_OBJ(self, entity_lis, verb):
         for child in verb.children:
             if child.rel in ['VOB', 'FOB'] and child.postag == 'v':
@@ -387,8 +402,29 @@ class VerbRelationExtractor:
                     verb.obj += self.find_special_OBJ(entity_lis, child)
                     break
         return verb.obj
+    '''
+    def find_actualsub_by_ATT(self, verb, entity_lis, tree):
+        res = []
+        res_depth = []
+        final_res = None
+        for concept_sub in verb.concept_sub:
+            for entity in entity_lis:
+                path1, path2 = tree.find_path(verb.idx, entity.idx)
+                if len(path1) == 1 and self.judge_all_ATT(path2) == True:
+                    res.append(entity)
+                    res_depth.append(entity.depth)
+        if len(res_depth) != 0:
+            min_depth = min(res_depth)
+            final_res = res[res_depth.index(min_depth)]
+        if final_res != None:
+            res.append(final_res)
+            coo_final_lis = self.find_all_COO(final_res)
+            for coo_final in coo_final_lis:
+                if coo_final not in res:
+                    res.append(coo_final)
+        return res
 
-    def find_rel_sub(self, verb, entity_lis):
+    def find_rel_sub(self, verb, entity_lis, tree):
         if verb.search_sub_mark == True:
             return verb.concept_sub, verb.actual_sub
         concept_res = []
@@ -411,6 +447,8 @@ class VerbRelationExtractor:
             for coo_con_sub in coo_con_lis:
                 if coo_con_sub not in concept_res:
                     concept_res.append(coo_con_sub)
+        if len(actual_res) == 0 and len(concept_res) != 0:
+            actual_res = self.find_actualsub_by_ATT(verb, entity_lis, tree)
         #recursion 
         if len(actual_res) == 0:
             path = self.find_path_to_root(verb)
@@ -418,7 +456,7 @@ class VerbRelationExtractor:
                 if node.rel not in ['COO', 'VOB']:
                     break
                 if node.father.postag == 'v':
-                    con_res, act_res = self.find_rel_sub(node.father, entity_lis)
+                    con_res, act_res = self.find_rel_sub(node.father, entity_lis, tree)
                     if len(act_res) != 0:
                         actual_res = act_res
                         break
@@ -427,24 +465,6 @@ class VerbRelationExtractor:
         verb.actual_sub = actual_res
         verb.concept_sub = concept_res
         return concept_res, actual_res
-
-    #def find_final_actualsub(self, verb, entity_lis, tree):
-        for concept_sub in verb.concept_sub:
-            for entity in entity_lis:
-                path1, path2 = tree.find_path(verb.idx, entity.idx)
-                if len(path1) == 1 and self.judge_all_ATT(path2) == True:
-                    res.append(entity)
-                    res_depth.append(entity.depth)
-        if len(res_depth) != 0:
-            min_depth = min(res_depth)
-            final_res = res[res_depth.index(min_depth)]
-        if final_res != None:
-            verb.actual_sub.append(final_res)
-            coo_final_lis = self.find_all_COO(final_res)
-            for coo_final in coo_final_lis:
-                if coo_final != final_res:
-                    verb.actual_sub.append(coo_final)
-        return
 
     def deal_with_res(self, res, verb, e1, e2, ltp_result):
         op1 = []
@@ -512,7 +532,7 @@ class VerbRelationExtractor:
         #step one: mark sub
         #for each verb mark
         for verb in verb_lis:
-            self.find_rel_sub(verb, entity_lis)
+            self.find_rel_sub(verb, entity_lis, tree)
         #step two: renew sub mark(has 2 type)
         
         #type1: (actual_sub, is, concept_sub)
@@ -573,7 +593,7 @@ class VerbRelationExtractor:
         #att:
         self.find_all_ATT(entity_lis)
         #target:
-        self.find_all_TARGET(verb_lis)
+        self.find_all_TARGET(verb_lis, entity_lis)
         #step four: return tripple
         for verb in verb_lis:
             for sub in verb.actual_sub:
