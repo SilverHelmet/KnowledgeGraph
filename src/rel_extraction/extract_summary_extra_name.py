@@ -299,7 +299,7 @@ def extract_summary_name(summary_path, keywords, outpath):
                 outf.write('%s\t%s\n' %(url, extra_name))
     outf.close()    
 
-strange_puncs = [u' ', u'\t', u'\n', u'"', u'\'', u':', u'：']
+strange_puncs = [u' ', u'\t', u'\n', u'"', u'\'', u':', u'：', u')', u'(', u'）', u'）']
 bracket_puncs = [u'《', u'》']
 def has_strange_punc(extra_name):
     global strange_puncs, brackets
