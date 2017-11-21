@@ -57,16 +57,22 @@ class SummaryNameExtractor():
                 break
         return "".join(chars), max_len_name
 
-    def find_extra_name(self, sent, first_name, names):
-        rest_sent = sent[len(first_name):]
+    def find_extra_name(self, rest_sent, first_name, names):
+        # rest_sent = sent[len(first_name):]
         second_name_pos = (10000, 0)
         for name in names:
             pos = rest_sent.find(name)
             if pos == -1:
                 continue
+            ed = pos + len(name)
+            if ed >= len(rest_sent):
+                continue
+            if rest_sent[ed] not in self.end_puncs and rest_sent[ed] not in self.commas:
+                continue
+
             if pos < second_name_pos[0]:
                 second_name_pos = (pos, len(name))
-            
+
         if second_name_pos[0] == 10000:
             return None
         second_name = rest_sent[second_name_pos[0]:second_name_pos[0] + second_name_pos[1]]
@@ -115,11 +121,18 @@ def train_extract_summary_name(summary_path, out_path):
     outf.close()
 
 
-        
+def debug():
+    s = u'易行，全称为易行实战销售训练机构，'
+    s = u'瓦哈巴英文名:Ben Vahaba'
+    ext = SummaryNameExtractor()
+    summary = u'瓦哈巴英文名:Ben Vahaba生日:1992-03-27场上位置:后卫惯用脚:右脚个人资料代表国家队:出场0次，进0球欧洲三大杯:出场2次，进0球欧洲冠军联赛:出场0次，进0球职业生涯比赛日期比赛性质代表球队对手球队主客场比分出场时间状态进球得牌分析2012-08-22欧冠谢莫纳镇工人鲍里索夫客场0:253首发0 [析]2012-07-24欧冠谢莫纳镇工人日利纳主场2:05替补0 [析]'
+    print " ".join(ext.find_extra_name(s[3:], u'瓦哈巴', [u'瓦哈巴',u'Ben Vahaba']))
 
 
 if __name__ == "__main__":
     summary_path = os.path.join(rel_ext_dir, 'baike_summary.json')
     train_log_path = os.path.join(rel_ext_dir, 'extra_name/summary_extra_name.train.tsv')
     train_extract_summary_name(summary_path, train_log_path)
+
+    
     
