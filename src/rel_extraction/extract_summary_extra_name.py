@@ -247,11 +247,6 @@ def load_keywords(error_path, keyword_path, limit):
             extra_keys.add(key + end)
     keys.update(extra_keys)
 
-    extra_keys = set()
-    for key in keys:
-        if key 
-
-
     return keys
 
 def extract_summary_name(summary_path, keywords, outpath):
@@ -300,7 +295,10 @@ def extract_summary_name(summary_path, keywords, outpath):
                 outf.write('%s\t%s\n' %(url, extra_name))
     outf.close()    
 
+strange_puncs = [u' ', u'\t', u'\n', u'"', u'\'', u':', u'：']
+brackets = [u'《', u'》']
 def has_strange_punc(extra_name):
+    punc = [u' ', u'\t']
     if  not " " in extra_name and not "\t" in extra_name and not '\n' in extra_name and not '"' in extra_name and not "'" in extra_name:
          return False
     return True
