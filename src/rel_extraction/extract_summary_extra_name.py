@@ -7,7 +7,7 @@ import json
 
 class SummaryNameExtractor():
     def __init__(self):
-        self.end_puncs = set([u'。', u'？',u'?', u'!', u'！', u';', u'；'])
+        self.end_puncs = set([u'。', u'？',u'?', u'!', u'！', u';', u'；', '\n'])
         self.other_puncs = set([u'、'])
         self.commas = [u',', u'，']
         self.left_brackets = [u'(', u'（']
@@ -126,19 +126,50 @@ def train_extract_summary_name(summary_path, out_path):
         outf.write('%s\n' %('\t'.join(outs)))
     outf.close()
 
+def collect_keyword(train_log_path, outpath):
+    outf = file(outpath, 'w')
+    keyword_cnts = {}
+    for line in file(train_log_path):
+        p = line.split('\t')
+        if len(p) != 4:
+            print line
+        keyword = p[2].strip()
+        if not keyword in keyword_cnts:
+            keyword_cnts[keyword] = 0
+        keyword_cnts[keyword] += 1
+    
+    for key in sorted(keyword_cnts.keys(), key = lambda x: keyword_cnts[x], reverse = True):
+        cnt = keyword_cnts[key]
+        if cnt >= 10:
+            outf.write("%s\t%d\n" %(key, cnt))
+        
+    outf.close()
+
+    
 
 def debug():
-    s = u'易行，全称为易行实战销售训练机构，'
-    s = u'瓦哈巴英文名:Ben Vahaba'
+    s = u'4-硝基苯酚甲酯，英文名为\n4-Nitrophenyl formate，又名\n甲酸对硝基苯酯，CAS登记号为1865-01-6，分子式是C7H5NO4，分子量为167.1189，化工中间体一种。'
+    names = [u'4-硝基苯酚甲酯', u'4-Nitrophenyl formate']
     ext = SummaryNameExtractor()
-    summary = u'瓦哈巴英文名:Ben Vahaba生日:1992-03-27场上位置:后卫惯用脚:右脚个人资料代表国家队:出场0次，进0球欧洲三大杯:出场2次，进0球欧洲冠军联赛:出场0次，进0球职业生涯比赛日期比赛性质代表球队对手球队主客场比分出场时间状态进球得牌分析2012-08-22欧冠谢莫纳镇工人鲍里索夫客场0:253首发0 [析]2012-07-24欧冠谢莫纳镇工人日利纳主场2:05替补0 [析]'
-    print " ".join(ext.find_extra_name(s[3:], u'瓦哈巴', [u'瓦哈巴',u'Ben Vahaba']))
+    rest_sent, first_name = ext.find_name_sentence(s, names)
+    print rest_sent
+    print first_name
+    ret = ext.find_extra_name(rest_sent, first_name, names)
+    if ret:
+        first_name, sent_name, second_name = ret
+        print first_name, sent_name, second_name
 
 
 if __name__ == "__main__":
     summary_path = os.path.join(rel_ext_dir, 'baike_summary.json')
     train_log_path = os.path.join(rel_ext_dir, 'extra_name/summary_extra_name.train.tsv')
+    keyword_path = os.path.join(rel_ext_dir, 'extra_name/summary_name_key_word_cnt.tsv')
+
     train_extract_summary_name(summary_path, train_log_path)
+
+    # collect_keyword(train_log_path, keyword_path)
+
+    # debug()
 
     
     
