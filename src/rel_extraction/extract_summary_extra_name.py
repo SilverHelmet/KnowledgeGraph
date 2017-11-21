@@ -159,7 +159,7 @@ class SummaryNameExtractor():
 
         extra_name = self.get_extra_name_from_key(rest_sentence, mapped_key)
         if len(extra_name) == 0:
-            return ""
+            return None
         if extra_name is not None and mapped_key in extra_name:
             return None
         return extra_name
@@ -278,7 +278,7 @@ def extract_summary_name(summary_path, keywords, outpath):
 
         
         if extra_name is not None:
-            extra_name = extra_name.strip('"')
+            extra_name = extra_name.strip('\'" \t\n')
             if not extra_name in names:
                 outf.write('%s\t%s\n' %(url, extra_name))
     outf.close()    
