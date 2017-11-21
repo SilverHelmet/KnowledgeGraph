@@ -1,5 +1,5 @@
 #encoding: utf-8
-from src.IOUtil import rel_ext_dir, Print, nb_lines_of
+from src.IOUtil import rel_ext_dir, Print, nb_lines_of, load_file
 import os
 from src.extractor.resource import Resource
 from tqdm import tqdm
@@ -10,6 +10,12 @@ class SummaryNameExtractor():
         self.end_puncs = set([u'。', u'？',u'?', u'!', u'！', u';', u'；', '\n'])
         self.other_puncs = set([u'、'])
         self.commas = [u',', u'，']
+
+        self.puncs = []
+        self.puncs.extend(self.end_puncs)
+        self.puncs.extend(self.other_puncs)
+        self.puncs.extend(self.commas)
+
         self.left_brackets = [u'(', u'（']
         self.right_brackets = [u')', u'）']
         self.max_comma = 3
@@ -98,6 +104,58 @@ class SummaryNameExtractor():
 
         return first_name, name_pred_sent, second_name
 
+    def find_only_key(self, mapped_keys):
+        max_len_key = u''
+        for key in mapped_keys:
+            if len(key) > len(max_len_key):
+                max_len_key = key
+            
+        if len(max_len_key) == 0:
+            return None
+
+        for key in mapped_keys:
+            if not key in max_len_key:
+                return None
+        return max_len_key
+
+    def get_extra_name_from_key(self, sentence, key):
+        st = sentence.find(key) + len(key)
+        length = len(sentence)
+        ed = st
+        while ed < length:
+            if ed - st >= 50:
+                return None
+            char = sentence[ed]
+            if char in self.puncs:
+                break
+            ed += 1
+        return sentence[st:ed]
+
+    def find_no_subj_name(self, summary, keywords):
+        mapped_keys = set()
+        for key in keywords:
+            if summary.startswith(key):
+                mapped_keys.add(key)
+
+        mapped_key = self.find_only_key(mapped_keys)
+        if mapped_key is None:
+            return None
+
+        return self.get_extra_name_from_key(summary, mapped_key)
+
+    def find_new_extra_name(self, rest_sentence, keywords):
+        mapped_keys = set()
+        for key in keywords:
+            if rest_sentence.find(key) != -1:
+                mapped_keys.add(key)
+
+        mapped_key = self.find_only_key(mapped_keys)
+        if mapped_key is None:
+            return None
+        return self.get_extra_name_from_key(rest_sentence, mapped_key)
+
+
+
 
 def train_extract_summary_name(summary_path, out_path):
     outf = file(out_path, 'w')
@@ -126,7 +184,7 @@ def train_extract_summary_name(summary_path, out_path):
         outf.write('%s\n' %('\t'.join(outs)))
     outf.close()
 
-def collect_keyword(train_log_path, outpath):
+def collect_keyword(train_log_path, outpath, limit):
     outf = file(outpath, 'w')
     keyword_cnts = {}
     for line in file(train_log_path):
@@ -145,6 +203,65 @@ def collect_keyword(train_log_path, outpath):
         
     outf.close()
 
+def load_keywords(error_path, keyword_path, limit):
+    good_ends = [u'是',u':', u'为', u'：']
+    error_keys = load_file(error_keyword_path)
+    error_keys = set([x.decode('utf-8') for x in error_keys])
+    
+    keys = set()
+    last_words = set()
+    for line in file(keyword_path):
+        p = line.split('\t')
+        key = p[0].decode('utf-8')
+        if len(key) < 2:
+            continue
+        if key in error_keys:
+            continue
+        cnt = int(p[1])
+        if cnt < limit:
+            continue
+        keys.add(key)
+        last_words.add(key[-1])
+    extra_keys = set()
+    for key in keys:
+        is_good_end = False
+        for end in good_ends:
+            if key.endswith(end):
+                is_good_end = True
+        if is_good_end:
+            continue
+        for end in good_ends:
+            extra_keys.add(key + end)
+    keys.update(extra_keys)
+
+
+    return keys
+
+def extract_summary_name(summary_path, keywords, outpath):
+    Print('extract extra name from ')
+    url2names = Resource.get_singleton().get_url2names()
+    ext = SummaryNameExtractor()
+    outf = file(outpath, 'w')
+    for line in tqdm(file(summary_path)):
+        url, summary = line.split('\t')
+        summary = json.loads(summary)['summary']
+
+        names = url2names[url]
+        names = [x.decode('utf-8') for x in names]
+        ret = ext.find_name_sentence(summary, names)
+        if ret is None:
+            extra_name = ext.find_no_subj_name(summary, keywords)
+        else:
+            rest_sentence, first_name = ret
+            extra_name = ext.find_new_extra_name(rest_sentence, keywords)
+
+        
+        if extra_name is not None:
+            extra_name = extra_name.strip('"')
+            if not extra_name in names:
+                outf.write('%s\t%s\n' %(url, extra_name))
+    outf.close()    
+        
     
 
 def debug():
@@ -164,12 +281,18 @@ if __name__ == "__main__":
     summary_path = os.path.join(rel_ext_dir, 'baike_summary.json')
     train_log_path = os.path.join(rel_ext_dir, 'extra_name/summary_extra_name.train.tsv')
     keyword_path = os.path.join(rel_ext_dir, 'extra_name/summary_name_key_word_cnt.tsv')
-
-    train_extract_summary_name(summary_path, train_log_path)
-
-    # collect_keyword(train_log_path, keyword_path)
-
+    error_keyword_path = os.path.join(rel_ext_dir, 'extra_name/error_keys.txt')
+    new_extra_name_path = os.path.join(rel_ext_dir, 'extra_name/summary_extra_name.tsv')
     # debug()
+
+    # train_extract_summary_name(summary_path, train_log_path)
+
+    collect_keyword(train_log_path, keyword_path, 10)
+
+    keywords = load_keywords(error_keyword_path, keyword_path, 10)
+    extract_summary_name(summary_path, keywords, new_extra_name_path)
+
+    
 
     
     
