@@ -279,7 +279,8 @@ def extract_summary_name(summary_path, keywords, outpath):
         
         if extra_name is not None:
             extra_name = extra_name.strip('\'" \t\n')
-            if not extra_name in names:
+            
+            if not extra_name in names and not " " in extra_name and not "\t" in extra_name and not '\n' in extra_name and not '"' in extra_name and not "'" in extra_name:
                 outf.write('%s\t%s\n' %(url, extra_name))
     outf.close()    
         
