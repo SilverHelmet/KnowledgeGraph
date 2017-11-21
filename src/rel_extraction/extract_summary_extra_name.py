@@ -291,7 +291,11 @@ def extract_summary_name(summary_path, keywords, outpath):
         
         if extra_name is not None:
             extra_name = extra_name.strip('\'" \t\n')
-            if not has_strange_punc(extra_name) and not too_long_name(extra_name, names) and not extra_name in names:
+            if not has_strange_punc(extra_name) \
+                and not too_long_name(extra_name, names) \
+                and not extra_name in names \
+                and not error_bracket_name(extra_name, names) \
+                and not too_short_name(extra_name):
                 outf.write('%s\t%s\n' %(url, extra_name))
     outf.close()    
 
