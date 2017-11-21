@@ -1,5 +1,6 @@
 #encoding: utf-8
 from src.IOUtil import rel_ext_dir, Print, nb_lines_of, load_file
+from src.baike_process.process_page import split_sentences
 import os
 from src.extractor.resource import Resource
 from tqdm import tqdm
@@ -204,7 +205,7 @@ def collect_keyword(train_log_path, outpath, limit):
     outf.close()
 
 def load_keywords(error_path, keyword_path, limit):
-    good_ends = [u'是',u':', u'为', u'：']
+    good_ends = [u'是',u':', u'为', u'：', '称']
     error_keys = load_file(error_keyword_path)
     error_keys = set([x.decode('utf-8') for x in error_keys])
     
@@ -242,15 +243,25 @@ def extract_summary_name(summary_path, keywords, outpath):
     url2names = Resource.get_singleton().get_url2names()
     ext = SummaryNameExtractor()
     outf = file(outpath, 'w')
-    for line in tqdm(file(summary_path)):
+    for line in tqdm(file(summary_path), total = nb_lines_of(summary_path)):
         url, summary = line.split('\t')
         summary = json.loads(summary)['summary']
+        summary = summary.replace(u'（', '(').replace(u'）', u')')
 
         names = url2names[url]
         names = [x.decode('utf-8') for x in names]
         ret = ext.find_name_sentence(summary, names)
         if ret is None:
-            extra_name = ext.find_no_subj_name(summary, keywords)
+            extra_name = None
+            sentences = split_sentences(summary)
+            if len(sentences) > 0:
+                first_sentence = sentences[0]
+                no_subj = True
+                for name in names:
+                    if name in first_sentence:
+                        no_subj = False
+                if no_subj:
+                    extra_name = ext.find_no_subj_name(summary, keywords)
         else:
             rest_sentence, first_name = ret
             extra_name = ext.find_new_extra_name(rest_sentence, keywords)
