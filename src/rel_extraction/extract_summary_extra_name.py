@@ -92,7 +92,11 @@ class SummaryNameExtractor():
         if left == right:
             return None
 
-        return first_name, rest_sent[left:right], second_name
+        name_pred_sent = rest_sent[left:right].strip()
+        if len(name_pred_sent) == 0:
+            return None
+
+        return first_name, name_pred_sent, second_name
 
 
 def train_extract_summary_name(summary_path, out_path):
