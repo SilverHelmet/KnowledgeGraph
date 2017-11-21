@@ -296,12 +296,22 @@ def extract_summary_name(summary_path, keywords, outpath):
     outf.close()    
 
 strange_puncs = [u' ', u'\t', u'\n', u'"', u'\'', u':', u'：']
-brackets = [u'《', u'》']
+bracket_puncs = [u'《', u'》']
 def has_strange_punc(extra_name):
-    punc = [u' ', u'\t']
-    if  not " " in extra_name and not "\t" in extra_name and not '\n' in extra_name and not '"' in extra_name and not "'" in extra_name:
-         return False
-    return True
+    global strange_puncs, brackets
+    for punc in strange_puncs:
+        if punc in extra_name:
+            return True
+    bracket_cnt = 0
+    for bracket_punc in bracket_puncs:
+        if bracket_punc in extra_name:
+            bracket_cnt += 1
+    if bracket_cnt == 1:
+        return True
+    if bracket_cnt == 2:
+        if not extra_name.startswith(u'《') or not extra_name.endswith(u"》"):
+            return True
+    return False
 
 re_eng = re.compile(ur'[\w ]+$')
 def too_long_name(extra_name, names):
@@ -316,6 +326,20 @@ def too_long_name(extra_name, names):
             return False
     return True
     
+def too_short_name(extra_name):
+    if len(extra_name) == 1:
+        return True
+    return False
+
+def error_bracket_name(extra_name, names):
+    is_bracket = False
+    for name in names:
+        if name.startswith(u'《') and name.endswith(u'》'):
+            is_bracket = True
+    if is_bracket:
+        if not extra_name.startswith(u'《') or not extra_name.endswith(u'》'):
+            return True
+    return False
     
 
 def debug():
