@@ -307,7 +307,9 @@ def too_long_name(extra_name, names):
         return False
     extra_length = len(extra_name)
     for name in names:
-        if len(name) + 5 < extra_name:
+        if re_eng.match(name):
+            continue
+        if len(name) + 5 >= len(extra_name):
             return False
     return True
     
