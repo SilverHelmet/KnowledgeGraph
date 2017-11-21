@@ -5,6 +5,7 @@ import os
 from src.extractor.resource import Resource
 from tqdm import tqdm
 import json
+from src.extractor.util import get_domain
 
 class SummaryNameExtractor():
     def __init__(self):
@@ -251,10 +252,21 @@ def load_keywords(error_path, keyword_path, limit):
 def extract_summary_name(summary_path, keywords, outpath):
     Print('extract extra name from ')
     url2names = Resource.get_singleton().get_url2names()
+    bk_info_map = Resource.get_singleton().get_baike_info()
+    error_domains = ['fb:chemistry']
     ext = SummaryNameExtractor()
     outf = file(outpath, 'w')
     for line in tqdm(file(summary_path), total = nb_lines_of(summary_path)):
         url, summary = line.split('\t')
+        types = bk_info_map[url].types
+
+        in_error_domain = False
+        for bk_type in types:
+            if get_domain(bk_type) in error_domains:
+                in_error_domain = True
+        if in_error_domain:
+            continue
+        
         summary = json.loads(summary)['summary']
         summary = summary.replace(u'（', '(').replace(u'）', u')')
 
