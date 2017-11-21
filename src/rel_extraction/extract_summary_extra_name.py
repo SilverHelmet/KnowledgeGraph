@@ -153,6 +153,9 @@ class SummaryNameExtractor():
         mapped_key = self.find_only_key(mapped_keys)
         if mapped_key is None:
             return None
+        pos = rest_sentence.find(mapped_key)
+        if pos > 15:
+            return None
         return self.get_extra_name_from_key(rest_sentence, mapped_key)
 
 
