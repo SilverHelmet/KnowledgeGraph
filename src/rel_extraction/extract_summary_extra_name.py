@@ -208,7 +208,7 @@ def collect_keyword(train_log_path, outpath, limit):
     outf.close()
 
 def load_keywords(error_path, keyword_path, limit):
-    good_ends = [u'是',u':', u'为', u'：', '称']
+    good_ends = [u'是',u':', u'为', u'：']
     error_keys = load_file(error_keyword_path)
     error_keys = set([x.decode('utf-8') for x in error_keys])
     
