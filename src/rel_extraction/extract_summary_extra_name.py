@@ -64,20 +64,21 @@ class SummaryNameExtractor():
             pos = rest_sent.find(name)
             if pos == -1:
                 continue
-            ed = pos + len(name)
-            if ed >= len(rest_sent):
-                continue
-            if rest_sent[ed] not in self.end_puncs and rest_sent[ed] not in self.commas:
-                continue
-
             if pos < second_name_pos[0]:
                 second_name_pos = (pos, len(name))
 
         if second_name_pos[0] == 10000:
             return None
+
         second_name = rest_sent[second_name_pos[0]:second_name_pos[0] + second_name_pos[1]]
 
         if second_name == first_name:
+            return None
+
+        ed = second_name_pos[0] + second_name_pos[1]
+        if ed >= len(rest_sent):
+            return None
+        if rest_sent[ed] not in self.end_puncs and rest_sent[ed] not in self.commas:
             return None
 
         right = second_name_pos[0]
