@@ -247,6 +247,11 @@ def load_keywords(error_path, keyword_path, limit):
             extra_keys.add(key + end)
     keys.update(extra_keys)
 
+    extra_keys = set()
+    for key in keys:
+        if key 
+
+
     return keys
 
 def extract_summary_name(summary_path, keywords, outpath):
