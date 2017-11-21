@@ -6,6 +6,7 @@ from src.extractor.resource import Resource
 from tqdm import tqdm
 import json
 from src.extractor.util import get_domain
+import re
 
 class SummaryNameExtractor():
     def __init__(self):
@@ -246,7 +247,6 @@ def load_keywords(error_path, keyword_path, limit):
             extra_keys.add(key + end)
     keys.update(extra_keys)
 
-
     return keys
 
 def extract_summary_name(summary_path, keywords, outpath):
@@ -291,11 +291,26 @@ def extract_summary_name(summary_path, keywords, outpath):
         
         if extra_name is not None:
             extra_name = extra_name.strip('\'" \t\n')
-            
-            if not extra_name in names and not " " in extra_name and not "\t" in extra_name and not '\n' in extra_name and not '"' in extra_name and not "'" in extra_name:
+            if not has_strange_punc(extra_name) and not too_long_name(extra_name, names) and not extra_name in names:
                 outf.write('%s\t%s\n' %(url, extra_name))
     outf.close()    
-        
+
+def has_strange_punc(extra_name):
+    if  not " " in extra_name and not "\t" in extra_name and not '\n' in extra_name and not '"' in extra_name and not "'" in extra_name:
+         return False
+    return True
+
+re_eng = re.compile(ur'[\w ]+$')
+def too_long_name(extra_name, names):
+    global re_eng
+    if re_eng.match(extra_name):
+        return False
+    extra_length = len(extra_name)
+    for name in names:
+        if len(name) + 5 < extra_name:
+            return False
+    return True
+    
     
 
 def debug():
