@@ -1,5 +1,5 @@
 #encoding: utf-8
-from src.IOUtil import rel_ext_dir, Print
+from src.IOUtil import rel_ext_dir, Print, nb_lines_of
 import os
 from src.extractor.resource import Resource
 from tqdm import tqdm
@@ -92,7 +92,7 @@ def train_extract_summary_name(summary_path, out_path):
     url2names = Resource.get_singleton().get_url2names()
     extor = SummaryNameExtractor()
     Print('train summary extra name')
-    for line in file(summary_path):
+    for line in tqdm(file(summary_path), total = nb_lines_of(summary_path)):
         url, summary = line.split('\t')
         summary = json.loads(summary)['summary']
         names = url2names[url]
