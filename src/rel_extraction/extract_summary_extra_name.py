@@ -8,6 +8,7 @@ import json
 class SummaryNameExtractor():
     def __init__(self):
         self.end_puncs = set([u'。', u'？',u'?', u'!', u'！', u';', u'；'])
+        self.other_puncs = set([u'、'])
         self.commas = [u',', u'，']
         self.left_brackets = [u'(', u'（']
         self.right_brackets = [u')', u'）']
@@ -78,7 +79,7 @@ class SummaryNameExtractor():
         ed = second_name_pos[0] + second_name_pos[1]
         if ed >= len(rest_sent):
             return None
-        if rest_sent[ed] not in self.end_puncs and rest_sent[ed] not in self.commas:
+        if rest_sent[ed] not in self.end_puncs and rest_sent[ed] not in self.commas and not rest_sent[ed] in self.other_puncs:
             return None
 
         right = second_name_pos[0]
