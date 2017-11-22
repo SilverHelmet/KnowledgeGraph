@@ -291,7 +291,7 @@ def extract_summary_name(summary_path, keywords, outpath):
         
         if extra_name is not None:
             extra_name = extra_name.strip()
-            extra_names = unfold(extra_name)
+            extra_names = unfold(extra_name, names)
             succeed_names = []
             for extra_name in extra_names:
                 extra_name = extra_name.strip(u'\'" \t\n”“')
@@ -325,9 +325,13 @@ def unfold(extra_name, ori_names):
             if len(name) <= 1:
                 error_unfold = True
         if error_unfold:
-            return [extra_name]
+            if extra_name.startswith(u'或者'):
+                return []
+            else:
+                return [extra_name]
         else:
             return names
+    
     return [extra_name]
 
 
