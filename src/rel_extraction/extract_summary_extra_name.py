@@ -160,7 +160,7 @@ class SummaryNameExtractor():
             return None
 
         extra_name = self.get_extra_name_from_key(rest_sentence, mapped_key)
-        if len(extra_name) == 0:
+        if extra_name and len(extra_name) == 0:
             return None
         if extra_name is not None and mapped_key in extra_name:
             return None
