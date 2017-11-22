@@ -290,16 +290,48 @@ def extract_summary_name(summary_path, keywords, outpath):
 
         
         if extra_name is not None:
-            extra_name = extra_name.strip('\'" \t\n')
-            if not has_strange_punc(extra_name) \
-                and not too_long_name(extra_name, names) \
-                and not extra_name in names \
-                and not error_bracket_name(extra_name, names) \
-                and not too_short_name(extra_name):
-                outf.write('%s\t%s\n' %(url, extra_name))
-    outf.close()    
+            extra_name = extra_name.strip()
+            extra_names = unfold(extra_name)
+            succeed_names = []
+            for extra_name in extra_names:
+                extra_name = extra_name.strip(u'\'" \t\n”“')
+                if not has_strange_punc(extra_name) \
+                    and not too_long_name(extra_name, names) \
+                    and not extra_name in names \
+                    and not error_bracket_name(extra_name, names) \
+                    and not too_short_name(extra_name):
+                        succeed_names.append(extra_name)
+            if len(succeed_names) > 0:
+                outf.write('%s\t%s\n' %(url, "\t".join(succeed_names)))
+    outf.close()  
 
-strange_puncs = [u' ', u'\t', u'\n', u'"', u'\'', u':', u'：', u')', u'(', u'）', u'）']
+def unfold(extra_name, ori_names):
+    names = []
+    seps = [u'或者',u'或']
+    for sep in seps:
+        if not sep in extra_name:
+            continue
+
+        error_sep = False
+        for name in ori_names:
+            if sep in name:
+                error_sep = True
+        if error_sep:
+            continue
+
+        names = extra_name.split(sep)
+        error_unfold = False
+        for name in names:
+            if len(name) <= 1:
+                error_unfold = True
+        if error_unfold:
+            return [extra_name]
+        else:
+            return names
+    return [extra_name]
+
+
+strange_puncs = [u' ', u'\t', u'\n', u'"', u'\'', u':', u'：', u')', u'(', u'）', u'）', u'”', u'“']
 bracket_puncs = [u'《', u'》']
 def has_strange_punc(extra_name):
     global strange_puncs, brackets
@@ -331,7 +363,7 @@ def too_long_name(extra_name, names):
     return True
     
 def too_short_name(extra_name):
-    if len(extra_name) == 1:
+    if len(extra_name) <= 1:
         return True
     return False
 
