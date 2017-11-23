@@ -84,6 +84,8 @@ if __name__ == "__main__":
             entities = data.entities
             bk_urls = data.bk_urls
             sentence = data.sentence.encode('utf-8')
+            # if sentence != '2014年11月，在巴塞罗那5比1战胜塞维利亚，梅西打破西甲历史进球纪录，提高到了253球。':
+                # continue
             link_map, ner_names = testor.test(sentence, page_info, stf_results_map[sentence])
 
 

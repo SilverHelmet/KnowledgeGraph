@@ -113,12 +113,14 @@ def summary_related_score(summary, page_info, summary_names):
     return score
 
 def page_type_related_score(etype, types, page_info):               
-    if etype in ['Ns']:
+    # if etype in ['Ns']:
+    #     return 0
+    if 'fb:location.location' in types:
         return 0
     domains = page_info.domains
     for fb_type in types:
         domain = get_domain(fb_type)
-        if domain != "fb:organization" and domain != "fb:people" and domain in domains:
+        if domain != "fb:organization" and domain != "fb:people" and domain != 'location' and domain in domains :
             return 30
     return 0
 
@@ -199,7 +201,10 @@ def entity_type_related_score(etype, types):
 class PageMemory:
     def __init__(self):
         self.link_map = {}
-        self.candidate_link_map = {}
+        # self.url2names = Resource.get_singleton().get_url2names()
+
+    def refresh(self):
+        self.link_map.clear()
 
     # def find_link(self, text):
     #     return self.link_map.get(text, None)
@@ -207,10 +212,15 @@ class PageMemory:
     def add(self, ltp_result, str_entity, baike_entity):
         text = ltp_result.text(str_entity.st, str_entity.ed)
         self.link_map[text] = baike_entity
+        for name in str_entity.extra_names:
+            self.link_map[text] = baike_entity
+        # if baike_entity:
+        #     for name in self.url2names[baike_entity.baike_url]:
+        #         self.link_map[name] = baike_entity
         if str_entity.etype == 'Nh' or str_entity.etype == 'Nf':
             self.add_person(text, baike_entity)
-        if str_entity.etype == 'Ni':
-            self.add_organzition(ltp_result, str_entity, baike_entity)
+        # if str_entity.etype == 'Ni':
+            # self.add_organzition(ltp_result, str_entity, baike_entity)
 
     def add_map(self, text, baike_entity):
         self.link_map[text] = baike_entity
@@ -229,7 +239,7 @@ class PageMemory:
         st = str_entity.st
         for ed in range(st + 1, str_entity.ed):
             text = ltp_result.text(st, ed)
-            self.candidate_link_map[text] = baike_entity.baike_url
+            self.link_map[text] = baike_entity
 
 def top_cnt_keys(keys_cnt):
     if len(keys_cnt) == 0:
@@ -257,7 +267,7 @@ class PageMemoryEntityLinker:
         self.location_dict = resource.get_location_dict()
 
         self.lowercase = lowercase
-        self.memory = None
+        self.memory = PageMemory()
 
         self.adjust_pop_by_summary()
 
@@ -272,8 +282,6 @@ class PageMemoryEntityLinker:
         baike_urls_cnt = {}
         for name, score in names: 
             baike_urls = self.name2bk.get(name, [])
-            if name in self.memory.candidate_link_map:
-                baike_urls.append(self.memory.candidate_link_map[name])
             for url in baike_urls:
                 if url not in baike_urls_cnt:
                     baike_urls_cnt[url] = 0
@@ -313,7 +321,7 @@ class PageMemoryEntityLinker:
         if name in self.memory.link_map:
             baike_entity = self.memory.link_map[name]
             if baike_entity is None:
-                pass
+                return []
             else:
                 new_bk_entity = BaikeEntity(str_entity, baike_entity.baike_url, baike_entity.pop, baike_entity.types) 
                 return [new_bk_entity]
@@ -343,8 +351,8 @@ class PageMemoryEntityLinker:
             entity_type_score = entity_type_related_score(str_entity.etype, bk_info.types)
             
             
-            if name == '冰与火之歌' or True:
-                print name, str_entity.etype, bk_url, pop, summary_score, page_type_score, entity_type_score, mapping_score
+            # if name == '冰与火之歌' or True:
+            #     print name, str_entity.etype, bk_url, pop, summary_score, page_type_score, entity_type_score, mapping_score
             baike_entities.append(BaikeEntity(str_entity, bk_url, bk_info.pop + summary_score + page_type_score + entity_type_score + mapping_score, bk_info.types))
 
 
@@ -364,7 +372,7 @@ class PageMemoryEntityLinker:
 
     
     def start_new_page(self, baike_url):
-        self.memory = PageMemory()
+        self.memory.refresh()
         types = self.bk_info_map[baike_url].types
         if 'fb:people.person' in types:
             baike_entity = BaikeEntity(StrEntity(0, 0, "Nh"), baike_url, 200, types)

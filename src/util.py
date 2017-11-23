@@ -1,3 +1,4 @@
+#encoding: utf-8
 import re 
 
 def add_to_dict_list(d, key, value):
@@ -13,9 +14,5 @@ def is_chinese(text):
 
 if __name__ == "__main__":
     import json
-    s = r'{"fb:type.object.type": ["fb:dataworld.information_source"], "fb:type.object.name": ["\"Fertility rate, Demographic Indicators, Vietnam, General Statistics Office of Vietnam\"@en", "\"Fertility rate, Demographic Indicators, Vietnam, General Statistics Office of Vietnam\"@en", "\"Fertility rate, Demographic Indicators, Vietnam, General Statistics Office of Vietnam\"@en"]}'
-    o = json.loads(s)
-    names = o['fb:type.object.name']
-    print len(names), names
-    names = set(names)
-    print len(names), sorted(names)
+    s = u'塞維利亞足球俱樂部'
+    print is_chinese(s)
