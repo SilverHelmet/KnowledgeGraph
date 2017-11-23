@@ -213,7 +213,7 @@ class PageMemory:
         text = ltp_result.text(str_entity.st, str_entity.ed)
         self.link_map[text] = baike_entity
         for name in str_entity.extra_names:
-            self.link_map[text] = baike_entity
+            self.link_map[name] = baike_entity
         # if baike_entity:
         #     for name in self.url2names[baike_entity.baike_url]:
         #         self.link_map[name] = baike_entity
