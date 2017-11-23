@@ -35,8 +35,9 @@ class Resource:
 
     def load_baike_names(self, lowercase):
         path = os.path.join(rel_ext_dir, 'baike_names.tsv')
+        extra_path = os.path.join(rel_ext_dir, 'extra_name/summary_extra_name.tsv')
         
-        name2bk, url2names = load_baike_names_resource(path)
+        name2bk, url2names = load_baike_names_resource([path,extra_path])
 
         self.dict['name2bk'] = name2bk
         self.dict['url2names'] = url2names
@@ -140,20 +141,24 @@ def load_url2names(filepath = None):
         url2names[bk_url] = p[1:]
     return url2names
 
-def load_baike_names_resource(filepath):
-    Print('generate url2names & name2baike from baike name file [%s]' %filepath)
-    total = nb_lines_of(filepath)
+def load_baike_names_resource(filepaths):
     url2names = {}
     name2bk = {}
-    for line in tqdm(file(filepath, 'r'), total = total):
-        p = line.strip().split('\t')
-        bk_url = p[0]
-        names = p[1:]
-        url2names[bk_url] = names
-        for name in names:
-            if not name in name2bk:
-                name2bk[name] = []
-            name2bk[name].append(bk_url)
+    for filepath in filepaths:
+        Print('generate url2names & name2baike from baike name file [%s]' %filepath)
+        total = nb_lines_of(filepath)
+        for line in tqdm(file(filepath, 'r'), total = total):
+            p = line.strip().split('\t')
+            bk_url = p[0]
+            names = p[1:]
+            if bk_url in url2names:
+                url2names[bk_url].extend(names)
+            else:
+                url2names[bk_url] = names
+            for name in names:
+                if not name in name2bk:
+                    name2bk[name] = []
+                name2bk[name].append(bk_url)
     
     return name2bk, url2names
 
