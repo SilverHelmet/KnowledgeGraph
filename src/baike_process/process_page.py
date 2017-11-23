@@ -5,14 +5,14 @@ from ..IOUtil import Print, nb_lines_of
 import json
 
 end_puncs = set([u'。', u'？',u'?', u'!', u'！', u';', u'；'])
-def split_sentences(text):
+def split_sentences(text, max_length = 150):
     global end_puncs
     lines = []
     st = 0
     pos = 0
     ed = len(text)
     while pos < ed:
-        if text[pos] in end_puncs or pos - st >= 150:
+        if text[pos] in end_puncs or pos - st >= max_length:
             lines.append((text[st:pos+1]))
             st = pos+1
         pos += 1

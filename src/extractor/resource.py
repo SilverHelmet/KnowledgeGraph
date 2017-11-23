@@ -2,6 +2,7 @@
 from src.IOUtil import *
 from ltp import LTP
 from src.schema.schema import Schema
+from src.baike_process.process_page import split_sentences
 import os
 import json
 
@@ -194,13 +195,15 @@ def load_bk_static_info(filepath):
     return info_map
 
 def filter_bad_summary(summary):
-    sentences = summary.split(u'。')
+    sentences = split_sentences(summary, max_length = 200)
     new_s = []
     for sentence in sentences:
-        if len(sentence.split("：")) >= 4:
+        if len(sentence) >= 200:
+            break
+        if len(sentence.split(u"：")) >= 4:
             break
         new_s.append(sentence)
-    return u'。'.join(new_s)
+    return u''.join(new_s)
 
 def load_summary_and_infobox(summary_path, infobox_path):
     Print("load summary from [%s]" %summary_path)
@@ -295,5 +298,7 @@ if __name__ == "__main__":
     s1 = Resource.get_singleton()
     s2 = Resource.get_singleton()
     print s1 == s2
+    s = u'《希斯帕尼亚》，西班牙电影，路易斯·霍马、安娜德、胡安·何塞·巴勒斯塔主演。演职员表演员表角色演员备注Galba路易斯·霍马（Llus Homar）Nerea安娜德�阿玛斯（Ana de Armas）Paulo胡安·何塞·巴勒斯塔（Juan Jos Ballesta）Marco何苏斯奥尔梅多（Jesús Olmedo）Viriato罗伯托·恩里奎兹（Roberto Enrquez）TeodoroAntonio Gil-MartinezDarío阿方索巴萨维（Alfonso Bassave）Helena玛努艾拉·维雷丝（Manuela Vells）BárbaraLuz ValdenebroHctor帕布罗·德奎（Pablo Derqui）SabinaÁngela CremonteSandroHovik影片花絮幕后制作西班牙Antena 3电视台大制作黄金时段古装连续剧，讲述了一个西班牙版的《角斗士》的反叛罗马帝国统治的故事，其主要情节和人物维里亚图斯、迦尔巴在两千多年前都有着历史原型。'
+    print filter_bad_summary(s)
 
 

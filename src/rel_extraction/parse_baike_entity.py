@@ -3,22 +3,6 @@ import jieba
 import jieba.posseg as pseg
 from ..mapping.fb_date import BaikeDatetime
 
-end_puncs = set([u'。', u'？',u'?', u'!', u'！', u';', u'；'])
-def split_sentences(text):
-    global end_puncs
-    lines = []
-    st = 0
-    pos = 0
-    ed = len(text)
-    while pos < ed:
-        if text[pos] in end_puncs or pos - st >= 150:
-            lines.append((text[st:pos+1]))
-            st = pos+1
-        pos += 1
-    if st < ed:
-        lines.append(text[st:])
-    return lines
-
 class TimeParser:
     time_flags = set([u't', u'm', u'x'])
 
