@@ -37,11 +37,11 @@ def gen_province_dict():
                 print "province ename: %s %s" %(ename, bk_url)
                 is_province = True
 
-        if is_province:
-            for bk_type in bk_types:
-                if get_domain(bk_type) in error_domains:
-                    is_province = False
-                    print "province error type: %s" %(bk_url)
+        # if is_province:
+        #     for bk_type in bk_types:
+        #         if get_domain(bk_type) in error_domains:
+        #             is_province = False
+        #             print "province error type: %s" %(bk_url)
 
         if is_province:
             province_names.update(enames)
