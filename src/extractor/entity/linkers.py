@@ -118,11 +118,15 @@ def page_type_related_score(etype, types, page_info):
     if 'fb:location.location' in types:
         return 0
     domains = page_info.domains
+    related_domains = set()
     for fb_type in types:
         domain = get_domain(fb_type)
-        if domain != "fb:organization" and domain != "fb:people" and domain != 'location' and domain in domains :
-            return 30
-    return 0
+        if domain != "fb:organization" and domain != "fb:people" and domain != 'location' and domain in domains:
+            related_domains.add(domains)
+    if len(related_domains) > 0:
+        return min(len(related_domains) * 10 + 20, 50)
+    else:
+        return 0
 
 etype_match_map = {
     'Nh': ['fb:people.person', 'fb:fictional_universe.fictional_character', 'fb:fictional_universe.person_in_fiction'],

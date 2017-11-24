@@ -4,7 +4,7 @@ from src.IOUtil import dict_dir, rel_ext_dir, Print
 import os
 from tqdm import tqdm
 
-org_types = ['fborganization.organization', 'fb:sports.sports_team']
+org_types = ['fb:sports.sports_team']
 def is_org(e_types):
     global org_types
     for org_type in org_types:
@@ -12,8 +12,8 @@ def is_org(e_types):
             return True
     return False
 
-def collect_org_suffix(suffix_out_path):
-    Print("collect organization suffix, write to [%s]" %suffix_out_path)
+def collect_team_suffix(suffix_out_path):
+    Print("collect team suffix, write to [%s]" %suffix_out_path)
 
     ename_title_map = Resource.get_singleton().get_baike_ename_title()
     baike_info_map = Resource.get_singleton().get_baike_info()
@@ -44,11 +44,18 @@ def collect_org_suffix(suffix_out_path):
             continue
         outf.write("%s\t%d\n" %(key, cnt))
     outf.close()
+
+def load_team_suffix():
+    inpath = os.path.join(dict_dir, 'team_suffix_cnt.tsv')
+    error_suffix = set([
+        '俱乐部'
+    ])
+    for line in file(inpath)
     
 
 
 if __name__ == "__main__":
-    suffix_out_path = os.path.join(dict_dir, 'org_suffix_cnt.tsv')
+    suffix_out_path = os.path.join(dict_dir, 'team_suffix_cnt.tsv')
     # summary_path = os.path.join(rel_ext_dir, 'baike_filtered_summary.json')
 
-    collect_org_suffix(suffix_out_path)
+    collect_team_suffix(suffix_out_path)
