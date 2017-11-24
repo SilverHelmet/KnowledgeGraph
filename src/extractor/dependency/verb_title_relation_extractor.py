@@ -530,6 +530,14 @@ class VerbRelationExtractor:
             self.dic[i] = self.dic[i].replace("\n","")
         self.debuger.debug('-'*40)
 
+    def deal_with_print(self, node, ltp_result):
+        res = None
+        if isinstance(node, StrEntity) == True:
+            res = ltp_result.text(node.st, node.ed)
+        else:
+            res = node.word
+        return res
+
     def find_tripple(self, ltp_result, e_lis):
         res = []
         entity_lis = []
@@ -597,6 +605,7 @@ class VerbRelationExtractor:
                 for child in verb.children:
                     if child.rel in ['VOB', 'FOB'] and child not in verb.actual_sub and child.postag in ['n', 'nd', 'nh', 'ni', 'nl', 'ns', 'nt', 'nz']:
                         for actual_sub in verb.actual_sub:
+                            child.mark.append(actual_sub)
                             if actual_sub.entity != None:
                                 if child.entity != None:
                                     res.append((actual_sub.entity, None, child.entity))
@@ -634,7 +643,9 @@ class VerbRelationExtractor:
         #target:
         self.find_all_TARGET(verb_lis, entity_lis)
         #step four: return tripple
+        self.debuger.debug("start return tripple!")
         for verb in verb_lis:
+            self.debuger.debug("for verb", verb.word)
             for sub in verb.actual_sub:
                 for obj in verb.obj:
                     self.debuger.debug("-"*20)
@@ -681,16 +692,21 @@ class VerbRelationExtractor:
             for target in verb.target:
                 self.debuger.debug(target.word)
             self.debuger.debug('-'*40)
-        #res = set(res)
+        res = set(res)
+        for node in tree.nodes:
+            self.debuger.debug("node", node.word, "has mark:")
+            for mark in node.mark:
+                tmp = self.deal_with_print(mark, ltp_result)
+                self.debuger.debug(tmp)
         return res
 
 if __name__ == "__main__":
     ltp = LTP(None)
-    ltp_result = ltp.parse("任天堂株式会社总部位于日本京都市。")
+    ltp_result = ltp.parse("Howard是加州理工大学应用物理系的科学家，有麻省理工学院工程硕士学位，是个犹太人。")
     info = PrintInfo()
     info.print_ltp(ltp_result)
     tree = ParseTree(ltp_result)
-    string = ["任天堂", "日本京都市"]
+    string = ["Howard","加州理工大学","麻省理工学院","犹太人"]
     e_lis = []
     for s in string:
         st, ed = ltp_result.search_word(s)
