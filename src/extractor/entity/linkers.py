@@ -121,7 +121,8 @@ def page_type_related_score(etype, types, page_info):
     related_domains = set()
     for fb_type in types:
         domain = get_domain(fb_type)
-        if domain != "fb:organization" and domain != "fb:people" and domain != 'location' and domain in domains:
+        if domain in domains and \
+            domain not in ["fb:organization", "fb:people", "fb:location" ,'fb:award']:
             related_domains.add(domain)
     if len(related_domains) > 0:
         return min(len(related_domains) * 10 + 20, 50)
@@ -366,7 +367,7 @@ class PageMemoryEntityLinker:
             entity_type_score = entity_type_related_score(str_entity.etype, bk_info.types)
             
             
-            # if name == '冰与火之歌' or True:
+            # if True:
             #     print name, str_entity.etype, bk_url, pop, summary_score, page_type_score, entity_type_score, mapping_score
             baike_entities.append(BaikeEntity(str_entity, bk_url, bk_info.pop + summary_score + page_type_score + entity_type_score + mapping_score, bk_info.types))
 
