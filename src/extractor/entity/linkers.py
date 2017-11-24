@@ -371,8 +371,8 @@ class PageMemoryEntityLinker:
             entity_type_score = entity_type_related_score(str_entity.etype, bk_info.types)
             
             
-            if True:
-                print name, str_entity.etype, bk_url, pop, summary_score, page_type_score, entity_type_score, mapping_score
+            # if True:
+            #     print name, str_entity.etype, bk_url, pop, summary_score, page_type_score, entity_type_score, mapping_score
             baike_entities.append(BaikeEntity(str_entity, bk_url, bk_info.pop + summary_score + page_type_score + entity_type_score + mapping_score, bk_info.types))
 
 
