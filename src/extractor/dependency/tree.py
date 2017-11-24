@@ -90,6 +90,7 @@ class Node:
         self.mark = []
         self.actual_sub = []
         self.concept_sub = []
+        self.direct_sub = []
         self.obj = []
         self.att = []
         self.target = []
