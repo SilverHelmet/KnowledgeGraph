@@ -389,25 +389,37 @@ class VerbRelationExtractor:
         verb.obj = obj_res
         return obj_res
 
-    def find_actualsub_by_ATT(self, verb, entity_lis, tree):
+    def find_actualsub_by_ATT(self, verb, entity_lis, tree, old_concept_res):
+        self.debuger.debug("verb", verb.word, "start finding sub by att!")
         res = []
         res_depth = []
         final_res = None
-        for concept_sub in verb.concept_sub:
+        for node in  old_concept_res:
+            self.debuger.debug("verb", verb.word, "concept word:", node.word)
+        for concept_sub in old_concept_res:
             for entity in entity_lis:
-                path1, path2 = tree.find_path(verb.idx, entity.idx)
-                if len(path1) == 1 and self.judge_all_ATT(path2) == True:
+                path1, path2 = tree.find_path(concept_sub.idx, entity.idx)
+                self.debuger.debug("entity:", entity.word,"concept_sub",concept_sub.word)
+                for node in path1:
+                    self.debuger.debug("path1:", node.word)
+                self.debuger.debug("path2:")
+                for node in path2:
+                    self.debuger.debug(node.word, node.rel)
+                if len(path1) == 1 and self.judge_all_ATT(path2[:-1]) == True:
                     res.append(entity)
                     res_depth.append(entity.depth)
+                    self.debuger.debug("entity:", entity.word,"verb",verb.word,"ATT find!")
         if len(res_depth) != 0:
             min_depth = min(res_depth)
             final_res = res[res_depth.index(min_depth)]
+            self.debuger.debug("final_res.word")
         if final_res != None:
             res.append(final_res)
             coo_final_lis = self.find_all_COO(final_res)
             for coo_final in coo_final_lis:
                 if coo_final not in res:
                     res.append(coo_final)
+                    self.debuger.debug("coo_final_res.word")
         return res
 
     def find_rel_sub(self, verb, entity_lis, tree):
@@ -434,7 +446,7 @@ class VerbRelationExtractor:
             for coo_con_sub in coo_con_lis:
                 if coo_con_sub not in old_concept_res:
                     old_concept_res.append(coo_con_sub)
-        actual_res += self.find_actualsub_by_ATT(verb, entity_lis, tree)
+        actual_res += self.find_actualsub_by_ATT(verb, entity_lis, tree, old_concept_res)
         for node in old_concept_res:
             if node not in actual_res:
                 concept_res.append(node)
@@ -537,12 +549,6 @@ class VerbRelationExtractor:
                 if(tmp_verb != None):
                     res.append((entity_lis[i].entity, tmp_verb.idx, entity_lis[j].entity))
                     self.debuger.debug("noun relation found!")
-        #step one: mark sub
-
-        #for each verb mark
-        for verb in verb_lis:
-            self.debuger.debug("verb", verb.word, "start finding its sub!")
-            self.find_rel_sub(verb, entity_lis, tree)
         #find title relationship
         self.build_dict()
         for node in tree.nodes:
@@ -550,7 +556,19 @@ class VerbRelationExtractor:
                 children = self.find_all_ATT_child(node)
                 for nodes in children:
                     if nodes.word in self.dic:
-                        self.deal_with_res(res, None, node, nodes, ltp_result)
+                        if ltp_result.text(node.entity.st, node.entity.ed) != nodes.word:
+                            self.debuger.debug("finding title relation!")
+                            self.debuger.debug("child:", nodes.word)
+                            self.debuger.debug("father:", node.word)
+                            self.debuger.debug("father:", ltp_result.text(node.entity.st, node.entity.ed))
+                            res.append((node.entity, None, nodes.idx))
+                            #self.deal_with_res(res, None, node, nodes, ltp_result)
+        #step one: mark sub
+
+        #for each verb mark
+        for verb in verb_lis:
+            self.debuger.debug("verb", verb.word, "start finding its sub!")
+            self.find_rel_sub(verb, entity_lis, tree)
         #step two: renew sub mark(has 2 type)
         
         #type1: (actual_sub, is, concept_sub)
@@ -668,11 +686,11 @@ class VerbRelationExtractor:
 
 if __name__ == "__main__":
     ltp = LTP(None)
-    ltp_result = ltp.parse("任天堂已经在全球销售超过20亿份游戏软件，缔造了多名游戏史上著名人物，例如马里奥（Mario），大金刚（Donkey Kong）和创造了游戏史上最为经典的游戏，例如《塞尔达传说》（The Legend of Zelda），《口袋妖怪》（Pokémon），《超级马里奥兄弟》(Super Flash Mario )。")
+    ltp_result = ltp.parse("任天堂株式会社总部位于日本京都市。")
     info = PrintInfo()
     info.print_ltp(ltp_result)
     tree = ParseTree(ltp_result)
-    string = ["任天堂", "马里奥",  "塞尔达传说", "口袋妖怪", "超级马里奥兄弟"]
+    string = ["任天堂", "日本京都市"]
     e_lis = []
     for s in string:
         st, ed = ltp_result.search_word(s)
