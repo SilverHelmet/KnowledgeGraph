@@ -425,31 +425,29 @@ class VerbRelationExtractor:
     def find_rel_sub(self, verb, entity_lis, tree):
         if verb.search_sub_mark == True:
             return verb.concept_sub, verb.actual_sub
-        old_concept_res = []
         concept_res = []
         actual_res = []
-        #find all actual sub
+        #find all direct sub
         for child in verb.children:
-            if child.rel == 'SBV' and child in entity_lis:
-                actual_res.append(child)
-        for actual_sub in actual_res:
-            coo_act_lis = self.find_all_COO(actual_sub)
-            for coo_act_sub in coo_act_lis:
-                if coo_act_sub not in actual_res:
-                    actual_res.append(coo_act_sub)
-        #find all concept sub
-        for child in verb.children:
-            if child.rel == 'SBV' and child not in entity_lis:
-                old_concept_res.append(child)
-        for concept_sub in old_concept_res:
-            coo_con_lis = self.find_all_COO(concept_sub)
-            for coo_con_sub in coo_con_lis:
-                if coo_con_sub not in old_concept_res:
-                    old_concept_res.append(coo_con_sub)
-        actual_res += self.find_actualsub_by_ATT(verb, entity_lis, tree, old_concept_res)
-        for node in old_concept_res:
-            if node not in actual_res:
-                concept_res.append(node)
+            if child.rel == 'SBV':
+                verb.direct_sub.append(child)
+        for sub in verb.direct_sub:
+            coo_direct_lis = self.find_all_COO(sub)
+            for direct_sub in coo_direct_lis:
+                if direct_sub not in verb.direct_sub:
+                    verb.direct_sub.append(direct_sub)
+        for sub in verb.direct_sub:
+            if sub.entity != None:
+                actual_res.append(sub)
+            else:
+                concept_res.append(sub)
+        tmp_res = self.find_actualsub_by_ATT(verb, entity_lis, tree, concept_res)
+        for res in tmp_res:
+            if res.entity != None:
+                actual_res.append(res)
+        for res in tmp_res:
+            if res in concept_res:
+                concept_res.remove(res)
         #recursion 
         if len(actual_res) ==  0 and len(concept_res) == 0:
             path = self.find_path_to_root(verb)
