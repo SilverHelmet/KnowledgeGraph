@@ -2,11 +2,12 @@
 from src.IOUtil import rel_ext_dir, Print, nb_lines_of, load_file
 from src.baike_process.process_page import split_sentences
 import os
-from src.extractor.resource import Resource
+from src.extractor.resource import Resource, load_url2names
 from tqdm import tqdm
 import json
 from src.extractor.util import get_domain
 import re
+from src.util import is_no_chinese
 
 class SummaryNameExtractor():
     def __init__(self):
@@ -166,6 +167,44 @@ class SummaryNameExtractor():
             return None
         return extra_name
 
+    def extract_bracket_name_from_snippet(self, snippet, keywords):
+        find_no_subj_name
+
+
+    def extract_bracket_names(self, summary, keywords, names):
+        max_len_name = u""
+        for name in names:
+            if summary.startswith(name) and len(name) > len(max_len_name):
+                max_len_name = name
+        
+        if len(max_len_name) == 0:
+            return []
+
+        left = len(max_len_name)
+        if left < len(summary) and summary[left] == u'(':
+            right = left
+            while right < len(summary) and summary[right] != u')':
+                right += 1
+            if right == len(summary):
+                return []
+
+            text = summary[left+1:right]
+
+            snippets = text.split(u'，')
+            extra_names = []
+            for snippet in snippets:
+                
+                bracket_name = self.find_no_subj_name(snippet, keywords)
+                if bracket_name:
+                    extra_names.append(bracket_name)
+                elif is_no_chinese(snippet):
+                    extra_names.append(snippet)
+            return extra_names
+            
+        else:
+            return []
+
+
 
 
 
@@ -249,13 +288,15 @@ def load_keywords(error_path, keyword_path, limit):
 
     return keys
 
-def extract_summary_name(summary_path, keywords, outpath):
-    Print('extract extra name from ')
-    url2names = Resource.get_singleton().get_url2names()
+def extract_summary_name(summary_path, keywords, outpath, bracket_name_outpath):
+    Print('extract extra name from [%s]' %summary_path)
+    # url2names = Resource.get_singleton().get_url2names()
+    url2names = load_url2names()
     bk_info_map = Resource.get_singleton().get_baike_info()
     error_domains = ['fb:chemistry']
     ext = SummaryNameExtractor()
     outf = file(outpath, 'w')
+    bracket_name_outf = file(bracket_name_outpath, 'w')
     for line in tqdm(file(summary_path), total = nb_lines_of(summary_path)):
         url, summary = line.split('\t')
         types = bk_info_map[url].types
@@ -268,7 +309,7 @@ def extract_summary_name(summary_path, keywords, outpath):
             continue
         
         summary = json.loads(summary)['summary']
-        summary = summary.replace(u'（', '(').replace(u'）', u')')
+        summary = summary.replace(u'（', u'(').replace(u'）', u')')
 
         names = url2names[url]
         names = [x.decode('utf-8') for x in names]
@@ -288,7 +329,7 @@ def extract_summary_name(summary_path, keywords, outpath):
             rest_sentence, first_name = ret
             extra_name = ext.find_new_extra_name(rest_sentence, keywords)
 
-        
+
         if extra_name is not None:
             extra_name = extra_name.strip()
             extra_names = unfold(extra_name, names)
@@ -299,11 +340,41 @@ def extract_summary_name(summary_path, keywords, outpath):
                     and not too_long_name(extra_name, names) \
                     and not extra_name in names \
                     and not error_bracket_name(extra_name, names) \
-                    and not too_short_name(extra_name):
+                    and not too_short_name(extra_name) \
+                    and not digit_in_name(extra_name):
                         succeed_names.append(extra_name)
             if len(succeed_names) > 0:
+                succeed_names = list(set(succeed_names))
                 outf.write('%s\t%s\n' %(url, "\t".join(succeed_names)))
+                names.extend(succeed_names)
+
+        
+        # extract bracket name
+        extra_bracket_names = ext.extract_bracket_names(summary, keywords, names)
+        succeed_names = []
+        for extra_name in extra_bracket_names:
+            extra_name = extra_name.strip()
+            extra_names = unfold(extra_name, names)
+            for extra_name in extra_names:
+                extra_name = extra_name.strip(u'\'" \t\n”“')
+                if not has_strange_punc(extra_name) \
+                    and not too_long_name(extra_name, names) \
+                    and not extra_name in names \
+                    and not too_short_name(extra_name) \
+                    and not digit_in_name(extra_name):
+                        succeed_names.append(extra_name)
+        if len(succeed_names) > 0:
+            succeed_names = list(set(succeed_names))
+            bracket_name_outf.write('%s\t%s\n' %(url, "\t".join(succeed_names)))
+        
     outf.close()  
+    bracket_name_outf.close()
+
+re_digit = re.compile(r'[0-9]')
+def digit_in_name(extra_name):
+    global re_digit
+    return re_digit.search(extra_name) is not None
+    
 
 def unfold(extra_name, ori_names):
     names = []
@@ -335,10 +406,12 @@ def unfold(extra_name, ori_names):
     return [extra_name]
 
 
-strange_puncs = [u' ', u'\t', u'\n', u'"', u'\'', u':', u'：', u')', u'(', u'）', u'）', u'”', u'“', u']',u'[',u'】',u'【']
+strange_puncs = [u'\t', u'\n', u'"', u'\'', u':', u'：', u')', u'(', u'）', u'）', u'”', u'“', u']',u'[',u'】',u'【', u',', u'，', u'、']
 bracket_puncs = [u'《', u'》']
 def has_strange_punc(extra_name):
     global strange_puncs, brackets
+    if u' ' in extra_name and not is_no_chinese(extra_name):
+        return True
     for punc in strange_puncs:
         if punc in extra_name:
             return True
@@ -353,14 +426,18 @@ def has_strange_punc(extra_name):
             return True
     return False
 
-re_eng = re.compile(ur'[\w ]+$')
+# re_eng = re.compile(ur'[\w ]+$')
 def too_long_name(extra_name, names):
     global re_eng
-    if re_eng.match(extra_name):
+    # if re_eng.match(extra_name):
+    #     return False
+    if is_no_chinese(extra_name):
         return False
     extra_length = len(extra_name)
     for name in names:
-        if re_eng.match(name):
+        # if re_eng.match(name):
+        #     continue
+        if is_no_chinese(name):
             continue
         if len(name) + 5 >= len(extra_name):
             return False
@@ -396,11 +473,12 @@ def debug():
 
 
 if __name__ == "__main__":
-    summary_path = os.path.join(rel_ext_dir, 'baike_summary.json')
+    summary_path = os.path.join(rel_ext_dir, 'baike_filtered_summary.json')
     train_log_path = os.path.join(rel_ext_dir, 'extra_name/summary_extra_name.train.tsv')
     keyword_path = os.path.join(rel_ext_dir, 'extra_name/summary_name_key_word_cnt.tsv')
     error_keyword_path = os.path.join(rel_ext_dir, 'extra_name/error_keys.txt')
     new_extra_name_path = os.path.join(rel_ext_dir, 'extra_name/summary_extra_name.tsv')
+    new_extra_bracket_name_path = os.path.join(rel_ext_dir, 'extra_name/summary_extra_bracket_name.tsv')
     # debug()
 
     # train_extract_summary_name(summary_path, train_log_path)
@@ -408,7 +486,7 @@ if __name__ == "__main__":
     collect_keyword(train_log_path, keyword_path, 10)
 
     keywords = load_keywords(error_keyword_path, keyword_path, 10)
-    extract_summary_name(summary_path, keywords, new_extra_name_path)
+    extract_summary_name(summary_path, keywords, new_extra_name_path, new_extra_bracket_name_path)
 
     
 

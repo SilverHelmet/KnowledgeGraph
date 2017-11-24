@@ -248,7 +248,7 @@ class PageMemory:
 
     def find_link(self, name, etype):
         text = name + '#' + etype
-        return self.link_map.get[text]
+        return self.link_map[text]
 
 def top_cnt_keys(keys_cnt):
     if len(keys_cnt) == 0:
@@ -328,7 +328,7 @@ class PageMemoryEntityLinker:
             str_entity.etype = "Ns"
 
         if self.memory.had_link(name, str_entity.etype):
-            baike_entity = self.memory.find_link(name, str_entity.etypr)
+            baike_entity = self.memory.find_link(name, str_entity.etype)
             if baike_entity is None:
                 return []
             else:
@@ -387,9 +387,10 @@ class PageMemoryEntityLinker:
             baike_entity = BaikeEntity(StrEntity(0, 0, "Nh"), baike_url, 200, types)
             names = self.url2names[baike_url]
             for name in names:
-                self.memory.add_map(name, baike_entity)
-                self.memory.add_person(name, baike_entity)
-
+                self.memory.add_map(name, "Nh", baike_entity)
+                self.memory.add_person(name, "Nh", baike_entity)
+                self.memory.add_map(name, "Nf", baike_entity)
+                self.memory.add_person(name, "Nf", baike_entity)
     def add_sentence(self, ltp_result, str_entities, baike_entities):
         for i in range(len(str_entities)):
             str_entity = str_entities[i]
