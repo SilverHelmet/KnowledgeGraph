@@ -2,7 +2,6 @@
 from src.IOUtil import *
 from ltp import LTP
 from src.schema.schema import Schema
-from src.baike_process.process_page import split_sentences
 import os
 import json
 
@@ -194,16 +193,7 @@ def load_bk_static_info(filepath):
         info_map[bk_url] = info
     return info_map
 
-def filter_bad_summary(summary):
-    sentences = split_sentences(summary, max_length = 200)
-    new_s = []
-    for sentence in sentences:
-        if len(sentence) >= 200:
-            break
-        if len(sentence.split(u"：")) >= 4:
-            break
-        new_s.append(sentence)
-    return u''.join(new_s)
+
 
 def load_summary_and_infobox(summary_path, infobox_path):
     Print("load summary from [%s]" %summary_path)
