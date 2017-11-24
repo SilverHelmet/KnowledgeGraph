@@ -406,7 +406,8 @@ def unfold(extra_name, ori_names):
     return [extra_name]
 
 
-strange_puncs = [u'\t', u'\n', u'"', u'\'', u':', u'：', u')', u'(', u'）', u'）', u'”', u'“', u']',u'[',u'】',u'【', u',', u'，', u'、']
+strange_puncs = [u'\t', u'\n', u'"', u'\'', u':', u'：', u')', u'(', u'）', u'）', \
+         u'”', u'“', u']',u'[',u'】',u'【', u',', u'，', u'、', u'~', u'-', u'?', u'？']
 bracket_puncs = [u'《', u'》']
 def has_strange_punc(extra_name):
     global strange_puncs, brackets
