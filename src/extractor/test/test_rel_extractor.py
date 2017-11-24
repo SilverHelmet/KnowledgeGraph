@@ -227,11 +227,20 @@ def print_all(extractor, ltp):
     tagnum = 0
     conum = 0
     conum_noverb = 0
+    path = "result/show_no_extract.txt"
+    f = open(path, "w")
     for url in datas_map:
         datas = datas_map[url]
         for data in datas:
             standard_triple = []
             triples, ner_res = testor.test_all(data)
+            if len(triples) == 0 and len(data.knowledges) != 0:
+                f.write(data.sentence)
+                f.write('\n')
+                for kl in data.knowledges:
+                    f.write(kl.triple())
+                    f.write('\n') 
+                f.write('\n')
             # if data.sentence != u'《青花瓷》是方文山作词，周杰伦作曲并演唱的歌曲，收录于2007年11月2日周杰伦制作发行音乐专辑《我很忙》中。':
             #     continue
             print data.sentence
@@ -262,6 +271,7 @@ def print_all(extractor, ltp):
                     (triple[0] == standard_triple[j][2] and \
                     triple[2] == standard_triple[j][0]):
                         conum_noverb += 1
+    f.close()
     print "extractnum is:", extractnum
     print "tagnum is:", tagnum
     print "conum is:", conum
