@@ -6,7 +6,6 @@ from src.IOUtil import Print, nb_lines_of, result_dir, rel_ext_dir
 import json
 import base64
 import os
-from src.extractor.resource import filter_bad_summary
 from src.baike_process.process_page import split_sentences
 
 def parse(filepath, entities, outf):
