@@ -317,6 +317,14 @@ class VerbRelationExtractor:
                 res += self.find_all_COO_child(child)
         return res
 
+    def find_all_ATT_child(self, node):
+        res = []
+        for child in node.children:
+            if child.rel == 'ATT':
+                res.append(child)
+                res += self.find_all_ATT_child(child)
+        return res
+
     def find_all_COO(self, node):
         res = self.find_all_COO_father(node) + self.find_all_COO_child(node)
         return res
@@ -356,17 +364,6 @@ class VerbRelationExtractor:
                 res += self.find_normal_verb_OBJ(child, entity_lis)
         return res
 
-    '''
-    def find_all_OBJ(self, entity_lis):
-        for entity in entity_lis:
-            path = self.find_path_to_root(entity)
-            for node in path[:-1]:
-                if node.father.postag == 'v':
-                    if node.rel in ['VOB', 'FOB']:
-                        if entity not in node.father.obj:
-                            node.father.obj.append(entity)
-                    break
-    '''
     def find_verb_OBJ(self, verb, entity_lis):
         if verb.search_obj_mark == True:
             self.debuger.debug("the object of verb", verb.word ,"has been found!")
@@ -391,18 +388,7 @@ class VerbRelationExtractor:
         verb.search_obj_mark = True
         verb.obj = obj_res
         return obj_res
-    '''
-    def find_special_OBJ(self, entity_lis, verb):
-        for child in verb.children:
-            if child.rel in ['VOB', 'FOB'] and child.postag == 'v':
-                tmp = self.find_all_direct_SBV(child)
-                if len(tmp) != 0:
-                    verb.obj += tmp
-                else:
-                    verb.obj += self.find_special_OBJ(entity_lis, child)
-                    break
-        return verb.obj
-    '''
+
     def find_actualsub_by_ATT(self, verb, entity_lis, tree):
         res = []
         res_depth = []
@@ -427,6 +413,7 @@ class VerbRelationExtractor:
     def find_rel_sub(self, verb, entity_lis, tree):
         if verb.search_sub_mark == True:
             return verb.concept_sub, verb.actual_sub
+        old_concept_res = []
         concept_res = []
         actual_res = []
         #find all actual sub
@@ -441,25 +428,27 @@ class VerbRelationExtractor:
         #find all concept sub
         for child in verb.children:
             if child.rel == 'SBV' and child not in entity_lis:
-                concept_res.append(child)
-        for concept_sub in concept_res:
+                old_concept_res.append(child)
+        for concept_sub in old_concept_res:
             coo_con_lis = self.find_all_COO(concept_sub)
             for coo_con_sub in coo_con_lis:
-                if coo_con_sub not in concept_res:
-                    concept_res.append(coo_con_sub)
-        if len(actual_res) == 0 and len(concept_res) != 0:
-            actual_res = self.find_actualsub_by_ATT(verb, entity_lis, tree)
+                if coo_con_sub not in old_concept_res:
+                    old_concept_res.append(coo_con_sub)
+        actual_res += self.find_actualsub_by_ATT(verb, entity_lis, tree)
+        for node in old_concept_res:
+            if node not in actual_res:
+                concept_res.append(node)
         #recursion 
-        if len(actual_res) == 0:
+        if len(actual_res) ==  0 and len(concept_res) == 0:
             path = self.find_path_to_root(verb)
             for node in path:
                 if node.rel not in ['COO', 'VOB']:
                     break
                 if node.father.postag == 'v':
                     con_res, act_res = self.find_rel_sub(node.father, entity_lis, tree)
-                    if len(act_res) != 0:
-                        actual_res = act_res
-                        break
+                    actual_res = act_res
+                    concept_res = con_res
+                    break
         #renew
         verb.search_sub_mark = True
         verb.actual_sub = actual_res
@@ -472,7 +461,8 @@ class VerbRelationExtractor:
         res1 = []
         res2 = []
         r1 = []
-        r2 = verb.word
+        if verb != None:
+            r2 = verb.word
         r3 = []
         if len(e1.mark) != 0:
             op1 = e1.mark
@@ -498,8 +488,12 @@ class VerbRelationExtractor:
                 r3.append(i.word)
         for i in range(len(res1)):
             for j in range(len(res2)):
-                res.append((res1[i], verb.idx, res2[j]))
-                self.debuger.debug(r1[i], r2, r3[j])
+                if verb != None:
+                    res.append((res1[i], verb.idx, res2[j]))
+                    self.debuger.debug(r1[i], r2, r3[j])
+                else:
+                    res.append((res1[i], None, res2[j]))
+                    self.debuger.debug(r1[i], "是", r3[j])
 
     def premark_entity(self, tree, e_lis, ltp_result):
         self.debuger.debug('|'*40)
@@ -509,6 +503,20 @@ class VerbRelationExtractor:
                 node.entity = e
                 self.debuger.debug("node", node.word ,"mark as entity:", ltp_result.text(e.st, e.ed))
         self.debuger.debug('|'*40)
+
+    def build_dict(self):
+        self.dic = []
+        root = "result/rel_extraction/dict/"
+        #name = ["nationality.txt", "full_profession.txt", "province.txt", "langauge.txt", "citytown.txt"]
+        name = ["nationality.txt", "full_profession.txt"]
+        for n in name:
+            with open(root+n, "r") as f:
+                res = f.readlines()
+                self.dic += res
+        self.debuger.debug('-'*40)
+        for i in range(len(self.dic)):
+            self.dic[i] = self.dic[i].replace("\n","")
+        self.debuger.debug('-'*40)
 
     def find_tripple(self, ltp_result, e_lis):
         res = []
@@ -530,12 +538,23 @@ class VerbRelationExtractor:
                     res.append((entity_lis[i].entity, tmp_verb.idx, entity_lis[j].entity))
                     self.debuger.debug("noun relation found!")
         #step one: mark sub
+
         #for each verb mark
         for verb in verb_lis:
+            self.debuger.debug("verb", verb.word, "start finding its sub!")
             self.find_rel_sub(verb, entity_lis, tree)
+        #find title relationship
+        self.build_dict()
+        for node in tree.nodes:
+            if node.entity != None:
+                children = self.find_all_ATT_child(node)
+                for nodes in children:
+                    if nodes.word in self.dic:
+                        self.deal_with_res(res, None, node, nodes, ltp_result)
         #step two: renew sub mark(has 2 type)
         
         #type1: (actual_sub, is, concept_sub)
+        '''
         for verb in verb_lis:
             if len(verb.actual_sub) != 0 and len(verb.concept_sub) != 0:
                 for actual_sub in verb.actual_sub:
@@ -553,7 +572,7 @@ class VerbRelationExtractor:
                             else:
                                 res.append((actual_sub.idx, None, concept_sub.idx))
                         self.debuger.debug("is relation found:(actual_sub, is, concept_sub)")
-        
+        '''
         #type2: (actual_sub, is, direct_obj_of_is)
         for verb in verb_lis:
             if verb.word == '是' and len(verb.actual_sub) != 0:
@@ -573,9 +592,11 @@ class VerbRelationExtractor:
                             self.debuger.debug("is relation found:(actual_sub, is, direct_obj_of_is)")
 
         #type1: concept_sub => actual_sub
+        '''
         for verb in verb_lis:
             for concept_sub in verb.concept_sub:
                 concept_sub.mark = verb.actual_sub
+        '''
         
         #type2: is relation + direct_obj => actual_sub
         for verb in verb_lis:
@@ -647,11 +668,11 @@ class VerbRelationExtractor:
 
 if __name__ == "__main__":
     ltp = LTP(None)
-    ltp_result = ltp.parse("8月30日吉姆·帕森斯荣获艾美奖喜剧类最佳男主角奖。")
+    ltp_result = ltp.parse("任天堂已经在全球销售超过20亿份游戏软件，缔造了多名游戏史上著名人物，例如马里奥（Mario），大金刚（Donkey Kong）和创造了游戏史上最为经典的游戏，例如《塞尔达传说》（The Legend of Zelda），《口袋妖怪》（Pokémon），《超级马里奥兄弟》(Super Flash Mario )。")
     info = PrintInfo()
     info.print_ltp(ltp_result)
     tree = ParseTree(ltp_result)
-    string = ["吉姆·帕森斯", "艾美奖"]
+    string = ["任天堂", "马里奥",  "塞尔达传说", "口袋妖怪", "超级马里奥兄弟"]
     e_lis = []
     for s in string:
         st, ed = ltp_result.search_word(s)
@@ -683,20 +704,3 @@ if __name__ == "__main__":
     ret = set(ret)
     for triple in ret:
         print '\t%s' %('\t'.join(triple))
-    '''
-    r1 = r2 = None
-    for k, item in enumerate(tripple_res):
-        print 'tripple', k, 'is:'
-        if isinstance(item[0], int) == False:
-            r1 = ltp_result.text(item[0].st, item[0].ed)
-        else:
-            r1 = tree.nodes[item[0]].word
-        if isinstance(item[2], int) == False:
-            r2 = ltp_result.text(item[2].st, item[2].ed)
-        else:
-            r2 = tree.nodes[item[2]].word
-        if item[1] == None:
-            print"(", r1, '是', r2,")"
-        else:
-            print"(", r1, tree.nodes[item[1]].word, r2, ")"
-    '''
