@@ -10,6 +10,7 @@ def get_error_domains():
     error_types = ['fb:people.person', 'fb:film.film', 'fb:book.book', 'fb:book.written_work', 'fb:cvg.computer_videogame', 'fb:tv.tv_program', 'fb:book.periodical', 'fb:comic_books.comic_book_series']
     error_domains = set([get_domain(bk_type) for bk_type in error_types])
     error_domains.add('fb:award')
+    error_domains.add('fb:music')
     return error_domains
 
 if __name__ == "__main__":
