@@ -250,7 +250,7 @@ class PageMemory:
     def find_link(self, name, etype):
         # text = name + '#' + etype
         # return self.link_map[text]
-        return self.link_map[text]
+        return self.link_map[name]
 
 def top_cnt_keys(keys_cnt):
     if len(keys_cnt) == 0:
