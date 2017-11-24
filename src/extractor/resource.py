@@ -261,7 +261,7 @@ def load_predicate_map(filepath = None, extra_path = None):
     return predicate_map
 
 def load_baike_ename_title():
-    path = os.path.join(result_dir, '360/360_entity_info.json')
+    path = os.path.join(result_dir, '360/360_entity_info_processed.json')
     Print('load baike\'s ename and title from [%s]' %path)
     ename_title_map = {}
     for line in tqdm(file(path), total = nb_lines_of(path)):

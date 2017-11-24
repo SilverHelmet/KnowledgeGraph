@@ -481,7 +481,7 @@ if __name__ == "__main__":
     summary_path = os.path.join(rel_ext_dir, 'baike_filtered_summary.json')
     train_log_path = os.path.join(rel_ext_dir, 'extra_name/summary_extra_name.train.tsv')
     keyword_path = os.path.join(rel_ext_dir, 'extra_name/summary_name_key_word_cnt.tsv')
-    error_keyword_path = os.path.join(rel_ext_dir, 'extra_name/error_keys.txt')
+    error_keyword_path = os.path.join(rel_ext_dir, 'extra_name/summary_error_keys.txt')
     new_extra_name_path = os.path.join(rel_ext_dir, 'extra_name/summary_extra_name.tsv')
     new_extra_bracket_name_path = os.path.join(rel_ext_dir, 'extra_name/summary_extra_bracket_name.tsv')
     # debug()
