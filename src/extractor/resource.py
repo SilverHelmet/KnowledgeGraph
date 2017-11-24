@@ -35,9 +35,10 @@ class Resource:
 
     def load_baike_names(self, lowercase):
         path = os.path.join(rel_ext_dir, 'baike_names.tsv')
-        extra_path = os.path.join(rel_ext_dir, 'extra_name/summary_extra_name.tsv')
+        extra_path = os.path.join(extra_name_dir, 'summary_extra_name.tsv')
+        extra_bracket_path = os.path.join(extra_name_dir, 'summary_extra_bracket_name.tsv')
         
-        name2bk, url2names = load_baike_names_resource([path,extra_path])
+        name2bk, url2names = load_baike_names_resource([path, extra_path, extra_bracket_path])
 
         self.dict['name2bk'] = name2bk
         self.dict['url2names'] = url2names
