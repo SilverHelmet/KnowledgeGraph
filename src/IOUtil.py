@@ -45,7 +45,9 @@ def load_json_map(in_path, total = None):
 def load_file(in_path):
     ret = []
     for line in file(in_path):
-        ret.append(line.strip())
+        l = line.strip()
+        if len(l) > 0:
+            ret.append(line.strip())
     return ret
      
 def load_json_dict(path):

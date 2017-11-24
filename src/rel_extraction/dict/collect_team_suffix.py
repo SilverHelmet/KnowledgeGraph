@@ -1,8 +1,9 @@
 from src.extractor.util import get_domain
 from src.extractor.resource import Resource
-from src.IOUtil import dict_dir, rel_ext_dir, Print
+from src.IOUtil import dict_dir, rel_ext_dir, Print, load_file
 import os
 from tqdm import tqdm
+import re 
 
 org_types = ['fb:sports.sports_team']
 def is_org(e_types):
@@ -45,12 +46,21 @@ def collect_team_suffix(suffix_out_path):
         outf.write("%s\t%d\n" %(key, cnt))
     outf.close()
 
+re_eng_digit = re.compile(r'[0-9a-zA-Z]')
+def has_eng_digit(name):
+    global re_eng_digit
+    return re_eng_digit.search(name) is not None
+
 def load_team_suffix():
     inpath = os.path.join(dict_dir, 'team_suffix_cnt.tsv')
-    error_suffix = set([
-        '俱乐部'
-    ])
-    for line in file(inpath)
+    error_suffix_path = os.path.join(dict_dir, 'team_error_suffix.txt')
+    suffixes = set()
+    for line in file(inpath):
+        suffixes.add(line.split('\t')[0])
+    error_suf = set(load_file(error_suffix_path))
+    good_suf = set([suf for suf in suffixes if not suf in error_suf])
+    return good_suf
+        
     
 
 
@@ -58,4 +68,5 @@ if __name__ == "__main__":
     suffix_out_path = os.path.join(dict_dir, 'team_suffix_cnt.tsv')
     # summary_path = os.path.join(rel_ext_dir, 'baike_filtered_summary.json')
 
-    collect_team_suffix(suffix_out_path)
+    # collect_team_suffix(suffix_out_path)
+    load_team_suffix()
