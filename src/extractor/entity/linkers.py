@@ -214,7 +214,7 @@ class PageMemory:
         self.link_map[text] = baike_entity
         etype = str_entity.etype
         for name in str_entity.extra_names:
-            self.link_map[name + '#' + etype] = baike_entity
+            self.add_map(name, etype, baike_entity)
         # if baike_entity:
         #     for name in self.url2names[baike_entity.baike_url]:
         #         self.link_map[name] = baike_entity
@@ -222,10 +222,6 @@ class PageMemory:
             self.add_person(text, str_entity.etype, baike_entity)
         # if str_entity.etype == 'Ni':
             # self.add_organzition(ltp_result, str_entity, baike_entity)
-
-    def add_map(self, text, etype, baike_entity):
-        self.link_map[text + "#" + etype] = baike_entity
-
 
     def add_person(self, text, etype, baike_entity):
         person_names = person_extra_names(text)
@@ -242,12 +238,18 @@ class PageMemory:
             text = ltp_result.text(st, ed)
             self.add_map(text, str_entity.etype, baike_entity)
 
+    def add_map(self, text, etype, baike_entity):
+        # self.link_map[text + "#" + etype] = baike_entity
+        self.link_map[text] = baike_entity
+
     def had_link(self, name, etype):
-        text = name + '#' + etype
-        return text in self.link_map
+        # text = name + '#' + etype
+        # return text in self.link_map
+        return name in self.link_map
 
     def find_link(self, name, etype):
-        text = name + '#' + etype
+        # text = name + '#' + etype
+        # return self.link_map[text]
         return self.link_map[text]
 
 def top_cnt_keys(keys_cnt):
