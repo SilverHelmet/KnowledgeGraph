@@ -538,6 +538,30 @@ class VerbRelationExtractor:
             res = node.word
         return res
 
+    def deal_with_tripple(self, node, ltp_result):
+        res = None
+        if isinstance(node, StrEntity) == True:
+            res = ltp_result.text(node.st, node.ed)
+        else:
+            res = ltp_result.text(node, node+1)
+        return res
+
+    def judge_remove_is(self, tripple, ltp_result):
+        ret = False
+        flag = 0
+        if (tripple[1] != None and ltp_result.text(tripple[1], tripple[1]+1) == "是") or (tripple[1] == None):
+            flag =1
+        if flag == 1:
+            self.debuger.debug("verb is \"is\"")
+            r1 = self.deal_with_tripple(tripple[0], ltp_result)
+            r2 = self.deal_with_tripple(tripple[2], ltp_result)
+            self.debuger.debug("r1 is ",r1)
+            self.debuger.debug("r2 is ",r2)
+            if r1 == r2:
+                ret = True
+                self.debuger.debug("tripple (a, is, a) is removed!")
+        return ret
+
     def find_tripple(self, ltp_result, e_lis):
         res = []
         entity_lis = []
@@ -693,20 +717,24 @@ class VerbRelationExtractor:
                 self.debuger.debug(target.word)
             self.debuger.debug('-'*40)
         res = set(res)
+        final_res = []
+        for i in res:
+            if self.judge_remove_is(i, ltp_result) == False:
+                final_res.append(i)
         for node in tree.nodes:
             self.debuger.debug("node", node.word, "has mark:")
             for mark in node.mark:
                 tmp = self.deal_with_print(mark, ltp_result)
                 self.debuger.debug(tmp)
-        return res
+        return final_res
 
 if __name__ == "__main__":
     ltp = LTP(None)
-    ltp_result = ltp.parse("Howard是加州理工大学应用物理系的科学家，有麻省理工学院工程硕士学位，是个犹太人。")
+    ltp_result = ltp.parse("《青花瓷》又是一首周杰伦演唱的中国风，但它这种离愁别绪被描写得更加婉转细腻，隐藏得愈加含蓄而韵味别生，仿佛青橄榄在口，可以慢慢回味。")
     info = PrintInfo()
     info.print_ltp(ltp_result)
     tree = ParseTree(ltp_result)
-    string = ["Howard","加州理工大学","麻省理工学院","犹太人"]
+    string = ["青花瓷", "周杰伦","中国风"]
     e_lis = []
     for s in string:
         st, ed = ltp_result.search_word(s)
