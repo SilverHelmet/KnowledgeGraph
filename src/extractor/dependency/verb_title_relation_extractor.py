@@ -584,10 +584,10 @@ class VerbRelationExtractor:
         #find title relationship
         self.build_dict()
         for node in tree.nodes:
-            if node.entity != None:
+            if node.entity != None and node.postag in ['n', 'nd', 'nh', 'ni', 'nl', 'ns', 'nt', 'nz']:
                 children = self.find_all_ATT_child(node)
                 for nodes in children:
-                    if nodes.word in self.dic:
+                    if nodes.word in self.dic and nodes.postag in ['n', 'nd', 'nh', 'ni', 'nl', 'ns', 'nt', 'nz']:
                         if ltp_result.text(node.entity.st, node.entity.ed) != nodes.word:
                             self.debuger.debug("finding title relation!")
                             self.debuger.debug("child:", nodes.word)
