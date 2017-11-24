@@ -212,26 +212,27 @@ class PageMemory:
     def add(self, ltp_result, str_entity, baike_entity):
         text = ltp_result.text(str_entity.st, str_entity.ed)
         self.link_map[text] = baike_entity
+        etype = str_entity.etype
         for name in str_entity.extra_names:
-            self.link_map[name] = baike_entity
+            self.link_map[name + '#' + etype] = baike_entity
         # if baike_entity:
         #     for name in self.url2names[baike_entity.baike_url]:
         #         self.link_map[name] = baike_entity
         if str_entity.etype == 'Nh' or str_entity.etype == 'Nf':
-            self.add_person(text, baike_entity)
+            self.add_person(text, str_entity.etype, baike_entity)
         # if str_entity.etype == 'Ni':
             # self.add_organzition(ltp_result, str_entity, baike_entity)
 
-    def add_map(self, text, baike_entity):
-        self.link_map[text] = baike_entity
+    def add_map(self, text, etype, baike_entity):
+        self.link_map[text + "#" + etype] = baike_entity
 
 
-    def add_person(self, text, baike_entity):
+    def add_person(self, text, etype, baike_entity):
         person_names = person_extra_names(text)
         for name in person_names:
             if type(name) is unicode:
                 name = name.encode('utf-8')
-            self.link_map[name] = baike_entity
+            self.add_map(name, etype, baike_entity)
 
     def add_organzition(self, ltp_result, str_entity, baike_entity): 
         if baike_entity is None:
@@ -239,7 +240,15 @@ class PageMemory:
         st = str_entity.st
         for ed in range(st + 1, str_entity.ed):
             text = ltp_result.text(st, ed)
-            self.link_map[text] = baike_entity
+            self.add_map(text, str_entity.etype, baike_entity)
+
+    def had_link(self, name, etype):
+        text = name + '#' + etype
+        return text in self.link_map
+
+    def find_link(self, name, etype):
+        text = name + '#' + etype
+        return self.link_map.get[text]
 
 def top_cnt_keys(keys_cnt):
     if len(keys_cnt) == 0:
@@ -318,8 +327,8 @@ class PageMemoryEntityLinker:
             name = ltp_result.text(str_entity.ed - 1, str_entity.ed)
             str_entity.etype = "Ns"
 
-        if name in self.memory.link_map:
-            baike_entity = self.memory.link_map[name]
+        if self.memory.had_link(name, str_entity.etype):
+            baike_entity = self.memory.find_link(name, str_entity.etypr)
             if baike_entity is None:
                 return []
             else:
