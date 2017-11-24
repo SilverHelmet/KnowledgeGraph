@@ -63,7 +63,7 @@ class Resource:
 
     def get_summary_with_infobox(self):
         if not 'baike_summary_with_infobox' in self.dict:
-            summary_path = os.path.join(rel_ext_dir, 'baike_summary.json')
+            summary_path = os.path.join(rel_ext_dir, 'baike_filtered_summary.json')
             infobox_path = os.path.join(result_dir, '360/360_entity_info_processed.json')
             self.dict['baike_summary_with_infobox'] = load_summary_and_infobox(summary_path, infobox_path)
         return self.dict['baike_summary_with_infobox']
@@ -202,7 +202,7 @@ def load_summary_and_infobox(summary_path, infobox_path):
         p = line.split('\t')
         key = p[0]
         summary = json.loads(p[1])['summary']
-        summary = filter_bad_summary(summary)
+        # summary = filter_bad_summary(summary)
         summary_map[key] = summary.encode('utf-8')
     Print('add infobox value to summary, path is [%s]' %infobox_path)
     for line in tqdm(file(infobox_path), total = nb_lines_of(infobox_path)):
