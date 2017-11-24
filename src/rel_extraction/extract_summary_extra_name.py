@@ -341,6 +341,7 @@ def extract_summary_name(summary_path, keywords, outpath, bracket_name_outpath):
                     and not extra_name in names \
                     and not error_bracket_name(extra_name, names) \
                     and not too_short_name(extra_name) \
+                    and not is_error_name(extra_name) \
                     and not digit_in_name(extra_name):
                         succeed_names.append(extra_name)
             if len(succeed_names) > 0:
@@ -361,6 +362,7 @@ def extract_summary_name(summary_path, keywords, outpath, bracket_name_outpath):
                     and not too_long_name(extra_name, names) \
                     and not extra_name in names \
                     and not too_short_name(extra_name) \
+                    and not is_error_name(extra_name) \
                     and not digit_in_name(extra_name):
                         succeed_names.append(extra_name)
         if len(succeed_names) > 0:
@@ -459,6 +461,8 @@ def error_bracket_name(extra_name, names):
             return True
     return False
     
+def is_error_name(extra_name):
+    return extra_name == u'不详'
 
 def debug():
     s = u'4-硝基苯酚甲酯，英文名为\n4-Nitrophenyl formate，又名\n甲酸对硝基苯酯，CAS登记号为1865-01-6，分子式是C7H5NO4，分子量为167.1189，化工中间体一种。'
