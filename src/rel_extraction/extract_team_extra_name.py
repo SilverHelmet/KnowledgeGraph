@@ -56,7 +56,7 @@ def parse_entity(sentence, ltp, ner, location_dict):
             continue
         try:
             names.append(name.decode('utf-8'))
-         except Exception, e:
+        except Exception, e:
              print e
              print '\terror in parse entity:', sentence
 
