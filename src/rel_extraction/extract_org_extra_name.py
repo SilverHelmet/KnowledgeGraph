@@ -160,7 +160,7 @@ def extract_org_extra_name_from_summary(summary_path, out_path):
             if valid:
                 succeed_names.add(parsed_name)
 
-        for j_name in j_names:
+        for j_name in j_names_cnt:
             if j_names_cnt[j_name] >= 2:
                 valid = False
                 for ename, suffix in zip(enames, suffixes):
