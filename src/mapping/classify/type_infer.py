@@ -262,14 +262,39 @@ class TypeInfer:
         self.title_type_infer = TitleTypeInfer(path = baike_title_path)
         self.extra_type_infer = ExtraTypeInfer(path = extra_info_path)
     
-    def infer(self, info, baike_clses, baike_title, extra_info):
+    def infer(self, info, baike_clses, baike_title, extra_info, chosen_prob):
         prob = {}
         sep_prob = {}
         self.info_type_infer.infer(info, prob, sep_prob)
         self.baike_cls_infer.infer(baike_clses, prob, sep_prob)
         self.title_type_infer.infer(baike_title, prob, sep_prob)
-        self.extra_type_infer.infer(extra_info, prob, sep_prob)
+        if prob['fb:sports.sports_team'] > chosen_prob:
+            team_score = prob['fb:sports.sports_team']
+        else
+            team_score = 0
+        if prob['fb:sports.pro_athlete'] > chosen_prob:
+            athlete_score = prob['fb:sports.pro_athlete']
+        else
+            athlete_score = 0
+        if team_score > athlete_score:
+            self.choose_team(extra_info, prob, sep_prob, chosen_prob)
+        else:
+            self.extra_type_infer.infer(extra_info, prob, sep_prob)
         return prob, sep_prob
+
+    def choose_team(self, extra_info, prob, sep_prob, chosen_prob):
+        sports_team = ['fb:baseball.baseball_team', 'fb:american_football.football_team', 'fb:soccer.football_team', 'fb:ice_hockey.hockey_team', 'fb:cricket.cricket_team', 'fb:basketball.basketball_team']
+        for team in sports_team:
+            if team in prob:
+                prob.pop(team)
+            if team in sep_prob:
+                sep_prob.pop(team)
+        sports_team = [(u'棒球', 'fb:baseball.baseball_team'), (u'美式橄榄球', 'fb:american_football.football_team'), (u'足球', 'fb:soccer.football_team'), (u'冰球', 'fb:ice_hockey.hockey_team'), (u'板球', 'fb:cricket.cricket_team'), (u'篮球', 'fb:basketball.basketball_team')]
+        for team_tuple in sports_team:
+            if team_tuple[0] in extra_info:
+                prob[team_tuple[1]] = chosen_prob + 0.01
+            if team_tuple[0] in extra_info:
+                sep_prob[team_tuple[1]] = [0, 0, 0, chosen_prob + 0.01]
 
     def choose_one_music_type(self, type_probs, threshold):
         types = set(type_probs.keys())
@@ -476,7 +501,7 @@ def infer_type():
             titles = baike_title_map[baike_url]
         else:
             titles = []
-        type_probs, sep_type_probs = type_infer.infer(names, clses, titles, extra_info) 
+        type_probs, sep_type_probs = type_infer.infer(names, clses, titles, extra_info, chosen_prob) 
         type_infer.choose_music_type(type_probs, sep_type_probs, chosen_prob)
         type_infer.choose_tv_or_film(type_probs, sep_type_probs, names, titles, chosen_prob)
         type_probs_assumed = []
