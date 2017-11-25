@@ -4,4 +4,5 @@ python -u -m src.rel_extraction.dict.gen_title_rel_dict >& log/gen_title_rel_dic
 python -u -m src.rel_extraction.dict.extra_profession_dict >& log/extra_prof.log
 python -u -m src.rel_extraction.dict.gen_location_dict >& log/gen_location_dict.log 
 
-python -u -m src.extractor.test.test_entity_linking >& log/test_entity_linking.log11
+
+python -u -m src.rel_extraction.extract_summary_extra_name >& log/extract_summary_extra_name.log
