@@ -261,19 +261,7 @@ def load_predicate_map(filepath = None, extra_path = None):
                 probs[prop] += 1.0
     return predicate_map
 
-def load_baike_ename_title():
-    path = os.path.join(result_dir, '360/360_entity_info_processed.json')
-    Print('load baike\'s ename and title from [%s]' %path)
-    ename_title_map = {}
-    for line in tqdm(file(path), total = nb_lines_of(path)):
-        bk_url, obj = line.split('\t')
-        obj = json.loads(obj)
-        ename, title = obj['ename'].encode('utf-8'), obj['title'].encode('utf-8')
-        if title != ename:
-            ename_title_map[bk_url] = [ename, title]
-        else:
-            ename_title_map[bk_url] = [ename]
-    return ename_title_map
+
 
 def load_dict(dicts_path):
     dict_names = set()
