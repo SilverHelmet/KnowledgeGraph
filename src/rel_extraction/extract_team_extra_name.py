@@ -57,14 +57,13 @@ def parse_entity(sentence, ltp, ner, location_dict):
     for str_entity in str_entities:
         if str_entity.etype in ['Ns', 'Ns-ATT']:
             continue
-        name = ltp_result.text(str_entity.st, str_entity.ed)
-        if is_location(name, location_dict):
-            continue
         try:
+            name = ltp_result.text(str_entity.st, str_entity.ed)
+            if is_location(name, location_dict):
+                continue
             names.append(name.decode('utf-8'))
         except Exception, e:
              print '\terror in parse entity:', sentence
-
     j_names = []
     for i in range(ltp_result.length):
         if ltp_result.tags[i] == 'j':
