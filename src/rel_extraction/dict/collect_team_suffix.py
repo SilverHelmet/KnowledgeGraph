@@ -63,6 +63,12 @@ def try_get_suffix(name, suffixes):
             max_len_suffix = suffix
     return max_len_suffix
 
+def try_get_str_suffix(name, suffixes):
+    max_len_suffix = ''
+    for suffix in suffixes:
+        if name.endswith(suffix) and len(suffix) > len(max_len_suffix):
+            max_len_suffix = suffix
+    return max_len_suffix
 
 if __name__ == "__main__":
     suffix_out_path = os.path.join(dict_dir, 'team_suffix_cnt.tsv')

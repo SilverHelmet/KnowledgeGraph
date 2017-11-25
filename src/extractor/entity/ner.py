@@ -112,6 +112,22 @@ class NamedEntityPostProcessor:
 		if len(brackets) == 0:
 			return str_entities
 
+		new_str_entities = []
+		for str_entity in str_entities:
+			st = str_entity.st
+			ed = str_entity.ed
+			left_bracket_cnt = 0
+			right_bracket_cnt = 0
+			for i in range(st, ed):
+				if ltp_result.words[i] in ['(', '（']:
+					left_bracket_cnt += 1
+				if ltp_result.words[i] in [')', '）']:
+					right_bracket_cnt += 1
+			if left_bracket_cnt != right_bracket_cnt:
+				continue
+			new_str_entities.append(str_entity)
+		str_entities = new_str_entities
+
 		word_pos2entity_pos = [-1] * ltp_result.length
 		for idx, str_entity in enumerate(str_entities):
 			st = str_entity.st
@@ -153,6 +169,7 @@ class NamedEntityPostProcessor:
 		new_str_entities = []
 		now_e_idx = 0
 		bias = 0
+
 		for i in range(ltp_result.length):
 			if not in_bracket[i]:
 				new_words.append(ltp_result.words[i])
@@ -209,6 +226,9 @@ class NamedEntityReg:
 		if stanford_result:
 			self.__blend_with_stanford(ltp_result,stanford_result)
 
+		for word, tag, ner_tag in zip(ltp_result.words, ltp_result.tags, ltp_result.ner_tags):
+			print "%s:%s:%s" %(word, tag, ner_tag),
+		print ""
 		self.__combine(ltp_result)
 		str_entities = self.__entity_tuples(ltp_result.ner_tags)
 
