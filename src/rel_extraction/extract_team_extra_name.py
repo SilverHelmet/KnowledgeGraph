@@ -39,6 +39,8 @@ def is_location(name, location_dict):
     for end in location_ends:
         if name + end in location_dict:
             return True
+    if name.endswith(u'队'):
+        return is_location(name[:-1], location_dict)
     return False
 
 def parse_entity(sentence, ltp, ner, location_dict):
