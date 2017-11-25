@@ -57,18 +57,25 @@ def load_team_suffix():
     return good_suf
         
 def try_get_suffix(name, suffixes):
-    max_len_suffix = u''
-    for suffix in suffixes:
-        if name.endswith(suffix) and len(suffix) > len(max_len_suffix):
-            max_len_suffix = suffix
-    return max_len_suffix
+    ltp = Resource.get_singleton().get_ltp()
+    words = list(ltp.cut(name.encode('utf-8')))
+    words = [w.decode('utf-8') for w in words]
+
+    for st in range(1, len(words)):
+        text = u"".join(words[st:])
+        if text in suffixes:
+            return text
+    return u""
 
 def try_get_str_suffix(name, suffixes):
-    max_len_suffix = ''
-    for suffix in suffixes:
-        if name.endswith(suffix) and len(suffix) > len(max_len_suffix):
-            max_len_suffix = suffix
-    return max_len_suffix
+    ltp = Resource.get_singleton().get_ltp()
+    words = list(ltp.cut(name))
+
+    for st in range(1, len(words)):
+        text = "".join(words[st:])
+        if text in suffixes:
+            return text
+    return ""
 
 if __name__ == "__main__":
     suffix_out_path = os.path.join(dict_dir, 'team_suffix_cnt.tsv')

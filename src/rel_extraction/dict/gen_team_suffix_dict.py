@@ -31,6 +31,7 @@ class TeamDicts:
         
 
 def gen_team_suffix_dict(suffixes):
+    suffixes = set(suffixes)
     outpath = os.path.join(extra_name_dir, 'extra_team_name_dict.tsv')
     resource = Resource.get_singleton()
     baike_info_map = resource.get_baike_info()

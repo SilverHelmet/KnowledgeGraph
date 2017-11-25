@@ -226,9 +226,6 @@ class NamedEntityReg:
 		if stanford_result:
 			self.__blend_with_stanford(ltp_result,stanford_result)
 
-		for word, tag, ner_tag in zip(ltp_result.words, ltp_result.tags, ltp_result.ner_tags):
-			print "%s:%s:%s" %(word, tag, ner_tag),
-		print ""
 		self.__combine(ltp_result)
 		str_entities = self.__entity_tuples(ltp_result.ner_tags)
 

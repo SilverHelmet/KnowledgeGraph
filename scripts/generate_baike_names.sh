@@ -14,3 +14,4 @@ python -u -m src.mapping.classify.extract_baike_summary >& log/extract_baike_sum
 # extract extra name from summary
 # python -u -m src.rel_extraction.extract_summary_extra_name >& log/extract_summary_extra_name.log
 python -u -m src.rel_extraction.extract_team_extra_name >& log/extract_summary_team_extra_name.log 
+python -u -m src.rel_extraction.dict.gen_team_suffix_dict >& log/gen_team_suffix_dict.log

@@ -112,6 +112,7 @@ def extract_team_extra_name_from_summary(summary_path, out_path):
     ner = NamedEntityReg()
     team_suffixes = load_team_suffix()
     team_suffixes = [x.decode('utf-8') for x in team_suffixes]
+    team_suffixes = set(team_suffixes)
 
     Print('extract org\'s extra name from summary [%s]' %summary_path)
     Print("result write to [%s]" %out_path)
