@@ -32,15 +32,19 @@ def has_eng_digit(name):
     return re_eng_digit.search(name) is not None
 
 location_ends = ['城','市','','州','洲','省']
+bad_ends = ['队', '男子', '女子']
 def is_location(name, location_dict):
-    global location_ends
+    global location_ends, bad_ends
     if type(name) is unicode:
         name = name.encode('utf-8')
     for end in location_ends:
         if name + end in location_dict:
             return True
-    # if name.endswith('队'):
-    #     return is_location(name[:-len('队')], location_dict)
+
+    for end in bad_ends:
+        if name.endswith(end):
+            return is_location(name[:-len(end)], location_dict)
+
     return False
 
 def parse_entity(sentence, ltp, ner, location_dict):
