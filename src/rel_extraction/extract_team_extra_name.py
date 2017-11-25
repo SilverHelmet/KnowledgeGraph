@@ -62,7 +62,9 @@ def parse_entity(sentence, ltp, ner, location_dict):
     j_names = []
     for i in range(ltp_result.length):
         if ltp_result.tags[i] == 'j':
-            j_names.append(ltp_result.words[i].decode('utf-8'))
+            name = ltp_result.words[i].decode('utf-8')
+            if not is_location(name, location_dict):
+                j_names.append(ltp_result.words[i].decode('utf-8'))
     return names, j_names
 
 def is_good_sub_seq(parsed_name, ename, suffix):
@@ -157,7 +159,6 @@ def extract_team_extra_name_from_summary(summary_path, out_path):
         parsed_names = set(parsed_names)
         for parsed_name in parsed_names:
             valid = False
-            
             for ename, suffix in zip(enames, suffixes):
                 if has_eng_digit(ename):
                     continue
@@ -179,6 +180,7 @@ def extract_team_extra_name_from_summary(summary_path, out_path):
 
         succeed_names = [new_name for new_name in succeed_names if not new_name in ori_names]
         succeed_names = [new_name for new_name in succeed_names if not has_strange_punc(new_name)]
+        # succeed_names = [new_name for new_name in succeed_names if not is_location(new_name, location_dict)]
         if len(succeed_names) > 0:
             succeed_names = set(succeed_names)
             outf.write('%s\t%s\n' %(bk_url, "\t".join(succeed_names)))
