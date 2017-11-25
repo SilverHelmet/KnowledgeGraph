@@ -270,11 +270,11 @@ class TypeInfer:
         self.title_type_infer.infer(baike_title, prob, sep_prob)
         if prob['fb:sports.sports_team'] > chosen_prob:
             team_score = prob['fb:sports.sports_team']
-        else
+        else:
             team_score = 0
         if prob['fb:sports.pro_athlete'] > chosen_prob:
             athlete_score = prob['fb:sports.pro_athlete']
-        else
+        else:
             athlete_score = 0
         if team_score > athlete_score:
             self.choose_team(extra_info, prob, sep_prob, chosen_prob)
