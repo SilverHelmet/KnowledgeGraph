@@ -85,7 +85,7 @@ class Resource:
 
     def get_baike_ename_title(self):
         if not "baike_ename_title" in self.dict:
-            self.dict['baike_ename_title'] = load_baike_ename_title()
+            self.dict['baike_ename_title'] = load_url2names(os.path.join(rel_ext_dir, 'baike_ename_title.tsv'))
         return self.dict['baike_ename_title']
 
     def get_location_dict(self):
@@ -127,9 +127,7 @@ def gen_lowercase_name(name2bk):
             lower_name2bk[name.lower()] = name2bk[name]
     return lower_name2bk
 
-def load_url2names(filepath = None):
-    if filepath is None:
-        filepath = os.path.join(rel_ext_dir, 'baike_names.tsv')
+def load_url2names(filepath):
     total = nb_lines_of(filepath)
 
     Print('load url -> names from [%s]' %filepath)
