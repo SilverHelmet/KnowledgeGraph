@@ -268,11 +268,11 @@ class TypeInfer:
         self.info_type_infer.infer(info, prob, sep_prob)
         self.baike_cls_infer.infer(baike_clses, prob, sep_prob)
         self.title_type_infer.infer(baike_title, prob, sep_prob)
-        if prob['fb:sports.sports_team'] > chosen_prob:
+        if 'fb:sports.sports_team' in prob and prob['fb:sports.sports_team'] > chosen_prob:
             team_score = prob['fb:sports.sports_team']
         else:
             team_score = 0
-        if prob['fb:sports.pro_athlete'] > chosen_prob:
+        if 'fb:sports.pro_athlete' in prob and prob['fb:sports.pro_athlete'] > chosen_prob:
             athlete_score = prob['fb:sports.pro_athlete']
         else:
             athlete_score = 0
