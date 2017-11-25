@@ -64,9 +64,9 @@ class Resource:
 
     def get_summary_with_infobox(self):
         if not 'baike_summary_with_infobox' in self.dict:
-            summary_path = os.path.join(rel_ext_dir, 'baike_filtered_summary.json')
-            infobox_path = os.path.join(result_dir, '360/360_entity_info_processed.json')
-            self.dict['baike_summary_with_infobox'] = load_summary_and_infobox(summary_path, infobox_path)
+            summary_path = os.path.join(rel_ext_dir, 'baike_filtered_summary_with_infobox.json')
+            # infobox_path = os.path.join(result_dir, '360/360_entity_info_processed.json')
+            self.dict['baike_summary_with_infobox'] = load_summary(summary_path)
         return self.dict['baike_summary_with_infobox']
 
     def get_predicate_map(self):
@@ -239,6 +239,14 @@ def load_dict(dicts_path):
             dict_names.add(name)
     return dict_names
         
+def load_summary(summary_path):
+    Print("load summary from [%s]" %summary_path)
+    summary_map = {}
+    for line in tqdm(file(summary_path), total = nb_lines_of(summary_path)):
+        bk_url, summary = line.split('\t')
+        summary = json.loads(summary)['summary'].encode('utf-8')
+        summary_map[bk_url] = summary
+    return summary_map
 
 
 if __name__ == "__main__":
