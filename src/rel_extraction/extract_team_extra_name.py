@@ -1,4 +1,4 @@
-#encoding: utf-8
+#encoding:utf-8
 from src.IOUtil import Print, rel_ext_dir, nb_lines_of, extra_name_dir
 from src.extractor.resource import Resource
 from  src.extractor.entity.ner import NamedEntityReg
@@ -39,8 +39,8 @@ def is_location(name, location_dict):
     for end in location_ends:
         if name + end in location_dict:
             return True
-    if name.endswith(u'队'):
-        return is_location(name[:-1], location_dict)
+    # if name.endswith('队'):
+    #     return is_location(name[:-len('队')], location_dict)
     return False
 
 def parse_entity(sentence, ltp, ner, location_dict):
