@@ -53,7 +53,6 @@ def filter_summary(ori_path, new_path):
 
 def merge_summary_and_infobox(summary_path, infobox_path, out_path):
     Print("load summary from [%s]" %summary_path)
-    Print("write summary&infobox to [%s]" %out_path)
     outf = file(out_path, 'w')
     summary_map = {}
     for line in tqdm(file(summary_path, 'r'), total = nb_lines_of(summary_path)):

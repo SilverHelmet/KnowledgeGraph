@@ -8,6 +8,9 @@
 # extract ename & title
 # python -u -m src.rel_extraction.extract_ename_title >& log/extract_ename_title.log
 
+# extract baike summary; filter baike bad summary, merge summary and infobox
+# python -u -m src.mapping.classify.extract_baike_summary >& log/extract_baike_summary.log
+
 # extract extra name from summary
 python -u -m src.rel_extraction.extract_summary_extra_name >& log/extract_summary_extra_name.log
 python -u -m src.rel_extraction.extract_org_extra_name >& log/extract_summary_org_extra_name.log 
