@@ -59,7 +59,6 @@ def parse_entity(sentence, ltp, ner, location_dict):
          except Exception, e:
              print e
              print '\terror in parse entity:', sentence
-             return [], []
 
     j_names = []
     for i in range(ltp_result.length):
