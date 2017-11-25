@@ -1,7 +1,7 @@
 #encoding: utf-8
 import os
 from ..IOUtil import result_dir, rel_ext_dir, data_dir, cache_dir
-from ..rel_extraction.parse_baike_entity import split_sentences
+from src.baike_process.process_page import split_sentences
 from .structure import *
 from dependency.verb_relation_simple_extractor import VerbRelationExtractor
 from .mst import perform_MST, Edge

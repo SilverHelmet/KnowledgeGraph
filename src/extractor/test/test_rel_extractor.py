@@ -32,7 +32,6 @@ class Estimation():
         print "noverb right", self.noverb_right
         print "noverb error", self.noverb_error
 
-
 class RelExtractorTestor():
     def __init__(self, extractor, ltp = None, use_advanced_ner = True):
         if ltp is None:
@@ -224,10 +223,24 @@ def print_all(extractor, ltp):
     print "#sentence: %d, #labeled: %d" %(nb_data, nb_kl)
 
     testor = RelExtractorTestor(extractor, ltp, use_advanced_ner = True)
+    extractnum = 0
+    tagnum = 0
+    conum = 0
+    conum_noverb = 0
+    path = "result/show_no_extract.txt"
+    f = open(path, "w")
     for url in datas_map:
         datas = datas_map[url]
         for data in datas:
+            standard_triple = []
             triples, ner_res = testor.test_all(data)
+            if len(triples) == 0 and len(data.knowledges) != 0:
+                f.write(data.sentence)
+                f.write('\n')
+                for kl in data.knowledges:
+                    f.write(kl.triple())
+                    f.write('\n') 
+                f.write('\n')
             # if data.sentence != u'《青花瓷》是方文山作词，周杰伦作曲并演唱的歌曲，收录于2007年11月2日周杰伦制作发行音乐专辑《我很忙》中。':
             #     continue
             print data.sentence
@@ -235,14 +248,46 @@ def print_all(extractor, ltp):
             ner_tmp = '\t'.join(ner_res)
             print ner_tmp
             print "the tripple num we can extract from the sentence:", len(triples)
+            extractnum += len(triples);
             for triple in triples:
                 print '\t%s' %('\t'.join(triple))
             print "the standard tripple num of the sentence:", len(data.knowledges)
+            tagnum += len(data.knowledges);
             for kl in data.knowledges:
+                standard_triple.append((kl.subj, kl.prop, kl.obj))
                 print "\t\t%s" %(kl.triple())
             print '-'*40
-
-
+            for triple in triples:
+                for j in range(len(data.knowledges)):
+                    if (triple == standard_triple[j]) or \
+                    (triple[0] == standard_triple[j][2] and \
+                    triple[2] == standard_triple[j][0] and \
+                    triple[1] == standard_triple[j][1]):
+                        conum += 1
+            for triple in triples:
+                for j in range(len(data.knowledges)):
+                    if (triple[0] == standard_triple[j][0] and \
+                    triple[2] == standard_triple[j][2]) or \
+                    (triple[0] == standard_triple[j][2] and \
+                    triple[2] == standard_triple[j][0]):
+                        conum_noverb += 1
+    f.close()
+    print "extractnum is:", extractnum
+    print "tagnum is:", tagnum
+    print "conum is:", conum
+    print "conum_noverb is:", conum_noverb
+    accuracy = float(conum)/float(extractnum)
+    recall = float(conum)/float(tagnum)
+    F1_score = (2*accuracy*recall)/(accuracy+recall)
+    print "accuracy is:", accuracy
+    print "recall is:", recall
+    print "F1 score is:", F1_score
+    accuracy_noverb = float(conum_noverb)/float(extractnum)
+    recall_noverb = float(conum_noverb)/float(tagnum)
+    F1_score_noverb = (2*accuracy_noverb*recall_noverb)/(accuracy_noverb+recall_noverb)
+    print "accuracy_noverb is:", accuracy_noverb
+    print "recall_noverb is:", recall_noverb
+    print "F1_noverb score is:", F1_score_noverb
 
 if __name__ == "__main__":
     extractor = VerbRelationExtractor()

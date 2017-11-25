@@ -45,7 +45,9 @@ def load_json_map(in_path, total = None):
 def load_file(in_path):
     ret = []
     for line in file(in_path):
-        ret.append(line.strip())
+        l = line.strip()
+        if len(l) > 0:
+            ret.append(line.strip())
     return ret
      
 def load_json_dict(path):
@@ -119,6 +121,9 @@ result_dir = os.path.join(base_dir, 'result')
 cache_dir = os.path.join(result_dir, 'cache')
 classify_dir = os.path.join(result_dir, '360/mapping/classify')
 rel_ext_dir = os.path.join(result_dir, 'rel_extraction')
+dict_dir = os.path.join(rel_ext_dir, 'dict')
+extra_name_dir = os.path.join(rel_ext_dir, 'extra_name')
+infobox_cnt_dir = os.path.join(rel_ext_dir, 'infobox_count')
 freebase_rel_dir = os.path.join(result_dir, 'freebase_rel')
 doc_dir = os.path.join(base_dir, "docs")
 data_dir = os.path.join(base_dir, 'data')

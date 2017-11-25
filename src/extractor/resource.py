@@ -35,8 +35,10 @@ class Resource:
 
     def load_baike_names(self, lowercase):
         path = os.path.join(rel_ext_dir, 'baike_names.tsv')
+        extra_path = os.path.join(extra_name_dir, 'summary_extra_name.tsv')
+        extra_bracket_path = os.path.join(extra_name_dir, 'summary_extra_bracket_name.tsv')
         
-        name2bk, url2names = load_baike_names_resource(path)
+        name2bk, url2names = load_baike_names_resource([path, extra_path, extra_bracket_path])
 
         self.dict['name2bk'] = name2bk
         self.dict['url2names'] = url2names
@@ -61,11 +63,11 @@ class Resource:
         return self.dict['lower_name2bk']
 
     def get_summary_with_infobox(self):
-        if not 'baike_summary' in self.dict:
-            summary_path = os.path.join(rel_ext_dir, 'baike_summary.json')
+        if not 'baike_summary_with_infobox' in self.dict:
+            summary_path = os.path.join(rel_ext_dir, 'baike_filtered_summary.json')
             infobox_path = os.path.join(result_dir, '360/360_entity_info_processed.json')
-            self.dict['baike_summary'] = load_summary_and_infobox(summary_path, infobox_path)
-        return self.dict['baike_summary']
+            self.dict['baike_summary_with_infobox'] = load_summary_and_infobox(summary_path, infobox_path)
+        return self.dict['baike_summary_with_infobox']
 
     def get_predicate_map(self):
         if not "predicate_map" in self.dict:
@@ -76,11 +78,23 @@ class Resource:
 
     def get_vertical_domain_baike_dict(self):
         if not "vt_domain_bk_dict" in self.dict:
-            path = base_dir + "/lib/ltp_data_v3.4.0/vertical_domain_baike_dict.txt"
+            path = os.path.join(dict_dir, 'vertical_domain_baike_dict.txt')
             Print("load name dict from [%s]" %path)
             self.dict['vt_domain_bk_dict'] = load_file(path)
         return self.dict['vt_domain_bk_dict']
 
+    def get_baike_ename_title(self):
+        if not "baike_ename_title" in self.dict:
+            self.dict['baike_ename_title'] = load_baike_ename_title()
+        return self.dict['baike_ename_title']
+
+    def get_location_dict(self):
+        if not 'location_dict' in self.dict:
+            dicts = ['province.txt', 'citytown.txt', 'nationality.txt']
+            dicts_path = [os.path.join(dict_dir, x) for x in dicts]
+            Print('load location dict from [%s]' %" ".join(dicts))
+            self.dict['location_dict'] = load_dict(dicts_path)
+        return self.dict['location_dict']
 
     @staticmethod
     def get_singleton():
@@ -100,6 +114,7 @@ def load_name2baike(filepath = None):
         bk_url = p[0]
         names = p[1:]
         for name in names:
+            name = name.strip()
             if not name in name2bk:
                 name2bk[name] = []
             name2bk[name].append(bk_url)
@@ -127,20 +142,24 @@ def load_url2names(filepath = None):
         url2names[bk_url] = p[1:]
     return url2names
 
-def load_baike_names_resource(filepath):
-    Print('generate url2names & name2baike from baike name file [%s]' %filepath)
-    total = nb_lines_of(filepath)
+def load_baike_names_resource(filepaths):
     url2names = {}
     name2bk = {}
-    for line in tqdm(file(filepath, 'r'), total = total):
-        p = line.strip().split('\t')
-        bk_url = p[0]
-        names = p[1:]
-        url2names[bk_url] = names
-        for name in names:
-            if not name in name2bk:
-                name2bk[name] = []
-            name2bk[name].append(bk_url)
+    for filepath in filepaths:
+        Print('generate url2names & name2baike from baike name file [%s]' %filepath)
+        total = nb_lines_of(filepath)
+        for line in tqdm(file(filepath, 'r'), total = total):
+            p = line.strip().split('\t')
+            bk_url = p[0]
+            names = p[1:]
+            if bk_url in url2names:
+                url2names[bk_url].extend(names)
+            else:
+                url2names[bk_url] = names
+            for name in names:
+                if not name in name2bk:
+                    name2bk[name] = []
+                name2bk[name].append(bk_url)
     
     return name2bk, url2names
 
@@ -175,14 +194,7 @@ def load_bk_static_info(filepath):
         info_map[bk_url] = info
     return info_map
 
-def filter_bad_summary(summary):
-    sentences = summary.split(u'。')
-    new_s = []
-    for sentence in sentences:
-        if len(sentence.split("：")) >= 4:
-            break
-        new_s.append(sentence)
-    return u'。'.join(new_s)
+
 
 def load_summary_and_infobox(summary_path, infobox_path):
     Print("load summary from [%s]" %summary_path)
@@ -191,7 +203,7 @@ def load_summary_and_infobox(summary_path, infobox_path):
         p = line.split('\t')
         key = p[0]
         summary = json.loads(p[1])['summary']
-        summary = filter_bad_summary(summary)
+        # summary = filter_bad_summary(summary)
         summary_map[key] = summary.encode('utf-8')
     Print('add infobox value to summary, path is [%s]' %infobox_path)
     for line in tqdm(file(infobox_path), total = nb_lines_of(infobox_path)):
@@ -249,10 +261,35 @@ def load_predicate_map(filepath = None, extra_path = None):
                 probs[prop] += 1.0
     return predicate_map
 
+def load_baike_ename_title():
+    path = os.path.join(result_dir, '360/360_entity_info_processed.json')
+    Print('load baike\'s ename and title from [%s]' %path)
+    ename_title_map = {}
+    for line in tqdm(file(path), total = nb_lines_of(path)):
+        bk_url, obj = line.split('\t')
+        obj = json.loads(obj)
+        ename, title = obj['ename'].encode('utf-8'), obj['title'].encode('utf-8')
+        if title != ename:
+            ename_title_map[bk_url] = [ename, title]
+        else:
+            ename_title_map[bk_url] = [ename]
+    return ename_title_map
+
+def load_dict(dicts_path):
+    dict_names = set()
+    for dict_path in dicts_path:
+        for line in file(dict_path):
+            name = line.rstrip('\n')
+            dict_names.add(name)
+    return dict_names
+        
+
 
 if __name__ == "__main__":
     s1 = Resource.get_singleton()
     s2 = Resource.get_singleton()
     print s1 == s2
+    s = u'《希斯帕尼亚》，西班牙电影，路易斯·霍马、安娜德、胡安·何塞·巴勒斯塔主演。演职员表演员表角色演员备注Galba路易斯·霍马（Llus Homar）Nerea安娜德�阿玛斯（Ana de Armas）Paulo胡安·何塞·巴勒斯塔（Juan Jos Ballesta）Marco何苏斯奥尔梅多（Jesús Olmedo）Viriato罗伯托·恩里奎兹（Roberto Enrquez）TeodoroAntonio Gil-MartinezDarío阿方索巴萨维（Alfonso Bassave）Helena玛努艾拉·维雷丝（Manuela Vells）BárbaraLuz ValdenebroHctor帕布罗·德奎（Pablo Derqui）SabinaÁngela CremonteSandroHovik影片花絮幕后制作西班牙Antena 3电视台大制作黄金时段古装连续剧，讲述了一个西班牙版的《角斗士》的反叛罗马帝国统治的故事，其主要情节和人物维里亚图斯、迦尔巴在两千多年前都有着历史原型。'
+    print filter_bad_summary(s)
 
 

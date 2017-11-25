@@ -1,6 +1,7 @@
 #encoding:utf-8
 from pyltp import Segmentor, Postagger, Parser, NamedEntityRecognizer
 import os
+from src.IOUtil import dict_dir
 
 class LTPResult:
     def __init__(self, words, tags, ner_tags, arcs, sentence):
@@ -93,7 +94,7 @@ class LTP:
         tagger_model = os.path.join(base_dir, 'pos.model')
         ner_model = os.path.join(base_dir, 'ner.model')
         parser_model = os.path.join(base_dir, 'parser.model')
-        custom_seg_dict = os.path.join(base_dir,'vertical_domain_baike_dict.txt')
+        custom_seg_dict = os.path.join(dict_dir,'vertical_domain_baike_dict.txt')
 
         self.segmentor = Segmentor()
         if is_custom_seg_dict:

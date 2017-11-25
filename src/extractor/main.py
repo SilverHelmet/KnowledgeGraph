@@ -1,5 +1,5 @@
 from .simple_extractors import SimpleLTPExtractor
-from test.test_extractor import load_stanford_result, load_important_domains
+from test.test_extractor import load_stanford_result
 from .entity.ner import NamedEntityReg
 from ..schema.schema import Schema
 from .util import get_url_domains
