@@ -37,6 +37,8 @@ def filter_bad_summary(summary):
             break
         if len(sentence.split(u"：")) >= 4:
             break
+        if len(sentence.split(u":")) >= 5:
+            break
         new_s.append(sentence)
     return u''.join(new_s)
 
@@ -110,10 +112,9 @@ if __name__ == "__main__":
 
 
     # filter_bad_summary
-    # ori_summary_path = os.path.join(rel_ext_dir, 'baike_summary.json')
-    # new_summary_path = os.path.join(rel_ext_dir, 'baike_filtered_summary.json')
-
-    # filter_summary(ori_summary_path, new_summary_path)
+    ori_summary_path = os.path.join(rel_ext_dir, 'baike_summary.json')
+    new_summary_path = os.path.join(rel_ext_dir, 'baike_filtered_summary.json')
+    filter_summary(ori_summary_path, new_summary_path)
 
     # merge_summary_with_infobox
     summary_path = os.path.join(rel_ext_dir, 'baike_filtered_summary.json')
