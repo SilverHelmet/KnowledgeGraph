@@ -23,6 +23,9 @@ def is_org(types):
             return True
     return False
 
+def is_team(types):
+    return "fb:sports.sports_team" in types
+
 re_eng_digit = re.compile(ur'[0-9a-zA-Z]')
 def has_eng_digit(name):
     global re_eng_digit
@@ -87,7 +90,7 @@ def is_good_sub_seq(parsed_name, ename, suffix):
 
     return True
 
-def extract_org_extra_name_from_summary(summary_path, out_path):
+def extract_team_extra_name_from_summary(summary_path, out_path):
 
     resource = Resource().get_singleton()
     url2names = resource.get_url2names()
@@ -106,7 +109,7 @@ def extract_org_extra_name_from_summary(summary_path, out_path):
     for line in tqdm(file(summary_path), total = nb_lines_of(summary_path)):
         bk_url, summary = line.split('\t')
         types = baike_info_map[bk_url].types
-        if not is_org(types):
+        if not is_team(types):
             continue  
 
         enames = ename_title_map[bk_url]
@@ -187,8 +190,8 @@ def extract_org_extra_name_from_summary(summary_path, out_path):
 
 if __name__ == "__main__":
     summary_path = os.path.join(rel_ext_dir, 'baike_filtered_summary.json')
-    extra_org_out_path = os.path.join(extra_name_dir, 'extra_org_name.tsv')
-    extract_org_extra_name_from_summary(summary_path, extra_org_out_path)
+    extra_org_out_path = os.path.join(extra_name_dir, 'extra_team_name.tsv')
+    extract_team_extra_name_from_summary(summary_path, extra_org_out_path)
 
     
 
