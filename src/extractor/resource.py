@@ -192,36 +192,6 @@ def load_bk_static_info(filepath):
         info_map[bk_url] = info
     return info_map
 
-
-
-def load_summary_and_infobox(summary_path, infobox_path):
-    Print("load summary from [%s]" %summary_path)
-    summary_map = {}
-    for line in tqdm(file(summary_path, 'r'), total = nb_lines_of(summary_path)):
-        p = line.split('\t')
-        key = p[0]
-        summary = json.loads(p[1])['summary']
-        # summary = filter_bad_summary(summary)
-        summary_map[key] = summary.encode('utf-8')
-    Print('add infobox value to summary, path is [%s]' %infobox_path)
-    for line in tqdm(file(infobox_path), total = nb_lines_of(infobox_path)):
-        p = line.split('\t')
-        key = p[0]
-        info_values = list()
-        info = json.loads(p[1])['info']
-        for value_list in info.values():
-            for value in value_list:
-                info_values.append(value)
-        if len(info_values) == 0:
-            continue
-        text = u"。" + u"#".join(info_values)
-        text = text.encode('utf-8')
-        if not key in summary_map:
-            summary_map[key] = text
-        else:
-            summary_map[key] = summary_map[key] + text
-    return summary_map    
-
 def load_predicate_map(filepath = None, extra_path = None):
     if filepath is None:
         filepath = os.path.join(result_dir, '360/mapping/final_predicates_map.json')
