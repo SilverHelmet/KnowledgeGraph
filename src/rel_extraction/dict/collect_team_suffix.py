@@ -46,11 +46,6 @@ def collect_team_suffix(suffix_out_path):
         outf.write("%s\t%d\n" %(key, cnt))
     outf.close()
 
-re_eng_digit = re.compile(r'[0-9a-zA-Z]')
-def has_eng_digit(name):
-    global re_eng_digit
-    return re_eng_digit.search(name) is not None
-
 def load_team_suffix():
     inpath = os.path.join(dict_dir, 'team_suffix_cnt.tsv')
     error_suffix_path = os.path.join(dict_dir, 'team_error_suffix.txt')
@@ -61,7 +56,12 @@ def load_team_suffix():
     good_suf = set([suf for suf in suffixes if not suf in error_suf])
     return good_suf
         
-    
+def try_get_suffix(name, suffixes):
+    max_len_suffix = u''
+    for suffix in suffixes:
+        if name.endswith(suffix) and len(suffix) > len(max_len_suffix):
+            max_len_suffix = suffix
+    return max_len_suffix
 
 
 if __name__ == "__main__":
@@ -69,4 +69,4 @@ if __name__ == "__main__":
     # summary_path = os.path.join(rel_ext_dir, 'baike_filtered_summary.json')
 
     # collect_team_suffix(suffix_out_path)
-    load_team_suffix()
+    print len(load_team_suffix())

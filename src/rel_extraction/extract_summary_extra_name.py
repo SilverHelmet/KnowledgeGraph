@@ -257,6 +257,7 @@ def collect_keyword(train_log_path, outpath, limit):
 
 def load_keywords(error_path, keyword_path, limit):
     good_ends = [u'是',u':', u'为', u'：']
+    good_starts = [u'中文']
     error_keys = load_file(error_keyword_path)
     error_keys = set([x.decode('utf-8') for x in error_keys])
     
@@ -286,6 +287,17 @@ def load_keywords(error_path, keyword_path, limit):
             extra_keys.add(key + end)
     keys.update(extra_keys)
 
+    extra_keys = set()
+    for key in keys:
+        is_good_start = False
+        for start in good_starts:
+            if key.startswith(start):
+                is_good_start = True
+        if is_good_start:
+            continue
+        for start in good_starts:
+            extra_keys.add(start + key)
+    keys.update(extra_keys)
     return keys
 
 def extract_summary_name(summary_path, keywords, outpath, bracket_name_outpath):
@@ -488,7 +500,7 @@ if __name__ == "__main__":
 
     # train_extract_summary_name(summary_path, train_log_path)
 
-    collect_keyword(train_log_path, keyword_path, 10)
+    # collect_keyword(train_log_path, keyword_path, 10)
 
     keywords = load_keywords(error_keyword_path, keyword_path, 10)
     extract_summary_name(summary_path, keywords, new_extra_name_path, new_extra_bracket_name_path)
