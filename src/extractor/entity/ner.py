@@ -458,7 +458,7 @@ class NamedEntityReg:
 	def __get_words_dist(self,sentence,wb,we):
 		wb_end_index = sentence.index(wb) + len(wb) - 1
 		we_begin_index = sentence.index(we,wb_end_index)
-		return we_begin_index - wb_end_index
+		return we_begin_indaex - wb_end_index
 
 	# def __combine_single_big_dot(self,ltp_result):
 	# 	for index , word in enumerate(ltp_result.words):
