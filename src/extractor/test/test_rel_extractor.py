@@ -143,7 +143,7 @@ class RelExtractorTestor():
     
         if self.use_advanced_ner:
             stf_result = self.stf_results_map[sentence]
-            stf_result = None
+            # stf_result = None
             str_entities = self.ner.recognize(sentence, ltp_result, None, stf_result)
             # entities = [(e.st, e.ed)for e in entities]
         else:
