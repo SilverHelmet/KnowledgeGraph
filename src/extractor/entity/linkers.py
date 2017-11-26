@@ -360,7 +360,6 @@ class PageMemoryEntityLinker:
 
         baike_urls, mapping_scores = self.get_candidate_urls(names)
         baike_entities = []
-        print "\t".join(names)
         for bk_url in baike_urls:
             bk_info = self.bk_info_map[bk_url]
             pop = bk_info.pop
