@@ -145,6 +145,8 @@ def load_baike_names_resource(filepaths):
     url2names = {}
     name2bk = {}
     for filepath in filepaths:
+        if not os.path.exists(filepath):
+            continue
         Print('generate url2names & name2baike from baike name file [%s]' %filepath)
         total = nb_lines_of(filepath)
         for line in tqdm(file(filepath, 'r'), total = total):
