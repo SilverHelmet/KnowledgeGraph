@@ -97,6 +97,11 @@ class Resource:
             self.dict['location_dict'] = load_dict(dicts_path)
         return self.dict['location_dict']
 
+    def get_team_suffix_dict(self):
+        if not "team_suffix_dict" in self.dict:
+            self.dict['team_suffix_dict'] = load_extra_team_suffix_dict()
+        return self.dict['team_suffix_dict']
+
     @staticmethod
     def get_singleton():
         if Resource.singleton is None:
@@ -173,13 +178,6 @@ def load_important_domains():
         domains.add(line)
     return domains
 
-
-class BaikeInfo:
-    def __init__(self, pop, types):
-        self.pop = pop
-        self.types = types
-
-        
 def load_bk_static_info(filepath):
     total = nb_lines_of(filepath)
     info_map = {}
@@ -251,6 +249,64 @@ def load_summary(summary_path):
         summary_map[bk_url] = summary
     return summary_map
 
+def load_extra_team_suffix_dict():
+    team_suffix_dict_path = os.path.join(extra_name_dir, 'extra_team_name_dict.tsv')
+    team_suffix_dicts = SuffixDicts.load_from_file(team_suffix_dict_path)
+    return team_suffix_dicts
+
+
+class BaikeInfo:
+    def __init__(self, pop, types):
+        self.pop = pop
+        self.types = types
+
+class SuffixDicts:
+    def __init__(self):
+        self.dicts = {}
+        self.suffixes = set()
+        self.activated_suffixes = set()
+        self.url2suffix = {}
+
+    def add_url_with_suffix(self, bk_url, suffix):
+        self.url2suffix[bk_url] = suffix
+
+    def add_name_with_suffix(self, bk_url, name, suffix):
+        if not suffix in self.dicts:
+            self.dicts[suffix] = {}
+            self.suffixes.add(suffix)
+        team_dict = self.dicts[suffix]
+        if not name in team_dict:
+            team_dict[name] = []
+        team_dict[name].append(bk_url)
+
+    def search_name(self, name):
+        urls = []
+        for suffix in self.activated_suffixes:
+            suf_dict = self.dicts[suffix]
+            urls.extend(suf_dict.get(name, []))
+        return urls
+
+    def meet_url(self, bk_url):
+        if bk_url in self.url2suffix:
+            suffix = self.url2suffix[bk_url]
+            self.activated_suffixes.add(suffix)
+
+    def refresh(self):
+        self.activated_suffixes.clear()
+
+    @staticmethod
+    def load_from_file(filepath):
+        Print('load team\'s dict from [%s]' %filepath)
+        suf_dicts = SuffixDicts()
+        for line in file(filepath):
+            p = lien.strip().split('\t')
+            suffix = p[0]
+            bk_url = p[1]
+            suf_dicts.add_url_with_suffix(bk_url, suffix)
+            names = p[2:]
+            for name in names:
+                suf_dicts.add_name_with_suffix(bk_url, name, suffix)
+        return suf_dicts
 
 if __name__ == "__main__":
     s1 = Resource.get_singleton()

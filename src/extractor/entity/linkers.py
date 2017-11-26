@@ -92,7 +92,7 @@ class SeparatedLinker:
 #             top_entity.pop /= (total_score)
 #         return [top_entity]
 
-def summary_related_score(summary, page_info, summary_names):
+def summary_related_score(summary, page_info):
     max_cnt = 0
     for name in page_info.names:
         # flag = True
@@ -280,6 +280,7 @@ class PageMemoryEntityLinker:
         self.bk_info_map = resource.get_baike_info()
         self.name2bk = resource.get_name2bk(lowercase)
         self.url2names = resource.get_url2names(lowercase)
+        self.team_suffix_dict = resource.get_team_suffix_dict()
         if lowercase:
             self.lower_name2bk = resource.get_lower_name2bk()
         self.summary_map = resource.get_summary_with_infobox()
@@ -288,6 +289,7 @@ class PageMemoryEntityLinker:
 
         self.lowercase = lowercase
         self.memory = PageMemory()
+
 
         self.adjust_pop_by_summary()
 
@@ -302,6 +304,7 @@ class PageMemoryEntityLinker:
         baike_urls_cnt = {}
         for name, score in names: 
             baike_urls = self.name2bk.get(name, [])
+            baike_urls.extend(self.team_suffix_dict.search_name(name))
             for url in baike_urls:
                 if url not in baike_urls_cnt:
                     baike_urls_cnt[url] = 0
@@ -360,13 +363,14 @@ class PageMemoryEntityLinker:
         for bk_url in baike_urls:
             bk_info = self.bk_info_map[bk_url]
             pop = bk_info.pop
-            url_names = self.url2names[bk_url]
+            # url_names = self.url2names[bk_url]
             summary = self.summary_map.get(bk_url, "")
             mapping_score = mapping_scores[bk_url]
             if page_info.url == bk_url and name == page_info.ename:
                 summary_score = 200
             else:
-                summary_score = summary_related_score(summary, page_info, url_names)
+                # summary_score = summary_related_score(summary, page_info, url_names)
+                summary_score = summary_related_score(summary, page_info)
             page_type_score = page_type_related_score(str_entity.etype, bk_info.types, page_info)
             entity_type_score = entity_type_related_score(str_entity.etype, bk_info.types)
             
@@ -393,6 +397,8 @@ class PageMemoryEntityLinker:
     
     def start_new_page(self, baike_url):
         self.memory.refresh()
+        self.team_suffix_dict.refresh()
+        self.team_suffix_dict.meet_url(baike_url)
         types = self.bk_info_map[baike_url].types
         if 'fb:people.person' in types:
             baike_entity = BaikeEntity(StrEntity(0, 0, "Nh"), baike_url, 200, types)
@@ -402,11 +408,13 @@ class PageMemoryEntityLinker:
                 self.memory.add_person(name, "Nh", baike_entity)
                 self.memory.add_map(name, "Nf", baike_entity)
                 self.memory.add_person(name, "Nf", baike_entity)
+
     def add_sentence(self, ltp_result, str_entities, baike_entities):
         for i in range(len(str_entities)):
             str_entity = str_entities[i]
             baike_entity = baike_entities[i]
             self.memory.add(ltp_result, str_entity, baike_entity)
+            self.team_suffix_dict.meet_url(baike_entity.baike_url)
 
             
 class MatchRelLinker:

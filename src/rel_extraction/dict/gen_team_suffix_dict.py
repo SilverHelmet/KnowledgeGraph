@@ -1,3 +1,4 @@
+#encoding: utf-8
 from .collect_team_suffix import load_team_suffix, try_get_str_suffix
 from ..extract_team_extra_name import is_team
 from src.extractor.resource import Resource
@@ -30,56 +31,7 @@ class TeamDicts:
             for bk_url in team_dict:
                 out = "%s\t%s\t%s" %(suffix, bk_url, "\t".join(team_dict[bk_url]))
                 outf.write(out.rstrip() + '\n')
-        outf.close()
-
-        
-class SuffixDicts:
-    def __init__(self):
-        self.dicts = {}
-        self.suffixes = set()
-        self.activated_suffixes = set()
-        self.url2suffix = {}
-
-    def add_name_with_suffix(self, bk_url, name, suffix):
-        self.url2suffix[bk_url] = suffix
-        if not suffix in self.dicts:
-            self.dicts[suffix] = {}
-            self.suffixes.add(suffix)
-        team_dict = self.dicts[suffix]
-        if not name in team_dict:
-            team_dict[name] = []
-        team_dict[name].append(bk_url)
-
-    @classmethod 
-    def load_from_file(filepath):
-        Print('load team\'s dict from [%s]' %filepath)
-        team_dicts = SuffixDicts()
-        for line in file(filepath):
-            p = lien.strip().split('\t')
-            suffix = p[0]
-            bk_url = p[1]
-            names = p[2:]
-            for name in names:
-                team_dicts.add_name_with_suffix(bk_url, name, suffix)
-
-        return team_dicts
-
-    def refresh(self):
-        self.activated_suffixes.clear()
-
-    def search_name(self, name):
-        urls = []
-        for suffix in self.activated_suffixes:
-            suf_dict = self.dicts[suffix]
-            urls.extend(suf_dict.get(name, []))
-        return urls
-
-
-
-
-
-
-        
+        outf.close()    
 
 def gen_team_suffix_dict(suffixes):
     suffixes = set(suffixes)
