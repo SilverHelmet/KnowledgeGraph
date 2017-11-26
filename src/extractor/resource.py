@@ -289,6 +289,7 @@ class SuffixDicts:
     def meet_url(self, bk_url):
         if bk_url in self.url2suffix:
             suffix = self.url2suffix[bk_url]
+            print 'add suffix', suffix, bk_url
             self.activated_suffixes.add(suffix)
 
     def refresh(self):
@@ -299,7 +300,7 @@ class SuffixDicts:
         Print('load team\'s dict from [%s]' %filepath)
         suf_dicts = SuffixDicts()
         for line in file(filepath):
-            p = lien.strip().split('\t')
+            p = line.strip().split('\t')
             suffix = p[0]
             bk_url = p[1]
             suf_dicts.add_url_with_suffix(bk_url, suffix)

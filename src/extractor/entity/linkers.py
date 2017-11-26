@@ -304,7 +304,7 @@ class PageMemoryEntityLinker:
         baike_urls_cnt = {}
         for name, score in names: 
             baike_urls = self.name2bk.get(name, [])
-            baike_urls.extend(self.team_suffix_dict.search_name(name))
+            # baike_urls.extend(self.team_suffix_dict.search_name(name))
             for url in baike_urls:
                 if url not in baike_urls_cnt:
                     baike_urls_cnt[url] = 0
@@ -360,6 +360,7 @@ class PageMemoryEntityLinker:
 
         baike_urls, mapping_scores = self.get_candidate_urls(names)
         baike_entities = []
+        print "\t".join(names)
         for bk_url in baike_urls:
             bk_info = self.bk_info_map[bk_url]
             pop = bk_info.pop
@@ -414,7 +415,8 @@ class PageMemoryEntityLinker:
             str_entity = str_entities[i]
             baike_entity = baike_entities[i]
             self.memory.add(ltp_result, str_entity, baike_entity)
-            self.team_suffix_dict.meet_url(baike_entity.baike_url)
+            if baike_entity:
+                self.team_suffix_dict.meet_url(baike_entity.baike_url)
 
             
 class MatchRelLinker:

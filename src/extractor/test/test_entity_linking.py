@@ -19,7 +19,6 @@ class EntityLinkingTestor:
 
     def test(self, sentence, page_info, stf_result):
         ltp_result = self.ltp.parse(sentence)
-        stf_result = stf_results_map[sentence]
 
         str_entites = self.ner.recognize(sentence, ltp_result, page_info, stf_result)
         # str_entites = [StrEntity(st, ed, etype) for st, ed, etype in str_entites]
