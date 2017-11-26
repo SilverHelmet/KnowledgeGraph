@@ -196,7 +196,7 @@ if __name__ == "__main__":
             #     elif ner_tag.startswith('E'):
             #         ner_entities_name.append(ltp_result.text(st, idx + 1))
             stf_result = stf_results_map[sentence]
-            # stf_result = None
+            stf_result = Nonez
             str_entities = ner.recognize(sentence, ltp_result, None, stf_result)
             ner_entities_name = []
             for str_entity in str_entities:
