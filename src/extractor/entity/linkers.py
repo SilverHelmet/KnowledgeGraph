@@ -304,7 +304,7 @@ class PageMemoryEntityLinker:
         baike_urls_cnt = {}
         for name, score in names: 
             baike_urls = self.name2bk.get(name, [])
-            # baike_urls.extend(self.team_suffix_dict.search_name(name))
+            baike_urls.extend(self.team_suffix_dict.search_name(name))
             for url in baike_urls:
                 if url not in baike_urls_cnt:
                     baike_urls_cnt[url] = 0
