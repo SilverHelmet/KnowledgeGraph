@@ -74,6 +74,20 @@ class LTPResult:
         self.length = len(self.words)
         self.words_st = self.find_pos()
 
+    def insert_word(self, i, word, tag, ner_tag):
+        if i == 0:
+            new_word_st = 0
+        else:
+            new_word_st = self.words_st[i-1] + len(self.words[i-1])
+        self.sentence = self.sentence[:new_word_st] + word + self.sentence[new_word_st:]
+        self.words.insert(i, word)
+        self.tags.insert(i, tag)
+        self.ner_tags.insert(i, ner_tag)
+        self.length += 1
+        
+        
+        self.words_st = self.find_pos()
+
     def update_parsing_tree(self, ltp):
         arcs = ltp.parser.parse(self.words, self.tags)
         arcs = list(arcs)
@@ -111,12 +125,14 @@ class LTP:
         self.parser = Parser()
         self.parser.load(parser_model)
 
-    def parse(self, sentence):
-        sentence = sentence.replace("•", '·')
+    def parse(self, sentence, parse_tree = True):
         words = list(self.segmentor.segment(sentence))
         tags = list(self.tagger.postag(words))
         ner_tags = list(self.nertagger.recognize(words, tags))
-        arcs = list(self.parser.parse(words, tags))
+        if parse_tree:
+            arcs = list(self.parser.parse(words, tags))
+        else:
+            arcs = None
         result = LTPResult(words, tags, ner_tags, arcs, sentence)
         return result
 
