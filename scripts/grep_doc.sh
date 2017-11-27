@@ -11,7 +11,7 @@ baike_doc_path="result/rel_extraction/baike_doc.json"
 filename=$(basename $baike_doc_path)
 for url in $urls
 do
-    grep -m 1 ${url} ${path} >> ${sample_dir}/${filename}
+    grep -m 1 ${url} ${baike_doc_path} >> ${sample_dir}/${filename}
     
 done
 
