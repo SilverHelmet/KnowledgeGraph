@@ -1,4 +1,4 @@
-urls = " \
+urls=" \
 baike.so.com/doc/6707957-6921972.html \
 baike.so.com/doc/5382393-5618748.html \
 baike.so.com/doc/5348516-5583969.html \
