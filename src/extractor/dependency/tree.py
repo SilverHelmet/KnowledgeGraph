@@ -33,6 +33,7 @@ class ParseTree:
     def __init__(self, ltp_result):
         self.length = ltp_result.length
         self.nodes = []
+        self.title = []
         idx = 0
         for tag, arc, word in zip(ltp_result.tags, ltp_result.arcs, ltp_result.words):
             node = Node(idx, tag, arc, word)

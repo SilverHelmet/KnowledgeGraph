@@ -195,71 +195,7 @@ class VerbRelationExtractor:
                 self.debuger.debug('found verb', ltp_result.words[res[0]] ,'is an entity! error!')
         return advanced_res
 
-    def judge_title_tag(self, node):
-        if node.postag in ['n', 'ns']:
-            return True
-        return False
 
-    def find_all_COO_title(self, node):
-        res = []
-        path = self.find_path_to_root(node)
-        for p in path:
-            if p.rel == 'COO' and self.judge_title_tag(p.father) == True:
-                res.append(p.father)
-        for child in node.children:
-            res += self.trace_down_title_rule2(child)
-        return res
-
-    def find_COO_or_ATT_title(self, node):
-        res = []
-        for child in node.children:
-            if child.rel == 'ATT' and self.judge_title_tag(child) == True:
-                res += self.trace_down_title_rule1(child)
-        return res
-
-    def trace_down_title_rule2(self, node):
-        res = []
-        if node.rel == 'COO' and self.judge_title_tag(node) == True:
-            res.append(node)
-        else:
-            return []
-        for child in node.children:
-            res += self.trace_down_title_rule2(child)
-        return res
-
-    def trace_down_title_rule1(self, node):
-        res = []
-        if node.rel in ['ATT', 'COO'] and self.judge_title_tag(node) == True:
-            res.append(node)
-        else:
-            return []
-        for child in node.children:
-            res += self.trace_down_title_rule1(child)
-        return res
-
-    def find_title(self, ltp_result, e, entity_pool):
-        tree = ParseTree(ltp_result)
-        father, near_verb, verb = self.find_2_verbs(tree, e)
-        res1 = self.find_all_COO_title(father)
-        res2 = self.find_COO_or_ATT_title(father)
-        new_res_1 = new_res_2 = []
-        for words in res1:
-            #if entity_pool[words.idx] == False:
-            new_res_1.append(words)
-        for words in res2:
-            #if entity_pool[words.idx] == False:
-            new_res_2.append(words)
-        new_res = new_res_1 + new_res_2
-        new_res = set(new_res)
-        final_res = []
-        for i in new_res:
-            final_res.append((i.idx, i.idx + 1))
-        '''
-        final_res = []
-        for i in res:
-            final_res.append((res.idx, res.idx + 1))
-        '''
-        return final_res
 
     def find_noun_relation(self, e1, e2):
         if e1.depth - e2.depth == 2:
@@ -560,6 +496,18 @@ class VerbRelationExtractor:
                 self.debuger.debug("tripple (a, is, a) is removed!")
         return ret
 
+    def remove_title_res(self, res, title_res):
+        for node in res:
+            for k in title_res:
+                if node[2] == k[2]:
+                    res.remove(node)
+
+    def remove_noun_res(self, res, noun_res):
+        for node in res:
+            for k in noun_res:
+                if res[0] == k[0] or res[1] == k[1]:
+                    res.remove(node)
+
     def find_tripple(self, ltp_result, e_lis):
         res = []
         entity_lis = []
@@ -573,13 +521,15 @@ class VerbRelationExtractor:
             entity, near_verb, verb = self.find_2_verbs(tree, e)
             entity_lis.append(entity)
         #judge noun relation
+        noun_res =[]
         for i in range(len(entity_lis)):
             for j in range(i + 1, len(entity_lis)):
                 tmp_verb = self.find_noun_relation(entity_lis[i], entity_lis[j]);
                 if(tmp_verb != None):
-                    res.append((entity_lis[i].entity, tmp_verb.idx, entity_lis[j].entity))
+                    noun_res.append((entity_lis[i].entity, tmp_verb.idx, entity_lis[j].entity))
                     self.debuger.debug("noun relation found!")
         #find title relationship
+        title_res = []
         self.build_dict()
         for node in tree.nodes:
             if node.entity != None and node.postag in ['n', 'nd', 'nh', 'ni', 'nl', 'ns', 'nt', 'nz']:
@@ -591,7 +541,7 @@ class VerbRelationExtractor:
                             self.debuger.debug("child:", nodes.word)
                             self.debuger.debug("father:", node.word)
                             self.debuger.debug("father:", ltp_result.text(node.entity.st, node.entity.ed))
-                            res.append((node.entity, None, nodes.idx))
+                            title_res.append((node.entity, None, nodes.idx))
                             #self.deal_with_res(res, None, node, nodes, ltp_result)
         #step one: mark sub
 
@@ -714,8 +664,12 @@ class VerbRelationExtractor:
             for target in verb.target:
                 self.debuger.debug(target.word)
             self.debuger.debug('-'*40)
-        res = set(res)
         final_res = []
+        self.remove_title_res(res, title_res)
+        self.remove_noun_res(res, noun_res)
+        res += title_res
+        res += noun_res
+        res = set(res)
         for i in res:
             if self.judge_remove_is(i, ltp_result) == False:
                 final_res.append(i)
@@ -728,11 +682,11 @@ class VerbRelationExtractor:
 
 if __name__ == "__main__":
     ltp = LTP(None)
-    ltp_result = ltp.parse("《青花瓷》又是一首周杰伦演唱的中国风，但它这种离愁别绪被描写得更加婉转细腻，隐藏得愈加含蓄而韵味别生，仿佛青橄榄在口，可以慢慢回味。")
+    ltp_result = ltp.parse("为了缓解更衣室的矛盾，巴萨果断地送走了梦二王朝的核心小罗和德科，提拔了年仅21的梅西作为新的核心。")
     info = PrintInfo()
     info.print_ltp(ltp_result)
     tree = ParseTree(ltp_result)
-    string = ["青花瓷", "周杰伦","中国风"]
+    string = ["巴萨", "小罗", "德科", "梅西"]
     e_lis = []
     for s in string:
         st, ed = ltp_result.search_word(s)
