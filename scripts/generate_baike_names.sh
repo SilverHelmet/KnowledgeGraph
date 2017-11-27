@@ -13,6 +13,7 @@
 
 # extract extra name from summary
 # python -u -m src.rel_extraction.extract_summary_extra_name >& log/extract_summary_extra_name.log
+python -u -m src.rel_extraction.dict.collect_org_suffix >& log/collect_team_suffix.log &
 python -u -m src.rel_extraction.extract_team_extra_name >& log/extract_summary_team_extra_name.log 
 python -u -m src.rel_extraction.dict.gen_team_suffix_dict >& log/gen_team_suffix_dict.log
 

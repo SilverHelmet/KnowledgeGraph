@@ -81,5 +81,5 @@ if __name__ == "__main__":
     suffix_out_path = os.path.join(dict_dir, 'team_suffix_cnt.tsv')
     # summary_path = os.path.join(rel_ext_dir, 'baike_filtered_summary.json')
 
-    # collect_team_suffix(suffix_out_path)
+    collect_team_suffix(suffix_out_path)
     print len(load_team_suffix())
