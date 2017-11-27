@@ -5,7 +5,7 @@ result/rel_extraction/baike_filtered_summary.json \
 result/rel_extraction/baike_filtered_summary_with_infobox.json \
 result/rel_extraction/baike_ename_title.tsv \
 result/360/360_entity_info_processed.json
-result/360/baike_doc.json
+result/rel_extraction/baike_doc.json
 "
 
 sample_dir="result/samples"
