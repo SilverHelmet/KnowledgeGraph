@@ -215,9 +215,9 @@ class DocProcessor:
         
 
 def test_sentence():
-    para_info = ParagraphInfo(1, ['方文山'], '方文山', False, True)
+    para_info = ParagraphInfo(10, ['方文山'], '方文山', True, True)
     doc_processor = DocProcessor()
-    s = u'1989年创刊，最初免费赠给500万任天堂“游戏人间”俱乐部的会员，以后改为月刊，现已成为全美销售量最大的儿童读物，1990年时已拥有600万读者。'
+    s = u'中国皮划艇激流回旋队 领队:韩建国 男队组成:胡明海、舒俊榕、黄存光、滕志强 女队组成:李晶晶参赛情况本次2012年伦敦奥运会上，中国皮划艇激流回旋队由5人组成。明星男队胡明海胡明海，出生于1989年4月19日，中国皮划艇激流回旋项目运动员。在2008年皮划艇激流回旋澳大利亚公开赛暨2008年北京奥运会大洋洲资格赛中，胡明海和舒俊榕爆大冷击败了那一对占据霸主地位多年的斯洛伐克孪生兄弟组合，一举夺得了男子双人划艇的金牌。这样的成绩，让国际划联激流委员会主席布鲁诺在接受采访时都不禁连称，中国激流运动员的竞技水平进步神速，让人难以置信。在即将到来的2012年伦敦奥运会上，他将向奖牌冲击。舒俊榕舒俊榕，中国皮划艇激流队队员，曾拿到过2008年澳大利亚公开赛第一，2008年世界杯赛第二，雅典奥运会冠军等历史性荣誉。黄存光黄存光，福建省三明市将乐县余坊乡人，小的时候在余坊中心校就读，因体能出众，被选入三明市体校参加训练，2002年选入福建省激流皮划艇队参加训练2005年，年仅20岁的他就入选国家皮划艇激流回旋运动队。滕志强滕志强，湖南怀化人，1991年10月26日出生，皮划艇激流回旋运动员。'
 
     sentences = split_sentences(s)
     # ner = NamedEntityReg()
@@ -237,10 +237,10 @@ def test_sentence():
         print ""
         print ""
 
-        words = ltp_result.words + ['root']
-        for idx, arc in enumerate(ltp_result.arcs, start = 0):
-            head, rel = arc.head, arc.relation
-            print "%s-%s:%s" %(words[idx], words[head], rel)
+        # words = ltp_result.words + ['root']
+        # for idx, arc in enumerate(ltp_result.arcs, start = 0):
+        #     head, rel = arc.head, arc.relation
+        #     print "%s-%s:%s" %(words[idx], words[head], rel)
 
         # es = ner.recognize(ltp_result.sentence, ltp_result, None, None)
         # for e in es:
@@ -281,8 +281,8 @@ def test_chapt():
 
 
 if __name__ == "__main__":
-    test_chapt()   
-    # test_sentence() 
+    # test_chapt()   
+    test_sentence() 
 
         
 

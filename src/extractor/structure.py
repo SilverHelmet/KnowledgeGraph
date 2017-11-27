@@ -16,9 +16,13 @@ class StrEntity:
         self.ed = ed
         self.etype = etype
         self.extra_names = []
+        self.obj = None
 
     def add_name(self, name):
         self.extra_names.append(name)
+
+    def add_time_obj(self, obj):
+        self.obj = obj
 
 
 class BaikeEntity:
