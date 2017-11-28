@@ -1,14 +1,28 @@
-
-# class PageInfo:
-#     def __init__(self, ename):
-#         self.ename = ename
+from src.rel_extraction.extract_baike_names import person_extra_names
 
 class PageInfo:
-    def __init__(self, ename, names, url, domains):
+    person_types = ['fb:people.person', 'fb:fictional_universe.fictional_character', 'fb:fictional_universe.person_in_fiction']
+    def __init__(self, ename, names, url, domains, types):
         self.ename = ename
-        self.names = names
+        self.names = names[:]
         self.url = url
         self.domains = domains
+        if PageInfo.is_person(types):
+            new_names = []
+            for name in names:
+                extra_names = person_extra_names(name)
+                new_names.extend(extra_names)
+            self.names.extend(new_names)
+            self.names = list(set(self.names))
+
+
+
+    @staticmethod
+    def is_person(types):
+        for p_type in PageInfo.person_types:
+            if p_type in types:
+                return True
+        return False
 
 class StrEntity:
     def __init__(self, st, ed, etype):

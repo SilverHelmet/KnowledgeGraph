@@ -6,6 +6,7 @@ from src.IOUtil import rel_ext_dir
 from src.extractor.ltp import LTPResult
 from src.extractor.resource import Resource
 from src.extractor.structure import PageInfo
+from entity.ner import NamedEntityReg
 
 
 class ParagraphInfo:
@@ -32,7 +33,8 @@ def strip_puncs(token):
     return token
 
 class DocProcessor:
-    def __init__(self):
+    def __init__(self, ner = None):
+        self.ner = None
         self.ltp = Resource.get_singleton().get_ltp()
         self.subj_miss_patterns = [
             ['p', '《'],
@@ -191,7 +193,10 @@ class DocProcessor:
 
         return ltp_result, is_para_info
 
-    def parse_chapter(self, title, paragraphs, page_info):
+    def parse_chapter(self, title, paragraphs, page_info, parse_ner = False):
+        if parse_ner and self.ner is None:
+            self.ner = NamedEntityReg()
+
         names = page_info.names
         ename = page_info.ename
         if title == 'intro_summary':
@@ -210,7 +215,41 @@ class DocProcessor:
                 pre_miss = para_info.subj_miss_cnt
                 ltp_result, may_info_para = self.parse_sentence(sentence, para_info)
                 subj_miss = may_info_para or para_info.subj_miss_cnt == pre_miss+1
-                yield ltp_result, subj_miss
+
+                if not self.ner:
+                    yield ltp_result, subj_miss
+                else:
+                    str_entities = self.ner.recognize(ltp_result.sentence, ltp_result, page_info)
+                    new_ename = self.check_new_subj(para_info, ltp_result, str_entities)
+                    if new_ename:
+                        print 'change subj to %s' %new_ename
+                        ename = new_ename
+                        names = [new_ename]
+                    yield ltp_result, str_entities, subj_miss
+
+    def check_new_subj(self, para_info, ltp_result, str_entities):
+        if para_info.nb_sent != 1:
+            return None
+
+        if len(str_entities) != 1:
+            return None
+
+        entity = str_entities[0]
+        st = entity.st
+        ed = entity.ed
+
+        valid = True
+        for i in range(ltp_result.length):
+            if i >= st and i < ed:
+                continue
+            if ltp_result.tags[i] == 'wp':
+                continue
+            valid = False
+            break
+        if not valid:
+            return None
+        return ltp_result.text(st, ed)
+
         
         
 
@@ -251,11 +290,13 @@ def test_chapt():
     import os
     urls = ['baike.so.com/doc/1287918-1361771.html', 'baike.so.com/doc/4835393-5052275.html', 
     'baike.so.com/doc/2526484-2669235.html', 'baike.so.com/doc/5382393-5618748.html', 
-    'baike.so.com/doc/6662392-6876216.html', 'baike.so.com/doc/3056594-3221987.html']
+    'baike.so.com/doc/6662392-6876216.html', 'baike.so.com/doc/3056594-3221987.html',
+    'baike.so.com/doc/8716294-9038723.html', 'baike.so.com/doc/5390356-5627004.html']
 
     # urls = ["baike.so.com/doc/1287918-1361771.html"]
     resource = Resource.get_singleton()
     url2names = resource.get_url2names()
+    baike_info_map = resource.get_baike_info()
 
     baike_doc_path = os.path.join(rel_ext_dir, 'baike_doc.json')
     doc_processor = DocProcessor()
@@ -267,11 +308,13 @@ def test_chapt():
         doc = json.loads(doc)
         names = url2names[url]
         ename = names[0]
-        page_info = PageInfo(ename, names, url, None)
+        types = baike_info_map[url].types
+        page_info = PageInfo(ename, names, url, [], types)
+        print " ".join(page_info.names)
     
         for chapter_title, chapter in doc:
             print 'parsing %s' %chapter_title
-            for ltp_result, subj_miss in doc_processor.parse_chapter(chapter_title, chapter, page_info):
+            for ltp_result, str_entities, subj_miss in doc_processor.parse_chapter(chapter_title, chapter, page_info, parse_ner = True):
                 # print '\t' + ltp_result.sentence
                 if subj_miss:
                     print "\t\t" + ltp_result.sentence
@@ -281,8 +324,8 @@ def test_chapt():
 
 
 if __name__ == "__main__":
-    # test_chapt()   
-    test_sentence() 
+    test_chapt()   
+    # test_sentence() 
 
         
 

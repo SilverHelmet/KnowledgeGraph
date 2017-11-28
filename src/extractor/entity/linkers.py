@@ -1,7 +1,7 @@
 #encoding: utf-8
 from ..structure import BaikeEntity, FBRelation, LinkedTriple, StrEntity
 from ..util import  get_domain
-from ...rel_extraction.extract_baike_names import person_extra_names
+from src.rel_extraction.extract_baike_names import person_extra_names
 import os
 import json
 from src.extractor.resource import Resource

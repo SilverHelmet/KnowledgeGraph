@@ -199,7 +199,7 @@ def test_ltp_extractor(datas_map, ner, rel_extractor, linker):
         # print url
         names = url2names[url]
         types = bk_info_map[url].types
-        page_info = PageInfo(baike_name, names, url, get_url_domains(types, important_domains))
+        page_info = PageInfo(baike_name, names, url, get_url_domains(types, important_domains), types)
         linker.entity_linker.start_new_page()
         for data in datas:
             sentence = data.sentence.encode('utf-8')

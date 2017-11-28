@@ -30,14 +30,13 @@ def load_mapping_names(bk2fb):
     return bk_name_map
 
 def person_extra_names(name):
-    tokens = name.split(u"·")
+    tokens = name.split("·")
     names = []
     if len(tokens) >= 2:
         names.append(tokens[-1])
         names.append(tokens[0])
     if len(tokens) >= 3:
-        names.append(tokens[0] + u"·" + tokens[-1])
-
+        names.append(tokens[0] + "·" + tokens[-1])
     return names
 
 re_english = re.compile(r'[\w\. ]+$')
