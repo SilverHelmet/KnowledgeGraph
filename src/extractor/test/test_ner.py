@@ -93,7 +93,7 @@ class Estimator:
     def clear(self):
         self.estimation = Estimation()
 
-    def add(self, ltp_result, entities_name, ner_entities_name):
+    def add(self, ltp_result, entities_name, ner_entities_name, debug = False):
 
         entities_name = [e if type(e) is str else e.encode('utf-8') for e in entities_name]
         ner_entities_name = [e if type(e) is str else e.encode('utf-8') for e in ner_entities_name]
@@ -102,6 +102,12 @@ class Estimator:
         self.estimation.total_labeled += len(entities_name)
         
         entities_name_set = set(entities_name)
+
+        if debug:
+            print sentence
+            print '\t%s' %"\t".join(ner_entities_name)
+            print '\t',
+
         for entity in ner_entities_name:
             if entity in entities_name_set:
                 self.estimation.right += 1
@@ -110,9 +116,12 @@ class Estimator:
 
         # miss analysis
         miss_type_map = {}
+
         for entity in entities_name:
             if entity in ner_entities_name:
                 continue
+            if debug:
+                print "\t%s" %(entity),
             self.estimation.miss += 1
             if self.check_include(entity, ner_entities_name):
                 self.estimation.miss_partial += 1
@@ -130,6 +139,8 @@ class Estimator:
             else:
                 self.estimation.miss_other += 1
                 miss_type_map[entity] = 4
+        if debug:
+            print ""
         return miss_type_map
         
     def check_include(self, entity, reco_entities):
@@ -163,7 +174,7 @@ if __name__ == "__main__":
 
     ltp = LTP(None)
     est = Estimator()
-    ner = NamedEntityReg(ltp)
+    ner = NamedEntityReg(process_bracket_flag = False)
 
     base_dir = os.path.join(data_dir, '实体标注')
     
@@ -185,13 +196,14 @@ if __name__ == "__main__":
             #     elif ner_tag.startswith('E'):
             #         ner_entities_name.append(ltp_result.text(st, idx + 1))
             stf_result = stf_results_map[sentence]
+            stf_result = Nonez
             str_entities = ner.recognize(sentence, ltp_result, None, stf_result)
             ner_entities_name = []
             for str_entity in str_entities:
                 ner_entities_name.append(ltp_result.text(str_entity.st, str_entity.ed))
                 ner_entities_name.extend(str_entity.extra_names)
+            est.add(ltp_result, data.entities, ner_entities_name, debug = True)
 
-            est.add(ltp_result, data.entities, ner_entities_name)
     est.estimation.print_info()
 
     

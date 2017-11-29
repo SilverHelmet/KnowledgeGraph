@@ -40,7 +40,6 @@ def get_url_domains(types, valid_domains):
             domains.add(domain)
     return list(domains)
 
-
 if __name__ == "__main__":
     predicate_map = load_predicate_map(extra_path = os.path.join(doc_dir, 'human_add_predicate_map.json'))
 

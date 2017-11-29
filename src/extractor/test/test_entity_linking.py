@@ -19,7 +19,6 @@ class EntityLinkingTestor:
 
     def test(self, sentence, page_info, stf_result):
         ltp_result = self.ltp.parse(sentence)
-        stf_result = stf_results_map[sentence]
 
         str_entites = self.ner.recognize(sentence, ltp_result, page_info, stf_result)
         # str_entites = [StrEntity(st, ed, etype) for st, ed, etype in str_entites]
@@ -55,7 +54,7 @@ if __name__ == "__main__":
     entity_linker = PageMemoryEntityLinker(lowercase = True)
 
     base_dir = os.path.join(data_dir, '实体标注')
-    stf_results_map = load_stanford_result(os.path.join(base_dir, 'sentences.txt'), os.path.join(base_dir, 'sentences_stanf_nlp.json'))
+    # stf_results_map = load_stanford_result(os.path.join(base_dir, 'sentences.txt'), os.path.join(base_dir, 'sentences_stanf_nlp.json'))
 
     testor = EntityLinkingTestor(ner, entity_linker, ltp)
     important_domains = Resource.get_singleton().get_important_domains()
@@ -79,14 +78,15 @@ if __name__ == "__main__":
         names = entity_linker.url2names[url]
         types = entity_linker.bk_info_map[url].types
         domains = get_url_domains(types, important_domains)
-        page_info = PageInfo(ename, names, url, domains)
+        page_info = PageInfo(ename, names, url, domains, types)
         for data in datas:
             entities = data.entities
             bk_urls = data.bk_urls
             sentence = data.sentence.encode('utf-8')
             # if sentence != '2014年11月，在巴塞罗那5比1战胜塞维利亚，梅西打破西甲历史进球纪录，提高到了253球。':
                 # continue
-            link_map, ner_names = testor.test(sentence, page_info, stf_results_map[sentence])
+            # stf_result = stf_results_map[sentence]
+            link_map, ner_names = testor.test(sentence, page_info, None)
 
 
             print sentence

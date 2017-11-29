@@ -37,8 +37,9 @@ class Resource:
         path = os.path.join(rel_ext_dir, 'baike_names.tsv')
         extra_path = os.path.join(extra_name_dir, 'summary_extra_name.tsv')
         extra_bracket_path = os.path.join(extra_name_dir, 'summary_extra_bracket_name.tsv')
+        extra_team_path = os.path.join(extra_name_dir, 'extra_team_name.tsv')
         
-        name2bk, url2names = load_baike_names_resource([path, extra_path, extra_bracket_path])
+        name2bk, url2names = load_baike_names_resource([path, extra_path, extra_bracket_path, extra_team_path])
 
         self.dict['name2bk'] = name2bk
         self.dict['url2names'] = url2names
@@ -64,9 +65,9 @@ class Resource:
 
     def get_summary_with_infobox(self):
         if not 'baike_summary_with_infobox' in self.dict:
-            summary_path = os.path.join(rel_ext_dir, 'baike_filtered_summary.json')
-            infobox_path = os.path.join(result_dir, '360/360_entity_info_processed.json')
-            self.dict['baike_summary_with_infobox'] = load_summary_and_infobox(summary_path, infobox_path)
+            summary_path = os.path.join(rel_ext_dir, 'baike_filtered_summary_with_infobox.json')
+            # infobox_path = os.path.join(result_dir, '360/360_entity_info_processed.json')
+            self.dict['baike_summary_with_infobox'] = load_summary(summary_path)
         return self.dict['baike_summary_with_infobox']
 
     def get_predicate_map(self):
@@ -85,7 +86,7 @@ class Resource:
 
     def get_baike_ename_title(self):
         if not "baike_ename_title" in self.dict:
-            self.dict['baike_ename_title'] = load_baike_ename_title()
+            self.dict['baike_ename_title'] = load_url2names(os.path.join(rel_ext_dir, 'baike_ename_title.tsv'))
         return self.dict['baike_ename_title']
 
     def get_location_dict(self):
@@ -95,6 +96,11 @@ class Resource:
             Print('load location dict from [%s]' %" ".join(dicts))
             self.dict['location_dict'] = load_dict(dicts_path)
         return self.dict['location_dict']
+
+    def get_team_suffix_dict(self):
+        if not "team_suffix_dict" in self.dict:
+            self.dict['team_suffix_dict'] = load_extra_team_suffix_dict()
+        return self.dict['team_suffix_dict']
 
     @staticmethod
     def get_singleton():
@@ -127,9 +133,7 @@ def gen_lowercase_name(name2bk):
             lower_name2bk[name.lower()] = name2bk[name]
     return lower_name2bk
 
-def load_url2names(filepath = None):
-    if filepath is None:
-        filepath = os.path.join(rel_ext_dir, 'baike_names.tsv')
+def load_url2names(filepath):
     total = nb_lines_of(filepath)
 
     Print('load url -> names from [%s]' %filepath)
@@ -146,6 +150,8 @@ def load_baike_names_resource(filepaths):
     url2names = {}
     name2bk = {}
     for filepath in filepaths:
+        if not os.path.exists(filepath):
+            continue
         Print('generate url2names & name2baike from baike name file [%s]' %filepath)
         total = nb_lines_of(filepath)
         for line in tqdm(file(filepath, 'r'), total = total):
@@ -172,13 +178,6 @@ def load_important_domains():
         domains.add(line)
     return domains
 
-
-class BaikeInfo:
-    def __init__(self, pop, types):
-        self.pop = pop
-        self.types = types
-
-        
 def load_bk_static_info(filepath):
     total = nb_lines_of(filepath)
     info_map = {}
@@ -193,36 +192,6 @@ def load_bk_static_info(filepath):
         info = BaikeInfo(pop, types)
         info_map[bk_url] = info
     return info_map
-
-
-
-def load_summary_and_infobox(summary_path, infobox_path):
-    Print("load summary from [%s]" %summary_path)
-    summary_map = {}
-    for line in tqdm(file(summary_path, 'r'), total = nb_lines_of(summary_path)):
-        p = line.split('\t')
-        key = p[0]
-        summary = json.loads(p[1])['summary']
-        # summary = filter_bad_summary(summary)
-        summary_map[key] = summary.encode('utf-8')
-    Print('add infobox value to summary, path is [%s]' %infobox_path)
-    for line in tqdm(file(infobox_path), total = nb_lines_of(infobox_path)):
-        p = line.split('\t')
-        key = p[0]
-        info_values = list()
-        info = json.loads(p[1])['info']
-        for value_list in info.values():
-            for value in value_list:
-                info_values.append(value)
-        if len(info_values) == 0:
-            continue
-        text = u"。" + u"#".join(info_values)
-        text = text.encode('utf-8')
-        if not key in summary_map:
-            summary_map[key] = text
-        else:
-            summary_map[key] = summary_map[key] + text
-    return summary_map    
 
 def load_predicate_map(filepath = None, extra_path = None):
     if filepath is None:
@@ -261,19 +230,7 @@ def load_predicate_map(filepath = None, extra_path = None):
                 probs[prop] += 1.0
     return predicate_map
 
-def load_baike_ename_title():
-    path = os.path.join(result_dir, '360/360_entity_info_processed.json')
-    Print('load baike\'s ename and title from [%s]' %path)
-    ename_title_map = {}
-    for line in tqdm(file(path), total = nb_lines_of(path)):
-        bk_url, obj = line.split('\t')
-        obj = json.loads(obj)
-        ename, title = obj['ename'].encode('utf-8'), obj['title'].encode('utf-8')
-        if title != ename:
-            ename_title_map[bk_url] = [ename, title]
-        else:
-            ename_title_map[bk_url] = [ename]
-    return ename_title_map
+
 
 def load_dict(dicts_path):
     dict_names = set()
@@ -283,7 +240,74 @@ def load_dict(dicts_path):
             dict_names.add(name)
     return dict_names
         
+def load_summary(summary_path):
+    Print("load summary from [%s]" %summary_path)
+    summary_map = {}
+    for line in tqdm(file(summary_path), total = nb_lines_of(summary_path)):
+        bk_url, summary = line.split('\t')
+        summary = json.loads(summary)['summary'].encode('utf-8')
+        summary_map[bk_url] = summary
+    return summary_map
 
+def load_extra_team_suffix_dict():
+    team_suffix_dict_path = os.path.join(extra_name_dir, 'extra_team_name_dict.tsv')
+    team_suffix_dicts = SuffixDicts.load_from_file(team_suffix_dict_path)
+    return team_suffix_dicts
+
+
+class BaikeInfo:
+    def __init__(self, pop, types):
+        self.pop = pop
+        self.types = types
+
+class SuffixDicts:
+    def __init__(self):
+        self.dicts = {}
+        self.suffixes = set()
+        self.activated_suffixes = set()
+        self.url2suffix = {}
+
+    def add_url_with_suffix(self, bk_url, suffix):
+        self.url2suffix[bk_url] = suffix
+
+    def add_name_with_suffix(self, bk_url, name, suffix):
+        if not suffix in self.dicts:
+            self.dicts[suffix] = {}
+            self.suffixes.add(suffix)
+        team_dict = self.dicts[suffix]
+        if not name in team_dict:
+            team_dict[name] = []
+        team_dict[name].append(bk_url)
+
+    def search_name(self, name):
+        urls = []
+        for suffix in self.activated_suffixes:
+            suf_dict = self.dicts[suffix]
+            urls.extend(suf_dict.get(name, []))
+        return urls
+
+    def meet_url(self, bk_url):
+        if bk_url in self.url2suffix:
+            suffix = self.url2suffix[bk_url]
+            print 'add suffix', suffix, bk_url
+            self.activated_suffixes.add(suffix)
+
+    def refresh(self):
+        self.activated_suffixes.clear()
+
+    @staticmethod
+    def load_from_file(filepath):
+        Print('load team\'s dict from [%s]' %filepath)
+        suf_dicts = SuffixDicts()
+        for line in file(filepath):
+            p = line.strip().split('\t')
+            suffix = p[0]
+            bk_url = p[1]
+            suf_dicts.add_url_with_suffix(bk_url, suffix)
+            names = p[2:]
+            for name in names:
+                suf_dicts.add_name_with_suffix(bk_url, name, suffix)
+        return suf_dicts
 
 if __name__ == "__main__":
     s1 = Resource.get_singleton()

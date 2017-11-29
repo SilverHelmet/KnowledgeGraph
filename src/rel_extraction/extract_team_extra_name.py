@@ -1,4 +1,4 @@
-#encoding: utf-8
+#encoding:utf-8
 from src.IOUtil import Print, rel_ext_dir, nb_lines_of, extra_name_dir
 from src.extractor.resource import Resource
 from  src.extractor.entity.ner import NamedEntityReg
@@ -23,19 +23,28 @@ def is_org(types):
             return True
     return False
 
+def is_team(types):
+    return "fb:sports.sports_team" in types
+
 re_eng_digit = re.compile(ur'[0-9a-zA-Z]')
 def has_eng_digit(name):
     global re_eng_digit
     return re_eng_digit.search(name) is not None
 
 location_ends = ['城','市','','州','洲','省']
+bad_ends = ['队', '男子', '女子']
 def is_location(name, location_dict):
-    global location_ends
+    global location_ends, bad_ends
     if type(name) is unicode:
         name = name.encode('utf-8')
     for end in location_ends:
         if name + end in location_dict:
             return True
+
+    for end in bad_ends:
+        if name.endswith(end):
+            return is_location(name[:-len(end)], location_dict)
+
     return False
 
 def parse_entity(sentence, ltp, ner, location_dict):
@@ -48,15 +57,19 @@ def parse_entity(sentence, ltp, ner, location_dict):
     for str_entity in str_entities:
         if str_entity.etype in ['Ns', 'Ns-ATT']:
             continue
-        name = ltp_result.text(str_entity.st, str_entity.ed)
-        if is_location(name, location_dict):
-            continue
-        names.append(name.decode('utf-8'))
-
+        try:
+            name = ltp_result.text(str_entity.st, str_entity.ed)
+            if is_location(name, location_dict):
+                continue
+            names.append(name.decode('utf-8'))
+        except Exception, e:
+             print '\terror in parse entity:', sentence
     j_names = []
     for i in range(ltp_result.length):
         if ltp_result.tags[i] == 'j':
-            j_names.append(ltp_result.words[i].decode('utf-8'))
+            name = ltp_result.words[i].decode('utf-8')
+            if not is_location(name, location_dict):
+                j_names.append(ltp_result.words[i].decode('utf-8'))
     return names, j_names
 
 def is_good_sub_seq(parsed_name, ename, suffix):
@@ -87,7 +100,7 @@ def is_good_sub_seq(parsed_name, ename, suffix):
 
     return True
 
-def extract_org_extra_name_from_summary(summary_path, out_path):
+def extract_team_extra_name_from_summary(summary_path, out_path):
 
     resource = Resource().get_singleton()
     url2names = resource.get_url2names()
@@ -99,6 +112,7 @@ def extract_org_extra_name_from_summary(summary_path, out_path):
     ner = NamedEntityReg()
     team_suffixes = load_team_suffix()
     team_suffixes = [x.decode('utf-8') for x in team_suffixes]
+    team_suffixes = set(team_suffixes)
 
     Print('extract org\'s extra name from summary [%s]' %summary_path)
     Print("result write to [%s]" %out_path)
@@ -106,7 +120,7 @@ def extract_org_extra_name_from_summary(summary_path, out_path):
     for line in tqdm(file(summary_path), total = nb_lines_of(summary_path)):
         bk_url, summary = line.split('\t')
         types = baike_info_map[bk_url].types
-        if not is_org(types):
+        if not is_team(types):
             continue  
 
         enames = ename_title_map[bk_url]
@@ -151,7 +165,6 @@ def extract_org_extra_name_from_summary(summary_path, out_path):
         parsed_names = set(parsed_names)
         for parsed_name in parsed_names:
             valid = False
-            
             for ename, suffix in zip(enames, suffixes):
                 if has_eng_digit(ename):
                     continue
@@ -160,7 +173,7 @@ def extract_org_extra_name_from_summary(summary_path, out_path):
             if valid:
                 succeed_names.add(parsed_name)
 
-        for j_name in j_names:
+        for j_name in j_names_cnt:
             if j_names_cnt[j_name] >= 2:
                 valid = False
                 for ename, suffix in zip(enames, suffixes):
@@ -173,6 +186,7 @@ def extract_org_extra_name_from_summary(summary_path, out_path):
 
         succeed_names = [new_name for new_name in succeed_names if not new_name in ori_names]
         succeed_names = [new_name for new_name in succeed_names if not has_strange_punc(new_name)]
+        # succeed_names = [new_name for new_name in succeed_names if not is_location(new_name, location_dict)]
         if len(succeed_names) > 0:
             succeed_names = set(succeed_names)
             outf.write('%s\t%s\n' %(bk_url, "\t".join(succeed_names)))
@@ -187,8 +201,8 @@ def extract_org_extra_name_from_summary(summary_path, out_path):
 
 if __name__ == "__main__":
     summary_path = os.path.join(rel_ext_dir, 'baike_filtered_summary.json')
-    extra_org_out_path = os.path.join(extra_name_dir, 'extra_org_name.tsv')
-    extract_org_extra_name_from_summary(summary_path, extra_org_out_path)
+    extra_org_out_path = os.path.join(extra_name_dir, 'extra_team_name.tsv')
+    extract_team_extra_name_from_summary(summary_path, extra_org_out_path)
 
     
 
