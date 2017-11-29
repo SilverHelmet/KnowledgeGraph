@@ -66,7 +66,12 @@ def add_game_type(origin_map):
             continue
         game_type_list = origin_map[item]
         new_game_type_list = []
-        new_game_type_list.append(('fb:cvg.computer_videogame', int(game_type_list['sum'][1] * 0.8)))
+        game_prob = 0.0
+        for game_type in game_type_list:
+            if game_type[0] != 'sum':
+                continue
+            game_prob = game_type[1] * 0.8
+        new_game_type_list.append(('fb:cvg.computer_videogame', int(game_prob)))
         for game_type in game_type_list:
             if game_type[0] == 'sum':
                 continue
