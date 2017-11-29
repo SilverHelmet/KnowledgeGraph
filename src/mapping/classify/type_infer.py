@@ -59,9 +59,24 @@ class InfoboxTypeInfer:
         return prob_map
 '''
 
+def add_game_type(origin_map):
+    game_list = [u'操作指南', u'游戏目标', u'如何开始', u'游戏基本信息', u'游戏类型', u'游戏大小', u'游戏标签', u'操作说明', u'游戏介绍', u'游戏攻略']
+    for item in origin_map:
+        if item not in game_list:
+            continue
+        game_type_list = origin_map[item]
+        new_game_type_list = []
+        new_game_type_list.append(('fb:cvg.computer_videogame', int(game_type_list['sum'][1] * 0.8)))
+        for game_type in game_type_list:
+            if game_type[0] == 'sum':
+                continue
+            new_game_type_list.append((game_type[0], int(game_type[1] * 0.2)))
+    return origin_map
+
 class InfoTypeInfer:
     def __init__(self, path):
         self.baike_info_map = self.init(path)
+        self.baike_info_map = add_game_type(self.baike_info_map)
 
     def init(self, mapping_path):
         Print('load mapping result from [%s]' %mapping_path)
@@ -150,6 +165,7 @@ class BKClassTypeInfer:
 class TitleTypeInfer:
     def __init__(self, path):
         self.baike_title_map = self.init(path)
+        self.baike_title_map = add_game_type(self.baike_title_map)
 
     def init(self, mapping_path):
         Print('load mapping result from [%s]' %mapping_path)
