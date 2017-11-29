@@ -63,6 +63,7 @@ def add_game_type(attr, origin_list):
     game_list = [u'操作指南', u'游戏目标', u'如何开始', u'游戏基本信息', u'游戏类型', u'游戏大小', u'游戏标签', u'操作说明', u'游戏介绍', u'游戏攻略']
     if attr not in game_list:
         return origin_list
+    print "fuck it off"
     new_game_type_list = []
     game_prob = 0.0
     for game_type in origin_list:
@@ -460,7 +461,7 @@ def infer_type():
     baike_infobox_path = os.path.join(result_dir, '360/info_type.txt')
     baike_cls2tpe_path = os.path.join(classify_dir, 'final_baike_cls2fb_type.json')
     type_infer = TypeInfer(baike_info_path = baike_infobox_path, baike_cls_path = baike_cls2tpe_path, baike_title_path = baike_title_path, extra_info_path = extra_info_path)
-    
+    return    
     extra_type_path = os.path.join(classify_dir, 'extra_type.json')
     extra_type_map = load_json_map(extra_type_path)
     
