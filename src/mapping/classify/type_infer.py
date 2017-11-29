@@ -169,7 +169,6 @@ class BKClassTypeInfer:
 class TitleTypeInfer:
     def __init__(self, path):
         self.baike_title_map = self.init(path)
-        self.baike_title_map = add_game_type(self.baike_title_map)
 
     def init(self, mapping_path):
         Print('load mapping result from [%s]' %mapping_path)
