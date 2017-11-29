@@ -303,12 +303,17 @@ class PageMemoryEntityLinker:
     def get_candidate_urls(self, names):
         baike_urls_cnt = {}
         for name, score in names: 
-            baike_urls = self.name2bk.get(name, [])
-            baike_urls.extend(self.team_suffix_dict.search_name(name))
+            baike_urls = self.name2bk.get(name, [])            
             for url in baike_urls:
                 if url not in baike_urls_cnt:
                     baike_urls_cnt[url] = 0
                 baike_urls_cnt[url] += score
+
+            team_baike_urls = self.team_suffix_dict.search_name(name)
+            for url in team_baike_urls:
+                if url not in baike_urls_cnt:
+                    baike_urls_cnt[url] = 0
+                baike_urls_cnt[url] += score + 1
         if len(baike_urls_cnt) != 0:
             return top_cnt_keys(baike_urls_cnt)
         
@@ -361,6 +366,8 @@ class PageMemoryEntityLinker:
         baike_urls, mapping_scores = self.get_candidate_urls(names)
         baike_entities = []
         for bk_url in baike_urls:
+            # if not bk_url in self.bk_info_map:
+            #     continue
             bk_info = self.bk_info_map[bk_url]
             pop = bk_info.pop
             # url_names = self.url2names[bk_url]
