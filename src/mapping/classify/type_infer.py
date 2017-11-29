@@ -69,7 +69,7 @@ def add_game_type(attr, origin_list):
     for game_type in origin_list:
         if game_type[0] != 'sum':
             continue
-        game_prob = game_type[1]
+        game_prob = game_type[1] * 0.8
     new_game_type_list.append(('fb:cvg.computer_videogame', int(game_prob)))
     for game_type in origin_list:
         if game_type[0] == 'sum':
