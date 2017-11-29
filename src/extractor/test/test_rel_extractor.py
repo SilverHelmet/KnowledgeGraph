@@ -170,6 +170,7 @@ class RelExtractorTestor():
                 r1 = ltp_result.text(item[0].st, item[0].ed)
             else:
                 r1 = ltp_result.text(item[0], item[0] + 1)
+            print r1
             if isinstance(item[2], int) == False:
                 r3 = ltp_result.text(item[2].st, item[2].ed)
             else:
@@ -180,6 +181,7 @@ class RelExtractorTestor():
                 r2 = ltp_result.text(item[1], item[1] + 1)
             ret.append((r1, r2, r3))
         ret = set(ret)
+        str_entities_word = set(str_entities_word)
         '''
         for i in range(len(entities)):
             for j in range(i + 1, len(entities)):
@@ -234,13 +236,6 @@ def print_all(extractor, ltp):
         for data in datas:
             standard_triple = []
             triples, ner_res = testor.test_all(data)
-            if len(triples) == 0 and len(data.knowledges) != 0:
-                f.write(data.sentence)
-                f.write('\n')
-                for kl in data.knowledges:
-                    f.write(kl.triple())
-                    f.write('\n') 
-                f.write('\n')
             # if data.sentence != u'《青花瓷》是方文山作词，周杰伦作曲并演唱的歌曲，收录于2007年11月2日周杰伦制作发行音乐专辑《我很忙》中。':
             #     continue
             print data.sentence
