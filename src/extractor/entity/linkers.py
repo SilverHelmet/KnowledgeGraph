@@ -142,6 +142,7 @@ etype_match_map = {
     "Nf": [],
     "Nm": [],
     "Ns-ATT": [],
+    'Nt': [],
 }
 
 def entity_type_related_score(etype, types):
