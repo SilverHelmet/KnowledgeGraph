@@ -76,6 +76,7 @@ def add_game_type(attr, origin_list):
             new_game_type_list.append((game_type[0], game_type[1]))
             continue
         new_game_type_list.append((game_type[0], int(game_type[1] * 0.2)))
+    print new_game_type_list
     return new_game_type_list
 
 class InfoTypeInfer:
