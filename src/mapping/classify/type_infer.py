@@ -76,6 +76,7 @@ def add_game_type(attr, origin_list):
             new_game_type_list.append((game_type[0], game_type[1]))
             continue
         new_game_type_list.append((game_type[0], int(game_type[1] * 0.2)))
+    print new_game_type_list
     return new_game_type_list
 
 class InfoTypeInfer:
@@ -90,7 +91,7 @@ class InfoTypeInfer:
             p = line.decode('utf-8').split('\t')
             baikeattr = p[0]
             mapping_pairs = eval(p[1])
-            add_game_type(baikeattr, mapping_pairs)
+            mapping_pairs = add_game_type(baikeattr, mapping_pairs)
             mappings = []
             info_count = 0
             info_sum = 0
@@ -179,7 +180,7 @@ class TitleTypeInfer:
             p = line.decode('utf-8').split('\t')
             baikeattr = p[0]
             mapping_pairs = eval(p[1])
-            add_game_type(baikeattr, mapping_pairs)
+            mapping_pairs = add_game_type(baikeattr, mapping_pairs)
             mappings = []
             title_count = 0
             title_sum = 0
@@ -461,7 +462,7 @@ def infer_type():
     baike_infobox_path = os.path.join(result_dir, '360/info_type.txt')
     baike_cls2tpe_path = os.path.join(classify_dir, 'final_baike_cls2fb_type.json')
     type_infer = TypeInfer(baike_info_path = baike_infobox_path, baike_cls_path = baike_cls2tpe_path, baike_title_path = baike_title_path, extra_info_path = extra_info_path)
-    return    
+    #return    
     extra_type_path = os.path.join(classify_dir, 'extra_type.json')
     extra_type_map = load_json_map(extra_type_path)
     
