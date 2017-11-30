@@ -8,7 +8,7 @@ import os
 def process(inpath, outpath, name_map):
     Print('process %s' %inpath)
     outf = file(outpath, 'w')
-    error_outf = file('log/error.log')
+    error_outf = file('log/error.log', 'w')
     for line in tqdm(file(inpath), total  = nb_lines_of(inpath)):
         fb_key, rels = line.split('\t')
         rels = json.loads(rels)
