@@ -12,8 +12,6 @@ def process(inpath, outpath, name_map):
     for line in tqdm(file(inpath), total  = nb_lines_of(inpath)):
         fb_key, rels = line.split('\t')
         rels = json.loads(rels)
-        if len(rels) > 500:
-            error_outf.write("big size rels for uri: %s\n" %fb_key)
         new_rels = {}
         for fb_property, obj in rels:
             
@@ -28,10 +26,8 @@ def process(inpath, outpath, name_map):
         big = False
         for fb_property in new_rels:
             new_rels[fb_property] = list(set(new_rels[fb_property]))
-            if len(new_rels[fb_property]) > 500:
-                big = True
-        if big:
-            error_outf.write('big size property of url = %s, property = %s\n' %(fb_key, fb_property))
+            if len(new_rels[fb_property]) > 300:
+                error_outf.write('big size property of url = %s, property = %s, size = %d\n' %(fb_key, fb_property, len(new_rels[fb_property])) )
         outf.write("%s\t%s\n" %(fb_key, json.dumps(new_rels, ensure_ascii = False)))
     outf.close()
     error_outf.close()
