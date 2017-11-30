@@ -44,4 +44,4 @@ if __name__ == "__main__":
 
     in_path = os.path.join(classify_dir, 'mapped_fb_entity_info.json')
     out_path = os.path.join(rel_ext_dir, 'mapped_fb_entity_info_processed.json')
-    process(in_path, out_path)
+    process(in_path, out_path, name_map)
