@@ -18,7 +18,14 @@ def process(inpath, outpath, name_map):
             if obj in name_map:
                 names = name_map[obj]
             else:
-                names = [process_fb_value(obj)]
+                literal = process_fb_value(obj)
+                if literal.startswith('fb:m.'):
+                    error_outf.write('error property %s, entity %s' %(fb_property, obj) )
+                    names = []
+                else:
+                    names = [process_fb_value(obj)]
+            if len(names) == 0:
+                continue
             if not fb_property in new_rels:
                 new_rels[fb_property] = []
             new_rels[fb_property].extend(names)
@@ -34,6 +41,12 @@ def process(inpath, outpath, name_map):
 
 
 if __name__ == "__main__":
+    mapping_path = os.path.join(rel_ext_dir, 'mapping_result.tsv')
+    fb_uris = set()
+    for line in file(mapping_path):
+        fb_uris.add(line.strip().split('\t')[1])
+
+
     name_files = [os.path.join(result_dir, 'freebase/entity_name.json'),
         os.path.join(result_dir, 'freebase/entity_alias.json')]
     totals = [39345270, 2197095]
