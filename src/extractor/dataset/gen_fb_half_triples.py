@@ -18,12 +18,12 @@ def process(inpath, outpath, name_map):
         for fb_property, obj in rels:
             
             if obj in name_map:
-                name = name_map[obj]
+                names = name_map[obj]
             else:
-                name = [process_fb_value(obj)]
+                names = [process_fb_value(obj)]
             if not fb_property in new_rels:
                 new_rels[fb_property] = []
-            new_rels[fb_property].extend(name)
+            new_rels[fb_property].extend(names)
 
         big = False
         for fb_property in new_rels:
