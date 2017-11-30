@@ -221,7 +221,7 @@ class VerbRelationExtractor:
     def find_direct_SBV_entity(self, verb, entity_lis):
         res = []
         for child in verb.children:
-            if child.rel == 'SBV' and child in entity_lis:
+            if child.rel == 'SBV' and child in entity_lis and child.title == None:
                 res.append(child)
         return res
 
@@ -278,11 +278,15 @@ class VerbRelationExtractor:
             path = [verb.father]
             path += self.find_ATT_or_COO_path(verb.father)
             for node in path:
+                if node.title != None:
+                    continue
                 if (node.entity != None) or (len(node.mark) != 0 and node.postag == 'n'):
                     verb.target.append(node)
 
     def find_all_ATT(self, entity_lis):
         for entity in entity_lis:
+            if entity.title != None:
+                continue
             path = self.find_path_to_root(entity)
             for node in path[:-1]:
                 if node.father.postag == 'v':
@@ -295,7 +299,7 @@ class VerbRelationExtractor:
         res = []
         for child in verb.children:
             if child.postag != 'v':
-                if child in entity_lis:
+                if child in entity_lis and child.title == None:
                     res.append(child)
                 res += self.find_normal_verb_OBJ(child, entity_lis)
         return res
@@ -318,7 +322,7 @@ class VerbRelationExtractor:
             self.debuger.debug("the object of verb", verb.word, "has normal object")
             for child in verb.children:
                 if child.rel in ['VOB', 'FOB']:
-                    if child in entity_lis:
+                    if child in entity_lis and child.title == None:
                         obj_res.append(child)
                     obj_res += self.find_normal_verb_OBJ(child, entity_lis)
         verb.search_obj_mark = True
@@ -451,18 +455,18 @@ class VerbRelationExtractor:
         self.debuger.debug('|'*40)
 
     def build_dict(self):
-        self.dic = []
-        root = "result/rel_extraction/dict/"
+        self.nationality_dic = []
+        self.profession_dic = []
         #name = ["nationality.txt", "full_profession.txt", "province.txt", "langauge.txt", "citytown.txt"]
-        name = ["nationality.txt", "full_profession.txt"]
-        for n in name:
-            with open(root+n, "r") as f:
-                res = f.readlines()
-                self.dic += res
-        self.debuger.debug('-'*40)
-        for i in range(len(self.dic)):
-            self.dic[i] = self.dic[i].replace("\n","")
-        self.debuger.debug('-'*40)
+        name = ["", ""]
+        with open("result/rel_extraction/dict/nationality.txt", "r") as f:
+            self.nationality_dic = f.readlines()
+        for i in range(len(self.nationality_dic)):
+            self.nationality_dic[i] = self.nationality_dic[i].replace("\n","")
+        with open("result/rel_extraction/dict/full_profession.txt", "r") as f:
+            self.profession_dic = f.readlines()
+        for i in range(len(self.profession_dic)):
+            self.profession_dic[i] = self.profession_dic[i].replace("\n","")
 
     def deal_with_print(self, node, ltp_result):
         res = None
@@ -473,22 +477,40 @@ class VerbRelationExtractor:
         return res
 
     def deal_with_tripple(self, node, ltp_result):
-        res = None
-        if isinstance(node, StrEntity) == True:
-            res = ltp_result.text(node.st, node.ed)
-        else:
-            res = ltp_result.text(node, node+1)
+        res_1 = None
+        res_2 = None
+        res_3 = None
+        if isinstance(node[0], StrEntity) == True:
+            res_1 = ltp_result.text(node[0].st, node[0].ed)
+        elif isinstance(node[0], int) == True:
+            res_1 = ltp_result.text(node[0], node[0]+1)
+        elif isinstance(node[0], str) == True:
+            res_1 = node[0]
+        if node[1] == None:
+            res_2 = "是"
+        elif isinstance(node[1], int) == True:
+            res_2 = ltp_result.text(node[1], node[1]+1)
+        elif isinstance(node[1], str) == True:
+            res_2 = node[1]
+        if isinstance(node[2], StrEntity) == True:
+            res_3 = ltp_result.text(node[2].st, node[2].ed)
+        elif isinstance(node[2], int) == True:
+            res_3 = ltp_result.text(node[2], node[2]+1)
+        res = (res_1, res_2, res_3)
         return res
 
     def judge_remove_is(self, tripple, ltp_result):
         ret = False
         flag = 0
+        if isinstance(tripple[1], str) == True: #deal with title_res
+            return False
         if (tripple[1] != None and ltp_result.text(tripple[1], tripple[1]+1) == "是") or (tripple[1] == None):
             flag =1
         if flag == 1:
             self.debuger.debug("verb is \"is\"")
-            r1 = self.deal_with_tripple(tripple[0], ltp_result)
-            r2 = self.deal_with_tripple(tripple[2], ltp_result)
+            r = self.deal_with_tripple(tripple, ltp_result)
+            r1 = r[0]
+            r2 = r[2]
             self.debuger.debug("r1 is ",r1)
             self.debuger.debug("r2 is ",r2)
             if r1 == r2:
@@ -496,17 +518,28 @@ class VerbRelationExtractor:
                 self.debuger.debug("tripple (a, is, a) is removed!")
         return ret
 
-    def remove_title_res(self, res, title_res):
-        for node in res:
-            for k in title_res:
-                if node[2] == k[2]:
-                    res.remove(node)
-
-    def remove_noun_res(self, res, noun_res):
-        for node in res:
-            for k in noun_res:
-                if res[0] == k[0] or res[1] == k[1]:
-                    res.remove(node)
+    def find_title(self, tree, ltp_result):
+        res = []
+        for node in tree.nodes:
+            if node.entity != None and node.postag in ['n', 'nd', 'nh', 'ni', 'nl', 'ns', 'nt', 'nz']:
+                children = self.find_all_ATT_child(node)
+                for child in children:
+                    if child.postag not in ['n', 'nd', 'nh', 'ni', 'nl', 'ns', 'nt', 'nz']:
+                        continue
+                    node_str = ltp_result.text(node.entity.st, node.entity.ed)
+                    if child.word in self.nationality_dic and child.word not in node_str:
+                        child.title = node.entity
+                        self.debuger.debug("finding title relation: nationality")
+                        self.debuger.debug("child:", child.word)
+                        self.debuger.debug("father:", node_str)
+                        res.append((child.word, "nationality", node.entity))
+                    elif child.word in self.profession_dic and child.word not in node_str:
+                        child.title = node.entity
+                        self.debuger.debug("finding title relation: profession")
+                        self.debuger.debug("child:", child.word)
+                        self.debuger.debug("father:", node_str)
+                        res.append((child.word, "profession", node.entity))
+        return res
 
     def find_tripple(self, ltp_result, e_lis):
         res = []
@@ -520,7 +553,7 @@ class VerbRelationExtractor:
         for e in e_lis:
             entity, near_verb, verb = self.find_2_verbs(tree, e)
             entity_lis.append(entity)
-        #judge noun relation
+        #find noun relation
         noun_res =[]
         for i in range(len(entity_lis)):
             for j in range(i + 1, len(entity_lis)):
@@ -528,24 +561,19 @@ class VerbRelationExtractor:
                 if(tmp_verb != None):
                     noun_res.append((entity_lis[i].entity, tmp_verb.idx, entity_lis[j].entity))
                     self.debuger.debug("noun relation found!")
-        #find title relationship
+        self.debuger.debug("noun_res:")
+        for tmp in noun_res:
+            self.debuger.debug(ltp_result.text(tmp[0].st, tmp[0].ed), \
+            ltp_result.text(tmp[1], tmp[1] + 1), ltp_result.text(tmp[2].st, tmp[2].ed))
+        #find title relation
         title_res = []
         self.build_dict()
-        for node in tree.nodes:
-            if node.entity != None and node.postag in ['n', 'nd', 'nh', 'ni', 'nl', 'ns', 'nt', 'nz']:
-                children = self.find_all_ATT_child(node)
-                for nodes in children:
-                    if nodes.word in self.dic and nodes.postag in ['n', 'nd', 'nh', 'ni', 'nl', 'ns', 'nt', 'nz']:
-                        if ltp_result.text(node.entity.st, node.entity.ed) != nodes.word:
-                            self.debuger.debug("finding title relation!")
-                            self.debuger.debug("child:", nodes.word)
-                            self.debuger.debug("father:", node.word)
-                            self.debuger.debug("father:", ltp_result.text(node.entity.st, node.entity.ed))
-                            title_res.append((node.entity, None, nodes.idx))
-                            #self.deal_with_res(res, None, node, nodes, ltp_result)
-        #step one: mark sub
+        title_res = self.find_title(tree, ltp_result)
+        self.debuger.debug("title_res:")
+        for tmp in title_res:
+            self.debuger.debug(tmp[0], tmp[1], ltp_result.text(tmp[2].st, tmp[2].ed))
 
-        #for each verb mark
+        #step one: find sub realation
         for verb in verb_lis:
             self.debuger.debug("verb", verb.word, "start finding its sub!")
             self.find_rel_sub(verb, entity_lis, tree)
@@ -572,38 +600,33 @@ class VerbRelationExtractor:
                         self.debuger.debug("is relation found:(actual_sub, is, concept_sub)")
         '''
         #type2: (actual_sub, is, direct_obj_of_is)
+        is_res = []
         for verb in verb_lis:
             if verb.word == '是' and len(verb.actual_sub) != 0:
                 for child in verb.children:
-                    if child.rel in ['VOB', 'FOB'] and child not in verb.actual_sub and child.postag in ['n', 'nd', 'nh', 'ni', 'nl', 'ns', 'nt', 'nz']:
+                    if child.rel in ['VOB', 'FOB'] and child not in verb.actual_sub \
+                    and child.postag in ['n', 'nd', 'nh', 'ni', 'nl', 'ns', 'nt', 'nz']:
                         for actual_sub in verb.actual_sub:
+                            if actual_sub.title != None or child.title != None:
+                                continue
                             child.mark.append(actual_sub)
                             if actual_sub.entity != None:
                                 if child.entity != None:
-                                    res.append((actual_sub.entity, None, child.entity))
+                                    is_res.append((actual_sub.entity, None, child.entity))
                                 else:
-                                    res.append((actual_sub.entity, None, child.idx))
+                                    is_res.append((actual_sub.entity, None, child.idx))
                             else:
                                 if child.entity != None:
-                                    res.append((actual_sub.idx, None, child.entity))
+                                    is_res.append((actual_sub.idx, None, child.entity))
                                 else:
-                                    res.append((actual_sub.idx, None, child.idx))
+                                    is_res.append((actual_sub.idx, None, child.idx))
                             self.debuger.debug("is relation found:(actual_sub, is, direct_obj_of_is)")
-
-        #type1: concept_sub => actual_sub
-        '''
-        for verb in verb_lis:
-            for concept_sub in verb.concept_sub:
-                concept_sub.mark = verb.actual_sub
-        '''
-        
-        #type2: is relation + direct_obj => actual_sub
-        for verb in verb_lis:
-            if verb.word == '是' and len(verb.actual_sub) != 0:
-                for child in verb.children:
-                    if child.rel in ['VOB', 'FOB'] and child not in verb.actual_sub:
-                        child.mark = verb.actual_sub
-
+        self.debuger.debug("is_res:")
+        for tmp in is_res:
+            r = self.deal_with_tripple(tmp, ltp_result)
+            r1 = r[0]
+            r2 = r[2]
+            self.debuger.debug(r1, "是", r2)
         #step three: confirm the obj, att, target part
         #obj&debug:
         for verb in verb_lis:
@@ -615,6 +638,11 @@ class VerbRelationExtractor:
         #target:
         self.find_all_TARGET(verb_lis, entity_lis)
         #step four: return tripple
+        sub_verb_obj = []
+        sub_verb_att = []
+        sub_verb_target = []
+        obj_verb_target = []
+        att_verb_target = []
         self.debuger.debug("start return tripple!")
         for verb in verb_lis:
             self.debuger.debug("for verb", verb.word)
@@ -622,29 +650,29 @@ class VerbRelationExtractor:
                 for obj in verb.obj:
                     self.debuger.debug("-"*20)
                     self.debuger.debug("sub-verb-obj relation found!")
-                    self.deal_with_res(res, verb, sub, obj, ltp_result)
+                    self.deal_with_res(sub_verb_obj, verb, sub, obj, ltp_result)
                     self.debuger.debug("-"*20)
                 for att in verb.att:
                     self.debuger.debug("-"*20)
                     self.debuger.debug("sub-verb-att relation found!")
-                    self.deal_with_res(res, verb, sub, att, ltp_result)
+                    self.deal_with_res(sub_verb_att, verb, sub, att, ltp_result)
                     self.debuger.debug("-"*20)
                 for target in verb.target:
                     self.debuger.debug("-"*20)
                     self.debuger.debug("sub-verb-target relation found!")
-                    self.deal_with_res(res, verb, sub, target, ltp_result)
+                    self.deal_with_res(sub_verb_target, verb, sub, target, ltp_result)
                     self.debuger.debug("-"*20)
             for obj in verb.obj:
                 for target in verb.target:
                     self.debuger.debug("-"*20)
                     self.debuger.debug("obj-verb-target relation found!")
-                    self.deal_with_res(res, verb, obj, target, ltp_result)
+                    self.deal_with_res(obj_verb_target, verb, obj, target, ltp_result)
                     self.debuger.debug("-"*20)
             for att in verb.att:
                 for target in verb.target:
                     self.debuger.debug("-"*20)
                     self.debuger.debug("att-verb-target relation found!")
-                    self.deal_with_res(res, verb, att, target, ltp_result)
+                    self.deal_with_res(att_verb_target, verb, att, target, ltp_result)
                     self.debuger.debug("-"*20)
         #debug
         for verb in verb_lis:
@@ -664,29 +692,27 @@ class VerbRelationExtractor:
             for target in verb.target:
                 self.debuger.debug(target.word)
             self.debuger.debug('-'*40)
-        final_res = []
-        self.remove_title_res(res, title_res)
-        self.remove_noun_res(res, noun_res)
-        res += title_res
-        res += noun_res
-        res = set(res)
-        for i in res:
-            if self.judge_remove_is(i, ltp_result) == False:
-                final_res.append(i)
         for node in tree.nodes:
             self.debuger.debug("node", node.word, "has mark:")
             for mark in node.mark:
                 tmp = self.deal_with_print(mark, ltp_result)
                 self.debuger.debug(tmp)
+        res = noun_res + title_res + is_res + sub_verb_obj + sub_verb_att + \
+        sub_verb_target + obj_verb_target + att_verb_target
+        res = set(res)
+        final_res = []
+        for i in res:
+            if self.judge_remove_is(i, ltp_result) == False:
+                final_res.append(i)
         return final_res
 
 if __name__ == "__main__":
     ltp = LTP(None)
-    ltp_result = ltp.parse("为了缓解更衣室的矛盾，巴萨果断地送走了梦二王朝的核心小罗和德科，提拔了年仅21的梅西作为新的核心。")
+    ltp_result = ltp.parse("2017年8月4日，巴黎圣日耳曼官方宣布正式签下了巴西球星内马尔，合约5年。而巴塞罗那官方也承认，内马尔的法律顾问支付了2.22亿欧元的违约金，终止了双方的合同。")
     info = PrintInfo()
     info.print_ltp(ltp_result)
     tree = ParseTree(ltp_result)
-    string = ["巴萨", "小罗", "德科", "梅西"]
+    string = ["巴黎圣日耳曼官方","巴塞罗那官方","内马尔","巴西球星","2017年8月4日"]
     e_lis = []
     for s in string:
         st, ed = ltp_result.search_word(s)
@@ -694,27 +720,15 @@ if __name__ == "__main__":
             print "cannot find word!!", s
         else:
             e_lis.append(StrEntity(st, ed, None))
-    res = VerbRelationExtractor(True)
-    tripple_res = res.find_tripple(ltp_result, e_lis)
+    test = VerbRelationExtractor(True)
+    tripple_res = test.find_tripple(ltp_result, e_lis)
     #print tripple_res
     r1 = None
     r2 = None
     r3 = None
     ret = []
     for k, item in enumerate(tripple_res):
-        if isinstance(item[0], int) == False:
-            r1 = ltp_result.text(item[0].st, item[0].ed)
-        else:
-            r1 = ltp_result.text(item[0], item[0] + 1)
-        if isinstance(item[2], int) == False:
-            r3 = ltp_result.text(item[2].st, item[2].ed)
-        else:
-            r3 = ltp_result.text(item[2], item[2] + 1)
-        if item[1] == None:
-            r2 = "是"
-        else:
-            r2 = ltp_result.text(item[1], item[1] + 1)
-        ret.append((r1, r2, r3))
+        ret.append(test.deal_with_tripple(item, ltp_result))
     ret = set(ret)
     for triple in ret:
         print '\t%s' %('\t'.join(triple))

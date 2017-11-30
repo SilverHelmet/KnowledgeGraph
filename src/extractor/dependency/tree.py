@@ -99,6 +99,7 @@ class Node:
         self.children = []
         self.search_sub_mark = False
         self.search_obj_mark = False
+        self.title = None
 
     def search_depth(self):
         if self.depth != -1:

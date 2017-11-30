@@ -149,7 +149,7 @@ class RelExtractorTestor():
 
     def test_all(self, data, ename):
         sentence = data.sentence.encode('utf-8')
-        
+        ltp_result = None
         ename = self.get_miss_ename(data, ename)
         if self.use_advanced_ner:
             para_info = ParagraphInfo(1, [ename], ename, False, True)
@@ -179,20 +179,7 @@ class RelExtractorTestor():
         r2 = None
         r3 = None
         for k, item in enumerate(raw_rels):
-            if isinstance(item[0], int) == False:
-                r1 = ltp_result.text(item[0].st, item[0].ed)
-            else:
-                r1 = ltp_result.text(item[0], item[0] + 1)
-            print r1
-            if isinstance(item[2], int) == False:
-                r3 = ltp_result.text(item[2].st, item[2].ed)
-            else:
-                r3 = ltp_result.text(item[2], item[2] + 1)
-            if item[1] == None:
-                r2 = "是"
-            else:
-                r2 = ltp_result.text(item[1], item[1] + 1)
-            ret.append((r1, r2, r3))
+            ret.append(self.extractor.deal_with_tripple(item, ltp_result))
         ret = set(ret)
         str_entities_word = set(str_entities_word)
         '''
@@ -242,16 +229,15 @@ def print_all(extractor, ltp):
     tagnum = 0
     conum = 0
     conum_noverb = 0
-    path = "result/show_no_extract.txt"
-    f = open(path, "w")
+    #path = "result/show_no_extract.txt"
+    #f = open(path, "w")
     for url in datas_map:
         datas = datas_map[url]
         for data in datas:
             standard_triple = []
-<<<<<<< HEAD
-            triples, ner_res = testor.test_all(data)
-=======
+            #triples, ner_res = testor.test_all(data)
             triples, ner_res = testor.test_all(data, url)
+            '''
             if len(triples) == 0 and len(data.knowledges) != 0:
                 f.write(data.sentence)
                 f.write('\n')
@@ -259,9 +245,7 @@ def print_all(extractor, ltp):
                     f.write(kl.triple())
                     f.write('\n') 
                 f.write('\n')
->>>>>>> 063a5dcd7fd644e3abd8f7f6771e4753aa8381a2
-            # if data.sentence != u'《青花瓷》是方文山作词，周杰伦作曲并演唱的歌曲，收录于2007年11月2日周杰伦制作发行音乐专辑《我很忙》中。':
-            #     continue
+            '''
             print data.sentence
             print "this sentence has named entity:"
             ner_tmp = '\t'.join(ner_res)
@@ -277,6 +261,8 @@ def print_all(extractor, ltp):
                 print "\t\t%s" %(kl.triple())
             print '-'*40
             for triple in triples:
+                if triple[1] in ['nationality', 'profession']:
+                    continue
                 for j in range(len(data.knowledges)):
                     if (triple == standard_triple[j]) or \
                     (triple[0] == standard_triple[j][2] and \
@@ -284,13 +270,15 @@ def print_all(extractor, ltp):
                     triple[1] == standard_triple[j][1]):
                         conum += 1
             for triple in triples:
+                if triple[1] in ['nationality', 'profession']:
+                    continue
                 for j in range(len(data.knowledges)):
                     if (triple[0] == standard_triple[j][0] and \
                     triple[2] == standard_triple[j][2]) or \
                     (triple[0] == standard_triple[j][2] and \
                     triple[2] == standard_triple[j][0]):
                         conum_noverb += 1
-    f.close()
+    #f.close()
     print "extractnum is:", extractnum
     print "tagnum is:", tagnum
     print "conum is:", conum
