@@ -59,6 +59,25 @@ class InfoboxTypeInfer:
         return prob_map
 '''
 
+def add_game_type(attr, origin_list):
+    game_list = [u'操作指南', u'游戏目标', u'如何开始', u'游戏基本信息', u'游戏类型', u'游戏大小', u'游戏标签', u'操作说明', u'游戏介绍', u'游戏攻略']
+    if attr not in game_list:
+        return origin_list
+    print "fuck it off"
+    new_game_type_list = []
+    game_prob = 0.0
+    for game_type in origin_list:
+        if game_type[0] != 'sum':
+            continue
+        game_prob = game_type[1] * 0.8
+    new_game_type_list.append(('fb:cvg.computer_videogame', int(game_prob)))
+    for game_type in origin_list:
+        if game_type[0] == 'sum':
+            new_game_type_list.append((game_type[0], game_type[1]))
+            continue
+        new_game_type_list.append((game_type[0], int(game_type[1] * 0.2)))
+    return new_game_type_list
+
 class InfoTypeInfer:
     def __init__(self, path):
         self.baike_info_map = self.init(path)
@@ -71,6 +90,7 @@ class InfoTypeInfer:
             p = line.decode('utf-8').split('\t')
             baikeattr = p[0]
             mapping_pairs = eval(p[1])
+            add_game_type(baikeattr, mapping_pairs)
             mappings = []
             info_count = 0
             info_sum = 0
@@ -159,6 +179,7 @@ class TitleTypeInfer:
             p = line.decode('utf-8').split('\t')
             baikeattr = p[0]
             mapping_pairs = eval(p[1])
+            add_game_type(baikeattr, mapping_pairs)
             mappings = []
             title_count = 0
             title_sum = 0
@@ -440,7 +461,7 @@ def infer_type():
     baike_infobox_path = os.path.join(result_dir, '360/info_type.txt')
     baike_cls2tpe_path = os.path.join(classify_dir, 'final_baike_cls2fb_type.json')
     type_infer = TypeInfer(baike_info_path = baike_infobox_path, baike_cls_path = baike_cls2tpe_path, baike_title_path = baike_title_path, extra_info_path = extra_info_path)
-    
+    return    
     extra_type_path = os.path.join(classify_dir, 'extra_type.json')
     extra_type_map = load_json_map(extra_type_path)
     

@@ -74,11 +74,12 @@ def year_month_checker(args):
     return args['year'] > 12
 
 class BaikeDatetime:
-    date_p = re.compile(ur'(?P<year>-?\d{1,4})(-|年|/|\.)(?P<month>\d{1,2})(-|月|/|\.)(?P<day>\d{1,2})(日)?$')
-    year_p = re.compile(ur'(?P<year>-?\d{1,4})年$')
-    year_p_2 = re.compile(ur'(?P<year>\d{4,4})$')
-    yearmonth_p = re.compile(ur'(?P<year>-?\d{1,4})(-|年|\.)(?P<month>\d{1,2})(月)?$')
-    yearmonth_p_2 = re.compile(ur'(?P<year>-?\d{2,4})(-|年|\.)(?P<month>\d{1,2})(月)?$')
+    date_p = re.compile(ur'(?P<year>-?\d{1,4})(-|年|/|\.)(?P<month>\d{1,2})(-|月|/|\.)(?P<day>\d{1,2})(日)?')
+    year_p = re.compile(ur'(?P<year>-?\d{1,4})年')
+    year_p_2 = re.compile(ur'(?P<year>\d{4,4})')
+    yearmonth_p = re.compile(ur'(?P<year>-?\d{1,4})(-|年|\.)(?P<month>\d{1,2})(月)?')
+    yearmonth_p_2 = re.compile(ur'(?P<year>-?\d{2,4})(-|年|\.)(?P<month>\d{1,2})(月)?')
+    month_day_p = re.compile(ur'(?P<month>\d{1,2})月(?P<day>\d{1,2})(日)?')
     def __init__(self, year, month = 0, day = 0):
         self.year = year
         self.month = month
@@ -88,29 +89,34 @@ class BaikeDatetime:
         return "%d-%d-%d" %(self.year, self.month, self.day)
 
     @staticmethod
-    def parse(time_str, strict = False):
+    def parse(time_str, strict = False, search_mod = False):
         if type(time_str) is str:
             time_str = time_str.decode('utf-8')
         args = {}
         if not strict:
-            patterns = [BaikeDatetime.date_p, BaikeDatetime.year_p, BaikeDatetime.year_p_2, BaikeDatetime.yearmonth_p]
+            patterns = [BaikeDatetime.date_p, BaikeDatetime.year_p, BaikeDatetime.year_p_2, month_day_p, BaikeDatetime.yearmonth_p]
             pattern_names = [['year', 'month', 'day'],
                             ['year'],
                             ['year'],
+                            ['month', 'day'],
                             ['year', 'month']]
-            checkers = [None, None, None, None]
+            checkers = [None, None, None, None, None]
         else:
-            patterns = [BaikeDatetime.date_p, BaikeDatetime.year_p, BaikeDatetime.yearmonth_p_2]
+            patterns = [BaikeDatetime.date_p, BaikeDatetime.year_p, BaikeDatetime.month_day_p, BaikeDatetime.yearmonth_p_2]
             pattern_names = [['year', 'month', 'day'],
                             ['year'],
+                            ['month', 'day'],
                             ['year', 'month']]
             checkers =[None,
+                None,
                 None,
                year_month_checker] 
 
         match_flag = False
         for pattern, names, checker in zip(patterns, pattern_names, checkers):
             match = pattern.match(time_str)
+            if match and not search_mod and match.group() != time_str:
+                match = None
             if match:
                 match_flag = True
                 for name in names:
@@ -133,6 +139,8 @@ class BaikeDatetime:
         #         # print "\nException", e
         #         # print "\n dataparser error ", time_str
         if match_flag:
+            if not 'year' in args:
+                args['year'] = 0
             return BaikeDatetime(**args)
         else:
             return None
@@ -151,10 +159,10 @@ if __name__ == "__main__":
     #     print d
 
     #values = [u'2003年8月26日', u'2003年8', '2003', u'2003年8月', u'2003年', '203-8', u'1916年', u'公元前485年10月',u'1972.6.23', u'12.9', u'1971/02/05']
-    values = [u'12.9']
+    values = [u'几年12月5日夏天']
     for value in values:
         print "str", value
-        d = BaikeDatetime.parse(value, strict = True)
+        d = BaikeDatetime.parse(value, strict = True, search_mod = True)
         print "time", d
 
     

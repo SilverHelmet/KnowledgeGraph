@@ -78,7 +78,7 @@ if __name__ == "__main__":
         names = entity_linker.url2names[url]
         types = entity_linker.bk_info_map[url].types
         domains = get_url_domains(types, important_domains)
-        page_info = PageInfo(ename, names, url, domains)
+        page_info = PageInfo(ename, names, url, domains, types)
         for data in datas:
             entities = data.entities
             bk_urls = data.bk_urls

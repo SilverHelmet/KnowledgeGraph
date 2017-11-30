@@ -8,12 +8,14 @@ import copy
 import json
 import re
 from ..structure import StrEntity
+from src.mapping.fb_date import BaikeDatetime
 
 
 class NamedEntityPostProcessor:
-	def __init__(self, name_dict, process_bracket_flag):
+	def __init__(self, name_dict, process_bracket_flag, add_time_entity):
 		self.dict = name_dict
 		self.process_bracket_flag = process_bracket_flag
+		self.add_time_entity = add_time_entity
 
 	def decide_etype(self, str_entities, st, ed):
 		etype = str_entities[st][2]
@@ -195,6 +197,30 @@ class NamedEntityPostProcessor:
 
 		return new_str_entities
 
+	def parse_time_entity(self, ltp_result):
+		st = 0
+		time_entities = []
+		while st < ltp_result.length:
+			if ltp_result.tags[st] == 'nt':
+				tokens = []
+				ed = st
+				while ed < ltp_result.length:
+					if ltp_result.tags[ed] == 'nt':
+						tokens.append(ltp_result.words[ed])
+						ed += 1
+					elif ltp_result.tags[ed] == 'wp' and ltp_result.words[ed] in [',', '，']:
+						ed += 1
+					else:
+						break
+				text = "".join(tokens)
+				baike_time = BaikeDatetime.parse(text, strict = True, search_mod = True)
+				if baike_time:
+					entity = StrEntity(st, ed, 'Nt')
+					entity.add_time_obj(baike_time)
+					time_entities.append(entity)
+				st = ed
+			st += 1
+		return time_entities
 
 	def process(self, ltp_result, str_entities, ltp):
 		str_entities = self.merge_neighbor(ltp_result, str_entities)
@@ -203,6 +229,11 @@ class NamedEntityPostProcessor:
 		str_entities = [StrEntity(st, ed, etype) for st, ed, etype in str_entities]
 		if self.process_bracket_flag:
 			str_entities = self.process_bracket(ltp_result, str_entities, ltp)
+
+		if self.add_time_entity:
+			str_entities.extend(self.parse_time_entity(ltp_result))
+
+		str_entities.sort(key = lambda x:x.st)
 		return str_entities
 
 
@@ -213,12 +244,13 @@ stf_ltp_en_dist = {"PERSON":"Nh" , "LOCATION":"Ns" , "ORGANIZATION":"Ni" ,"MISC"
 class NamedEntityReg:
 	re_eng = re.compile(r"^[a-zA-Z.]+$")
 
-	def __init__(self, name_dict = None, process_bracket_flag = True):
+	def __init__(self, name_dict = None, process_bracket_flag = True, add_time_entity = True):
 		resource = Resource.get_singleton()
 		if name_dict is None:
 			name_dict = resource.get_vertical_domain_baike_dict()
 		self.ltp = resource.get_ltp()
-		self.post_processor = NamedEntityPostProcessor(name_dict, process_bracket_flag)
+		self.post_processor = NamedEntityPostProcessor(name_dict, process_bracket_flag, add_time_entity)
+
 		
 
 	def recognize(self,sentence,ltp_result,page_info,stanford_result=None):

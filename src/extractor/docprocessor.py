@@ -6,6 +6,7 @@ from src.IOUtil import rel_ext_dir
 from src.extractor.ltp import LTPResult
 from src.extractor.resource import Resource
 from src.extractor.structure import PageInfo
+from entity.ner import NamedEntityReg
 
 
 class ParagraphInfo:
@@ -32,7 +33,8 @@ def strip_puncs(token):
     return token
 
 class DocProcessor:
-    def __init__(self):
+    def __init__(self, ner = None):
+        self.ner = None
         self.ltp = Resource.get_singleton().get_ltp()
         self.subj_miss_patterns = [
             ['p', '《'],
@@ -191,7 +193,10 @@ class DocProcessor:
 
         return ltp_result, is_para_info
 
-    def parse_chapter(self, title, paragraphs, page_info):
+    def parse_chapter(self, title, paragraphs, page_info, parse_ner = False):
+        if parse_ner and self.ner is None:
+            self.ner = NamedEntityReg()
+
         names = page_info.names
         ename = page_info.ename
         if title == 'intro_summary':
@@ -210,14 +215,48 @@ class DocProcessor:
                 pre_miss = para_info.subj_miss_cnt
                 ltp_result, may_info_para = self.parse_sentence(sentence, para_info)
                 subj_miss = may_info_para or para_info.subj_miss_cnt == pre_miss+1
-                yield ltp_result, subj_miss
+
+                if not self.ner:
+                    yield ltp_result, subj_miss
+                else:
+                    str_entities = self.ner.recognize(ltp_result.sentence, ltp_result, page_info)
+                    new_ename = self.check_new_subj(para_info, ltp_result, str_entities)
+                    if new_ename:
+                        print 'change subj to %s' %new_ename
+                        ename = new_ename
+                        names = [new_ename]
+                    yield ltp_result, str_entities, subj_miss
+
+    def check_new_subj(self, para_info, ltp_result, str_entities):
+        if para_info.nb_sent != 1:
+            return None
+
+        if len(str_entities) != 1:
+            return None
+
+        entity = str_entities[0]
+        st = entity.st
+        ed = entity.ed
+
+        valid = True
+        for i in range(ltp_result.length):
+            if i >= st and i < ed:
+                continue
+            if ltp_result.tags[i] == 'wp':
+                continue
+            valid = False
+            break
+        if not valid:
+            return None
+        return ltp_result.text(st, ed)
+
         
         
 
 def test_sentence():
-    para_info = ParagraphInfo(1, ['方文山'], '方文山', False, True)
+    para_info = ParagraphInfo(10, ['方文山'], '方文山', True, True)
     doc_processor = DocProcessor()
-    s = u'1989年创刊，最初免费赠给500万任天堂“游戏人间”俱乐部的会员，以后改为月刊，现已成为全美销售量最大的儿童读物，1990年时已拥有600万读者。'
+    s = u'中国皮划艇激流回旋队 领队:韩建国 男队组成:胡明海、舒俊榕、黄存光、滕志强 女队组成:李晶晶参赛情况本次2012年伦敦奥运会上，中国皮划艇激流回旋队由5人组成。明星男队胡明海胡明海，出生于1989年4月19日，中国皮划艇激流回旋项目运动员。在2008年皮划艇激流回旋澳大利亚公开赛暨2008年北京奥运会大洋洲资格赛中，胡明海和舒俊榕爆大冷击败了那一对占据霸主地位多年的斯洛伐克孪生兄弟组合，一举夺得了男子双人划艇的金牌。这样的成绩，让国际划联激流委员会主席布鲁诺在接受采访时都不禁连称，中国激流运动员的竞技水平进步神速，让人难以置信。在即将到来的2012年伦敦奥运会上，他将向奖牌冲击。舒俊榕舒俊榕，中国皮划艇激流队队员，曾拿到过2008年澳大利亚公开赛第一，2008年世界杯赛第二，雅典奥运会冠军等历史性荣誉。黄存光黄存光，福建省三明市将乐县余坊乡人，小的时候在余坊中心校就读，因体能出众，被选入三明市体校参加训练，2002年选入福建省激流皮划艇队参加训练2005年，年仅20岁的他就入选国家皮划艇激流回旋运动队。滕志强滕志强，湖南怀化人，1991年10月26日出生，皮划艇激流回旋运动员。'
 
     sentences = split_sentences(s)
     # ner = NamedEntityReg()
@@ -237,10 +276,10 @@ def test_sentence():
         print ""
         print ""
 
-        words = ltp_result.words + ['root']
-        for idx, arc in enumerate(ltp_result.arcs, start = 0):
-            head, rel = arc.head, arc.relation
-            print "%s-%s:%s" %(words[idx], words[head], rel)
+        # words = ltp_result.words + ['root']
+        # for idx, arc in enumerate(ltp_result.arcs, start = 0):
+        #     head, rel = arc.head, arc.relation
+        #     print "%s-%s:%s" %(words[idx], words[head], rel)
 
         # es = ner.recognize(ltp_result.sentence, ltp_result, None, None)
         # for e in es:
@@ -251,11 +290,13 @@ def test_chapt():
     import os
     urls = ['baike.so.com/doc/1287918-1361771.html', 'baike.so.com/doc/4835393-5052275.html', 
     'baike.so.com/doc/2526484-2669235.html', 'baike.so.com/doc/5382393-5618748.html', 
-    'baike.so.com/doc/6662392-6876216.html', 'baike.so.com/doc/3056594-3221987.html']
+    'baike.so.com/doc/6662392-6876216.html', 'baike.so.com/doc/3056594-3221987.html',
+    'baike.so.com/doc/8716294-9038723.html', 'baike.so.com/doc/5390356-5627004.html']
 
     # urls = ["baike.so.com/doc/1287918-1361771.html"]
     resource = Resource.get_singleton()
     url2names = resource.get_url2names()
+    baike_info_map = resource.get_baike_info()
 
     baike_doc_path = os.path.join(rel_ext_dir, 'baike_doc.json')
     doc_processor = DocProcessor()
@@ -267,11 +308,13 @@ def test_chapt():
         doc = json.loads(doc)
         names = url2names[url]
         ename = names[0]
-        page_info = PageInfo(ename, names, url, None)
+        types = baike_info_map[url].types
+        page_info = PageInfo(ename, names, url, [], types)
+        print " ".join(page_info.names)
     
         for chapter_title, chapter in doc:
             print 'parsing %s' %chapter_title
-            for ltp_result, subj_miss in doc_processor.parse_chapter(chapter_title, chapter, page_info):
+            for ltp_result, str_entities, subj_miss in doc_processor.parse_chapter(chapter_title, chapter, page_info, parse_ner = True):
                 # print '\t' + ltp_result.sentence
                 if subj_miss:
                     print "\t\t" + ltp_result.sentence

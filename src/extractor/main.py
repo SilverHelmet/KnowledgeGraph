@@ -45,7 +45,7 @@ def work(inpath, sentences_path, stanford_results_path, outpath):
         Print('process %s' %url)
         names = url2names[url]
         types = bk_info_map[url].types
-        page_info = PageInfo(names[0], names, url, get_url_domains(types, important_domains))
+        page_info = PageInfo(names[0], names, url, get_url_domains(types, important_domains), types)
         
         
         entity_linker.start_new_page()

@@ -8,6 +8,7 @@ from ..dependency.verb_title_relation_extractor import VerbRelationExtractor
 from ..entity.naive_ner import NaiveNer
 from ..entity.ner import NamedEntityReg
 from ...IOUtil import data_dir
+from src.extractor.docprocessor import DocProcessor, ParagraphInfo
 import os
 
 class Estimation():
@@ -33,15 +34,15 @@ class Estimation():
         print "noverb error", self.noverb_error
 
 class RelExtractorTestor():
-    def __init__(self, extractor, ltp = None, use_advanced_ner = True):
-        if ltp is None:
-            ltp = LTP(None)
+    def __init__(self, extractor, ltp, use_advanced_ner = True):
         self.ltp = ltp
         self.use_advanced_ner = use_advanced_ner
         if use_advanced_ner:
-            self.ner = NamedEntityReg()
-            base_dir = os.path.join(data_dir, '标注数据')
-            self.stf_results_map = load_stanford_result(os.path.join(base_dir, 'sentences.txt'), os.path.join(base_dir, 'sentences_stanf_nlp.json'))
+            self.doc_processor = DocProcessor()
+            self.ner = NamedEntityReg(process_bracket_flag = True, add_time_entity = True)
+            # base_dir = os.path.join(data_dir, '标注数据')
+            # self.stf_results_map = load_stanford_result(os.path.join(base_dir, 'sentences.txt'), os.path.join(base_dir, 'sentences_stanf_nlp.json'))
+            
         else:
             self.ner = NaiveNer()
 
@@ -54,6 +55,7 @@ class RelExtractorTestor():
 
         
         if self.use_advanced_ner:
+            para_info = ParagraphInfo(1, [e])
             stf_result = self.stf_results_map[sentence]
             
             entities = self.ner.recognize(sentence, ltp_result, None, stf_result)
@@ -137,16 +139,27 @@ class RelExtractorTestor():
             ret[kl_str] = (rels_str, 'error')
         return ret, ltp_result
 
-    def test_all(self, data):
+    def get_miss_ename(self, data, default):
+        for kl in data.knowledges:
+            if kl.subj.endswith(u'*'):
+                return kl.subj.strip(u'*').encode('utf-8')
+            if kl.obj.endswith(u'*'):
+                return kl.obj.strip(u'*').encode('utf-8')
+        return default
+
+    def test_all(self, data, ename):
         sentence = data.sentence.encode('utf-8')
-        ltp_result = ltp.parse(sentence)
-    
+        
+        ename = self.get_miss_ename(data, ename)
         if self.use_advanced_ner:
-            stf_result = self.stf_results_map[sentence]
-            stf_result = None
-            str_entities = self.ner.recognize(sentence, ltp_result, None, stf_result)
+            para_info = ParagraphInfo(1, [ename], ename, False, True)
+            ltp_result, _ = self.doc_processor.parse_sentence(sentence, para_info)
+            if _ or para_info.subj_miss_cnt == 1:
+                print "add miss subj %s" %ename
+            str_entities = self.ner.recognize(ltp_result.sentence, ltp_result, None, None)
             # entities = [(e.st, e.ed)for e in entities]
         else:
+            ltp_result = ltp.parse(sentence)
             entities = self.ner.recognize(sentence, ltp_result, None)
             str_entities = [StrEntity(x[0], x[1], None) for x in entities]
 
@@ -220,7 +233,7 @@ def test(extractor, ltp):
     testor.estimation.print_info()
 
 def print_all(extractor, ltp):
-    datas_map, nb_data, nb_kl = process_labeled_data(ignore_subj_miss = True, ignore_verb_miss = True, clear = False)
+    datas_map, nb_data, nb_kl = process_labeled_data(ignore_subj_miss = False, ignore_verb_miss = True, clear = False)
 
     print "#sentence: %d, #labeled: %d" %(nb_data, nb_kl)
 
@@ -235,7 +248,18 @@ def print_all(extractor, ltp):
         datas = datas_map[url]
         for data in datas:
             standard_triple = []
+<<<<<<< HEAD
             triples, ner_res = testor.test_all(data)
+=======
+            triples, ner_res = testor.test_all(data, url)
+            if len(triples) == 0 and len(data.knowledges) != 0:
+                f.write(data.sentence)
+                f.write('\n')
+                for kl in data.knowledges:
+                    f.write(kl.triple())
+                    f.write('\n') 
+                f.write('\n')
+>>>>>>> 063a5dcd7fd644e3abd8f7f6771e4753aa8381a2
             # if data.sentence != u'《青花瓷》是方文山作词，周杰伦作曲并演唱的歌曲，收录于2007年11月2日周杰伦制作发行音乐专辑《我很忙》中。':
             #     continue
             print data.sentence
