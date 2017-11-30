@@ -2,6 +2,7 @@ from src.IOUtil import classify_dir, result_dir, rel_ext_dir, nb_lines_of, Print
 from tqdm import tqdm
 import json
 from src.fb_process.process_fb_result import process_fb_value
+import os
 
 def process(inpath, outpath, name_map):
     Print('process %s' %inpath)
