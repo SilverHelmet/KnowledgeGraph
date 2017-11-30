@@ -4,7 +4,7 @@ from tqdm import tqdm
 from ...IOUtil import Print, result_dir, load_json_map
 import json
 import os
-from ...fb_process.process_fb_result import process_fb_valuez
+from ...fb_process.process_fb_result import process_fb_value
 
 def add_property_name_all(in_path, total, name_map, out_path):
     Print("add fb property name, read from [%s] write to [%s]" %(in_path, out_path))
