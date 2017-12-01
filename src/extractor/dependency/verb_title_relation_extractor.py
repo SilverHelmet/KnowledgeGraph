@@ -11,7 +11,6 @@ class VerbRelationExtractor:
     def find_path_to_root(self, node):
         path = [node]
         while node.father != None:
-            print node.father.word
             node = node.father
             path.append(node)
         return path
@@ -593,6 +592,13 @@ class VerbRelationExtractor:
                             node.nertag = tree.nodes[i].nertag
                             node.entity = tree.nodes[i].entity
                             node.title = tree.nodes[i].title
+                            node.actual_sub = tree.nodes[i].actual_sub
+                            node.concept_sub = tree.nodes[i].concept_sub
+                            node.direct_sub = tree.nodes[i].direct_sub
+                            node.obj = tree.nodes[i].obj
+                            node.att = tree.nodes[i].att
+                            node.target = tree.nodes[i].target
+                            node.mark = tree.nodes[i].mark
                             node.father.children.append(node)
                             for j in node.children:
                                 j.father = node
@@ -612,7 +618,13 @@ class VerbRelationExtractor:
                             node.nertag = tree.nodes[i].nertag
                             node.entity = tree.nodes[i].entity
                             node.title = tree.nodes[i].title
-                            #node.mark = tree.nodes[i].mark[]
+                            node.actual_sub = tree.nodes[i].actual_sub
+                            node.concept_sub = tree.nodes[i].concept_sub
+                            node.direct_sub = tree.nodes[i].direct_sub
+                            node.obj = tree.nodes[i].obj
+                            node.att = tree.nodes[i].att
+                            node.target = tree.nodes[i].target
+                            node.mark = tree.nodes[i].mark
                             node.father.children.append(node)
                             for j in node.children:
                                 j.father = node
