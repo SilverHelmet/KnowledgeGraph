@@ -229,6 +229,7 @@ def print_all(extractor, ltp):
     tagnum = 0
     conum = 0
     conum_noverb = 0
+    tagnum_noner = 0
     #path = "result/show_no_extract.txt"
     #f = open(path, "w")
     for url in datas_map:
@@ -248,8 +249,7 @@ def print_all(extractor, ltp):
             '''
             print data.sentence
             print "this sentence has named entity:"
-            ner_tmp = '\t'.join(ner_res)
-            print ner_tmp
+            print '\t'.join(ner_res)
             print "the tripple num we can extract from the sentence:", len(triples)
             extractnum += len(triples);
             for triple in triples:
@@ -259,9 +259,23 @@ def print_all(extractor, ltp):
             for kl in data.knowledges:
                 if kl.subj[-1] == '*':
                     kl.subj = kl.subj[:-1]
+                if kl.obj[-1] == '*':
+                    kl.obj= kl.obj[:-1]
                 standard_triple.append((kl.subj, kl.prop, kl.obj))
                 print "\t\t%s" %(kl.triple())
             print '-'*40
+            for kl in data.knowledges:
+                if (str(kl.subj) not in ner_res) or (str(kl.obj) not in ner_res):
+                    '''
+                    print "="*30
+                    print "\t\t%s" %(kl.triple())
+                    print kl.subj
+                    print kl.obj
+                    for i in ner_res:
+                        print i
+                    print "="*30
+                    '''
+                    tagnum_noner += 1
             for triple in triples:
                 if triple[1] in ['nationality', 'profession']:
                     continue
@@ -283,6 +297,8 @@ def print_all(extractor, ltp):
     #f.close()
     print "extractnum is:", extractnum
     print "tagnum is:", tagnum
+    print "the number of label triples contain noun(not ner):", tagnum_noner
+    print "account for", float(tagnum_noner)/float(tagnum)
     print "conum is:", conum
     print "conum_noverb is:", conum_noverb
     accuracy = float(conum)/float(extractnum)
