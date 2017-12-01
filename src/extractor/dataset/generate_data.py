@@ -109,7 +109,7 @@ def generate_data_from_summary(summary_path, bk2fb, fb_uris, outpath):
         fb_uri = bk2fb[bk_url]
         if fb_uri not in fb_rels_map:
             continue
-        outf.write('##start parsing %s\n' %(bk_url))
+        # outf.write('##start parsing %s\n' %(bk_url))
         names = url2names[bk_url]
         types = bk_info_map[bk_url].types
         page_info = PageInfo(names[-1], names, bk_url, get_url_domains(types, important_domains), types)
