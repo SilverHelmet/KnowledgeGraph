@@ -85,7 +85,7 @@ def generate_data_from_chapter(title, paragraphs, page_info, doc_processor, e_li
                 for pred in predicate_map:
                     outf.write("\t%s\t%s\n" %(pred, "\t".join(predicate_map[pred])))
         except Exception, e:
-            print 'error in parsing %s' %ltp_result.sentence
+            print '\nerror in parsing %s' %ltp_result.sentence
 
 
 
