@@ -341,6 +341,9 @@ class PageMemoryEntityLinker:
         return True
 
     def link(self, ltp_result, str_entity, page_info):
+        if str_entity.etype == "Nt":
+            return [BaikeEntity(str_entity, None, 1, ['fb:type.datetime'])]
+
         name = ltp_result.text(str_entity.st, str_entity.ed)
 
         if self.check_is_location(ltp_result, str_entity):

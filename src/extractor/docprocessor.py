@@ -207,6 +207,8 @@ class DocProcessor:
 
         may_info_para = True
         for paragraph in paragraphs:
+            if type(paragraph) == str:
+                paragraph = paragraph.decode('utf-8')
             sentences = split_sentences(paragraph)
             
             para_info = ParagraphInfo(len(sentences), names, ename, is_summary, may_info_para)
