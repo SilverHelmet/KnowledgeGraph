@@ -2,7 +2,7 @@
 from tree import ParseTree, Debug, PrintInfo
 from ..ltp import LTP
 from ..structure import StrEntity
-
+from src.extractor.entity.ner import NamedEntityReg
 class VerbRelationExtractor:
     def __init__(self, debug_flag = False):
         self.debuger = Debug(debug_flag)
@@ -762,7 +762,10 @@ class VerbRelationExtractor:
 
 if __name__ == "__main__":
     ltp = LTP(None)
-    ltp_result = ltp.parse("2017年5月，埃内斯托·巴尔韦德和巴萨签订一份2+1的合同，他执教巴萨的首秀将是7月22日在新泽西对阵尤文图斯。")
+    sentence = "2017年5月，埃内斯托·巴尔韦德和巴萨签订一份2+1的合同，他执教巴萨的首秀将是7月22日在新泽西对阵尤文图斯。".encode('utf-8')
+    ltp_result = ltp.parse(sentence)
+    ner = NamedEntityReg()
+    es = ner.recognize(sentence, ltp_result, None, None)
     info = PrintInfo()
     info.print_ltp(ltp_result)
     tree = ParseTree(ltp_result)
