@@ -42,7 +42,6 @@ class RelExtractorTestor():
             self.ner = NamedEntityReg(process_bracket_flag = True, add_time_entity = True)
             # base_dir = os.path.join(data_dir, '标注数据')
             # self.stf_results_map = load_stanford_result(os.path.join(base_dir, 'sentences.txt'), os.path.join(base_dir, 'sentences_stanf_nlp.json'))
-            
         else:
             self.ner = NaiveNer()
 
@@ -175,13 +174,19 @@ class RelExtractorTestor():
         for str_entity in str_entities:
             str_entities_word.append(ltp_result.text(str_entity.st, str_entity.ed))
         raw_rels = self.extractor.find_tripple(ltp_result, str_entities)
+        tmp_raw_rels = []
+        extrainfo = []
+        for item in raw_rels:
+            tmp_raw_rels.append((item[0], item[1], item[2]))
+            extrainfo.append(item[3])
+        raw_rels = tmp_raw_rels
         r1 = None
         r2 = None
         r3 = None
         for k, item in enumerate(raw_rels):
             ret.append(self.extractor.deal_with_tripple(item, ltp_result))
-        ret = set(ret)
-        str_entities_word = set(str_entities_word)
+        #ret = set(ret)
+        #str_entities_word = set(str_entities_word)
         '''
         for i in range(len(entities)):
             for j in range(i + 1, len(entities)):
@@ -195,7 +200,7 @@ class RelExtractorTestor():
                     rel = " ".join(rels)
                     ret.append((e1_text, rel, e2_text))
         '''
-        return ret, str_entities_word
+        return ret, str_entities_word, extrainfo
                 
                 
         
@@ -219,6 +224,49 @@ def test(extractor, ltp):
                     
     testor.estimation.print_info()
 
+
+def show_res(extractnum, tagnum, conum, conum_noverb):
+    print "#"*30
+    print "use tagnum = ", tagnum
+    accuracy = float(conum)/float(extractnum)
+    recall = float(conum)/float(tagnum)
+    F1_score = (2*accuracy*recall)/(accuracy+recall)
+    print "accuracy is:", accuracy
+    print "recall is:", recall
+    print "F1 score is:", F1_score
+    accuracy_noverb = float(conum_noverb)/float(extractnum)
+    recall_noverb = float(conum_noverb)/float(tagnum)
+    F1_score_noverb = (2*accuracy_noverb*recall_noverb)/(accuracy_noverb+recall_noverb)
+    print "accuracy_noverb is:", accuracy_noverb
+    print "recall_noverb is:", recall_noverb
+    print "F1_noverb score is:", F1_score_noverb
+
+def calc_res(triples, standard_triple):
+    conum = 0
+    conum_noverb = 0
+    title_num = 0
+    for triple in triples:
+        if triple[1] in ['nationality', 'profession']:
+            title_num += 1
+            continue
+        for j in range(len(standard_triple)):
+            if (triple == standard_triple[j]) or \
+            (triple[0] == standard_triple[j][2] and \
+            triple[2] == standard_triple[j][0] and \
+            triple[1] == standard_triple[j][1]):
+                conum += 1
+    for triple in triples:
+        if triple[1] in ['nationality', 'profession']:
+            title_num += 1
+            continue
+        for j in range(len(standard_triple)):
+            if (triple[0] == standard_triple[j][0] and \
+            triple[2] == standard_triple[j][2]) or \
+            (triple[0] == standard_triple[j][2] and \
+            triple[2] == standard_triple[j][0]):
+                conum_noverb += 1
+    return conum, conum_noverb, title_num
+
 def print_all(extractor, ltp):
     datas_map, nb_data, nb_kl = process_labeled_data(ignore_subj_miss = False, ignore_verb_miss = True, clear = False)
 
@@ -226,10 +274,11 @@ def print_all(extractor, ltp):
 
     testor = RelExtractorTestor(extractor, ltp, use_advanced_ner = True)
     extractnum = 0
+    title_num = 0
     tagnum = 0
+    tagnum_noner = 0
     conum = 0
     conum_noverb = 0
-    tagnum_noner = 0
     #path = "result/show_no_extract.txt"
     #f = open(path, "w")
     for url in datas_map:
@@ -237,7 +286,7 @@ def print_all(extractor, ltp):
         for data in datas:
             standard_triple = []
             #triples, ner_res = testor.test_all(data)
-            triples, ner_res = testor.test_all(data, url)
+            triples, ner_res, extrainfo = testor.test_all(data, url)
             '''
             if len(triples) == 0 and len(data.knowledges) != 0:
                 f.write(data.sentence)
@@ -252,8 +301,8 @@ def print_all(extractor, ltp):
             print '\t'.join(ner_res)
             print "the tripple num we can extract from the sentence:", len(triples)
             extractnum += len(triples);
-            for triple in triples:
-                print '\t%s' %('\t'.join(triple))
+            for k, triple in enumerate(triples):
+                print '\t%s' %('\t'.join(triple)), '\t', extrainfo[k]
             print "the standard tripple num of the sentence:", len(data.knowledges)
             tagnum += len(data.knowledges);
             for kl in data.knowledges:
@@ -264,55 +313,24 @@ def print_all(extractor, ltp):
                 standard_triple.append((kl.subj, kl.prop, kl.obj))
                 print "\t\t%s" %(kl.triple())
             print '-'*40
-            for kl in data.knowledges:
-                if (str(kl.subj) not in ner_res) or (str(kl.obj) not in ner_res):
-                    '''
-                    print "="*30
-                    print "\t\t%s" %(kl.triple())
-                    print kl.subj
-                    print kl.obj
-                    for i in ner_res:
-                        print i
-                    print "="*30
-                    '''
+            for i in range(len(standard_triple)):
+                if (str(standard_triple[i][0]) not in ner_res) or (str(standard_triple[i][2]) not in ner_res):
                     tagnum_noner += 1
-            for triple in triples:
-                if triple[1] in ['nationality', 'profession']:
-                    continue
-                for j in range(len(data.knowledges)):
-                    if (triple == standard_triple[j]) or \
-                    (triple[0] == standard_triple[j][2] and \
-                    triple[2] == standard_triple[j][0] and \
-                    triple[1] == standard_triple[j][1]):
-                        conum += 1
-            for triple in triples:
-                if triple[1] in ['nationality', 'profession']:
-                    continue
-                for j in range(len(data.knowledges)):
-                    if (triple[0] == standard_triple[j][0] and \
-                    triple[2] == standard_triple[j][2]) or \
-                    (triple[0] == standard_triple[j][2] and \
-                    triple[2] == standard_triple[j][0]):
-                        conum_noverb += 1
+            tmpconum, tmpconum_noverb, tmptitle_num = calc_res(triples, standard_triple)
+            conum += tmpconum
+            conum_noverb += tmpconum_noverb
+            title_num += tmptitle_num
+    extractnum_notitle = extractnum - title_num
     #f.close()
     print "extractnum is:", extractnum
+    print "extractnum_notitle is:", extractnum_notitle
     print "tagnum is:", tagnum
     print "the number of label triples contain noun(not ner):", tagnum_noner
     print "account for", float(tagnum_noner)/float(tagnum)
     print "conum is:", conum
     print "conum_noverb is:", conum_noverb
-    accuracy = float(conum)/float(extractnum)
-    recall = float(conum)/float(tagnum)
-    F1_score = (2*accuracy*recall)/(accuracy+recall)
-    print "accuracy is:", accuracy
-    print "recall is:", recall
-    print "F1 score is:", F1_score
-    accuracy_noverb = float(conum_noverb)/float(extractnum)
-    recall_noverb = float(conum_noverb)/float(tagnum)
-    F1_score_noverb = (2*accuracy_noverb*recall_noverb)/(accuracy_noverb+recall_noverb)
-    print "accuracy_noverb is:", accuracy_noverb
-    print "recall_noverb is:", recall_noverb
-    print "F1_noverb score is:", F1_score_noverb
+    show_res(extractnum_notitle, tagnum, conum, conum_noverb)
+    show_res(extractnum_notitle, tagnum - tagnum_noner, conum, conum_noverb)
 
 if __name__ == "__main__":
     extractor = VerbRelationExtractor()

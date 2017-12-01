@@ -499,23 +499,25 @@ class VerbRelationExtractor:
         res = (res_1, res_2, res_3)
         return res
 
-    def judge_remove_is(self, tripple, ltp_result):
+    def judge_remove_equal(self, tripple, ltp_result):
         ret = False
         flag = 0
         if isinstance(tripple[1], str) == True: #deal with title_res
             return False
+        '''
         if (tripple[1] != None and ltp_result.text(tripple[1], tripple[1]+1) == "是") or (tripple[1] == None):
             flag =1
-        if flag == 1:
-            self.debuger.debug("verb is \"is\"")
-            r = self.deal_with_tripple(tripple, ltp_result)
-            r1 = r[0]
-            r2 = r[2]
-            self.debuger.debug("r1 is ",r1)
-            self.debuger.debug("r2 is ",r2)
-            if r1 == r2:
-                ret = True
-                self.debuger.debug("tripple (a, is, a) is removed!")
+        '''
+        #if flag == 1:
+        #self.debuger.debug("verb is \"is\"")
+        r = self.deal_with_tripple(tripple, ltp_result)
+        r1 = r[0]
+        r2 = r[2]
+        self.debuger.debug("r1 is ",r1)
+        self.debuger.debug("r2 is ",r2)
+        if r1 == r2:
+            ret = True
+            self.debuger.debug("tripple (a, is, a) is removed!")
         return ret
 
     def find_title(self, tree, ltp_result):
@@ -541,6 +543,54 @@ class VerbRelationExtractor:
                         res.append((child.word, "profession", node.entity))
         return res
 
+    def get_quadruple(self, triple):
+        appendix = None
+        res = []
+        for item in triple:
+            if isinstance(item[1], str) == True:
+                appendix = "title"
+            else:
+                if isinstance(item[2], int) == True:
+                    appendix = "not_entity"
+                elif isinstance(item[2], StrEntity) == True:
+                    appendix = "entity"
+            res.append((item[0], item[1], item[2], appendix))
+        return res
+
+    def replace_pronoun(self, tree, ltp_result):
+        for k, node in enumerate(tree.nodes):
+            if node.postag == 'r':
+                if node.word == '它':
+                    for i in range(k-1, -1, -1):
+                        if tree.nodes[i].postag != 'nh' and tree.nodes[i].entity != None:
+                            node.father.children.remove(node)
+                            tmp_node = tree.nodes[i]
+                            node.father.children.append(tmp_node)
+                            for j in node.children:
+                                j.father = tree.nodes[i]
+                                self.debuger.debug('*'*20)
+                                self.debuger.debug(j.word, "father has been changed as:", ltp_result.text(tree.nodes[i].entity.st, tree.nodes[i].entity.ed))
+                            #node = tree.nodes[i]
+                            self.debuger.debug("replace 它 as:",\
+                            ltp_result.text(tree.nodes[i].entity.st, tree.nodes[i].entity.ed))
+                            self.debuger.debug('*'*40)
+                            break
+                elif node.word in ['他', '她']:
+                    for i in range(k-1, -1, -1):
+                        if tree.nodes[i].postag == 'nh':
+                            node.father.children.remove(node)
+                            tmp_node = tree.nodes[i]
+                            node.father.children.append(tmp_node)
+                            for j in node.children:
+                                j.father = tree.nodes[i]
+                                self.debuger.debug('*'*20)
+                                self.debuger.debug(j.word, " father has been changed as:", tree.nodes[i].word)
+                            #node = tree.nodes[i]
+                            #self.debuger.debug("node's new father is:", node.father.word)
+                            self.debuger.debug("replace 他/她", "as:", tree.nodes[i].word)
+                            self.debuger.debug('*'*40)
+                            break                 
+
     def find_tripple(self, ltp_result, e_lis):
         res = []
         entity_lis = []
@@ -553,6 +603,8 @@ class VerbRelationExtractor:
         for e in e_lis:
             entity, near_verb, verb = self.find_2_verbs(tree, e)
             entity_lis.append(entity)
+        #pronoun replacement
+        self.replace_pronoun(tree, ltp_result)
         #find noun relation
         noun_res =[]
         for i in range(len(entity_lis)):
@@ -678,48 +730,62 @@ class VerbRelationExtractor:
         for verb in verb_lis:
             self.debuger.debug("verb", verb.word, "has actual_sub:")
             for actual_sub in verb.actual_sub:
-                self.debuger.debug(actual_sub.word)
+                self.debuger.debug(self.deal_with_print(actual_sub, ltp_result))
             self.debuger.debug("verb", verb.word, "has concept_sub:")
             for concept_sub in verb.concept_sub:
-                self.debuger.debug(concept_sub.word)
+                self.debuger.debug(self.deal_with_print(concept_sub, ltp_result))
             self.debuger.debug("verb", verb.word, "has obj:")
             for obj in verb.obj:
-                self.debuger.debug(obj.word)
+                self.debuger.debug(self.deal_with_print(obj, ltp_result))
             self.debuger.debug("verb", verb.word, "has att:")
             for att in verb.att:
-                self.debuger.debug(att.word)
+                self.debuger.debug(self.deal_with_print(att, ltp_result))
             self.debuger.debug("verb", verb.word, "has target:")
             for target in verb.target:
-                self.debuger.debug(target.word)
+                self.debuger.debug(self.deal_with_print(target, ltp_result))
             self.debuger.debug('-'*40)
         for node in tree.nodes:
             self.debuger.debug("node", node.word, "has mark:")
             for mark in node.mark:
                 tmp = self.deal_with_print(mark, ltp_result)
                 self.debuger.debug(tmp)
-        res = noun_res + title_res + is_res + sub_verb_obj + sub_verb_att + \
-        sub_verb_target + obj_verb_target + att_verb_target
+
+        res = noun_res + title_res + sub_verb_obj + sub_verb_att + \
+        sub_verb_target + obj_verb_target + att_verb_target #leave out is_relation
         res = set(res)
         final_res = []
         for i in res:
-            if self.judge_remove_is(i, ltp_result) == False:
+            if self.judge_remove_equal(i, ltp_result) == False:
                 final_res.append(i)
+        final_res = self.get_quadruple(final_res)
         return final_res
 
 if __name__ == "__main__":
     ltp = LTP(None)
-    ltp_result = ltp.parse("2017年8月4日，巴黎圣日耳曼官方宣布正式签下了巴西球星内马尔，合约5年。而巴塞罗那官方也承认，内马尔的法律顾问支付了2.22亿欧元的违约金，终止了双方的合同。")
+    ltp_result = ltp.parse("2017年5月，埃内斯托·巴尔韦德和巴萨签订一份2+1的合同，他执教巴萨的首秀将是7月22日在新泽西对阵尤文图斯。")
     info = PrintInfo()
     info.print_ltp(ltp_result)
     tree = ParseTree(ltp_result)
-    string = ["巴黎圣日耳曼官方","巴塞罗那官方","内马尔","巴西球星","2017年8月4日"]
+    #string = ["巴萨", "新泽西", "2017年5月", "尤文图斯", "7月22日", "巴尔韦德"]
     e_lis = []
+    '''
     for s in string:
         st, ed = ltp_result.search_word(s)
         if st == -1 and ed == -1:
             print "cannot find word!!", s
         else:
+            print '&'*40
+            print s, "has:"
+            print st, ed
             e_lis.append(StrEntity(st, ed, None))
+    '''
+    e_lis.append(StrEntity(5, 6, None))
+    e_lis.append(StrEntity(17, 18, None))
+    e_lis.append(StrEntity(25, 26, None))
+    e_lis.append(StrEntity(3, 4, None))
+    e_lis.append(StrEntity(27, 28, None))
+    e_lis.append(StrEntity(0, 2, None))
+    e_lis.append(StrEntity(22, 24, None))
     test = VerbRelationExtractor(True)
     tripple_res = test.find_tripple(ltp_result, e_lis)
     #print tripple_res
@@ -727,8 +793,14 @@ if __name__ == "__main__":
     r2 = None
     r3 = None
     ret = []
+    tmp_tripple_res = []
+    extrainfo = []
+    for item in tripple_res:
+        tmp_tripple_res.append((item[0], item[1], item[2]))
+        extrainfo.append(item[3])
+    tripple_res = tmp_tripple_res
     for k, item in enumerate(tripple_res):
         ret.append(test.deal_with_tripple(item, ltp_result))
     ret = set(ret)
-    for triple in ret:
-        print '\t%s' %('\t'.join(triple))
+    for k, triple in enumerate(ret):
+        print '\t%s' %('\t'.join(triple)), '\t', extrainfo[k]
