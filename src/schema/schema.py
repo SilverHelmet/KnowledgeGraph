@@ -234,3 +234,6 @@ if __name__ == "__main__":
     # print "fb:education.education.student" in pres
     # keys = set()
 
+    schema = Schema()
+    schema.init()
+    print schema.reverse_property('fb:music.recording.releases^fb:music.release.track')
