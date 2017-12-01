@@ -48,41 +48,44 @@ def try_map_triple(subj, predicate, obj, ltp_result, link_map, bk2fb, fb_rels_ma
 def generate_data_from_chapter(title, paragraphs, page_info, doc_processor, e_linker, fb_rels_map, rel_extractor, outf, bk2fb):
     results = doc_processor.parse_chapter(title, paragraphs, page_info, parse_ner = True)
     for ltp_result, str_entities, _ in results:
-        rels = rel_extractor.find_tripple(ltp_result, str_entities)
-        link_map = {}
-        for str_entity in str_entities:
-            baike_entity = e_linker.link(ltp_result, str_entity, page_info)
-            if len(baike_entity) > 0:
-                baike_entity = baike_entity[0]
-                link_map[make_str_entity_key(str_entity)] = baike_entity
+        try:
+            rels = rel_extractor.find_tripple(ltp_result, str_entities)
+            link_map = {}
+            for str_entity in str_entities:
+                baike_entity = e_linker.link(ltp_result, str_entity, page_info)
+                if len(baike_entity) > 0:
+                    baike_entity = baike_entity[0]
+                    link_map[make_str_entity_key(str_entity)] = baike_entity
 
-        new_rels = []
-        for subj, pred, obj, rtype in rels:
-            if type(subj) is int or type(obj) is int:
-                continue
-            if pred is None or type(pred) is str:
-                continue
-            pred = ltp_result.text(pred, pred+1)
-            # if pred == '是':
-            #     continue
-            new_rels.append((subj, pred, obj))
-        rels = new_rels
+            new_rels = []
+            for subj, pred, obj, rtype in rels:
+                if type(subj) is int or type(obj) is int:
+                    continue
+                if pred is None or type(pred) is str:
+                    continue
+                pred = ltp_result.text(pred, pred+1)
+                # if pred == '是':
+                #     continue
+                new_rels.append((subj, pred, obj))
+            rels = new_rels
 
-        predicate_map = {}
-        for subj, pred, obj in rels:
-            # print ltp_result.text(subj.st, subj.ed), pred, ltp_result.text(obj.st, obj.ed)
-            mapped_predicate = []
-            mapped_predicate.extend(try_map_triple(subj, pred, obj, ltp_result, link_map, bk2fb, fb_rels_map))
-            mapped_predicate.extend(try_map_triple(obj, pred, subj, ltp_result, link_map, bk2fb, fb_rels_map))
-        
-            if len(mapped_predicate) > 0:
-                if not pred in predicate_map:
-                    predicate_map[pred] = []
-                predicate_map[pred].extend(mapped_predicate)
-        if len(predicate_map) > 0:
-            outf.write("%s\n" %(ltp_result.sentence))
-            for pred in predicate_map:
-                outf.write("\t%s\t%s\n" %(pred, "\t".join(predicate_map[pred])))
+            predicate_map = {}
+            for subj, pred, obj in rels:
+                # print ltp_result.text(subj.st, subj.ed), pred, ltp_result.text(obj.st, obj.ed)
+                mapped_predicate = []
+                mapped_predicate.extend(try_map_triple(subj, pred, obj, ltp_result, link_map, bk2fb, fb_rels_map))
+                mapped_predicate.extend(try_map_triple(obj, pred, subj, ltp_result, link_map, bk2fb, fb_rels_map))
+            
+                if len(mapped_predicate) > 0:
+                    if not pred in predicate_map:
+                        predicate_map[pred] = []
+                    predicate_map[pred].extend(mapped_predicate)
+            if len(predicate_map) > 0:
+                outf.write("%s\n" %(ltp_result.sentence))
+                for pred in predicate_map:
+                    outf.write("\t%s\t%s\n" %(pred, "\t".join(predicate_map[pred])))
+        except Exception, e:
+            print 'error in parsing %s' %ltp_result.sentence
 
 
 
