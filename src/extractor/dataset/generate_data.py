@@ -57,7 +57,7 @@ def generate_data_from_chapter(title, paragraphs, page_info, doc_processor, e_li
                 link_map[make_str_entity_key(str_entity)] = baike_entity
 
         new_rels = []
-        for subj, pred, obj in rels:
+        for subj, pred, obj, rtype in rels:
             if type(subj) is int or type(obj) is int:
                 continue
             if pred is None or type(pred) is str:
