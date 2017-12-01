@@ -257,6 +257,8 @@ def print_all(extractor, ltp):
             print "the standard tripple num of the sentence:", len(data.knowledges)
             tagnum += len(data.knowledges);
             for kl in data.knowledges:
+                if kl.subj[-1] == '*':
+                    kl.subj = kl.subj[:-1]
                 standard_triple.append((kl.subj, kl.prop, kl.obj))
                 print "\t\t%s" %(kl.triple())
             print '-'*40
