@@ -11,7 +11,7 @@ def process(inpath, outpath, name_map, fb_uris):
     error_outf = file('log/error.log', 'w')
     for line in tqdm(file(inpath), total  = nb_lines_of(inpath)):
         fb_key, rels = line.split('\t')
-        if not fb_key in fb_uris:
+        if not fb_key in fb_uris:
             continue
         rels = json.loads(rels)
         new_rels = {}
