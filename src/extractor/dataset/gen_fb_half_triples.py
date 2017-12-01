@@ -22,7 +22,7 @@ def process(inpath, outpath, name_map, fb_uris):
             else:
                 literal = process_fb_value(obj)
                 if literal.startswith('fb:m.'):
-                    error_outf.write('error property %s, entity %s\n' %(fb_property, obj))
+                    error_outf.write('error property %s, entity %s\n' %(fb_property, fb_key))
                     names = []
                 else:
                     names = [process_fb_value(obj)]
