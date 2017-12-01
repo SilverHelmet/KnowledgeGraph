@@ -1,3 +1,4 @@
+#encoding: utf-8
 from src.IOUtil import rel_ext_dir, nb_lines_of, Print
 from src.extractor.entity.ner import NamedEntityReg
 from src.extractor.docprocessor import DocProcessor
@@ -33,7 +34,10 @@ def try_map_triple(subj, predicate, obj, ltp_result, link_map, bk2fb, fb_rels_ma
             fb_uri = bk2fb[bk_url]
             if fb_uri in fb_rels_map:
                 fb_rels = fb_rels_map[fb_uri]
-                obj_name = ltp_result.text(obj.st, obj.ed).decode('utf-8')
+                try:
+                    obj_name = ltp_result.text(obj.st, obj.ed).decode('utf-8')
+                except Exception, e:
+                    return []
                 maps = map_predicate(fb_rels, obj_name)
                 if len(maps) >= 3:
                     return []
@@ -58,7 +62,10 @@ def generate_data_from_chapter(title, paragraphs, page_info, doc_processor, e_li
                 continue
             if pred is None or type(pred) is str:
                 continue
-            new_rels.append((subj, ltp_result.text(pred, pred+1), obj))
+            pred = ltp_result.text(pred, pred+1)
+            # if pred == '是':
+            #     continue
+            new_rels.append((subj, pred, obj))
         rels = new_rels
 
         predicate_map = {}
