@@ -11,6 +11,7 @@ class VerbRelationExtractor:
     def find_path_to_root(self, node):
         path = [node]
         while node.father != None:
+            print node.father.word
             node = node.father
             path.append(node)
         return path
