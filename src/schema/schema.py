@@ -233,12 +233,4 @@ if __name__ == "__main__":
     # print "fb:book.book_subject.works" in pres 
     # print "fb:education.education.student" in pres
     # keys = set()
-    schema = Schema()
-    schema.init()
-    domains = set()
-    for fb_type in schema.property_attrs:
-        domain = get_domain(fb_type)
-        domains.add(domain)
-    for domain in sorted(domains):
-        print domain
 

@@ -4,8 +4,11 @@ import json
 from src.fb_process.process_fb_result import process_fb_value
 from src.mapping.predicate_mapping import load_name_attr
 import os
+from src.extractor.resource import Resource
 
 def process(inpath, outpath, name_map, fb_uris):
+    schema = Resource.get_singleton().get_schema()
+
     Print('process %s' %inpath)
     outf = file(outpath, 'w')
     error_outf = file('log/error.log', 'w')
@@ -16,7 +19,8 @@ def process(inpath, outpath, name_map, fb_uris):
         rels = json.loads(rels)
         new_rels = {}
         for fb_property, obj in rels:
-            
+            if schema.reverse_property(fb_property) == fb_property:
+                continue
             if obj in name_map:
                 names = name_map[obj]
             else:
