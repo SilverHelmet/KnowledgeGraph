@@ -565,9 +565,13 @@ class VerbRelationExtractor:
                         if tree.nodes[i].postag != 'nh' and tree.nodes[i].entity != None:
                             node.father.children.remove(node)
                             tmp_node = tree.nodes[i]
+                            tmp_node.rel = node.rel
+                            tmp_node.father = node.father
+                            tmp_node.depth = node.depth
+                            tmp_node.children = node.children
                             node.father.children.append(tmp_node)
                             for j in node.children:
-                                j.father = tree.nodes[i]
+                                j.father = tmp_node
                                 self.debuger.debug('*'*20)
                                 self.debuger.debug(j.word, "father has been changed as:", ltp_result.text(tree.nodes[i].entity.st, tree.nodes[i].entity.ed))
                             #node = tree.nodes[i]
@@ -580,9 +584,13 @@ class VerbRelationExtractor:
                         if tree.nodes[i].postag == 'nh':
                             node.father.children.remove(node)
                             tmp_node = tree.nodes[i]
+                            tmp_node.rel = node.rel
+                            tmp_node.father = node.father
+                            tmp_node.depth = node.depth
+                            tmp_node.children = node.children
                             node.father.children.append(tmp_node)
                             for j in node.children:
-                                j.father = tree.nodes[i]
+                                j.father = tmp_node
                                 self.debuger.debug('*'*20)
                                 self.debuger.debug(j.word, " father has been changed as:", tree.nodes[i].word)
                             #node = tree.nodes[i]
