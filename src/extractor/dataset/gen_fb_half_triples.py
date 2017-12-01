@@ -5,9 +5,11 @@ from src.fb_process.process_fb_result import process_fb_value
 from src.mapping.predicate_mapping import load_name_attr
 import os
 from src.extractor.resource import Resource
+from .error_property import load_error_property
 
 def process(inpath, outpath, name_map, fb_uris):
     schema = Resource.get_singleton().get_schema()
+    error_props = load_error_property()
 
     Print('process %s' %inpath)
     outf = file(outpath, 'w')
@@ -20,6 +22,8 @@ def process(inpath, outpath, name_map, fb_uris):
         new_rels = {}
         for fb_property, obj in rels:
             if schema.reverse_property(fb_property) == fb_property:
+                continue
+            if fb_property in error_props:
                 continue
             if obj in name_map:
                 names = name_map[obj]

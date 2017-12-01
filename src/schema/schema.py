@@ -36,6 +36,7 @@ class Schema:
 
     def init_type_neighbor(self):
         type_neighbors = {
+            'tv.tv_program': 'fb:tv.tv_series_episode',
             'fb:music.composition': 'fb:music.recording',
             'fb:music.composition': 'fb:music.album',
             'fb:sports.sports_league': 'fb:sports.sports_championship',
@@ -236,4 +237,4 @@ if __name__ == "__main__":
 
     schema = Schema()
     schema.init()
-    print schema.reverse_property('fb:music.recording.releases^fb:music.release.track')
+    print schema.reverse_property('fb:religion.type_of_place_of_worship.places_of_worship')
