@@ -5,12 +5,14 @@ from src.fb_process.process_fb_result import process_fb_value
 from src.mapping.predicate_mapping import load_name_attr
 import os
 
-def process(inpath, outpath, name_map):
+def process(inpath, outpath, name_map, fb_uris):
     Print('process %s' %inpath)
     outf = file(outpath, 'w')
     error_outf = file('log/error.log', 'w')
     for line in tqdm(file(inpath), total  = nb_lines_of(inpath)):
         fb_key, rels = line.split('\t')
+        if not fb_key in fb_uris:
+            continue
         rels = json.loads(rels)
         new_rels = {}
         for fb_property, obj in rels:
@@ -20,7 +22,7 @@ def process(inpath, outpath, name_map):
             else:
                 literal = process_fb_value(obj)
                 if literal.startswith('fb:m.'):
-                    error_outf.write('error property %s, entity %s' %(fb_property, obj) )
+                    error_outf.write('error property %s, entity %s\n' %(fb_property, obj))
                     names = []
                 else:
                     names = [process_fb_value(obj)]
@@ -54,4 +56,4 @@ if __name__ == "__main__":
 
     in_path = os.path.join(classify_dir, 'mapped_fb_entity_info.json')
     out_path = os.path.join(rel_ext_dir, 'mapped_fb_entity_info_processed.json')
-    process(in_path, out_path, name_map)
+    process(in_path, out_path, name_map, fb_uris)
