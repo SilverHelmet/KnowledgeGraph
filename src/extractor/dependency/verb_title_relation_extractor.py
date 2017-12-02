@@ -437,6 +437,15 @@ class VerbRelationExtractor:
                 actual_res.append(sub)
             else:
                 concept_res.append(sub)
+        for node in verb.children:
+            if node.entity != None and node.postag != 'nt' and node.rel == 'ATT':
+                flag = 0
+                for child in node.children:
+                    if child.rel == 'RAD' and child.word == '的':
+                        flag = 1
+                        break
+                if flag == 0 and node not in actual_res:
+                    actual_res.append(node)
         self.find_actualsub_by_ATT(verb, entity_lis, ltp_result, concept_res, actual_res)
         #recursion 
         if len(actual_res) ==  0 and len(concept_res) == 0:
@@ -822,7 +831,7 @@ class VerbRelationExtractor:
 
 if __name__ == "__main__":
     ltp = LTP(None)
-    sentence = "1985年，还在被公司雪藏期间的刘德华，电视剧拍得也少85年只有《香港八五》、《鼓舞》、《皇上保重》、《杨家将》等电视剧上映，此时的刘德华正向歌坛和影坛大力发展。".encode('utf-8')
+    sentence = "1988年，主演由王家卫执导的黑帮片《旺角卡门》[4]，塑造了一个重情重义的江湖混混华仔形象，使其首次获得香港电影金像奖最佳男主角提名。".encode('utf-8')
     ltp_result = ltp.parse(sentence)
     ner = NamedEntityReg()
     es = ner.recognize(sentence, ltp_result, None, None)
