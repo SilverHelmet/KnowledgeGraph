@@ -324,11 +324,16 @@ def load_half_named_fb_info(path):
     for line in tqdm(file(path), total = nb_lines_of(path)):
         fb_uri, rels = line.split('\t')
         rels = json.loads(rels)
+        total_names = set()
         for prop in rels:
             values = rels[prop]
-            if len(values) > 50:
+            total_names.update(values)
+            
+            if len(values) > 20:
                 rels[prop] = set(values)
+        rels['total'] = total_names
         fb_info[fb_uri] = rels
+        
     return fb_info
 
 
