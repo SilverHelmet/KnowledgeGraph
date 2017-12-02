@@ -25,27 +25,23 @@ def map_predicate(fb_rels, obj_name):
     return properties
 
 
-def try_map_triple(subj, predicate, obj, ltp_result, link_map, bk2fb, fb_rels_map):
-    subj_key = make_str_entity_key(subj)
-    if subj_key in link_map:
-        baike_entity = link_map[subj_key]
-        bk_url = baike_entity.baike_url
-        if bk_url in bk2fb:
-            fb_uri = bk2fb[bk_url]
-            if fb_uri in fb_rels_map:
-                fb_rels = fb_rels_map[fb_uri]
-                try:
-                    obj_name = ltp_result.text(obj.st, obj.ed).decode('utf-8')
-                except Exception, e:
-                    return []
-                maps = map_predicate(fb_rels, obj_name)
-                if len(maps) >= 3:
-                    return []
-                else:
-                    return maps
+def try_map_triple(subj, bk_url, predicate, obj, ltp_result, bk2fb, fb_rels_map):
+    if bk_url in bk2fb:
+        fb_uri = bk2fb[bk_url]
+        if fb_uri in fb_rels_map:
+            fb_rels = fb_rels_map[fb_uri]
+            try:
+                obj_name = ltp_result.text(obj.st, obj.ed).decode('utf-8')
+            except Exception, e:
+                return []
+            maps = map_predicate(fb_rels, obj_name)
+            if len(maps) >= 3:
+                return []
+            else:
+                return maps
     return []
 
-def generate_data_from_chapter(title, paragraphs, page_info, doc_processor, e_linker, fb_rels_map, rel_extractor, outf, bk2fb):
+def generate_data_from_chapter(title, paragraphs, page_info, doc_processor, fb_rels_map, rel_extractor, outf, bk2fb):
     results = doc_processor.parse_chapter(title, paragraphs, page_info, parse_ner = True)
     for ltp_result, str_entities, _ in results:
         try:
@@ -53,17 +49,17 @@ def generate_data_from_chapter(title, paragraphs, page_info, doc_processor, e_li
                 continue
             # Print(ltp_result.sentence)
             rels = rel_extractor.find_tripple(ltp_result, str_entities)
-            link_map = {}
-            baike_entities = []
-            for str_entity in str_entities:
-                baike_entity = e_linker.link(ltp_result, str_entity, page_info)
-                if len(baike_entity) > 0:
-                    baike_entity = baike_entity[0]
-                    baike_entities.append(baike_entity)
-                    link_map[make_str_entity_key(str_entity)] = baike_entity
-                else:
-                    baike_entities.append(None)
-            e_linker.add_sentence(ltp_result, str_entities, baike_entities)
+            # link_map = {}
+            # baike_entities = []
+            # for str_entity in str_entities:
+            #     baike_entity = e_linker.link(ltp_result, str_entity, page_info)
+            #     if len(baike_entity) > 0:
+            #         baike_entity = baike_entity[0]
+            #         baike_entities.append(baike_entity)
+            #         link_map[make_str_entity_key(str_entity)] = baike_entity
+            #     else:
+            #         baike_entities.append(None)
+            # e_linker.add_sentence(ltp_result, str_entities, baike_entities)
 
             new_rels = []
             for subj, pred, obj, rtype in rels:
@@ -82,8 +78,10 @@ def generate_data_from_chapter(title, paragraphs, page_info, doc_processor, e_li
                 obj_name = ltp_result.text(obj.st, obj.ed)
                 # print ltp_result.text(subj.st, subj.ed), pred, ltp_result.text(obj.st, obj.ed)
                 mapped_predicate = []
-                mapped_predicate.extend(try_map_triple(subj, pred, obj, ltp_result, link_map, bk2fb, fb_rels_map))
-                mapped_predicate.extend(try_map_triple(obj, pred, subj, ltp_result, link_map, bk2fb, fb_rels_map))
+                if subj_name in page_info.names:
+                    mapped_predicate.extend(try_map_triple(subj, page_info.url, pred, obj, ltp_result, bk2fb, fb_rels_map))
+                if obj_name in page_info.names:
+                    mapped_predicate.extend(try_map_triple(obj, page_info.url, pred, subj, ltp_result, bk2fb, fb_rels_map))
             
                 if len(mapped_predicate) > 0:
                     if not pred in predicate_map:
@@ -103,7 +101,7 @@ def generate_data_from_summary(summary_path, bk2fb, fb_uris, outpath):
     resource = Resource.get_singleton()
     fb_rels_map = resource.get_half_named_fb_info()
     ner = NamedEntityReg()
-    e_linker = PageMemoryEntityLinker()
+    # e_linker = PageMemoryEntityLinker()
     doc_processor = DocProcessor(ner)
     url2names = resource.get_url2names()
     bk_info_map = resource.get_baike_info()
@@ -131,11 +129,11 @@ def generate_data_from_summary(summary_path, bk2fb, fb_uris, outpath):
         names = url2names[bk_url]        
         page_info = PageInfo(names[-1], names, bk_url, get_url_domains(types, important_domains), types)
 
-        e_linker.start_new_page(bk_url)
+        # e_linker.start_new_page(bk_url)
         
         summary = [json.loads(summary)['summary']]
         chapter_title = 'intro_summary'
-        generate_data_from_chapter(chapter_title, summary, page_info, doc_processor, e_linker, 
+        generate_data_from_chapter(chapter_title, summary, page_info, doc_processor, 
             fb_rels_map, rel_extracotr, outf, bk2fb)
 
     outf.close()
