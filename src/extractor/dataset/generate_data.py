@@ -20,6 +20,8 @@ def map_predicate(fb_rels, obj_name):
         return []
     properties = []
     for prop in fb_rels:
+        if prop == 'total':
+            continue
         values = fb_rels[prop]
         if obj_name in values:
             properties.append(prop)
@@ -111,7 +113,7 @@ def generate_data_from_summary(summary_path, bk2fb, fb_uris, outpath):
 
     Print('generate data from [%s]' %os.path.basename(summary_path))
     outf = file(outpath, 'w')
-    cnt += 1
+    cnt = 0
     for line in tqdm(file(summary_path), total = nb_lines_of(summary_path)):
         bk_url, summary = line.split('\t')
         if bk_url not in bk2fb:
