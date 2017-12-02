@@ -326,7 +326,7 @@ def load_half_named_fb_info(path):
         rels = json.loads(rels)
         for prop in rels:
             values = rels[prop]
-            if len(values) > 100:
+            if len(values) > 50:
                 rels[prop] = set(values)
         fb_info[fb_uri] = rels
     return fb_info

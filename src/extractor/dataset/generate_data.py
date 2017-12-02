@@ -122,8 +122,13 @@ def generate_data_from_summary(summary_path, bk2fb, fb_uris, outpath):
         if fb_uri not in fb_rels_map:
             continue
         outf.write('##start parsing %s\n' %(bk_url))
-        names = url2names[bk_url]
-        types = bk_info_map[bk_url].types
+
+
+        bk_info = bk_info_map[bk_url]
+        if bk_info.pop < 4:
+            continue
+        types = bk_info.types
+        names = url2names[bk_url]        
         page_info = PageInfo(names[-1], names, bk_url, get_url_domains(types, important_domains), types)
 
         e_linker.start_new_page(bk_url)
