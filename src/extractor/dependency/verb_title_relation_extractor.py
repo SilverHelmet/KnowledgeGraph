@@ -6,7 +6,19 @@ from src.extractor.entity.ner import NamedEntityReg
 class VerbRelationExtractor:
     def __init__(self, debug_flag = False):
         self.debuger = Debug(debug_flag)
-        pass
+        self.nationality_dic = []
+        self.profession_dic = []
+        #name = ["nationality.txt", "full_profession.txt", "province.txt", "langauge.txt", "citytown.txt"]
+        with open("result/rel_extraction/dict/nationality.txt", "r") as f:
+            self.nationality_dic = f.readlines()
+        for i in range(len(self.nationality_dic)):
+            self.nationality_dic[i] = self.nationality_dic[i].replace("\n","")
+        with open("result/rel_extraction/dict/full_profession.txt", "r") as f:
+            self.profession_dic = f.readlines()
+        for i in range(len(self.profession_dic)):
+            self.profession_dic[i] = self.profession_dic[i].replace("\n","")
+        self.nationality_dic = set(self.nationality_dic)
+        self.profession_dic = set(self.profession_dic)
       
     def find_path_to_root(self, node):
         path = [node]
@@ -492,20 +504,6 @@ class VerbRelationExtractor:
                 self.debuger.debug("node", node.word ,"mark as entity:", ltp_result.text(e.st, e.ed))
         self.debuger.debug('|'*40)
 
-    def build_dict(self):
-        self.nationality_dic = []
-        self.profession_dic = []
-        #name = ["nationality.txt", "full_profession.txt", "province.txt", "langauge.txt", "citytown.txt"]
-        name = ["", ""]
-        with open("result/rel_extraction/dict/nationality.txt", "r") as f:
-            self.nationality_dic = f.readlines()
-        for i in range(len(self.nationality_dic)):
-            self.nationality_dic[i] = self.nationality_dic[i].replace("\n","")
-        with open("result/rel_extraction/dict/full_profession.txt", "r") as f:
-            self.profession_dic = f.readlines()
-        for i in range(len(self.profession_dic)):
-            self.profession_dic[i] = self.profession_dic[i].replace("\n","")
-
     def deal_with_print(self, node, ltp_result):
         res = None
         if isinstance(node, StrEntity) == True:
@@ -680,7 +678,7 @@ class VerbRelationExtractor:
             ltp_result.text(tmp[1], tmp[1] + 1), ltp_result.text(tmp[2].st, tmp[2].ed))
         #find title relation
         title_res = []
-        self.build_dict()
+        #self.build_dict()
         title_res = self.find_title(tree, ltp_result)
         self.debuger.debug("title_res:")
         for tmp in title_res:
