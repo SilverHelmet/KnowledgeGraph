@@ -131,6 +131,7 @@ def parse(filepath, outf):
 
 def parse_text_from_html(html, url, ignore_table):
     ps = []
+    html = html.strip()
     try:
          t = BeautifulSoup(html, 'lxml')
     except Exception, e:
@@ -139,8 +140,8 @@ def parse_text_from_html(html, url, ignore_table):
         return []
 
     if t.find('table'):
-        if ignore_table:
-            return []
+        if not ignore_table and html.startswith('<table>') and html.endswith('</table>'):
+            return html
         else:
             return html
         
