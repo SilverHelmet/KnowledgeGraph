@@ -384,9 +384,12 @@ class VerbRelationExtractor:
             if final_res != None: 
                 if final_res.entity != None:
                     self.debuger.debug("final_res is:", self.deal_with_print(final_res.entity, ltp_result))
-                    if final_res not in actual_res:
-                        actual_res.append(final_res)
                     concept_res.remove(concept_sub)
+                    tmp_res = [final_res]
+                    tmp_res += self.find_all_COO(final_res)
+                    for coo_final in tmp_res:
+                        if coo_final.entity != None and coo_final not in actual_res:
+                            actual_res.append(final_res)               
         old_concept_res = concept_res
         '''
         if final_res != None:
