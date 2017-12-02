@@ -16,7 +16,8 @@ def make_str_entity_key(str_entity):
     return str_entity.st * 1000 + str_entity.ed
 
 def map_predicate(fb_rels, obj_name):
-    
+    if obj_name not in fb_rels['total']:
+        return []
     properties = []
     for prop in fb_rels:
         values = fb_rels[prop]
@@ -110,6 +111,7 @@ def generate_data_from_summary(summary_path, bk2fb, fb_uris, outpath):
 
     Print('generate data from [%s]' %os.path.basename(summary_path))
     outf = file(outpath, 'w')
+    cnt += 1
     for line in tqdm(file(summary_path), total = nb_lines_of(summary_path)):
         bk_url, summary = line.split('\t')
         if bk_url not in bk2fb:
@@ -119,7 +121,11 @@ def generate_data_from_summary(summary_path, bk2fb, fb_uris, outpath):
         fb_uri = bk2fb[bk_url]
         if fb_uri not in fb_rels_map:
             continue
-        outf.write('##start parsing %s\n' %(bk_url))
+        cnt += 1
+        if cnt % 100 == 0:
+            Print('\ncnt = %d' %cnt)
+
+        # outf.write('##start parsing %s\n' %(bk_url))
 
 
         bk_info = bk_info_map[bk_url]
