@@ -328,6 +328,10 @@ class VerbRelationExtractor:
             return verb.obj
         obj_res = []
         if_special_obj = False
+        path = self.find_all_COO(verb)
+        for node in path:
+            if node.entity != None:
+                obj_res.append(node)
         for child in verb.children:
             if child.postag == 'v' and child.rel in ['VOB', 'FOB']:
                 if_special_obj = True
@@ -771,18 +775,19 @@ class VerbRelationExtractor:
                     self.debuger.debug("sub-verb-target relation found!")
                     self.deal_with_res(sub_verb_target, verb, sub, target, ltp_result)
                     self.debuger.debug("-"*20)
-            for obj in verb.obj:
-                for target in verb.target:
-                    self.debuger.debug("-"*20)
-                    self.debuger.debug("obj-verb-target relation found!")
-                    self.deal_with_res(obj_verb_target, verb, obj, target, ltp_result)
-                    self.debuger.debug("-"*20)
-            for att in verb.att:
-                for target in verb.target:
-                    self.debuger.debug("-"*20)
-                    self.debuger.debug("att-verb-target relation found!")
-                    self.deal_with_res(att_verb_target, verb, att, target, ltp_result)
-                    self.debuger.debug("-"*20)
+            if len(verb.actual_sub) == 0:
+                for obj in verb.obj:
+                    for target in verb.target:
+                        self.debuger.debug("-"*20)
+                        self.debuger.debug("obj-verb-target relation found!")
+                        self.deal_with_res(obj_verb_target, verb, obj, target, ltp_result)
+                        self.debuger.debug("-"*20)
+                for att in verb.att:
+                    for target in verb.target:
+                        self.debuger.debug("-"*20)
+                        self.debuger.debug("att-verb-target relation found!")
+                        self.deal_with_res(att_verb_target, verb, att, target, ltp_result)
+                        self.debuger.debug("-"*20)
         #debug
         for verb in verb_lis:
             self.debuger.debug("verb", verb.word, "has actual_sub:")
@@ -826,19 +831,7 @@ if __name__ == "__main__":
     info = PrintInfo()
     info.print_ltp(ltp_result)
     tree = ParseTree(ltp_result)
-    #string = ["巴萨", "新泽西", "2017年5月", "尤文图斯", "7月22日", "巴尔韦德"]
     e_lis = []
-    '''
-    for s in string:
-        st, ed = ltp_result.search_word(s)
-        if st == -1 and ed == -1:
-            print "cannot find word!!", s
-        else:
-            print '&'*40
-            print s, "has:"
-            print st, ed
-            e_lis.append(StrEntity(st, ed, None))
-    '''
     '''
     e_lis.append(StrEntity(5, 6, None))
     e_lis.append(StrEntity(17, 18, None))
