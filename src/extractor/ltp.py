@@ -165,7 +165,7 @@ if __name__ == "__main__":
 
     print '-' * 50 
 
-    print ltp_result.text(0, 4)
+    tp_result.text(0, 4)
     print ltp_result.text(8, 11)
 
 

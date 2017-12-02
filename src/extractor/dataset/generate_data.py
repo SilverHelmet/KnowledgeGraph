@@ -49,6 +49,8 @@ def generate_data_from_chapter(title, paragraphs, page_info, doc_processor, e_li
     results = doc_processor.parse_chapter(title, paragraphs, page_info, parse_ner = True)
     for ltp_result, str_entities, _ in results:
         try:
+            if ltp_result is None:
+                continue
             Print(ltp_result.sentence)
             rels = rel_extractor.find_tripple(ltp_result, str_entities)
             link_map = {}
@@ -69,9 +71,10 @@ def generate_data_from_chapter(title, paragraphs, page_info, doc_processor, e_li
                 #     continue
                 new_rels.append((subj, pred, obj))
             rels = new_rels
-
             predicate_map = {}
             for subj, pred, obj in rels:
+                subj_name = ltp_result.text(subj.st, subj.ed)
+                obj_name = ltp_result.text(obj.st, obj.ed)
                 # print ltp_result.text(subj.st, subj.ed), pred, ltp_result.text(obj.st, obj.ed)
                 mapped_predicate = []
                 mapped_predicate.extend(try_map_triple(subj, pred, obj, ltp_result, link_map, bk2fb, fb_rels_map))
@@ -122,7 +125,6 @@ def generate_data_from_summary(summary_path, bk2fb, fb_uris, outpath):
         
         summary = [json.loads(summary)['summary']]
         chapter_title = 'intro_summary'
-
         generate_data_from_chapter(chapter_title, summary, page_info, doc_processor, e_linker, 
             fb_rels_map, rel_extracotr, outf, bk2fb)
 
