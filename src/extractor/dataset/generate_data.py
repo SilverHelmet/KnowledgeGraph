@@ -123,7 +123,7 @@ def generate_data_from_summary(summary_path, bk2fb, fb_uris, outpath):
 
 
         bk_info = bk_info_map[bk_url]
-        if bk_info.pop < 4:
+        if bk_info.pop < 4 + 5:
             continue
         types = bk_info.types
         names = url2names[bk_url]        
