@@ -129,7 +129,7 @@ def parse(filepath, outf):
         if check_valid(attr):
             outf.write(strip_url(url) + "\t" + json.dumps(attr, ensure_ascii = False) + '\n')
 
-def parse_text_from_html(html, url):
+def parse_text_from_html(html, url, ignore_table):
     ps = []
     try:
          t = BeautifulSoup(html, 'lxml')
@@ -139,7 +139,10 @@ def parse_text_from_html(html, url):
         return []
 
     if t.find('table'):
-        return []
+        if ignore_table:
+            return []
+        else:
+            return html
         
     p_list = t.find_all('p')
     for p_obj in p_list:
@@ -151,7 +154,7 @@ def parse_text_from_html(html, url):
 def del_space(text):
     return text.replace(u'\xa0', '').replace(u'\u200b', '').strip()
 
-def parse_text(url, b64_content):
+def parse_text(url, b64_content, ignore_table):
     try:
         obj = json.loads(base64.b64decode(b64_content))
     except Exception, e:
@@ -177,11 +180,11 @@ def parse_text(url, b64_content):
                     continue
                 title = chapter_title + "_" + section['sub_section_title']
                 title = del_space(title)
-                texts = parse_text_from_html(section_content, url)
+                texts = parse_text_from_html(section_content, url, ignore_table)
                 if len(texts) > 0:
                     ret.append((title, texts))
         else:
-            texts = parse_text_from_html(chapter_content, url)
+            texts = parse_text_from_html(chapter_content, url, ignore_table)
             
             if len(texts) > 0:
                 ret.append( (del_space(chapter_title), texts) )
@@ -230,11 +233,19 @@ if __name__ == "__main__":
     # content = json.loads(base64.b64decode(s))
     baike_url = 'http://baike.so.com/doc/10236800-10762138.html'
     s = 'eyJpbmZvX21vZGVsIjpbeyJtb2R1bGVfbmFtZSI6Ilx1NGUyYVx1NGViYVx1Njk4Mlx1NTFiNSIsIm1vZHVsZV9zb3J0Ijo4LCJuYW1lIjoiXHU1OTE2XHU2NTg3XHU1NDBkIiwibmlja19uYW1lIjoibmFtZUUiLCJ2YWx1ZSI6WyJMaXNhIERlbGllbiJdfSx7Im1vZHVsZV9uYW1lIjoiXHU0ZTJhXHU0ZWJhXHU4MGNjXHU2NjZmIiwibW9kdWxlX3NvcnQiOjIsIm5hbWUiOiJcdTgwNGNcdTRlMWEiLCJuaWNrX25hbWUiOiJjYXJlZXIiLCJ2YWx1ZSI6WyJcdTZmMTRcdTU0NTgiXX1dLCJpbnRyb19pbmZvIjp7InRpdGxlIjoiTGlzYSBEZWxpZW4iLCJlbnRyeVR5cGUiOiIwIiwic3VtbWFyeSI6Ikxpc2EgRGVsaWVuXHVmZjBjXHU2ZjE0XHU1NDU4XHVmZjBjXHU0ZTNiXHU4OTgxXHU0ZjVjXHU1NGMxXHUzMDBhU2FudGEgQ2xhd3NcdTMwMGJcdTMwMDFcdTMwMGFTY3JlYW0gUXVlZW5zJyBOYWtlZCBDaHJpc3RtYXNcdTMwMGJcdTMwMDJcdTRlM2JcdTg5ODFcdTRmNWNcdTU0YzFcdTc1MzVcdTVmNzFcdTRmNWNcdTU0YzFcdTRlMGFcdTY2MjBcdTY1ZjZcdTk1ZjRcdTUyNjdcdTU0MGRcdTYyNmVcdTZmMTRcdTg5ZDJcdTgyNzJcdTViZmNcdTZmMTRcdTRlM2JcdTZmMTRcdTYyYzVcdTRlZmJcdTgwNGNcdTUyYTExOTk2U2FudGEgQ2xhd3NNYXJ5IEphbmUgQXVzdGluXHU3ZWE2XHU3ZmYwXHUwMGI3QVx1MDBiN1x1OWM4MVx1N2QyMkRlYmJpZSBSb2Nob25cdWZmMGNHcmFudCBDcmFtZXJcdTZmMTRcdTU0NTgxOTk2U2NyZWFtIFF1ZWVucycgTmFrZWQgQ2hyaXN0bWFzSGVyc2VsZiAoYXMgTGlzYSBEdXZhdWwpXHU3ZWE2XHU3ZmYwXHUwMGI3QVx1MDBiN1x1OWM4MVx1N2QyMkdyYW50IENyYW1lclx1ZmYwY0RlYmJpZSBSb2Nob25cdTZmMTRcdTU0NThcdTRlYmFcdTcyNjlcdTUxNzNcdTdjZmJcdTU0MDhcdTRmNWNcdTUxNzNcdTdjZmJcdTRlYmFcdTcyNjlcdTU0MGRcdTc5ZjBcdTU0MDhcdTRmNWNcdTRmNWNcdTU0YzFcdTU0MDhcdTRmNWNcdTRlMjRcdTZiMjFcdTRlZTVcdTRlMGFcdTc2ODRcdTVmNzFcdTRlYmFEZWJiaWUgUm9jaG9uXHU1NDA4XHU0ZjVjXHU0ZjVjXHU1NGMxKDIpXHVmZjFhXHUzMDBhU2NyZWFtIFF1ZWVucyYjMzk7IE5ha2VkIENocmlzdG1hc1x1MzAwYlx1ZmYwY1x1MzAwYVNhbnRhIENsYXdzXHUzMDBiUy4gV2lsbGlhbSBIaW56bWFuXHU1NDA4XHU0ZjVjXHU0ZjVjXHU1NGMxKDIpXHVmZjFhXHUzMDBhU2NyZWFtIFF1ZWVucyYjMzk7IE5ha2VkIEMiLCJ1cmwiOiJodHRwOlwvXC9iYWlrZS5zby5jb21cL2RvY1wvMTAyMzY4MDAtMTA3NjIxMzguaHRtbCIsInNlY3Rpb24iOlt7InNlY3Rpb25UaXRsZSI6Ilx1NGUzYlx1ODk4MVx1NGY1Y1x1NTRjMSIsInNlY3Rpb25MaW5rX20iOiJodHRwOlwvXC9tLmJhaWtlLnNvLmNvbVwvZG9jXC8xMDIzNjgwMC5odG1sP3NpZD0xMDc2MjEzOCZhbmNob3I9MSMxMDIzNjgwMC0xMDc2MjEzOC0xIiwic2VjdGlvbkxpbmsiOiJodHRwOlwvXC9iYWlrZS5zby5jb21cL2RvY1wvMTAyMzY4MDAtMTA3NjIxMzguaHRtbCMxMDIzNjgwMC0xMDc2MjEzOC0xIn0seyJzZWN0aW9uVGl0bGUiOiJcdTRlYmFcdTcyNjlcdTUxNzNcdTdjZmIiLCJzZWN0aW9uTGlua19tIjoiaHR0cDpcL1wvbS5iYWlrZS5zby5jb21cL2RvY1wvMTAyMzY4MDAuaHRtbD9zaWQ9MTA3NjIxMzgmYW5jaG9yPTIjMTAyMzY4MDAtMTA3NjIxMzgtMiIsInNlY3Rpb25MaW5rIjoiaHR0cDpcL1wvYmFpa2Uuc28uY29tXC9kb2NcLzEwMjM2ODAwLTEwNzYyMTM4Lmh0bWwjMTAyMzY4MDAtMTA3NjIxMzgtMiJ9XX0sImNvbnRlbnQiOnsiY29udGVudCI6eyIxIjp7InNlY3Rpb25fdGl0bGUiOiJcdTRlM2JcdTg5ODFcdTRmNWNcdTU0YzEiLCJzZWN0aW9uX2NvbnRlbnQiOlt7InN1Yl9zZWN0aW9uX3RpdGxlIjoiXHU3NTM1XHU1ZjcxXHU0ZjVjXHU1NGMxIiwic3ViX3NlY3Rpb25fY29udGVudCI6Ijx0YWJsZT48dHI+PHRoIHdpZHRoPVwiNTJcIj5cdTRlMGFcdTY2MjBcdTY1ZjZcdTk1ZjQ8XC90aD48dGg+XHU1MjY3XHU1NDBkPFwvdGg+PHRoPlx1NjI2ZVx1NmYxNFx1ODlkMlx1ODI3MjxcL3RoPjx0aD5cdTViZmNcdTZmMTQ8XC90aD48dGg+XHU0ZTNiXHU2ZjE0PFwvdGg+PHRoPlx1NjJjNVx1NGVmYlx1ODA0Y1x1NTJhMTxcL3RoPjxcL3RyPjx0cj48dGQ+MTk5NjxcL3RkPjx0ZD5TYW50YSBDbGF3czxcL3RkPjx0ZD5NYXJ5IEphbmUgQXVzdGluPFwvdGQ+PHRkPlx1N2VhNlx1N2ZmMFx1MDBiN0FcdTAwYjdcdTljODFcdTdkMjI8XC90ZD48dGQ+RGViYmllIFJvY2hvblx1ZmYwY0dyYW50IENyYW1lcjxcL3RkPjx0ZD5cdTZmMTRcdTU0NTg8XC90ZD48XC90cj48dHI+PHRkPjE5OTY8XC90ZD48dGQ+U2NyZWFtIFF1ZWVucycgTmFrZWQgQ2hyaXN0bWFzPFwvdGQ+PHRkPkhlcnNlbGYgKGFzIExpc2EgRHV2YXVsKTxcL3RkPjx0ZD5cdTdlYTZcdTdmZjBcdTAwYjdBXHUwMGI3XHU5YzgxXHU3ZDIyPFwvdGQ+PHRkPkdyYW50IENyYW1lclx1ZmYwY0RlYmJpZSBSb2Nob248XC90ZD48dGQ+XHU2ZjE0XHU1NDU4PFwvdGQ+PFwvdHI+PFwvdGFibGU+In1dfSwiMiI6eyJzZWN0aW9uX3RpdGxlIjoiXHU0ZWJhXHU3MjY5XHU1MTczXHU3Y2ZiIiwic2VjdGlvbl9jb250ZW50IjoiPHRhYmxlPjx0cj48dGggd2lkdGg9XCI2MFwiPlx1NTQwOFx1NGY1Y1x1NTE3M1x1N2NmYjxcL3RoPjx0aCB3aWR0aD1cIjYwXCI+XHU0ZWJhXHU3MjY5XHU1NDBkXHU3OWYwPFwvdGg+PHRoPlx1NTQwOFx1NGY1Y1x1NGY1Y1x1NTRjMTxcL3RoPjxcL3RyPjx0cj48dGQgcm93c3Bhbj1cIjVcIj5cdTU0MDhcdTRmNWNcdTRlMjRcdTZiMjFcdTRlZTVcdTRlMGFcdTc2ODRcdTVmNzFcdTRlYmE8XC90ZD48dGQ+RGViYmllIFJvY2hvbjxcL3RkPjx0ZD48cD5cdTU0MDhcdTRmNWNcdTRmNWNcdTU0YzEoMilcdWZmMWE8XC9wPjxwPlx1MzAwYVNjcmVhbSBRdWVlbnMmIzM5OyBOYWtlZCBDaHJpc3RtYXNcdTMwMGJcdWZmMGNcdTMwMGFTYW50YSBDbGF3c1x1MzAwYjxcL3A+PFwvdGQ+PFwvdHI+PHRyPjx0ZD5TLiBXaWxsaWFtIEhpbnptYW48XC90ZD48dGQ+PHA+XHU1NDA4XHU0ZjVjXHU0ZjVjXHU1NGMxKDIpXHVmZjFhPFwvcD48cD5cdTMwMGFTY3JlYW0gUXVlZW5zJiMzOTsgTmFrZWQgQ2hyaXN0bWFzXHUzMDBiXHVmZjBjXHUzMDBhU2FudGEgQ2xhd3NcdTMwMGI8XC9wPjxcL3RkPjxcL3RyPjx0cj48dGQ+U3VlIEVsbGVuIFdoaXRlPFwvdGQ+PHRkPjxwPlx1NTQwOFx1NGY1Y1x1NGY1Y1x1NTRjMSgyKVx1ZmYxYTxcL3A+PHA+XHUzMDBhU2FudGEgQ2xhd3NcdTMwMGJcdWZmMGNcdTMwMGFTY3JlYW0gUXVlZW5zJiMzOTsgTmFrZWQgQ2hyaXN0bWFzXHUzMDBiPFwvcD48XC90ZD48XC90cj48dHI+PHRkPkFtYW5kYSBNYWRpc29uPFwvdGQ+PHRkPjxwPlx1NTQwOFx1NGY1Y1x1NGY1Y1x1NTRjMSgyKVx1ZmYxYTxcL3A+PHA+XHUzMDBhU2FudGEgQ2xhd3NcdTMwMGJcdWZmMGNcdTMwMGFTY3JlYW0gUXVlZW5zJiMzOTsgTmFrZWQgQ2hyaXN0bWFzXHUzMDBiPFwvcD48XC90ZD48XC90cj48dHI+PHRkPlx1N2VhNlx1N2ZmMFx1MDBiNyZuYnNwO0FcdTAwYjdcdTljODFcdTdkMjIgSm9obiBBLiBSdXNzbzxcL3RkPjx0ZD48cD5cdTU0MDhcdTRmNWNcdTRmNWNcdTU0YzEoMilcdWZmMWE8XC9wPjxwPlx1MzAwYVNjcmVhbSBRdWVlbnMmIzM5OyBOYWtlZCBDaHJpc3RtYXNcdTMwMGJcdWZmMGNcdTMwMGFTYW50YSBDbGF3c1x1MzAwYjxcL3A+PFwvdGQ+PFwvdHI+PFwvdGFibGU+In19fSwiZW50cnlfZmVhdHVyZSI6eyJpZCI6IjI1MjI4NDUyIiwiZWlkIjoiMTAyMzY4MDAiLCJzaWQiOiIxMDc2MjEzOCIsImVuYW1lIjoiTGlzYSBEZWxpZW4iLCJzbmFtZSI6IiIsInR5cGVfaWQiOiI1NSIsImludHJvX2xlbiI6IjY2IiwiaW50cm9fcGljIjoiMCIsImludHJvX3BpY193IjoiMCIsImludHJvX3BpY19oIjoiMCIsImludHJvX2xpbmsiOiIwIiwibW9kdWxlIjoiMiIsImNvbnRlbnRfbGVuIjoiNjEwIiwiY29udGVudF9saW5rIjoiMCIsImNvbnRlbnRfaW1nIjoiMCIsImNvbnRlbnRfaW1nX2ludHJvIjoiMCIsImgyX251bSI6IjIiLCJoM19udW0iOiIxIiwicmVmX251bSI6IjEiLCJmdXJfbnVtIjoiMCIsInRhZ19udW0iOiIzIiwicHYiOiIwIiwidXBkYXRldGltZSI6IjIwMTUtMDctMjcgMTc6MTc6MjgiLCJpc19lc3NlbmNlIjoiMCIsImlzX3BlcnNvbmFsX3dpZGdldHMiOiIwIiwiaXNfcGFydG5lciI6IjAiLCJpc19iYWlkdV9pbXBvcnQiOiIwIiwiaXNfYmFpa2VfZWRpdCI6IjAifSwiZW50cnlfaW5mbyI6eyJlbmFtZSI6Ikxpc2EgRGVsaWVuIiwidHlwZV9pZCI6IjU1Iiwic25hbWUiOiIiLCJuZXdfdHlwZXMiOiIxNSIsInVybCI6Imh0dHA6XC9cL2JhaWtlLnNvLmNvbVwvZG9jXC8xMDIzNjgwMC0xMDc2MjEzOC5odG1sIn19'
-    text = parse_text(baike_url, s)
+    # obj = json.loads(base64.b64decode(s))['content']['content']
+    # print obj.keys()
+    # print obj['1']['section_title']
+    # print obj['2']['section_content']
+    text = parse_text(baike_url, s, False)
     print type(text)
     for title, paras in text:
-        for s in paras:
-            print s
+        print title
+        if type(paras) is unicode:
+            print paras
+        else:
+            for s in paras:
+                print s
     # print content['intro_info']['summary']
     # out_path = os.path.join(result_dir, '360/360_entity_info.json')
     # if not os.path.exists(os.path.dirname(out_path)):

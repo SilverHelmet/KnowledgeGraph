@@ -5,7 +5,7 @@ import os
 import json
 from ..baike_process.parse import strip_url, parse_text
 
-def extract_doc(filepath, doc, baike_urls):
+def extract_doc(filepath, doc, baike_urls, ignore_table):
     Print('extract doc from [%s]' %os.path.basename(filepath))
     hit = 0
     for line in tqdm(file(filepath), total = nb_lines_of(filepath)):
@@ -13,7 +13,7 @@ def extract_doc(filepath, doc, baike_urls):
         url = strip_url(p[0])
         if not url in baike_urls:
             continue
-        docs = parse_text(url, p[1])
+        docs = parse_text(url, p[1], ignore_table)
         outf.write("%s\t%s\n" %(url, json.dumps(docs, ensure_ascii = False)))
         hit += 1
 
@@ -30,6 +30,6 @@ if __name__ == "__main__":
     outf = file(out_path, 'w')
     hit = 0
     for filepath in glob.glob('data/360/*finish'):
-        extract_doc(filepath, outf, baike_urls)
+        extract_doc(filepath, outf, baike_urls, False)
     outf.close()
     
