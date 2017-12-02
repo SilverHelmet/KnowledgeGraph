@@ -150,7 +150,7 @@ class VerbRelationExtractor:
         tree = ParseTree(ltp_result)
         father1, near_verb1, verb1 = self.find_2_verbs(tree, e1)
         father2, near_verb2, verb2 = self.find_2_verbs(tree, e2)
-        noun_res = self.find_noun_relation(father1, father2)
+        noun_res = self.find_noun_relation(father1, father2, tree)
         if noun_res != None:
             self.debuger.debug("find \"noun\"reslation")
             advanced_res.append((noun_res.idx, noun_res.idx + 1))
@@ -195,27 +195,35 @@ class VerbRelationExtractor:
                 self.debuger.debug('found verb', ltp_result.words[res[0]] ,'is an entity! error!')
         return advanced_res
 
-
-
-    def find_noun_relation(self, e1, e2):
+    def find_noun_relation(self, e1, e2, tree):
         if e1.depth - e2.depth == 2:
+            flag = 0
             if e1.rel == 'ATT' and e1.father.rel == 'ATT' and e1.father.father == e2:
+                if tree.nodes[e1.father.idx - 1].word == '的':
+                    flag = 1
                 for child in e1.children:
                     if child.rel == 'RAD' and child.word == '的':
-                        self.debuger.debug("-"*20)
-                        self.debuger.debug("find noun relation!")
-                        self.debuger.debug(e1.word, e1.father.word, e2.word)
-                        self.debuger.debug("-"*20)
-                        return e1.father
+                        flag = 1
+            if flag == 1:
+                self.debuger.debug("-"*20)
+                self.debuger.debug("find noun relation!")
+                self.debuger.debug(e1.word, e1.father.word, e2.word)
+                self.debuger.debug("-"*20)
+                return e1.father
         elif e2.depth - e1.depth == 2:
+            flag = 0
             if e2.rel == 'ATT' and e2.father.rel == 'ATT' and e2.father.father == e1:
+                if tree.nodes[e2.father.idx - 1].word == '的':
+                    flag = 1
                 for child in e2.children:
                     if child.rel == 'RAD' and child.word == '的':
-                        self.debuger.debug("-"*20)
-                        self.debuger.debug("find noun relation!")
-                        self.debuger.debug(e2.word, e2.father.word, e1.word)
-                        self.debuger.debug("-"*20)
-                        return e2.father
+                        flag = 1
+            if flag == 1:
+                self.debuger.debug("-"*20)
+                self.debuger.debug("find noun relation!")
+                self.debuger.debug(e2.word, e2.father.word, e1.word)
+                self.debuger.debug("-"*20)
+                return e2.father
         return None
 
     def find_direct_SBV_entity(self, verb, entity_lis):
@@ -654,7 +662,7 @@ class VerbRelationExtractor:
         noun_res =[]
         for i in range(len(entity_lis)):
             for j in range(i + 1, len(entity_lis)):
-                tmp_verb = self.find_noun_relation(entity_lis[i], entity_lis[j]);
+                tmp_verb = self.find_noun_relation(entity_lis[i], entity_lis[j], tree);
                 if(tmp_verb != None):
                     noun_res.append((entity_lis[i].entity, tmp_verb.idx, entity_lis[j].entity))
                     self.debuger.debug("noun relation found!")
@@ -807,7 +815,7 @@ class VerbRelationExtractor:
 
 if __name__ == "__main__":
     ltp = LTP(None)
-    sentence = "亚当·布切1988年出生在加拿大安大略省的Cambridge，他的叔叔婶婶分别从事替身表演和演艺经纪的公司，于是在9岁之际他们为亚当和他的姐姐曼迪拍摄了大头照，制作个人简历投到剧组，由此推开了演艺界的大门。".encode('utf-8')
+    sentence = "1982年，刘德华参演许鞍华指导的影片《投奔怒海》，从此走上了演艺之路。".encode('utf-8')
     ltp_result = ltp.parse(sentence)
     ner = NamedEntityReg()
     es = ner.recognize(sentence, ltp_result, None, None)
