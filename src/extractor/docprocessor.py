@@ -224,7 +224,7 @@ class DocProcessor:
                     str_entities = self.ner.recognize(ltp_result.sentence, ltp_result, page_info)
                     new_ename = self.check_new_subj(para_info, ltp_result, str_entities)
                     if new_ename:
-                        print 'change subj to %s' %new_ename
+                        # print 'change subj to %s' %new_ename
                         ename = new_ename
                         names = [new_ename]
                     yield ltp_result, str_entities, subj_miss
