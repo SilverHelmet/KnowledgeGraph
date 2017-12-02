@@ -389,7 +389,8 @@ class VerbRelationExtractor:
                     tmp_res += self.find_all_COO(final_res)
                     for coo_final in tmp_res:
                         if coo_final.entity != None and coo_final not in actual_res:
-                            actual_res.append(final_res)               
+                            actual_res.append(coo_final) 
+                            self.debuger.debug("add new item to actual_sub:", self.deal_with_print(coo_final.entity, ltp_result))              
         old_concept_res = concept_res
         '''
         if final_res != None:
@@ -818,7 +819,7 @@ class VerbRelationExtractor:
 
 if __name__ == "__main__":
     ltp = LTP(None)
-    sentence = "1982年，刘德华参演许鞍华指导的影片《投奔怒海》，从此走上了演艺之路。".encode('utf-8')
+    sentence = "1985年，还在被公司雪藏期间的刘德华，电视剧拍得也少85年只有《香港八五》、《鼓舞》、《皇上保重》、《杨家将》等电视剧上映，此时的刘德华正向歌坛和影坛大力发展。".encode('utf-8')
     ltp_result = ltp.parse(sentence)
     ner = NamedEntityReg()
     es = ner.recognize(sentence, ltp_result, None, None)
