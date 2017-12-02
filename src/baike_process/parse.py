@@ -140,7 +140,7 @@ def parse_text_from_html(html, url, ignore_table):
         return []
 
     if t.find('table'):
-        if not ignore_table and html.startswith('<table>') and html.endswith('</table>'):
+        if not ignore_table and html.startswith('<table') and html.endswith('</table>'):
             return html
         else:
             return html
