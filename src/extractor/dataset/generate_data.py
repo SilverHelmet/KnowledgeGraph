@@ -49,7 +49,7 @@ def generate_data_from_chapter(title, paragraphs, page_info, doc_processor, e_li
     results = doc_processor.parse_chapter(title, paragraphs, page_info, parse_ner = True)
     for ltp_result, str_entities, _ in results:
         try:
-            print ltp_result.sentence
+            Print(ltp_result.sentence)
             rels = rel_extractor.find_tripple(ltp_result, str_entities)
             link_map = {}
             for str_entity in str_entities:
