@@ -59,10 +59,10 @@ def generate_data_from_chapter(title, paragraphs, page_info, doc_processor, e_li
                 baike_entity = e_linker.link(ltp_result, str_entity, page_info)
                 if len(baike_entity) > 0:
                     baike_entity = baike_entity[0]
-                    baike_entity.append(baike_entity)
+                    baike_entities.append(baike_entity)
                     link_map[make_str_entity_key(str_entity)] = baike_entity
                 else:
-                    baike_entity.append(None)
+                    baike_entities.append(None)
             e_linker.add_sentence(ltp_result, str_entities, baike_entities)
 
             new_rels = []
