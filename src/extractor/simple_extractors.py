@@ -61,7 +61,7 @@ class SimpleLTPExtractor:
 
 
     def parse_sentence(self, ltp_result, str_entites, page_info, out_link_map = None, debug = False):
-
+        sentence = ltp_result.sentence
         if out_link_map:
             sentence_link_map = out_link_map[ltp_result.sentence]
 
