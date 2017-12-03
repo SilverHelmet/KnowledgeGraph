@@ -445,7 +445,9 @@ class MatchRelLinker:
         if predicate in self.predicate_map:
             probs = self.predicate_map[predicate]
         else:
-            probs = self.link_partial_match_predicate(predicate)
+            probs = []
+        # else:
+        #     probs = self.link_partial_match_predicate(predicate)
         for fb_prop in probs:
             fb_rels.append(FBRelation(rel, fb_prop, probs[fb_prop]))
         return fb_rels
