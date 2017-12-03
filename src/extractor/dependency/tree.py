@@ -4,8 +4,9 @@ from ..ltp import LTP
 class PrintInfo:
     def __init__(self):
         pass
-    def print_ltp(self,ltp_result):
+    def print_ltp(self,ltp_result, tree):
         print ltp_result.sentence
+        print "its root is:", tree.root.word
         for i in range(ltp_result.length):
             print i, ":", ltp_result.words[i], ltp_result.tags[i]
         for i in range(len(ltp_result.arcs)):
@@ -34,6 +35,7 @@ class ParseTree:
         self.length = ltp_result.length
         self.nodes = []
         self.title = []
+        self.root = None
         idx = 0
         for tag, arc, word in zip(ltp_result.tags, ltp_result.arcs, ltp_result.words):
             node = Node(idx, tag, arc, word)
@@ -42,6 +44,7 @@ class ParseTree:
         for node, arc in zip(self.nodes, ltp_result.arcs):
             father_idx = arc.head
             if father_idx == self.length:
+                self.root = node
                 continue
             node.father = self.nodes[father_idx]
             self.nodes[father_idx].children.append(node)
@@ -100,6 +103,7 @@ class Node:
         self.search_sub_mark = False
         self.search_obj_mark = False
         self.title = None
+        self.environment = []
 
     def search_depth(self):
         if self.depth != -1:

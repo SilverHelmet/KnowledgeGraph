@@ -3,6 +3,7 @@ from tree import ParseTree, Debug, PrintInfo
 from ..ltp import LTP
 from ..structure import StrEntity
 from src.extractor.entity.ner import NamedEntityReg
+from src.extractor.docprocessor import DocProcessor, ParagraphInfo
 class VerbRelationExtractor:
     def __init__(self, debug_flag = False):
         self.debuger = Debug(debug_flag)
@@ -238,13 +239,6 @@ class VerbRelationExtractor:
                 return e2.father
         return None
 
-    def find_direct_SBV_entity(self, verb, entity_lis):
-        res = []
-        for child in verb.children:
-            if child.rel == 'SBV' and child in entity_lis and child.title == None:
-                res.append(child)
-        return res
-
     def find_ATT_or_COO_path(self, node):
         res = []
         path = self.find_path_to_root(node)
@@ -291,15 +285,44 @@ class VerbRelationExtractor:
                 res += self.find_all_ATT_child(child)
         return res
 
-    def find_all_COO(self, node):
+    def find_all_COO(self, node, postag = None):
         res = self.find_all_COO_father(node) + self.find_all_COO_child(node)
-        return res
+        final_res = []
+        if postag == None:
+            final_res = res
+        if postag != None:
+            for node in res:
+                if node.postag in postag:
+                    final_res.append(node)
+        return final_res
 
     def judge_all_ATT(self, path):
         for node in path:
             if node.rel != 'ATT':
                 return False
         return True
+
+    def find_direct_rel(self, node, rel, postag = None, if_use_entity = None, if_use_title = None):
+        res = []
+        for child in node.children:
+            if child.rel in rel:
+                if (if_use_entity == True and child.entity == None)\
+                or (if_use_entity == False and child.entity != None):
+                    continue
+                if (if_use_title == True and child.title == None)\
+                or (if_use_title == False and child.title != None):
+                    continue
+                if postag != None and child.postag not in postag:
+                    continue
+                res.append(child)
+        return res
+
+    def get_environment_rule_1(self, verb_lis):
+        for verb in verb_lis:
+            for child in verb.children:
+                 if child.postag == 'n' and child.rel == 'VOB' and child.entity == None:
+                    verb.environment.append(child)
+                    self.debuger.debug("environment of verb", verb.word, child.word, "found!")
 
     def find_all_TARGET(self, verb_lis, entity_lis):
         for verb in verb_lis:
@@ -347,9 +370,15 @@ class VerbRelationExtractor:
         for child in verb.children:
             if child.postag == 'v' and child.rel in ['VOB', 'FOB']:
                 if_special_obj = True
-                direct_sub = self.find_direct_SBV_entity(child, entity_lis)
-                if len(direct_sub) != 0:
-                    obj_res += direct_sub
+                direct_entity_sub = []
+                for verb_child in child.children:
+                    if verb_child.rel == 'SBV' and verb_child.entity != None and verb_child.title == None:
+                        direct_entity_sub.append(verb_child)
+                        verb.environment += self.find_direct_rel(child, ['VOB'], ['n', 'nd', 'nh', 'ni', 'nl', 'ns', 'nt', 'nz'], False)
+                        #self.debuger.debug("environment of verb", verb.word, verb.environment.word, "found")
+                #direct_entity_sub = self.find_direct_rel(child, ['SBV'], None, True, False)
+                if len(direct_entity_sub) != 0:
+                    obj_res += direct_entity_sub
                 else:
                     obj_res += self.find_verb_OBJ(child, entity_lis)
         if if_special_obj == False:
@@ -521,7 +550,7 @@ class VerbRelationExtractor:
             res = node.word
         return res
 
-    def deal_with_tripple(self, node, ltp_result):
+    def  deal_with_quadruple(self, node, ltp_result):
         res_1 = None
         res_2 = None
         res_3 = None
@@ -541,13 +570,19 @@ class VerbRelationExtractor:
             res_3 = ltp_result.text(node[2].st, node[2].ed)
         elif isinstance(node[2], int) == True:
             res_3 = ltp_result.text(node[2], node[2]+1)
-        res = (res_1, res_2, res_3)
+        if node[3] == None:
+            res = (res_1, res_2, res_3, "no environment")
+        else:
+            res_4 = ltp_result.text(node[3], node[3]+1)
+            res = (res_1, res_2, res_3, res_4)
         return res
 
-    def judge_remove_equal(self, tripple, ltp_result):
+    def judge_remove_equal(self, node, ltp_result):
         ret = False
-        flag = 0
-        if isinstance(tripple[1], str) == True: #deal with title_res
+        #flag = 0
+        res_1 = None
+        res_2 = None
+        if isinstance(node[1], str) == True: #deal with title_res
             return False
         '''
         if (tripple[1] != None and ltp_result.text(tripple[1], tripple[1]+1) == "是") or (tripple[1] == None):
@@ -555,12 +590,24 @@ class VerbRelationExtractor:
         '''
         #if flag == 1:
         #self.debuger.debug("verb is \"is\"")
-        r = self.deal_with_tripple(tripple, ltp_result)
+        if isinstance(node[0], StrEntity) == True:
+            res_1 = ltp_result.text(node[0].st, node[0].ed)
+        elif isinstance(node[0], int) == True:
+            res_1 = ltp_result.text(node[0], node[0]+1)
+        elif isinstance(node[0], str) == True:
+            res_1 = node[0]
+        if isinstance(node[2], StrEntity) == True:
+            res_2 = ltp_result.text(node[2].st, node[2].ed)
+        elif isinstance(node[2], int) == True:
+            res_2 = ltp_result.text(node[2], node[2]+1)
+        '''
+        r = self. deal_with_quadruple(tripple, ltp_result)
         r1 = r[0]
         r2 = r[2]
-        self.debuger.debug("r1 is ",r1)
-        self.debuger.debug("r2 is ",r2)
-        if r1 == r2:
+        '''
+        self.debuger.debug("res_1 is ",res_1)
+        self.debuger.debug("res_2 is ",res_2)
+        if res_1 == res_2:
             ret = True
             self.debuger.debug("tripple (a, is, a) is removed!")
         return ret
@@ -588,19 +635,36 @@ class VerbRelationExtractor:
                         res.append((child.word, "profession", node.entity))
         return res
 
-    def get_quadruple(self, triple):
+    def get_quintuple(self, triple):
         appendix = None
         res = []
         for item in triple:
             if isinstance(item[1], str) == True:
-                appendix = "title"
+                if item[1] in ['nationality', 'profession']:
+                    appendix = "title"
+                else:
+                    appendix = "coo_noun_type"
             else:
                 if isinstance(item[2], int) == True:
                     appendix = "not_entity"
                 elif isinstance(item[2], StrEntity) == True:
                     appendix = "entity"
-            res.append((item[0], item[1], item[2], appendix))
+            res.append((item[0], item[1], item[2], item[3], appendix))
         return res
+
+    def add_environment(self, triples, tree):
+        new_triples = []
+        for item in triples:
+            if isinstance(item[1], int) == True and tree.nodes[item[1]].postag == 'v':
+                envir = [node.idx for node in tree.nodes[item[1]].environment]
+                if len(envir) == 0:
+                    new_triples.append((item[0], item[1], item[2], None))
+                else:
+                    for e in envir:
+                        new_triples.append((item[0], item[1], item[2], e))
+            else:
+                new_triples.append((item[0], item[1], item[2], None))
+        return new_triples
 
     def replace_pronoun(self, tree, ltp_result):
         for k in range(len(tree.nodes) - 1, -1, -1):
@@ -659,6 +723,51 @@ class VerbRelationExtractor:
                             self.debuger.debug('*'*40)
                             break                 
 
+    def judge_if_has_verb(self, tree):
+        for node in tree.nodes:
+            if node.postag == 'v':
+                return True
+        return False
+
+    def find_ATT_part(self, node, tree, ltp_result):
+        ed = node.idx
+        st = node.idx
+        for i in range(node.idx - 1, -1, -1):
+            tmp_node = tree.nodes[i + 1]
+            if tree.nodes[i].rel != 'ATT' or tree.nodes[i].father != tmp_node:
+                st = i + 1
+                break
+        return ltp_result.text(st, ed + 1)
+
+    def find_coo_noun_relation(self, tree, ltp_result):
+        res = []
+        #step one: find central word
+        central_word = None
+        if tree.root.entity != None:
+            central_word = tree.root
+        for node in tree.nodes:
+            if node.entity != None:
+                central_word = node
+                break
+        if central_word != None:
+            self.debuger.debug("central word found: ", \
+            self.deal_with_print(central_word.entity, ltp_result))
+        else:
+            self.debuger.debug("cannot find central word(entity)!")
+            return []
+        #step two: find coo-central word
+        path = self.find_all_COO(central_word, ['n', 'nd', 'nh', 'ni', 'nl', 'ns', 'nt', 'nz'])
+        for node in path:
+            nodes = self.find_direct_rel(node, ['ATT'], None, None, False)
+            rel = []
+            if len(nodes) == 0:
+                rel = ["是"]
+            for child in nodes:
+                rel.append(self.find_ATT_part(child, tree, ltp_result))
+            for r in rel:
+                res.append((central_word.entity, r, node.idx))
+        return res
+
     def find_tripple(self, ltp_result, e_lis):
         res = []
         entity_lis = []
@@ -686,13 +795,13 @@ class VerbRelationExtractor:
             self.debuger.debug(ltp_result.text(tmp[0].st, tmp[0].ed), \
             ltp_result.text(tmp[1], tmp[1] + 1), ltp_result.text(tmp[2].st, tmp[2].ed))
         #find title relation
-        title_res = []
-        #self.build_dict()
         title_res = self.find_title(tree, ltp_result)
         self.debuger.debug("title_res:")
         for tmp in title_res:
             self.debuger.debug(tmp[0], tmp[1], ltp_result.text(tmp[2].st, tmp[2].ed))
-
+        coo_noun_res = []
+        if self.judge_if_has_verb(tree) == False:
+            coo_noun_res = self.find_coo_noun_relation(tree, ltp_result)
         #step one: find sub realation
         for verb in verb_lis:
             self.debuger.debug("verb", verb.word, "start finding its sub!")
@@ -741,14 +850,18 @@ class VerbRelationExtractor:
                                 else:
                                     is_res.append((actual_sub.idx, None, child.idx))
                             self.debuger.debug("is relation found:(actual_sub, is, direct_obj_of_is)")
+        '''
         self.debuger.debug("is_res:")
         for tmp in is_res:
-            r = self.deal_with_tripple(tmp, ltp_result)
+            r = self. deal_with_quadruple(tmp, ltp_result)
             r1 = r[0]
             r2 = r[2]
             self.debuger.debug(r1, "是", r2)
+        '''
         #step three: confirm the obj, att, target part
         #obj&debug:
+        self.debuger.debug("start finding environment!")
+        self.get_environment_rule_1(verb_lis)
         for verb in verb_lis:
             self.debuger.debug("#"*30)
             self.debuger.debug("verb", verb.word, "start finding object!")
@@ -819,25 +932,33 @@ class VerbRelationExtractor:
                 tmp = self.deal_with_print(mark, ltp_result)
                 self.debuger.debug(tmp)
 
-        res = noun_res + title_res + sub_verb_obj + sub_verb_att + \
+        res = noun_res + title_res + coo_noun_res +sub_verb_obj + sub_verb_att + \
         sub_verb_target + obj_verb_target + att_verb_target #leave out is_relation
         res = set(res)
         final_res = []
         for i in res:
             if self.judge_remove_equal(i, ltp_result) == False:
                 final_res.append(i)
-        final_res = self.get_quadruple(final_res)
+        final_res = self.add_environment(final_res, tree)
+        final_res = self.get_quintuple(final_res)
         return final_res
 
 if __name__ == "__main__":
+    '''
     ltp = LTP(None)
-    sentence = "1988年，主演由王家卫执导的黑帮片《旺角卡门》[4]，塑造了一个重情重义的江湖混混华仔形象，使其首次获得香港电影金像奖最佳男主角提名。".encode('utf-8')
+    s = "1988年，主演由王家卫执导的黑帮片《旺角卡门》[4]，塑造了一个重情重义的江湖混混华仔形象，使其首次获得香港电影金像奖最佳男主角提名。".encode('utf-8')
     ltp_result = ltp.parse(sentence)
-    ner = NamedEntityReg()
+    ner = NamedEntityReg(process_bracket_flag = True, add_time_entity = True)
     es = ner.recognize(sentence, ltp_result, None, None)
-    info = PrintInfo()
-    info.print_ltp(ltp_result)
+    '''
+    sentence = "任天堂推出了Donkey Kong的续集——Donkey Kong Jr.，同样是一款街机游戏。".encode('utf-8')
+    doc_processor = DocProcessor()
+    ltp_result, _ = doc_processor.parse_sentence(sentence, ParagraphInfo(3, ['刘德华'], '刘德华', False, True))
+    ner = NamedEntityReg(process_bracket_flag = True, add_time_entity = True)
+    es = ner.recognize(sentence, ltp_result, None, None)
     tree = ParseTree(ltp_result)
+    info = PrintInfo()
+    info.print_ltp(ltp_result, tree)
     e_lis = []
     '''
     e_lis.append(StrEntity(5, 6, None))
@@ -858,11 +979,11 @@ if __name__ == "__main__":
     tmp_tripple_res = []
     extrainfo = []
     for item in tripple_res:
-        tmp_tripple_res.append((item[0], item[1], item[2]))
-        extrainfo.append(item[3])
+        tmp_tripple_res.append((item[0], item[1], item[2], item[3]))
+        extrainfo.append(item[4])
     tripple_res = tmp_tripple_res
     for k, item in enumerate(tripple_res):
-        ret.append(test.deal_with_tripple(item, ltp_result))
-    ret = set(ret)
+        ret.append(test. deal_with_quadruple(item, ltp_result))
+    #ret = set(ret)
     for k, triple in enumerate(ret):
         print '\t%s' %('\t'.join(triple)), '\t', extrainfo[k]

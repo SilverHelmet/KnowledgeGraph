@@ -177,14 +177,14 @@ class RelExtractorTestor():
         tmp_raw_rels = []
         extrainfo = []
         for item in raw_rels:
-            tmp_raw_rels.append((item[0], item[1], item[2]))
-            extrainfo.append(item[3])
+            tmp_raw_rels.append((item[0], item[1], item[2], item[3]))
+            extrainfo.append(item[4])
         raw_rels = tmp_raw_rels
         r1 = None
         r2 = None
         r3 = None
         for k, item in enumerate(raw_rels):
-            ret.append(self.extractor.deal_with_tripple(item, ltp_result))
+            ret.append(self.extractor.deal_with_quadruple(item, ltp_result))
         #ret = set(ret)
         #str_entities_word = set(str_entities_word)
         '''
@@ -250,7 +250,9 @@ def calc_res(triples, standard_triple):
             title_num += 1
             continue
         for j in range(len(standard_triple)):
-            if (triple == standard_triple[j]) or \
+            if (triple[0] == standard_triple[j][0] and \
+            triple[1] == standard_triple[j][1] and \
+            triple[2] == standard_triple[j][2]) or \
             (triple[0] == standard_triple[j][2] and \
             triple[2] == standard_triple[j][0] and \
             triple[1] == standard_triple[j][1]):
