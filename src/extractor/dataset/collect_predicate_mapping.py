@@ -40,6 +40,8 @@ if __name__ == '__main__':
         predicate = predicate.strip("'\" :")
         if len(predicate) == 0:
             continue
+        if len(predicate.decode('utf-8')) < 2 and predicate != '是':
+            continue
         props = p[1:]
         pred_maps.add(predicate, props)
 
