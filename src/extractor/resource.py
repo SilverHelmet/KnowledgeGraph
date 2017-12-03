@@ -4,6 +4,8 @@ from ltp import LTP
 from src.schema.schema import Schema
 import os
 import json
+from tqdm import tqdm
+
 
 class Resource:
     singleton = None
@@ -101,6 +103,12 @@ class Resource:
         if not "team_suffix_dict" in self.dict:
             self.dict['team_suffix_dict'] = load_extra_team_suffix_dict()
         return self.dict['team_suffix_dict']
+
+    def get_half_named_fb_info(self):
+        if not 'half_named_fb_info' in  self.dict:
+            path = os.path.join(rel_ext_dir, 'mapped_fb_entity_info_processed.json')
+            self.dict['half_named_fb_info'] = load_half_named_fb_info(path)
+        return self.dict['half_named_fb_info']
 
     @staticmethod
     def get_singleton():
@@ -289,7 +297,7 @@ class SuffixDicts:
     def meet_url(self, bk_url):
         if bk_url in self.url2suffix:
             suffix = self.url2suffix[bk_url]
-            print 'add suffix', suffix, bk_url
+            # print 'add suffix', suffix, bk_url
             self.activated_suffixes.add(suffix)
 
     def refresh(self):
@@ -308,6 +316,26 @@ class SuffixDicts:
             for name in names:
                 suf_dicts.add_name_with_suffix(bk_url, name, suffix)
         return suf_dicts
+
+def load_half_named_fb_info(path):
+    Print('load half naemd fb info from [%s]' %os.path.basename(path))
+
+    fb_info = {}
+    for line in tqdm(file(path), total = nb_lines_of(path)):
+        fb_uri, rels = line.split('\t')
+        rels = json.loads(rels)
+        total_names = set()
+        for prop in rels:
+            values = rels[prop]
+            total_names.update(values)
+            
+            if len(values) > 20:
+                rels[prop] = set(values)
+        rels['total'] = total_names
+        fb_info[fb_uri] = rels
+        
+    return fb_info
+
 
 if __name__ == "__main__":
     s1 = Resource.get_singleton()

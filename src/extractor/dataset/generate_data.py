@@ -1,0 +1,162 @@
+#encoding: utf-8
+from src.IOUtil import rel_ext_dir, nb_lines_of, Print
+from src.extractor.entity.ner import NamedEntityReg
+from src.extractor.docprocessor import DocProcessor
+from src.extractor.dependency.verb_title_relation_extractor import VerbRelationExtractor
+from src.extractor.entity.linkers import PageMemoryEntityLinker
+from src.rel_extraction.util import load_mappings
+from src.extractor.resource import Resource
+from src.extractor.structure import PageInfo
+from src.extractor.util import get_url_domains
+import os
+from tqdm import tqdm
+import json
+
+def make_str_entity_key(str_entity):
+    return str_entity.st * 1000 + str_entity.ed
+
+def map_predicate(fb_rels, obj_name):
+    if obj_name not in fb_rels['total']:
+        return []
+    properties = []
+    for prop in fb_rels:
+        if prop == 'total':
+            continue
+        values = fb_rels[prop]
+        if obj_name in values:
+            properties.append(prop)
+    return properties
+
+
+def try_map_triple(subj, obj, ltp_result, fb_rels):
+    try:
+        obj_name = ltp_result.text(obj.st, obj.ed).decode('utf-8')
+    except Exception, e:
+        return []
+    maps = map_predicate(fb_rels, obj_name)
+    if len(maps) >= 3:
+        return []
+    else:
+                return maps
+    return []
+
+def generate_data_from_chapter(title, paragraphs, page_info, doc_processor, fb_rels, rel_extractor, outf):
+    results = doc_processor.parse_chapter(title, paragraphs, page_info, parse_ner = True)
+    for ltp_result, str_entities, _ in results:
+        try:
+            if ltp_result is None:
+                continue
+            # Print(ltp_result.sentence)
+            rels = rel_extractor.find_tripple(ltp_result, str_entities)
+            # link_map = {}
+            # baike_entities = []
+            # for str_entity in str_entities:
+            #     baike_entity = e_linker.link(ltp_result, str_entity, page_info)
+            #     if len(baike_entity) > 0:
+            #         baike_entity = baike_entity[0]
+            #         baike_entities.append(baike_entity)
+            #         link_map[make_str_entity_key(str_entity)] = baike_entity
+            #     else:
+            #         baike_entities.append(None)
+            # e_linker.add_sentence(ltp_result, str_entities, baike_entities)
+
+            new_rels = []
+            for subj, pred, obj, rtype in rels:
+                if type(subj) is int or type(obj) is int:
+                    continue
+                if pred is None or type(pred) is str:
+                    continue
+                pred = ltp_result.text(pred, pred+1)
+                # if pred == '是':
+                #     continue
+                new_rels.append((subj, pred, obj))
+            rels = new_rels
+            predicate_map = {}
+            for subj, pred, obj in rels:
+                subj_name = ltp_result.text(subj.st, subj.ed)
+                obj_name = ltp_result.text(obj.st, obj.ed)
+                # print ltp_result.text(subj.st, subj.ed), pred, ltp_result.text(obj.st, obj.ed)
+                mapped_predicate = []
+                if subj_name in page_info.names:
+                    mapped_predicate.extend(try_map_triple(subj, obj, ltp_result, fb_rels))
+                if obj_name in page_info.names:
+                    mapped_predicate.extend(try_map_triple(obj, subj, ltp_result, fb_rels))
+            
+                if len(mapped_predicate) > 0:
+                    if not pred in predicate_map:
+                        predicate_map[pred] = []
+                    predicate_map[pred].extend(mapped_predicate)
+            if len(predicate_map) > 0:
+                outf.write("%s\n" %(ltp_result.sentence))
+                for pred in predicate_map:
+                    outf.write("\t%s\t%s\n" %(pred, "\t".join(predicate_map[pred])))
+        except Exception, e:
+            print '\nerror in parsing %s' %ltp_result.sentence
+
+
+
+
+def generate_data_from_summary(summary_path, bk2fb, fb_uris, outpath):
+    resource = Resource.get_singleton()
+    fb_rels_map = resource.get_half_named_fb_info()
+    ner = NamedEntityReg()
+    # e_linker = PageMemoryEntityLinker()
+    doc_processor = DocProcessor(ner)
+    url2names = resource.get_url2names()
+    bk_info_map = resource.get_baike_info()
+    important_domains = resource.get_important_domains()
+    rel_extracotr = VerbRelationExtractor()
+
+    Print('generate data from [%s]' %os.path.basename(summary_path))
+    outf = file(outpath, 'w')
+    cnt = 0
+    for line in tqdm(file(summary_path), total = nb_lines_of(summary_path)):
+        bk_url, summary = line.split('\t')
+        if bk_url not in bk2fb:
+            continue
+        if not bk_url in bk2fb:
+            continue
+        fb_uri = bk2fb[bk_url]
+        if fb_uri not in fb_rels_map:
+            continue
+        fb_rels = fb_rels_map[fb_uri]
+        cnt += 1
+        if cnt % 100 == 0:
+            Print('\ncnt = %d' %cnt)
+
+        # outf.write('##start parsing %s\n' %(bk_url))
+
+
+        bk_info = bk_info_map[bk_url]
+        if bk_info.pop < 4 + 5:
+            continue
+        types = bk_info.types
+        names = url2names[bk_url]        
+        page_info = PageInfo(names[-1], names, bk_url, get_url_domains(types, important_domains), types)
+
+        # e_linker.start_new_page(bk_url)
+        
+        summary = [json.loads(summary)['summary']]
+        chapter_title = 'intro_summary'
+
+        generate_data_from_chapter(chapter_title, summary, page_info, doc_processor, 
+            fb_rels, rel_extracotr, outf)
+
+    outf.close()
+
+
+if __name__ == "__main__":
+    summary_path = os.path.join(rel_ext_dir, 'baike_filtered_summary.json')
+    bk2fb = load_mappings()
+    fb_uris = set(bk2fb.values())
+    # fb_entity_info_path = os.path.join(rel_ext_dir, 'mapped_fb_entity_info_processed.json')
+
+    outpath = os.path.join(rel_ext_dir, 'dataset/summary_dataset.tsv')
+    generate_data_from_summary(summary_path, bk2fb, fb_uris, outpath)
+
+
+
+
+    
+
+

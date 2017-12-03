@@ -36,6 +36,7 @@ class Schema:
 
     def init_type_neighbor(self):
         type_neighbors = {
+            'tv.tv_program': 'fb:tv.tv_series_episode',
             'fb:music.composition': 'fb:music.recording',
             'fb:music.composition': 'fb:music.album',
             'fb:sports.sports_league': 'fb:sports.sports_championship',
@@ -62,11 +63,16 @@ class Schema:
         expected_type = self.expected_type(fb_property)
         return self.is_mediator(expected_type)
 
+    def is_uniq_prop(self, fb_property):
+        return get_bool(self.property_attrs[fb_property].get('fb:type.property.unique', '0'))
+
     def is_mediator(self, fb_type):
         if fb_type in self.type_attrs:
             return get_bool(self.type_attrs[fb_type].get('fb:freebase.type_hints.mediator', '0'))
         else:
             return False
+
+
     
     def reverse_property(self, fb_property):
         props = fb_property.split('^')
@@ -233,12 +239,8 @@ if __name__ == "__main__":
     # print "fb:book.book_subject.works" in pres 
     # print "fb:education.education.student" in pres
     # keys = set()
+
     schema = Schema()
     schema.init()
-    domains = set()
-    for fb_type in schema.property_attrs:
-        domain = get_domain(fb_type)
-        domains.add(domain)
-    for domain in sorted(domains):
-        print domain
-
+    print schema.reverse_property('fb:religion.type_of_place_of_worship.places_of_worship')
+    print schema.is_uniq_prop('fb:people.person.date_of_birth')

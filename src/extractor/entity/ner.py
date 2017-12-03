@@ -212,6 +212,8 @@ class NamedEntityPostProcessor:
 						ed += 1
 					else:
 						break
+				if ltp_result.tags[ed-1] == 'wp':
+					ed -= 1
 				text = "".join(tokens)
 				baike_time = BaikeDatetime.parse(text, strict = True, search_mod = True)
 				if baike_time:

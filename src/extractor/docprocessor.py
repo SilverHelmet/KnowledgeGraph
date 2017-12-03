@@ -173,7 +173,9 @@ class DocProcessor:
         para_info.sent_order += 1
         if type(sentence) is unicode:
             sentence = sentence.encode('utf-8')
-        sentence = sentence.replace("•", '·').strip()
+        sentence = sentence.replace("•", '·').replace('　','').strip()
+        if len(sentence) == 0:
+            return None, False
 
         tokens = self.check_info_para(sentence, para_info)
         is_para_info = tokens is not None
@@ -181,7 +183,6 @@ class DocProcessor:
         if tokens is not None and len(tokens) == 2:
             ltp_result = self.fake_ltp_result_with_info_para(tokens, para_info)
             return ltp_result, is_para_info
-
         ltp_result = self.ltp.parse(sentence, parse_tree = False)
         
         miss = self.check_subj_miss(ltp_result, para_info)
@@ -207,6 +208,8 @@ class DocProcessor:
 
         may_info_para = True
         for paragraph in paragraphs:
+            if type(paragraph) == str:
+                paragraph = paragraph.decode('utf-8')
             sentences = split_sentences(paragraph)
             
             para_info = ParagraphInfo(len(sentences), names, ename, is_summary, may_info_para)
@@ -214,15 +217,19 @@ class DocProcessor:
             for sentence in sentences:
                 pre_miss = para_info.subj_miss_cnt
                 ltp_result, may_info_para = self.parse_sentence(sentence, para_info)
+
                 subj_miss = may_info_para or para_info.subj_miss_cnt == pre_miss+1
 
                 if not self.ner:
                     yield ltp_result, subj_miss
                 else:
+                    if ltp_result is None:
+                        yield ltp_result, [], False
+                        continue
                     str_entities = self.ner.recognize(ltp_result.sentence, ltp_result, page_info)
                     new_ename = self.check_new_subj(para_info, ltp_result, str_entities)
                     if new_ename:
-                        print 'change subj to %s' %new_ename
+                        # print 'change subj to %s' %new_ename
                         ename = new_ename
                         names = [new_ename]
                     yield ltp_result, str_entities, subj_miss
