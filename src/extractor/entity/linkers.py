@@ -42,6 +42,7 @@ class SeparatedLinker:
         for rel in fb_rels:
             ltriple = LinkedTriple(e1, rel, e2)
             if self.schema.check_spo(ltriple.baike_subj.types, ltriple.fb_rel.fb_prop, ltriple.baike_obj.types, True):
+                ltriple.fb_rel.prob += 0.01
                 linked_triples.append(ltriple)
 
             ltriple = LinkedTriple(e2, rel, e1)
