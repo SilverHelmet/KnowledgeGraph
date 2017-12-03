@@ -3,6 +3,7 @@ import sys
 from .parse import parse_text, strip_url
 from ..IOUtil import Print, nb_lines_of
 import json
+from tqdm import tqdm
 
 end_puncs = set([u'。', u'？',u'?', u'!', u'！', u';', u'；'])
 def split_sentences(text, max_length = 150):
@@ -20,39 +21,39 @@ def split_sentences(text, max_length = 150):
         lines.append(text[st:])
     return lines
 
-def work(inpath, sentence_out_path, docuemnt_out_path):
+def work(inpath, docuemnt_out_path):
     Print('process page information')
     doc_outf = file(docuemnt_out_path, 'w')
-    sentence_outf = file(sentence_out_path, 'w')
     for line in tqdm(file(inpath), total = nb_lines_of(inpath)):
         p = line.strip().split('\t')
         url = strip_url(p[0])
         b64content = p[1]
-        texts = parse_text(url, b64content)
+        texts = parse_text(url, b64content, ignore_table = True)
         sentences = []
-        for _, text in texts:
-            for paragraph in text:
-                sentences.extend(split_sentences(paragraph))
         obj = {
             'url': url,
-            'sentences': sentences,
+            'chapters': texts
         }
+        # for _, text in texts:
+        #     for paragraph in text:
+        #         sentences.extend(split_sentences(paragraph))
+        # obj = {
+        #     'url': url,
+        #     'sentences': sentences,
+        # }
 
-        doc_outf.write(json.dumps(obj, ensure_ascii=False))
-        doc_outf.write('\n')
+        doc_outf.write("%s\n" %(json.dumps(obj, ensure_ascii=False)))
 
         for sentence in sentences:
             sentence_outf.write(sentence + '\n')    
     doc_outf.close()
-    sentence_outf.close()
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 4:
-        print "need inpath sentence_out_path page_document_out_path"
+    if len(sys.argv) != 3:
+        print "need inpath page_document_out_path"
     else:
         inpath = sys.argv[1]
-        sentence_out_path = sys.argv[2]
-        document_out_path = sys.argv[3]
-        work(inpath, sentence_out_path, document_out_path)
+        document_out_path = sys.argv[2]
+        work(inpath, document_out_path)
 

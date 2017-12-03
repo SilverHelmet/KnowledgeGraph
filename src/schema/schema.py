@@ -37,11 +37,12 @@ class Schema:
     def init_type_neighbor(self):
         type_neighbors = {
             'tv.tv_program': 'fb:tv.tv_series_episode',
-            'fb:music.composition': 'fb:music.recording',
-            'fb:music.composition': 'fb:music.album',
+            # 'fb:music.composition': 'fb:music.recording',
+            # 'fb:music.composition': 'fb:music.album',
             'fb:sports.sports_league': 'fb:sports.sports_championship',
             'fb:award.award': 'fb:award.award_category',
             'fb:cvg.game_series': 'fb:cvg.computer_videogame',
+            'location.administrative_division': 'fb:location.mailing_address',
         }
         return type_neighbors
 
@@ -115,11 +116,10 @@ class Schema:
                 return True
         return False
 
-    def check_spo(self, subj_types, prob, obj_types, use_neighbor):
-        subj_type = self.schema_type(prob)
-        obj_type = self.expected_type(prob)
+    def check_spo(self, subj_types, prop, obj_types, use_neighbor):
+        subj_type = self.schema_type(prop)
+        obj_type = self.expected_type(prop)
         
-
 
         if subj_type in subj_types and obj_type in obj_types:
             return True
@@ -242,5 +242,7 @@ if __name__ == "__main__":
 
     schema = Schema()
     schema.init()
-    print schema.reverse_property('fb:religion.type_of_place_of_worship.places_of_worship')
-    print schema.is_uniq_prop('fb:people.person.date_of_birth')
+    subj = [u'fb:media_common.netflix_title', u'fb:award.award_winning_work', u'fb:tv.tv_program', u'fb:award.award_nominated_work']
+    obj = [u'fb:people.person', u'fb:tv.tv_program_creator', u'fb:influence.influence_node', u'fb:film.producer', u'fb:award.award_nominee', u'fb:tv.tv_writer', u'fb:fictional_universe.fictional_character_creator', u'fb:music.artist', u'fb:music.composer', u'fb:tv.tv_director', u'fb:tv.tv_producer', u'fb:film.writer', u'fb:award.award_winner', u'fb:tv.tv_actor', u'fb:music.lyricist']
+    prop = u'fb:tv.tv_program.program_creator'
+    print schema.check_spo(subj, prop, obj, True)

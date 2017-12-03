@@ -234,7 +234,7 @@ def load_predicate_map(filepaths, extra_path = None):
         error_prop = set()
         for fb_prop in prop_probs:
             cnt, total = prop_probs[fb_prop]
-            if cnt >= 50 or cnt / (total + 0.0) >= 0.05:
+            if cnt >= 20 or cnt / (total + 0.0) >= 0.03:
                 prop_probs[fb_prop] = cnt / (total + 3.0)
             else:
                 error_prop.add(fb_prop)

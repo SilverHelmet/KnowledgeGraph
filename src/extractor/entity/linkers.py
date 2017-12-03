@@ -39,8 +39,10 @@ class SeparatedLinker:
         linked_triples = []
         e1 = half_linked_triple.baike_subj
         e2 = half_linked_triple.baike_obj
+
         for rel in fb_rels:
             ltriple = LinkedTriple(e1, rel, e2)
+            
             if self.schema.check_spo(ltriple.baike_subj.types, ltriple.fb_rel.fb_prop, ltriple.baike_obj.types, True):
                 ltriple.fb_rel.prob += 0.01
                 linked_triples.append(ltriple)
@@ -476,7 +478,7 @@ if __name__ == "__main__":
     resource = Resource.get_singleton()
     predicate_map = resource.get_predicate_map()
 
-    probs = predicate_map['生于']
+    probs = predicate_map['执导']
     for prop in probs:
         print prop, probs[prop]
 

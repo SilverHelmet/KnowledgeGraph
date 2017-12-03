@@ -78,7 +78,7 @@ class FBRelation:
 
     @staticmethod
     def null_relation(str_rel):
-        return FBRelation(str_rel, 'None', 0.01)
+        return FBRelation(str_rel, 'None', 0.0001)
 
 class SPO:
     def __init__(self, e1, rel, e2, score, type):

@@ -172,7 +172,7 @@ def test_ltp_extractor(datas_map, doc_processor, rel_extractor, linker):
     # stf_results_map = load_stanford_result(os.path.join(base_dir, 'sentences.txt'), os.path.join(base_dir, 'sentences_stanf_nlp.json'))
 
     link_maps = None
-    # link_maps = load_links_map(os.path.join(cache_dir, 'link_map.json'))
+    link_maps = load_links_map(os.path.join(cache_dir, 'link_map.json'))
     ltp_extractor = SimpleLTPExtractor(doc_processor, rel_extractor, linker, link_maps is None)
 
     url2names = resource.get_url2names()
@@ -204,7 +204,7 @@ def test_ltp_extractor(datas_map, doc_processor, rel_extractor, linker):
         linker.entity_linker.start_new_page(url)
         for data in datas:
             sentence = data.sentence
-            # if sentence != '1982年马拉多纳加盟巴萨，但是因为肝炎和一连串伤病，马拉多纳在巴萨并没有取得预想中的成绩。':
+            # if sentence != '《生活大爆炸》(The Big Bang Theory)是由查克·洛尔和比尔·普拉迪创作的一出美国情景喜剧，此剧由华纳兄弟电视公司和查克·洛尔制片公司共同制作。':
             #     continue
             print sentence
             para_info = ParagraphInfo(3, names, baike_name, False, True)

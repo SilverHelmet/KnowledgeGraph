@@ -220,7 +220,7 @@ class DocProcessor:
 
                 subj_miss = may_info_para or para_info.subj_miss_cnt == pre_miss+1
 
-                if not self.ner:
+                if not parse_ner:
                     yield ltp_result, subj_miss
                 else:
                     if ltp_result is None:
