@@ -171,8 +171,8 @@ def test_ltp_extractor(datas_map, doc_processor, rel_extractor, linker):
     # base_dir = os.path.join(data_dir, '标注数据')
     # stf_results_map = load_stanford_result(os.path.join(base_dir, 'sentences.txt'), os.path.join(base_dir, 'sentences_stanf_nlp.json'))
 
-    # link_maps = None
-    link_maps = load_links_map(os.path.join(cache_dir, 'link_map.json'))
+    link_maps = None
+    # link_maps = load_links_map(os.path.join(cache_dir, 'link_map.json'))
     ltp_extractor = SimpleLTPExtractor(doc_processor, rel_extractor, linker, link_maps is None)
 
     url2names = resource.get_url2names()

@@ -468,10 +468,15 @@ class MatchRelLinker:
         return mapped_probs
 
 if __name__ == "__main__":
-    rel_linker = MatchRelLinker()
-    probs = rel_linker.link_partial_match_predicate(u'出版')
-    for fb_prop in probs:
-        print fb_prop, probs[fb_prop]
+    # rel_linker = MatchRelLinker()
+    # probs = rel_linker.link_partial_match_predicate(u'出版')
+
+    resource = Resource.get_singleton()
+    predicate_map = resource.get_predicate_map()
+
+    probs = predicate_map['生于']
+    for prop in probs:
+        print prop, probs[prop]
 
 
 

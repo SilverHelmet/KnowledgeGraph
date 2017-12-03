@@ -74,9 +74,11 @@ class Resource:
 
     def get_predicate_map(self):
         if not "predicate_map" in self.dict:
-            filepath = os.path.join(result_dir, '360/mapping/final_predicates_map.json')
+            main_filepath = os.path.join(result_dir, '360/mapping/final_predicates_map.json')
+            dataset_path = os.path.join(dataset_dir, 'summary_dataset.tsv.v1.predicate_map.json')
             extra_path = os.path.join(doc_dir, 'human_add_predicate_map.json')
-            self.dict['predicate_map'] = load_predicate_map(filepath, extra_path)
+            
+            self.dict['predicate_map'] = load_predicate_map([main_filepath, dataset_path], extra_path)
         return self.dict['predicate_map']
 
     def get_vertical_domain_baike_dict(self):
@@ -201,21 +203,43 @@ def load_bk_static_info(filepath):
         info_map[bk_url] = info
     return info_map
 
-def load_predicate_map(filepath = None, extra_path = None):
-    if filepath is None:
-        filepath = os.path.join(result_dir, '360/mapping/final_predicates_map.json')
-    Print('load predicate map from %s' %filepath)
+def load_predicate_map(filepaths, extra_path = None):
     predicate_map  = {}
-    for line in file(filepath):
-        p = line.split('\t')
-        infobox_pred = p[0]
-        mappings = json.loads(p[1])[:7]
-        probs = {}
-        for prop, occur in mappings:
-            cnt, total = map(int, occur.split('/'))
-            prob = (cnt + 0.0) / (total + 3)
-            probs[prop] = prob
-        predicate_map[infobox_pred] = probs
+    for filepath in filepaths:
+        if not os.path.exists(filepath):
+            continue
+        Print('load predicate map from %s' %filepath)
+        for line in file(filepath):
+            p = line.split('\t')
+            infobox_pred = p[0]
+            mappings = json.loads(p[1])[:10]
+            if not infobox_pred in predicate_map:
+                predicate_map[infobox_pred] = {}
+            probs = predicate_map[infobox_pred]
+            total = None
+            for prop, occur in mappings:
+                if not prop in probs:
+                    probs[prop] = (0, 0)
+                cnt, total = map(int, occur.split('/'))
+                pre_cnt, pre_total = probs[prop]
+                probs[prop] = (pre_cnt + cnt, pre_total)
+            if total:
+                for prop in probs:
+                    cnt, pre_total = probs[prop]
+                    probs[prop] = (cnt, pre_total + total)
+            predicate_map[infobox_pred] = probs
+
+    for infobox_pred in predicate_map:
+        prop_probs = predicate_map[infobox_pred]
+        error_prop = set()
+        for fb_prop in prop_probs:
+            cnt, total = prop_probs[fb_prop]
+            if cnt >= 50 or cnt / (total + 0.0) >= 0.05:
+                prop_probs[fb_prop] = cnt / (total + 3.0)
+            else:
+                error_prop.add(fb_prop)
+        for prop in error_prop:
+            prop_probs.pop(prop)
 
     if extra_path is not None:
         Print("load extra rule from [%s]" %extra_path)
