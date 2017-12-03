@@ -264,7 +264,7 @@ class ExtraTypeInfer:
             mappings = self.baike_extra_map[attr]
             for mapping in mappings:
                 fb_type = mapping.fb_type()
-                prob = mapping.prob()
+                prob = mapping.prob() * 3
                 if not fb_type in prob_map:
                     prob_map[fb_type] = prob
                 else:
