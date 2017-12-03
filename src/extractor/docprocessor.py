@@ -34,7 +34,7 @@ def strip_puncs(token):
 
 class DocProcessor:
     def __init__(self, ner = None):
-        self.ner = None
+        self.ner = ner
         self.ltp = Resource.get_singleton().get_ltp()
         self.subj_miss_patterns = [
             ['p', '《'],

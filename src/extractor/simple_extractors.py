@@ -3,7 +3,7 @@ import os
 from ..IOUtil import result_dir, rel_ext_dir, data_dir, cache_dir
 from src.baike_process.process_page import split_sentences
 from .structure import *
-from dependency.verb_relation_simple_extractor import VerbRelationExtractor
+from dependency.verb_title_relation_extractor import VerbRelationExtractor
 from .mst import perform_MST, Edge
 from src.extractor.resource import Resource
 import json
@@ -27,10 +27,11 @@ def fill_entity_pool(length, str_entites):
     return pool
 
 class SimpleLTPExtractor:
-    def __init__(self, ner, rel_extractor, linker, link_map_out = False):
+    def __init__(self, doc_processor, rel_extractor, linker, link_map_out = False):
         self.ltp = Resource.get_singleton().get_ltp()
-        self.ner = ner
-        self.rel_extractor = rel_extractor
+        self.doc_processor = doc_processor
+        self.ner = doc_processor.ner
+        self.rel_extractor = rel_extractor 
         self.linker = linker
         if link_map_out:
             self.link_map_outf = file(os.path.join(cache_dir, 'link_map.json'), 'w')
@@ -59,14 +60,10 @@ class SimpleLTPExtractor:
         return triples
 
 
-    def parse_sentence(self, sentence, page_info, stf_result, out_link_map = None, debug = False):
-        ltp_result = self.ltp.parse(sentence)
+    def parse_sentence(self, ltp_result, str_entites, page_info, out_link_map = None, debug = False):
 
         if out_link_map:
-            sentence_link_map = out_link_map[sentence]
-
-        str_entites = self.ner.recognize(sentence, ltp_result, page_info, stf_result)
-        str_entites = [e for e in str_entites if not e.etype == 'Nm']
+            sentence_link_map = out_link_map[ltp_result.sentence]
 
         baike_entities = []
         link_map = {}
@@ -76,25 +73,47 @@ class SimpleLTPExtractor:
                 if baike_entity:
                     new_baike_entity = BaikeEntity(str_entity, baike_entity.baike_url, baike_entity.pop, baike_entity.types)
                     baike_entities.append(new_baike_entity)
+                else:
+                    baike_entities.append(None)
             else:
                 baike_entity_list = self.linker.entity_linker.link(ltp_result, str_entity, page_info)
                 if len(baike_entity_list) > 0:
                     baike_entity = baike_entity_list[0]
                     baike_entities.append(baike_entity)
                     link_map[ltp_result.text(str_entity.st, str_entity.ed)] = baike_entity.to_obj()
+                else:
+                    baike_entities.append(None)
 
         if debug:
             print "#str entities:", len(str_entites)
             print "#baike entities:", len(baike_entities)
+
+        self.linker.entity_linker.add_sentence(ltp_result, str_entites, baike_entities)
+        local_link_map = {}
+        for i in range(len(str_entites)):
+            baike_entity = baike_entities[i]
+            if baike_entity is None:
+                continue
+            e = str_entites[i]
+            local_link_map[e.st * 10000 + e.ed] = baike_entity
+         
         
 
-        entity_pool = fill_entity_pool(ltp_result.length, str_entites)
+        rels = self.rel_extractor.find_tripple(ltp_result, str_entites)
+        rels = [rel for rel in rels if rel[3] == 'entity']
+
+        half_linked_triples = []
+        for e1, pred, e2, _ in rels:
+            e1 = local_link_map.get(e1.st * 10000 + e1.ed, None)
+            e2 = local_link_map.get(e2.st * 10000 + e2.ed, None)
+            if e1 and e2:
+                half_linked_triples.append(HalfLinkedTriple(e1, StrRelation(pred, pred+1), e2))
         
-        half_linked_triples = self.parse_triples(ltp_result, baike_entities, entity_pool)
-        for half_linked_triple in half_linked_triples:
-            subj = ltp_result.text(half_linked_triple.baike_subj.st, half_linked_triple.baike_subj.ed)
-            obj = ltp_result.text(half_linked_triple.baike_obj.st, half_linked_triple.baike_obj.ed)
-            rel = ltp_result.text(half_linked_triple.str_rel.st, half_linked_triple.str_rel.ed)
+        # half_linked_triples = self.parse_triples(ltp_result, baike_entities, entity_pool)
+        # for half_linked_triple in half_linked_triples:
+        #     subj = ltp_result.text(half_linked_triple.baike_subj.st, half_linked_triple.baike_subj.ed)
+        #     obj = ltp_result.text(half_linked_triple.baike_obj.st, half_linked_triple.baike_obj.ed)
+        #     rel = ltp_result.text(half_linked_triple.str_rel.st, half_linked_triple.str_rel.ed)
 
         linked_triples = []
         for half_linked_triple in half_linked_triples:

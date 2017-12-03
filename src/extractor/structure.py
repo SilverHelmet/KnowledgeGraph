@@ -165,7 +165,8 @@ class LinkedTriple:
 
     def score(self):
         # return (self.baike_subj.pop + self.baike_obj.pop) * self.fb_rel.prob * self. position_coef()
-        return (self.baike_subj.pop + self.baike_obj.pop) / 2.0 * self.fb_rel.prob
+        # return (self.baike_subj.pop + self.baike_obj.pop) / 2.0 * self.fb_rel.prob
+        return self.fb_rel.prob
 
     def position_coef(self):
         pos_diff = min(abs(self.baike_subj.st - self.baike_obj.ed), abs(self.baike_obj.st - self.baike_subj.ed) )

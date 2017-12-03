@@ -43,6 +43,10 @@ class SeparatedLinker:
             ltriple = LinkedTriple(e1, rel, e2)
             if self.schema.check_spo(ltriple.baike_subj.types, ltriple.fb_rel.fb_prop, ltriple.baike_obj.types, True):
                 linked_triples.append(ltriple)
+
+            ltriple = LinkedTriple(e2, rel, e1)
+            if self.schema.check_spo(ltriple.baike_subj.types, ltriple.fb_rel.fb_prop, ltriple.baike_obj.types, True):
+                linked_triples.append(ltriple)
         
         if len(linked_triples) == 0:
             triple = LinkedTriple(e1, FBRelation.null_relation(half_linked_triple.str_rel), e2)

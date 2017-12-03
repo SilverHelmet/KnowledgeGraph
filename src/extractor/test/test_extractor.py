@@ -7,12 +7,13 @@ import pandas as pd
 import json
 import numpy as np 
 import os
-from ..structure import Knowledge, PageInfo, BaikeEntity
-from ..entity.ner import NamedEntityReg
-from ..dependency.verb_title_relation_extractor import VerbRelationExtractor
-from ..entity.linkers import SeparatedLinker, MatchRelLinker, PageMemoryEntityLinker
-from ..simple_extractors import SimpleLTPExtractor
-from ..util import load_stanford_result, get_url_domains
+from src.extractor.structure import Knowledge, PageInfo, BaikeEntity
+from src.extractor.entity.ner import NamedEntityReg
+from src.extractor.dependency.verb_title_relation_extractor import VerbRelationExtractor
+from src.extractor.docprocessor import DocProcessor, ParagraphInfo
+from src.extractor.entity.linkers import PageMemoryEntityLinker, MatchRelLinker, SeparatedLinker
+from src.extractor.simple_extractors import SimpleLTPExtractor
+from src.extractor.util import  get_url_domains
 from src.extractor.resource import Resource
 
 
@@ -164,15 +165,15 @@ def process_labeled_data(ignore_subj_miss, ignore_verb_miss, clear = True):
 
 
 
-def test_ltp_extractor(datas_map, ner, rel_extractor, linker):
+def test_ltp_extractor(datas_map, doc_processor, rel_extractor, linker):
     resource = Resource.get_singleton()
     schema = resource.get_schema()
-    base_dir = os.path.join(data_dir, '标注数据')
-    stf_results_map = load_stanford_result(os.path.join(base_dir, 'sentences.txt'), os.path.join(base_dir, 'sentences_stanf_nlp.json'))
+    # base_dir = os.path.join(data_dir, '标注数据')
+    # stf_results_map = load_stanford_result(os.path.join(base_dir, 'sentences.txt'), os.path.join(base_dir, 'sentences_stanf_nlp.json'))
 
     link_maps = None
-    link_maps = load_links_map(os.path.join(cache_dir, 'link_map.json'))
-    ltp_extractor = SimpleLTPExtractor(ner, rel_extractor, linker, link_maps is None)
+    # link_maps = load_links_map(os.path.join(cache_dir, 'link_map.json'))
+    ltp_extractor = SimpleLTPExtractor(doc_processor, rel_extractor, linker, link_maps is None)
 
     url2names = resource.get_url2names()
     bk_info_map = resource.get_baike_info()
@@ -200,14 +201,16 @@ def test_ltp_extractor(datas_map, ner, rel_extractor, linker):
         names = url2names[url]
         types = bk_info_map[url].types
         page_info = PageInfo(baike_name, names, url, get_url_domains(types, important_domains), types)
-        linker.entity_linker.start_new_page()
+        linker.entity_linker.start_new_page(url)
         for data in datas:
-            sentence = data.sentence.encode('utf-8')
+            sentence = data.sentence
             # if sentence != '1982年马拉多纳加盟巴萨，但是因为肝炎和一连串伤病，马拉多纳在巴萨并没有取得预想中的成绩。':
             #     continue
             print sentence
-            stf_result = stf_results_map[sentence]
-            triples, ltp_result,  = ltp_extractor.parse_sentence(sentence, page_info, stf_result, link_maps)
+            para_info = ParagraphInfo(3, names, names[-1], False, True)
+            ltp_result, _ = doc_processor.parse_sentence(sentence, para_info)
+            str_entities = doc_processor.ner.recognize(ltp_result.sentence, ltp_result, page_info, None)
+            triples, ltp_result = ltp_extractor.parse_sentence(ltp_result, str_entities, page_info, link_maps)
             
             kl_set = set()
             str_set = set()
@@ -293,11 +296,12 @@ if __name__ == "__main__":
     print "#data = %d, #labeled kl = %d" %(nb_data, nb_kl)
 
     ner = NamedEntityReg()  
+    doc_processor = DocProcessor(ner)
     rel_extractor = VerbRelationExtractor()
 
     entity_linker = PageMemoryEntityLinker()
     rel_linker = MatchRelLinker()
-    linker = SeparatedLinker(entity_linker, rel_linker)
+    linkers = SeparatedLinker(entity_linker, rel_linker)
 
-    test_ltp_extractor(datas_map, ner, rel_extractor, linker)
+    test_ltp_extractor(datas_map, doc_processor, rel_extractor, linkers)
 
