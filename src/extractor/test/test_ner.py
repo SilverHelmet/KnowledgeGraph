@@ -174,11 +174,11 @@ if __name__ == "__main__":
 
     ltp = LTP(None)
     est = Estimator()
-    ner = NamedEntityReg(process_bracket_flag = False)
+    ner = NamedEntityReg(process_bracket_flag = False, add_time_entity = False)
 
     base_dir = os.path.join(data_dir, '实体标注')
     
-    stf_results_map = load_stanford_result(os.path.join(base_dir, 'sentences.txt'), os.path.join(base_dir, 'sentences_stanf_nlp.json'))
+    # stf_results_map = load_stanford_result(os.path.join(base_dir, 'sentences.txt'), os.path.join(base_dir, 'sentences_stanf_nlp.json'))
 
     for data_type in datas_map:
         datas = datas_map[data_type]
@@ -195,8 +195,8 @@ if __name__ == "__main__":
             #         st = idx
             #     elif ner_tag.startswith('E'):
             #         ner_entities_name.append(ltp_result.text(st, idx + 1))
-            stf_result = stf_results_map[sentence]
-            stf_result = Nonez
+            # stf_result = stf_results_map[sentence]
+            stf_result = None
             str_entities = ner.recognize(sentence, ltp_result, None, stf_result)
             ner_entities_name = []
             for str_entity in str_entities:

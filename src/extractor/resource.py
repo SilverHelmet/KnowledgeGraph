@@ -85,7 +85,7 @@ class Resource:
         if not "vt_domain_bk_dict" in self.dict:
             path = os.path.join(dict_dir, 'vertical_domain_baike_dict.txt')
             Print("load name dict from [%s]" %path)
-            self.dict['vt_domain_bk_dict'] = load_file(path)
+            self.dict['vt_domain_bk_dict'] = set(load_file(path))
         return self.dict['vt_domain_bk_dict']
 
     def get_baike_ename_title(self):

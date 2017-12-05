@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 import sys
 from ..ltp import LTPResult
 from src import IOUtil
@@ -12,10 +11,12 @@ from src.mapping.fb_date import BaikeDatetime
 
 
 class NamedEntityPostProcessor:
+	re_year = re.compile(r'^\d{2,4}年$')
 	def __init__(self, name_dict, process_bracket_flag, add_time_entity):
 		self.dict = name_dict
 		self.process_bracket_flag = process_bracket_flag
 		self.add_time_entity = add_time_entity
+		self.ltp = Resource.get_singleton().get_ltp()
 
 	def decide_etype(self, str_entities, st, ed):
 		etype = str_entities[st][2]
@@ -63,7 +64,7 @@ class NamedEntityPostProcessor:
 					return [ff, father]
 		return [father]
 
-	def ATT_extension(self, ltp_result, str_entities):
+	def up_ATT_extension(self, ltp_result, str_entities):
 		new_str_entities = []
 		entity_pool = [False] * ltp_result.length
 		is_leaf = [True] * (ltp_result.length + 1)
@@ -95,6 +96,128 @@ class NamedEntityPostProcessor:
 			for i in range(st, ed):
 				entity_pool[i] = True
 			new_str_entities.append((st, ed, etype))
+		return new_str_entities
+
+	def is_mq(self, ltp_result, idx):
+		if idx < 0:
+			return False
+		if ltp_result.tags[idx] != 'm' or ltp_result.tags[idx + 1] != 'q':
+			return False
+		# if ltp_result.words[idx + 1] != '届':
+		# 	return False
+		if ltp_result.arcs[idx].relation != "ATT" or ltp_result.arcs[idx+1].relation != "ATT":
+			return False
+			
+		return True
+
+	def is_year(self, ltp_result, idx):
+		if idx < 0:
+			return False
+		if ltp_result.arcs[idx].relation != "ATT":
+			return False
+		return NamedEntityPostProcessor.re_year.match(ltp_result.words[idx]) is not None
+
+	def force_ATT(self, ltp_result, st, ed, tail):
+		for i in range(st, ed):
+			head = ltp_result.arcs[i].head
+			if head < st or head > tail:
+				ltp_result.arcs[i].head = tail
+
+	def merge_by_next(self, ltp_result, e_next, str_entities):
+		need_update = False
+		for i in range(ltp_result.length):
+			if e_next[i] != i + 1:
+				need_update = True
+
+		if not need_update:
+			return str_entities
+
+		entity_st_map = {}
+		for e in str_entities:
+			entity_st_map[e[0]] = e
+
+		new_words = []
+		new_tags = []
+		new_ner_tags = []
+		new_str_entities = []
+		length = 0
+		st = 0
+		l = 0
+		while st < ltp_result.length:
+			
+			ed = e_next[st]
+			if ed == st + 1:
+				new_words.append(ltp_result.words[st])
+				new_tags.append(ltp_result.tags[st])
+				new_ner_tags.append(ltp_result.ner_tags[st])
+			else:
+				new_words.append(ltp_result.text(st, ed))
+				# new_tags.append(ltp_result.tags[ed-1])
+				new_tags.append('nz')
+				new_ner_tags.append("S-Nz")
+
+			if st in entity_st_map:
+				e_st, e_ed, etype = entity_st_map[st]
+				if ed == st + 1:
+					new_str_entities.append((l, l + e_ed - e_st, etype ))
+				else:
+					new_str_entities.append((l, l + 1, etype))
+
+			l += 1
+			st = ed
+
+		ltp_result.update(new_words, new_tags, new_ner_tags)
+		ltp_result.update_parsing_tree(self.ltp)
+		
+		return new_str_entities
+
+		
+	def down_ATT_extension(self, ltp_result, str_entities):
+		entity_pool = [False] * ltp_result.length
+		new_str_entities = []
+		e_next = []
+		for i in range(ltp_result.length):
+			e_next.append(i + 1)
+		for i in range(len(str_entities)-1, -1, -1):
+			st, ed, etype = str_entities[i]
+			if entity_pool[ed - 1]:
+				continue
+
+			
+			ori_st = st
+			while st > 0:
+				arc = ltp_result.arcs[st-1]
+				if arc.relation == 'ATT' and arc.head >= st and arc.head < ed:
+					st -= 1
+				else:
+					break
+
+			order = (0, -1)
+			if self.is_mq(ltp_result, st - 2):
+				st -= 2
+				order = (st, st + 2)
+			if self.is_year(ltp_result, st - 1):
+				st -= 1
+				order = (st, st + 1)
+
+			extension = False
+			if  st < ori_st:
+				text = ltp_result.text(st, ed)
+				if text in self.dict:
+					extension = True
+				else:
+					st = ori_st
+
+			
+			if extension and order[1] != -1:
+				e_next[st] = ed
+
+			for idx in range(st, ed):
+				entity_pool[idx] = True
+			new_str_entities.append((st, ed, etype))
+
+		new_str_entities.reverse()
+		new_str_entities = self.merge_by_next(ltp_result, e_next, new_str_entities)
 		return new_str_entities
 
 	def process_bracket(self, ltp_result, str_entities, ltp):
@@ -197,7 +320,14 @@ class NamedEntityPostProcessor:
 
 		return new_str_entities
 
-	def parse_time_entity(self, ltp_result):
+	def parse_time_entity(self, ltp_result, str_entities):
+		entity_pool = [False] * ltp_result.length
+		for e in str_entities:
+			st = e.st
+			ed = e.ed
+			for i in range(st, ed):
+				entity_pool[i] = True
+
 		st = 0
 		time_entities = []
 		while st < ltp_result.length:
@@ -216,7 +346,11 @@ class NamedEntityPostProcessor:
 					ed -= 1
 				text = "".join(tokens)
 				baike_time = BaikeDatetime.parse(text, strict = True, search_mod = True)
-				if baike_time:
+				valid = baike_time is not None
+				for i in range(st, ed):
+					if entity_pool[i]:
+						valid = False
+				if valid:
 					entity = StrEntity(st, ed, 'Nt')
 					entity.add_time_obj(baike_time)
 					time_entities.append(entity)
@@ -226,14 +360,15 @@ class NamedEntityPostProcessor:
 
 	def process(self, ltp_result, str_entities, ltp):
 		str_entities = self.merge_neighbor(ltp_result, str_entities)
-		str_entities = self.ATT_extension(ltp_result, str_entities)
+		str_entities = self.up_ATT_extension(ltp_result, str_entities)
+		str_entities = self.down_ATT_extension(ltp_result, str_entities)
 
 		str_entities = [StrEntity(st, ed, etype) for st, ed, etype in str_entities]
 		if self.process_bracket_flag:
 			str_entities = self.process_bracket(ltp_result, str_entities, ltp)
 
 		if self.add_time_entity:
-			str_entities.extend(self.parse_time_entity(ltp_result))
+			str_entities.extend(self.parse_time_entity(ltp_result, str_entities))
 
 		str_entities.sort(key = lambda x:x.st)
 		return str_entities
