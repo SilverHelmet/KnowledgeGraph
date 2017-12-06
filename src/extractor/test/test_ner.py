@@ -202,7 +202,7 @@ if __name__ == "__main__":
             for str_entity in str_entities:
                 ner_entities_name.append(ltp_result.text(str_entity.st, str_entity.ed))
                 ner_entities_name.extend(str_entity.extra_names)
-            est.add(ltp_result, data.entities, ner_entities_name, debug = True)
+            est.add(ltp_result, data.entities, ner_entities_name, debug = False)
 
     est.estimation.print_info()
 

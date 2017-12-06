@@ -358,14 +358,37 @@ class NamedEntityPostProcessor:
 			st += 1
 		return time_entities
 
+	def add_abbrev(self, ltp_result, str_entities):
+		entity_pool = [False] * ltp_result.length
+		for st, ed, etype in str_entities:
+			for i in range(st, ed):
+				entity_pool[i] = True
+		
+		add_flag = False
+		for i in range(ltp_result.length):
+			if not entity_pool[i] and ltp_result.tags[i] == 'j' and ltp_result.words[i] in self.dict:
+				# print 'add j', ltp_result.words[i]
+				str_entities.append((i, i + 1, 'Nz'))
+				ltp_result.ner_tags[i] = 'nz'
+				add_flag = True
+
+		if add_flag:
+			str_entities.sort(key = lambda x: x[0])
+
+		return str_entities
+
 	def process(self, ltp_result, str_entities, ltp):
+		str_entities = self.add_abbrev(ltp_result, str_entities)
 		str_entities = self.merge_neighbor(ltp_result, str_entities)
 		str_entities = self.up_ATT_extension(ltp_result, str_entities)
 		str_entities = self.down_ATT_extension(ltp_result, str_entities)
+		
 
 		str_entities = [StrEntity(st, ed, etype) for st, ed, etype in str_entities]
 		if self.process_bracket_flag:
 			str_entities = self.process_bracket(ltp_result, str_entities, ltp)
+
+		
 
 		if self.add_time_entity:
 			str_entities.extend(self.parse_time_entity(ltp_result, str_entities))
