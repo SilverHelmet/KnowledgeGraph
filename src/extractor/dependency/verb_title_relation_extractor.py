@@ -799,9 +799,22 @@ class VerbRelationExtractor:
         self.debuger.debug("title_res:")
         for tmp in title_res:
             self.debuger.debug(tmp[0], tmp[1], ltp_result.text(tmp[2].st, tmp[2].ed))
+        tmp_coo_noun_res = []
         coo_noun_res = []
+        extra_title_res = []
         if self.judge_if_has_verb(tree) == False:
-            coo_noun_res = self.find_coo_noun_relation(tree, ltp_result)
+            tmp_coo_noun_res = self.find_coo_noun_relation(tree, ltp_result)
+        for item in tmp_coo_noun_res:
+            if tree.nodes[item[2]].entity != None:
+                coo_noun_res.append(item)
+            else:
+                if tree.nodes[item[2]].word in self.nationality_dic:
+                    extra_title_res.append((tree.nodes[item[2]].word, "nationality", item[0]))
+                elif tree.nodes[item[2]].word in self.profession_dic:
+                    extra_title_res.append((tree.nodes[item[2]].word, "profession", item[0]))
+        for item in extra_title_res:
+            if item not in title_res:
+                title_res.append(item)
         #step one: find sub realation
         for verb in verb_lis:
             self.debuger.debug("verb", verb.word, "start finding its sub!")
