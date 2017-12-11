@@ -73,7 +73,7 @@ def gen_name_map(extractor):
             parent_name = extractor.try_extract_parent_name(ename) # return unicode or None
             if not parent_name:
                 continue
-            if not parent_name in all_names:
+            if not parent_name.encode('utf-8') in all_names:
                 continue
             if parent_name:
                 add_to_dict_list(name_map, parent_name, ename.decode('utf-8'))
