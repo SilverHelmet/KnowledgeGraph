@@ -50,6 +50,8 @@ def gen_name_map(extractor):
     all_names = set()
 
     for bk_url in baike_ename_title:
+        if not bk_url in bk_static_info:
+            continue
         bk_types = bk_static_info[bk_url].types
         if is_art_work(bk_types):
             continue
@@ -60,6 +62,8 @@ def gen_name_map(extractor):
     name_map = {}
     Print("extract parent name")
     for bk_url in tqdm(baike_ename_title, total = len(baike_ename_title)):
+        if not bk_url in bk_static_info:
+            continue
         bk_types = bk_static_info[bk_url].types
         if is_art_work(bk_types):
             continue
