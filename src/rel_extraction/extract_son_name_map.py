@@ -6,7 +6,7 @@ from src.IOUtil import extra_type_dir, Print
 from src.mapping.fb_date import BaikeDatetime
 import os
 
-re_order = re.compile(ur'^第[一二三四五六七八九十零百千0-9]+[届次]')
+re_order = re.compile(ur'^第[一二三四五六七八九十零百千0-9]+[届]')
 re_year = re.compile(ur'^\d{1,4}年')
 art_work_types = set(['fb:film.film', 'fb:book.book', 'fb:book.written_work', 'fb:cvg.computer_videogame', 'fb:tv.tv_program'])
 
