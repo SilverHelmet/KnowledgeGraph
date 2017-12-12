@@ -17,5 +17,10 @@ python -u -m src.rel_extraction.dict.collect_team_suffix >& log/collect_team_suf
 python -u -m src.rel_extraction.extract_team_extra_name >& log/extract_summary_team_extra_name.log 
 python -u -m src.rel_extraction.dict.gen_team_suffix_dict >& log/gen_team_suffix_dict.log
 
+
+# genenrate extra type
+# python -u -m src.rel_extraction.extract_son_name_map >& log/extract_son_name_map.log
+
+
 # extract important domain's name 
 # python -u -m src.rel_extraction.dict.gen_vertical_domain_dict >& log/gen_vertical_dict.log

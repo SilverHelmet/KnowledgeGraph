@@ -6,6 +6,7 @@ from src.IOUtil import extra_type_dir, Print
 from src.mapping.fb_date import BaikeDatetime
 import os
 
+
 re_order = re.compile(ur'^第[一二三四五六七八九十零百千0-9]+[届]')
 re_year = re.compile(ur'^\d{1,4}年')
 art_work_types = set(['fb:film.film', 'fb:book.book', 'fb:book.written_work', 'fb:cvg.computer_videogame', 'fb:tv.tv_program'])
@@ -44,10 +45,23 @@ def add_to_dict_list(d, key, value):
         d[key] = []
     d[key].append(value)
 
+def del_loc_prefix(name, location_dict):
+    ed = len(name)
+    while ed > 0:
+        if name[:ed] in location_dict:
+            return name[ed:]
+        ed -= 1
+
+    return None
+    
+
 def gen_name_map(extractor):
     baike_ename_title = Resource.get_singleton().get_baike_ename_title()
     url2names = Resource.get_singleton().get_url2names()
     bk_static_info = Resource.get_singleton().get_baike_info()
+    location_dict = Resource.get_singleton().get_location_dict()
+    
+    location_dict = set([x.decode('utf-8') for x in location_dict])
     all_names = set()
 
     for bk_url in url2names:
@@ -74,10 +88,11 @@ def gen_name_map(extractor):
             parent_name = extractor.try_extract_parent_name(ename) # return unicode or None
             if not parent_name:
                 continue
-            if not parent_name.encode('utf-8') in all_names:
-                continue
-            if parent_name:
+            if parent_name.encode('utf-8') in all_names:
                 add_to_dict_list(name_map, parent_name, ename.decode('utf-8'))
+            second_parent_name = del_loc_prefix(parent_name, location_dict)
+            if second_parent_name and second_parent_name.encode('utf-8') in all_names:
+                add_to_dict_list(name_map, second_parent_name, ename.decode('utf-8'))
 
     return name_map
 
@@ -85,11 +100,17 @@ def gen_name_map(extractor):
 if __name__ == '__main__':
     award_extor = NameExtractor(extract_name)
     name_map = gen_name_map(award_extor)
+
     outf = file(os.path.join(extra_type_dir, 'son_name_map.tsv'), 'w')
-    for name in sorted(name_map.keys()):
-        son_names = set(name_map[name])
+    out_names = set()
+    for name in sorted(name_map.keys(), key = lambda x: len(x), reverse = True):
+        son_names = name_map[name]
+        son_names = [x for x in son_names if not x in out_names]
+        son_names = set(son_names)
         if len(son_names) < 3:
             continue
+        for x in son_names:
+            out_names.add(x)
         outf.write("%s\t%s\n" %(name, "\t".join(sorted(son_names))))
     outf.close()
 
