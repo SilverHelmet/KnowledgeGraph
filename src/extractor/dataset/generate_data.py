@@ -132,8 +132,6 @@ def generate_data_from_chapter(title, paragraphs, page_info, doc_processor, fb_r
                 
 
                 if subj_name in page_info.names:
-                    print ''
-                    print subj_name, pred, obj_name
                     if obj.etype == "Nt":
                         obj_names = [str(obj.obj)]
                         is_time = True
@@ -144,8 +142,6 @@ def generate_data_from_chapter(title, paragraphs, page_info, doc_processor, fb_r
                             obj_names = e_linker.url2names[bk_obj.baike_url]
                         else:
                             obj_names = [obj_name]
-                    print " ".join(obj_names)
-                    print is_time
                     mapped_props = try_map_triple(obj_names, fb_rels, is_time, schema)
                     mapped_props = set(list(mapped_props))
                     if len(mapped_props) > 0:
@@ -240,7 +236,6 @@ def generate_data_from_doc(doc_path, bk2fb, fb_uris, outpath):
         fb_uri = bk2fb[bk_url]
         if fb_uri not in fb_rels_map:
             continue
-        print 'parse', bk_url
         fb_rels = fb_rels_map[fb_uri]
         cnt += 1
         if cnt % 100 == 0:
