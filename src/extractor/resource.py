@@ -203,6 +203,7 @@ def load_bk_static_info(filepath, extra_type_paths):
         types = json.loads(p[3])
         info = BaikeInfo(pop, types, p[1])
         info_map[bk_url] = info
+
     for path in extra_type_paths:
         if not os.path.exists(path):
             continue
@@ -392,7 +393,5 @@ if __name__ == "__main__":
     s2 = Resource.get_singleton()
     print s1 == s2
 
-    fb_rel_map = s1.get_half_named_fb_info()
-    print filter_bad_summary(s)
 
 
