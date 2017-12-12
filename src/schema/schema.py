@@ -36,13 +36,18 @@ class Schema:
 
     def init_type_neighbor(self):
         type_neighbors = {
-            'tv.tv_program': 'fb:tv.tv_series_episode',
+            'fb:tv.tv_program': 'fb:tv.tv_series_episode',
             # 'fb:music.composition': 'fb:music.recording',
             # 'fb:music.composition': 'fb:music.album',
-            'fb:sports.sports_league': 'fb:sports.sports_championship',
+            'fb:sports.sports_league': 'fb:sports.sports_championship_event',
+            "fb:sports.sports_league_season": "fb:sports.sports_championship_event",
+            'fb:sports.sports_championship': 'fb:sports.sports_championship_event',
             'fb:award.award': 'fb:award.award_category',
+            'fb:award.award_ceremony': 'fb:award.award_category',
+            'fb:film.film_festival' :'fb:award.award_category',
+            "fb:film.film_festival_event": 'fb:award.award_category',
             'fb:cvg.game_series': 'fb:cvg.computer_videogame',
-            'location.administrative_division': 'fb:location.mailing_address',
+            'fb:location.administrative_division': 'fb:location.mailing_address',
         }
         return type_neighbors
 
