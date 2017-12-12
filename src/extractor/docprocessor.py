@@ -7,6 +7,7 @@ from src.extractor.ltp import LTPResult
 from src.extractor.resource import Resource
 from src.extractor.structure import PageInfo
 from entity.ner import NamedEntityReg
+from src.mapping.fb_date import BaikeDatetime
 
 
 class ParagraphInfo:
@@ -117,14 +118,13 @@ class DocProcessor:
     def check_info_para(self, sentence, para_info):
         if not para_info.may_info_para or para_info.nb_sent > 1:
             return None
-
+        
         seps = [':', '：']
         used_sep = None
         for sep in seps:
             p = sentence.split(sep)
             if len(p) >= 2:
                 used_sep = sep
-
 
         if not used_sep:
             return None
@@ -151,8 +151,13 @@ class DocProcessor:
         
         tokens.insert(0, para_info.ename)
         tokens = [token.strip() for token in tokens]
+
         tags = ['nz', 'v', 'nz']
         ner_tags = ['S-Nz', 'O', 'S-Nz']
+
+        if BaikeDatetime.parse(tokens[2], strict = True, search_mod = False):
+            tags[2] = 'nt'
+            ner_tags[2] = 'O'
         
         arcs = []
         arcs.append(FakedArc(2, "SBV"))

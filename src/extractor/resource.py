@@ -212,6 +212,8 @@ def load_bk_static_info(filepath, extra_type_paths):
             p = line.strip().split('\t')
             bk_url = p[0]
             types = p[1:]
+            if not bk_url in info_map:
+                continue
             info_map[bk_url].types.extend(types)
 
     return info_map
