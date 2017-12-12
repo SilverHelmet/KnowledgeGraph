@@ -5,6 +5,7 @@ from src.schema.schema import Schema
 import os
 import json
 from tqdm import tqdm
+from src.mapping.fb_date import FBDatetime
 
 
 class Resource:
@@ -32,7 +33,8 @@ class Resource:
     def get_baike_info(self):
         if not 'baike_info' in self.dict:
             path = os.path.join(rel_ext_dir, 'baike_static_info.tsv')
-            self.dict['baike_info'] = load_bk_static_info(path)
+            extra_type_paths = [os.path.join(extra_type_dir, 'extra_type.tsv')]
+            self.dict['baike_info'] = load_bk_static_info(path, extra_type_paths)
         return self.dict['baike_info']
 
     def load_baike_names(self, lowercase):
@@ -188,7 +190,7 @@ def load_important_domains():
         domains.add(line)
     return domains
 
-def load_bk_static_info(filepath):
+def load_bk_static_info(filepath, extra_type_paths):
     total = nb_lines_of(filepath)
     info_map = {}
     Print("load baike static info from [%s]" %filepath)
@@ -201,6 +203,16 @@ def load_bk_static_info(filepath):
         types = json.loads(p[3])
         info = BaikeInfo(pop, types, p[1])
         info_map[bk_url] = info
+    for path in extra_type_paths:
+        if not os.path.exists(path):
+            continue
+        Print('load extra type from [%s]' %(path))
+        for line in file(filepath):
+            p = line.strip().split('\t')
+            bk_url = p[0]
+            types = p[1:]
+            info_map[bk_url].types.extend(types)
+
     return info_map
 
 def load_predicate_map(filepaths, extra_path = None):
@@ -342,9 +354,19 @@ class SuffixDicts:
                 suf_dicts.add_name_with_suffix(bk_url, name, suffix)
         return suf_dicts
 
+def process_fb_date_values(values):
+    fb_date_values = []
+    for value in values:
+        fb_date = FBDatetime.parse_fb_datetime(value)
+        if fb_date:
+            fb_date_values.append(fb_date.date_str())
+    return fb_date_values
+
+
+
 def load_half_named_fb_info(path):
     Print('load half naemd fb info from [%s]' %os.path.basename(path))
-
+    datetime_props = Resource.get_singleton().get_schema().get_datetime_properties()
     fb_info = {}
     for line in tqdm(file(path), total = nb_lines_of(path)):
         fb_uri, rels = line.split('\t')
@@ -352,6 +374,9 @@ def load_half_named_fb_info(path):
         total_names = set()
         for prop in rels:
             values = rels[prop]
+            if prop in datetime_props:
+                values = process_fb_date_values(values)
+                rels[prop] = values
             total_names.update(values)
             
             if len(values) > 20:

@@ -24,4 +24,4 @@ python -u -m src.rel_extraction.gen_extra_son_type >& log/gen_extra_son_type.log
 
 
 # extract important domain's name 
-# python -u -m src.rel_extraction.dict.gen_vertical_domain_dict >& log/gen_vertical_dict.log
+python -u -m src.rel_extraction.dict.gen_vertical_domain_dict >& log/gen_vertical_dict.log

@@ -143,8 +143,8 @@ def choose_parent_urls(urls, info_map, parent_type, all_son_names):
             parent_urls.append(url)
     # if max_score == 0:
     #     print len(parent_urls)
-    # if len(parent_urls) == 0:
-    #     print 'error', urls
+    if len(parent_urls) == 0:
+        print 'error', urls
     return parent_urls    
 
 def choose_son_urls(name2url, son_names, son_group):

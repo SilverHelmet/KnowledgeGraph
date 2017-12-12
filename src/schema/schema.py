@@ -10,6 +10,7 @@ class Schema:
         pass
     
     def init(self, init_type_neighbor = False):
+        self.datetime_properties = None
         self.property_attrs = load_property_attrs()
         self.type_attrs = load_type_attrs()
         self.reverse_prop_map = self.get_reverse_property_map(self.property_attrs)
@@ -135,8 +136,16 @@ class Schema:
                         return True
             return False
 
+    def get_datetime_properties(self):
+        if self.datetime_properties is None:
 
+            self.datetime_properties = set()
+            for fb_property in self.property_attrs:
+                if self.expected_type(fb_property) == 'fb:type.datetime':
+                    self.datetime_properties.add(fb_property)
+        return self.datetime_properties
 
+    
 
 def get_bool(value):
     if value == "1":
@@ -250,4 +259,7 @@ if __name__ == "__main__":
     subj = [u'fb:media_common.netflix_title', u'fb:award.award_winning_work', u'fb:tv.tv_program', u'fb:award.award_nominated_work']
     obj = [u'fb:people.person', u'fb:tv.tv_program_creator', u'fb:influence.influence_node', u'fb:film.producer', u'fb:award.award_nominee', u'fb:tv.tv_writer', u'fb:fictional_universe.fictional_character_creator', u'fb:music.artist', u'fb:music.composer', u'fb:tv.tv_director', u'fb:tv.tv_producer', u'fb:film.writer', u'fb:award.award_winner', u'fb:tv.tv_actor', u'fb:music.lyricist']
     prop = u'fb:tv.tv_program.program_creator'
-    print schema.check_spo(subj, prop, obj, True)
+    # print schema.check_spo(subj, prop, obj, True)
+    # datetime_props = schema.datetime_property()
+    # print len(datetime_props)
+    # print 'fb:people.person.date_of_birth' in datetime_props

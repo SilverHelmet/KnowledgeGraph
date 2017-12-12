@@ -6,7 +6,11 @@ def add_to_dict_list(d, key, value):
         d[key] = []
     d[key].append(value)
 
-
+def add_values_to_dict_list(d, key, values):
+    if not key in d:
+        d[key] = []
+    d[key].extend(values)
+    
 re_chinese = re.compile(ur'[\u4e00-\u9fa5]+$')
 def is_chinese(text):
     if type(text) == str:

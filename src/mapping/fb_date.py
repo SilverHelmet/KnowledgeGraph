@@ -70,6 +70,9 @@ class FBDatetime:
     def __str__(self):
         return "%d-%d-%d %d:%d:%d.%d" %(self.year, self.month, self.day, self.hour, self.minute, self.second, self.msec)
 
+    def date_str(self):
+        return "%d-%d-%d" %(self.year, self.month, self.day)
+
 def year_month_checker(args):
     return args['year'] > 12
 
@@ -159,11 +162,16 @@ if __name__ == "__main__":
     #     print d
 
     #values = [u'2003年8月26日', u'2003年8', '2003', u'2003年8月', u'2003年', '203-8', u'1916年', u'公元前485年10月',u'1972.6.23', u'12.9', u'1971/02/05']
-    values = [u'几年12月5日夏天']
+    values = [u'1961年9月27']
     for value in values:
         print "str", value
         d = BaikeDatetime.parse(value, strict = True, search_mod = True)
         print "time", d
+
+    values = [u'\"1961-09-27\"^^<http://www.w3.org/2001/XMLSchema#date>']
+    for value in values:
+        d = FBDatetime.parse_fb_datetime(value)
+        print d.date_str()
 
     
         
