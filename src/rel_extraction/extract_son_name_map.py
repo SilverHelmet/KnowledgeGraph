@@ -112,7 +112,7 @@ if __name__ == '__main__':
         son_names = name_map[name]
         son_names = [x for x in son_names if not x in out_names]
         son_names = set(son_names)
-        if len(son_names) < 1:
+        if len(son_names) < 3:
             continue
         for x in son_names:
             out_names.add(x)
