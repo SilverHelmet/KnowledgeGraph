@@ -210,9 +210,10 @@ def gen_extra_type(son_name_map_path, bk_info_path, parent_son_types, ends_to_ty
     for url in sorted(extra_type_map.keys()):
         ori_types = info_map[url]['type']
         extra_types = set(extra_type_map[url])
-        extra_types = [x for x in extra_types if not x in ori_types]
         if len(extra_types) > 1:
             print " ".join(info_map[url]['name']), url, extra_types
+        extra_types = [x for x in extra_types if not x in ori_types]
+
         if len(extra_types) > 0:
             outf.write('%s\t%s\n' %(url, "\t".join(extra_types)))
     outf.close()
