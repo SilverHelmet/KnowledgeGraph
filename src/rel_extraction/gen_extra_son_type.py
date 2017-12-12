@@ -42,6 +42,7 @@ def extract_type_info(son_name_map_path, bk_type_info_path):
                 local_info_map[parent_url] = {}
             info = local_info_map[parent_url]
             info['type'] = types
+            info['fb'] = baike_info_map[parent_url].fb_uri
             if not 'name' in info:
                 info['name'] = []
             info['name'].append(parent_name)
@@ -55,6 +56,7 @@ def extract_type_info(son_name_map_path, bk_type_info_path):
                 types = baike_info_map[son_url].types
                 info = local_info_map[son_url]
                 info['type'] = types
+                info['fb'] = baike_info_map[parent_url].fb_uri
                 if not 'name' in info:
                     info['name'] = []
                 info['name'].append(son_name)

@@ -199,7 +199,7 @@ def load_bk_static_info(filepath):
         if p[1] != "None":
             pop = pop + 5
         types = json.loads(p[3])
-        info = BaikeInfo(pop, types)
+        info = BaikeInfo(pop, types, p[1])
         info_map[bk_url] = info
     return info_map
 
@@ -288,9 +288,10 @@ def load_extra_team_suffix_dict():
 
 
 class BaikeInfo:
-    def __init__(self, pop, types):
+    def __init__(self, pop, types, fb_uri):
         self.pop = pop
         self.types = types
+        self.fb_uri = fb_uri
 
 class SuffixDicts:
     def __init__(self):
