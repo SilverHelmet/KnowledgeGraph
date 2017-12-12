@@ -9,7 +9,8 @@ import os
 
 re_order = re.compile(ur'^第[一二三四五六七八九十零百千0-9]+[届]')
 re_year = re.compile(ur'^\d{1,4}年')
-art_work_types = set(['fb:film.film', 'fb:book.book', 'fb:book.written_work', 'fb:cvg.computer_videogame', 'fb:tv.tv_program'])
+art_work_types = set(['fb:film.film', 'fb:book.book', 'fb:book.written_work', 'fb:cvg.computer_videogame', 
+'fb:tv.tv_program', 'fb:music.composition', "fb:music.single"])
 
 def is_art_work(types):
     global art_work_types
@@ -71,6 +72,14 @@ def gen_name_map(extractor):
         if is_art_work(bk_types):
             continue
         enames = url2names[bk_url]
+        is_son = False
+        for ename in enames:
+            parent_name = extractor.try_extract_parent_name(ename)
+            if parent_name:
+                is_son = True
+        if is_son:
+            continue
+
         for ename in enames:
             all_names.add(ename)
 
@@ -107,7 +116,7 @@ if __name__ == '__main__':
         son_names = name_map[name]
         son_names = [x for x in son_names if not x in out_names]
         son_names = set(son_names)
-        if len(son_names) < 3:
+        if len(son_names) < 1:
             continue
         for x in son_names:
             out_names.add(x)

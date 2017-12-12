@@ -13,13 +13,14 @@
 
 # extract extra name from summary
 # python -u -m src.rel_extraction.extract_summary_extra_name >& log/extract_summary_extra_name.log
-python -u -m src.rel_extraction.dict.collect_team_suffix >& log/collect_team_suffix.log 
-python -u -m src.rel_extraction.extract_team_extra_name >& log/extract_summary_team_extra_name.log 
-python -u -m src.rel_extraction.dict.gen_team_suffix_dict >& log/gen_team_suffix_dict.log
+# python -u -m src.rel_extraction.dict.collect_team_suffix >& log/collect_team_suffix.log 
+# python -u -m src.rel_extraction.extract_team_extra_name >& log/extract_summary_team_extra_name.log 
+# python -u -m src.rel_extraction.dict.gen_team_suffix_dict >& log/gen_team_suffix_dict.log
 
 
 # genenrate extra type
-# python -u -m src.rel_extraction.extract_son_name_map >& log/extract_son_name_map.log
+python -u -m src.rel_extraction.extract_son_name_map >& log/extract_son_name_map.log
+python -u -m src.rel_extraction.gen_extra_son_type >& log/gen_extra_son_type.log
 
 
 # extract important domain's name 
