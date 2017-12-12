@@ -2,6 +2,7 @@
 from src.extractor.resource import Resource
 import re
 from tqdm import tqdm
+from src.util import add_to_dict_list
 from src.IOUtil import extra_type_dir, Print
 from src.mapping.fb_date import BaikeDatetime
 import os
@@ -40,11 +41,6 @@ class NameExtractor:
 
     def try_extract_parent_name(self, ename):
         return self.parent_ext_func(ename)
-
-def add_to_dict_list(d, key, value):
-    if not key in d:
-        d[key] = []
-    d[key].append(value)
 
 def del_loc_prefix(name, location_dict):
     ed = len(name)

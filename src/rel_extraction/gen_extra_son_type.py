@@ -2,7 +2,8 @@
 from src.IOUtil import extra_type_dir
 from src.extractor.resource import Resource
 import os
-from .extract_son_name_map import is_art_work, add_to_dict_list
+from .extract_son_name_map import is_art_work
+from src.util import add_to_dict_list
 import json
 
 def extract_type_info(son_name_map_path, bk_type_info_path):
@@ -142,9 +143,16 @@ def choose_parent_urls(urls, info_map, parent_type, all_son_names):
             parent_urls.append(url)
     # if max_score == 0:
     #     print len(parent_urls)
-    if len(parent_urls) == 0:
-        print 'error', urls
+    # if len(parent_urls) == 0:
+    #     print 'error', urls
     return parent_urls    
+
+def choose_son_urls(name2url, son_names, son_group):
+    urls = []
+    for son_name in son_names:
+        son_urls = name2url[son_name]
+        urls.extend(son_urls)
+    return urls
 
 def gen_extra_type(son_name_map_path, bk_info_path, parent_son_types, ends_to_types, outpath):
     parent_types = [x[0] for x in parent_son_types]
@@ -166,6 +174,7 @@ def gen_extra_type(son_name_map_path, bk_info_path, parent_son_types, ends_to_ty
         sons = names[1:]
         all_son_names.update(sons)
 
+    extra_type_map = {}
     for line in file(son_name_map_path):
         names = line.strip().split('\t')
         names = [x.decode('utf-8') for x in names]
@@ -183,7 +192,30 @@ def gen_extra_type(son_name_map_path, bk_info_path, parent_son_types, ends_to_ty
             continue
         
         parent_urls = choose_parent_urls(name2url[parent], info_map, group, all_son_names)
-        # son_urls = choose_son_urls(name2url, sons, son_types)
+        for url in parent_urls:
+            add_to_dict_list(extra_type_map, url, group)
+
+        son_group = None
+        for parent_type, son_type in parent_son_types:
+            if parent_type == group:
+                son_group = son_type
+
+        assert son_group
+
+        son_urls = choose_son_urls(name2url, sons, son_group)
+        for url in son_urls:
+            add_to_dict_list(extra_type_map, url, son_group)
+
+    outf = file(outpath, 'w')
+    for url in sorted(extra_type_map.keys()):
+        ori_types = info_map[url]['type']
+        extra_types = set(extra_type_map[url])
+        extra_types = [x for x in extra_types if not x in ori_types]
+        if len(extra_types) > 1:
+            print " ".join(info_map[url]['name']), url, extra_types
+        if len(extra_types) > 0:
+            outf.write('%s\t%s\n' %(url, "\t".join(extra_types)))
+    outf.close()
 
 if __name__ == "__main__":
     parent_son_types = [
@@ -196,7 +228,7 @@ if __name__ == "__main__":
         (u'杯', 'fb:sports.sports_championship'),
         (u'联赛', 'fb:sports.sports_league'),
         (u'奥运会', 'fb:sports.sports_championship'),
-        (u'电影节', 'fb:film.film_festival_event'),
+        (u'电影节', 'fb:film.film_festival'),
         (u'奖', 'fb:award.award'),
         (u'赛', 'fb:sports.sports_championship'),
         (u'运动会', 'fb:sports.sports_championship'),
@@ -207,4 +239,4 @@ if __name__ == "__main__":
     extra_type_path = os.path.join(extra_type_dir, 'extra_type.tsv')
     extract_type_info(son_name_map_path, bk_info_path)
 
-    # gen_extra_type(son_name_map_path, bk_info_path, parent_son_types, ends_to_types, extra_type_path)
+    gen_extra_type(son_name_map_path, bk_info_path, parent_son_types, ends_to_types, extra_type_path)

@@ -27,6 +27,8 @@ def is_no_chinese(text):
             return False
     return True
 
+
+
 if __name__ == "__main__":
     import json
     s = u'Real Madrid Club de Fútbol '
