@@ -17,6 +17,8 @@ def make_str_entity_key(str_entity):
     return str_entity.st * 1000 + str_entity.ed
 
 def map_predicate(fb_rels, obj_name):
+    if type(obj_name) is str:
+        obj_name = obj_name.decode('utf-8')
     if obj_name not in fb_rels['total']:
         return []
     properties = []
@@ -52,7 +54,6 @@ def try_map_triple(obj_names, fb_rels, is_time, schema):
 
     maps_set = list(set(maps))
     if len(maps_set) >= 3:
-        print "big", maps_set
         return []
     else:
         return maps
@@ -87,9 +88,9 @@ def generate_data_from_chapter(title, paragraphs, page_info, doc_processor, fb_r
                     continue
                 if type(subj) is str or type(obj) is str:
                     continue
-                
                 if pred is None or type(pred) is str:
                     continue
+
                 pred = ltp_result.text(pred, pred+1)
                 # if pred == '是':
                 #     continue
@@ -143,6 +144,8 @@ def generate_data_from_chapter(title, paragraphs, page_info, doc_processor, fb_r
                             obj_names = e_linker.url2names[bk_obj.baike_url]
                         else:
                             obj_names = [obj_name]
+                    print " ".join(obj_names)
+                    print is_time
                     mapped_props = try_map_triple(obj_names, fb_rels, is_time, schema)
                     mapped_props = set(list(mapped_props))
                     if len(mapped_props) > 0:

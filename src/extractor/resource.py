@@ -207,7 +207,7 @@ def load_bk_static_info(filepath, extra_type_paths):
         if not os.path.exists(path):
             continue
         Print('load extra type from [%s]' %(path))
-        for line in file(filepath):
+        for line in file(path):
             p = line.strip().split('\t')
             bk_url = p[0]
             types = p[1:]
@@ -359,7 +359,7 @@ def process_fb_date_values(values):
     for value in values:
         fb_date = FBDatetime.parse_fb_datetime(value)
         if fb_date:
-            fb_date_values.append(fb_date.date_str())
+            fb_date_values.append(fb_date.date_str().decode('utf-8'))
     return fb_date_values
 
 
@@ -391,7 +391,8 @@ if __name__ == "__main__":
     s1 = Resource.get_singleton()
     s2 = Resource.get_singleton()
     print s1 == s2
-    s = u'《希斯帕尼亚》，西班牙电影，路易斯·霍马、安娜德、胡安·何塞·巴勒斯塔主演。演职员表演员表角色演员备注Galba路易斯·霍马（Llus Homar）Nerea安娜德�阿玛斯（Ana de Armas）Paulo胡安·何塞·巴勒斯塔（Juan Jos Ballesta）Marco何苏斯奥尔梅多（Jesús Olmedo）Viriato罗伯托·恩里奎兹（Roberto Enrquez）TeodoroAntonio Gil-MartinezDarío阿方索巴萨维（Alfonso Bassave）Helena玛努艾拉·维雷丝（Manuela Vells）BárbaraLuz ValdenebroHctor帕布罗·德奎（Pablo Derqui）SabinaÁngela CremonteSandroHovik影片花絮幕后制作西班牙Antena 3电视台大制作黄金时段古装连续剧，讲述了一个西班牙版的《角斗士》的反叛罗马帝国统治的故事，其主要情节和人物维里亚图斯、迦尔巴在两千多年前都有着历史原型。'
+
+    fb_rel_map = s1.get_half_named_fb_info()
     print filter_bad_summary(s)
 
 
