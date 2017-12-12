@@ -46,16 +46,17 @@ def add_to_dict_list(d, key, value):
 
 def gen_name_map(extractor):
     baike_ename_title = Resource.get_singleton().get_baike_ename_title()
+    url2names = Resource.get_singleton().get_url2names()
     bk_static_info = Resource.get_singleton().get_baike_info()
     all_names = set()
 
-    for bk_url in baike_ename_title:
+    for bk_url in url2names:
         if not bk_url in bk_static_info:
             continue
         bk_types = bk_static_info[bk_url].types
         if is_art_work(bk_types):
             continue
-        enames = baike_ename_title[bk_url]
+        enames = url2names[bk_url]
         for ename in enames:
             all_names.add(ename)
 
