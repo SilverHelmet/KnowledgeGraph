@@ -41,6 +41,8 @@ def parse_table(table):
     head = heads[0]
     columns = []
     for tr in head.find_all('th'):
+        if int(tr.get('colspan', "1")) > 1:
+            return None
         col = html_unescape(tr.get_text()).strip()
         columns.append(col)
     nb_cols = len(columns)
@@ -105,7 +107,7 @@ def extract_table_columns():
 
 
 def test():
-    html = '<table><thead><tr><th width=\"110\">角色</th><th width=\"110\">演员</th><th width=\"200\">备注</th></tr></thead><tbody><tr><td>江阳</td><td><a target=\"_blank\" href=\"/doc/5785535-5998321.html\">曹磊</a></td><td>----</td></tr><tr><td>钱程</td><td><a target=\"_blank\" href=\"/doc/3456059-3636614.html\">刘雨涛</a></td><td>----</td></tr><tr><td>苏清</td><td><a target=\"_blank\" href=\"/doc/5429313-5667540.html\">冯静</a></td><td>----</td></tr><tr><td>赵娜</td><td><a target=\"_blank\" href=\"/doc/1181672-1250052.html\">陶飞霏</a></td><td>----</td></tr><tr><td>熊早</td><td><a target=\"_blank\" href=\"/doc/5394530-5631649.html\">任重</a></td><td>----</td></tr><tr><td>王一涤</td><td>黄超</td><td>----</td></tr><tr><td>孟大为</td><td>王馨苒</td><td>----</td></tr><tr><td>老托</td><td><a target=\"_blank\" href=\"/doc/5350510-5585966.html\">张晓龙</a></td><td>----</td></tr><tr><td>胡燕</td><td>刘一霏</td><td>----</td></tr><tr><td>曹红梅</td><td>王文娟</td><td>----</td></tr><tr><td>杨昕巍</td><td>刘红雨</td><td>----</td></tr><tr><td>宋志飞</td><td><a target=\"_blank\" href=\"/doc/1599671-1691007.html\">胡亚捷</a></td><td>----</td></tr><tr><td>张仲年</td><td><a target=\"_blank\" href=\"/doc/5425282-5663502.html\">郑乾龙</a></td><td>----</td></tr><tr><td>苏晗</td><td>陈颖</td><td>----</td></tr><tr><td>梅昕</td><td><a target=\"_blank\" href=\"/doc/5426206-5664428.html\">向梅</a></td><td>----</td></tr><tr><td>彭洁</td><td>庞敏</td><td>----</td></tr><tr><td>苏天</td><td><a target=\"_blank\" href=\"/doc/4157036-4357026.html\">石燕京</a></td><td>----</td></tr><tr><td>周军</td><td><a target=\"_blank\" href=\"/doc/5367311-5603071.html\">白凡</a></td><td>----</td></tr><tr><td colspan=\"3\"></td></tr><tr><td>梅兆龙</td><td>吴晓东</td><td>----</td></tr><tr><td>江父</td><td>郭杰</td><td>----</td></tr><tr><td>小江阳</td><td>娄少青</td><td>----</td></tr></tbody></table>"'
+    html = '<table><thead><tr><th colspan=\"4\" width=\"0\"><br /> </th><th colspan=\"3\" width=\"0\"><p>投篮</p></th><th colspan=\"3\" width=\"0\"><p>3分球</p></th><th colspan=\"3\" width=\"0\"><p>罚球</p></th><th colspan=\"3\" width=\"0\"><p>篮板</p></th><th colspan=\"6\" width=\"0\"><p>其他</p></th></tr></thead><tbody><tr><th><p>赛季</p></th><th><p>球队</p></th><th><p>场次</p></th><th><p>时间</p></th><th><p>投中</p></th><th><p>出手</p></th><th><p>命中率</p></th><th><p>投中</p></th><th><p>出手</p></th><th><p>命中率</p></th><th><p>投中</p></th><th><p>出手</p></th><th><p>命中率</p></th><th><p>进攻</p></th><th><p>防守</p></th><th><p>总计</p></th><th><p>助攻</p></th><th><p>失误</p></th><th><p>抢断</p></th><th><p>盖帽</p></th><th><p>犯规</p></th><th><p><em>得分</em></p></th></tr><tr><td><p>2002-03</p></td><td><p>老鹰</p></td><td><p>29</p></td><td><p>09:24</p></td><td><p>0.7</p></td><td><p>1.5</p></td><td><p>45.2</p></td><td><p>0</p></td><td><p>0</p></td><td><p>0</p></td><td><p>0.6</p></td><td><p>1</p></td><td><p>60.7</p></td><td><p>0.3</p></td><td><p>0.8</p></td><td><p>1.1</p></td><td><p>1.2</p></td><td><p>0.5</p></td><td><p>0.3</p></td><td><p>0.1</p></td><td><p>0.9</p></td><td><p><em>1.9</em></p></td></tr><tr><td><p>2004-05</p></td><td><p>尼克斯</p></td><td><p>21</p></td><td><p>11:00</p></td><td><p>0.8</p></td><td><p>1.6</p></td><td><p>51.5</p></td><td><p>0</p></td><td><p>0.1</p></td><td><p>0</p></td><td><p>0.4</p></td><td><p>0.6</p></td><td><p>61.5</p></td><td><p>0.1</p></td><td><p>1</p></td><td><p>1.1</p></td><td><p>1.1</p></td><td><p>0.5</p></td><td><p>0.3</p></td><td><p>0.1</p></td><td><p>1.2</p></td><td><p><em>2</em></p></td></tr><tr><td><p>2005-06</p></td><td><p><a href=\"/doc/1692895-1790058.html\" target=\"_blank\">雄鹿</a></p></td><td><p>30</p></td><td><p>06:42</p></td><td><p>0.4</p></td><td><p>0.9</p></td><td><p>42.3</p></td><td><p>0</p></td><td><p>0.1</p></td><td><p>25</p></td><td><p>0.4</p></td><td><p>0.5</p></td><td><p>85.7</p></td><td><p>0.3</p></td><td><p>0.6</p></td><td><p>0.9</p></td><td><p>0.8</p></td><td><p>0.4</p></td><td><p>0.1</p></td><td><p>0</p></td><td><p>0.6</p></td><td><p><em>1.2</em></p></td></tr></tbody></table>'
     tables =  parse_tables_from_html(html)
     for table in tables:
         print  " ".join(table['columns'])
@@ -115,5 +117,5 @@ def test():
     
 
 if __name__ == "__main__":
-    # test()
+    test()
     extract_table_columns()
