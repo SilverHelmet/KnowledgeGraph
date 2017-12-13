@@ -77,7 +77,7 @@ def parse_tables_from_html(html):
     tables = soup.find_all('table')
     for table in tables:
         ret = parse_table(table)
-            if ret:
+        if ret:
             rets.append(ret)
     return rets
 
