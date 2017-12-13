@@ -210,33 +210,23 @@ class VerbRelationExtractor:
 
     def find_noun_relation(self, e1, e2, tree):
         if e1.depth - e2.depth == 2:
-            flag = 0
             if e1.rel == 'ATT' and e1.father.rel == 'ATT' and e1.father.father == e2:
-                if tree.nodes[e1.father.idx - 1].word == '的':
-                    flag = 1
                 for child in e1.children:
                     if child.rel == 'RAD' and child.word == '的':
-                        flag = 1
-            if flag == 1:
-                self.debuger.debug("-"*20)
-                self.debuger.debug("find noun relation!")
-                self.debuger.debug(e1.word, e1.father.word, e2.word)
-                self.debuger.debug("-"*20)
-                return e1.father
+                        self.debuger.debug("-"*20)
+                        self.debuger.debug("find noun relation!")
+                        self.debuger.debug(e1.word, e1.father.word, e2.word)
+                        self.debuger.debug("-"*20)
+                        return e1.father
         elif e2.depth - e1.depth == 2:
-            flag = 0
             if e2.rel == 'ATT' and e2.father.rel == 'ATT' and e2.father.father == e1:
-                if tree.nodes[e2.father.idx - 1].word == '的':
-                    flag = 1
                 for child in e2.children:
                     if child.rel == 'RAD' and child.word == '的':
-                        flag = 1
-            if flag == 1:
-                self.debuger.debug("-"*20)
-                self.debuger.debug("find noun relation!")
-                self.debuger.debug(e2.word, e2.father.word, e1.word)
-                self.debuger.debug("-"*20)
-                return e2.father
+                        self.debuger.debug("-"*20)
+                        self.debuger.debug("find noun relation!")
+                        self.debuger.debug(e2.word, e2.father.word, e1.word)
+                        self.debuger.debug("-"*20)
+                        return e2.father
         return None
 
     def find_ATT_or_COO_path(self, node):
@@ -786,10 +776,11 @@ class VerbRelationExtractor:
         noun_res =[]
         for i in range(len(entity_lis)):
             for j in range(i + 1, len(entity_lis)):
-                tmp_verb = self.find_noun_relation(entity_lis[i], entity_lis[j], tree);
-                if(tmp_verb != None):
-                    noun_res.append((entity_lis[i].entity, tmp_verb.idx, entity_lis[j].entity))
-                    self.debuger.debug("noun relation found!")
+                if entity_lis[i].entity != None and entity_lis[j].entity != None:
+                    tmp_verb = self.find_noun_relation(entity_lis[i], entity_lis[j], tree);
+                    if(tmp_verb != None):
+                        noun_res.append((entity_lis[i].entity, tmp_verb.idx, entity_lis[j].entity))
+                        self.debuger.debug("noun relation found!")
         self.debuger.debug("noun_res:")
         for tmp in noun_res:
             self.debuger.debug(ltp_result.text(tmp[0].st, tmp[0].ed), \
@@ -964,7 +955,7 @@ if __name__ == "__main__":
     ner = NamedEntityReg(process_bracket_flag = True, add_time_entity = True)
     es = ner.recognize(sentence, ltp_result, None, None)
     '''
-    sentence = "任天堂推出了Donkey Kong的续集——Donkey Kong Jr.，同样是一款街机游戏。".encode('utf-8')
+    sentence = "1987年首度推出的PC平台的《伊苏》，截至本作发售已经推出正统系列作共6款，以及多款衍生作品，是日本知名度相当高的系列游戏。".encode('utf-8')
     doc_processor = DocProcessor()
     ltp_result, _ = doc_processor.parse_sentence(sentence, ParagraphInfo(3, ['刘德华'], '刘德华', False, True))
     ner = NamedEntityReg(process_bracket_flag = True, add_time_entity = True)
