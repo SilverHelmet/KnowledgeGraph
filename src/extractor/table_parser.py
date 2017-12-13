@@ -77,9 +77,8 @@ def parse_tables_from_html(html):
     tables = soup.find_all('table')
     for table in tables:
         ret = parse_table(table)
-        if ret:
+            if ret:
             rets.append(ret)
-  
     return rets
 
 def extract_table_columns():
@@ -93,9 +92,12 @@ def extract_table_columns():
         for title, chapter in doc:
             if type(chapter) is not unicode:
                 continue
-            tables = parse_tables_from_html(chapter)
-            for table in tables:
-                outf.write('%s\t%s\t%s\n' %(bk_url, title, " # ".join(table['columns'])))
+            try:
+                tables = parse_tables_from_html(chapter)
+                for table in tables:
+                    outf.write('%s\t%s\t%s\n' %(bk_url, title, " # ".join(table['columns'])))
+            except Exception e:
+                print 'error at parse %s' %bk_url
     outf.close()
 
 
