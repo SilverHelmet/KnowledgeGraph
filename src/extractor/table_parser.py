@@ -96,7 +96,7 @@ def extract_table_columns():
                 tables = parse_tables_from_html(chapter)
                 for table in tables:
                     outf.write('%s\t%s\t%s\n' %(bk_url, title, " # ".join(table['columns'])))
-            except Exception e:
+            except Exception, e:
                 print 'error at parse %s' %bk_url
     outf.close()
 
