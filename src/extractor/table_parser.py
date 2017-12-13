@@ -40,10 +40,10 @@ def parse_table(table):
 
     head = heads[0]
     columns = []
-    for tr in head.find_all('th'):
-        if int(tr.get('colspan', "1")) > 1:
+    for th in head.find_all('th'):
+        if int(th.get('colspan', "1")) > 1:
             return None
-        col = html_unescape(tr.get_text()).strip()
+        col = html_unescape(th.get_text()).strip()
         columns.append(col)
     nb_cols = len(columns)
 
@@ -63,7 +63,7 @@ def parse_table(table):
                 td_idx += 1
                 text = html_unescape(td.get_text()).strip()
                 cnt = td.get('rowspan', "1")
-                if int(td.get('colspan', "1")):
+                if int(td.get('colspan', "1")) > 1:
                     return None
                 storage.push(i, text, int(cnt))
             row.append(storage.pop(i))
@@ -117,5 +117,5 @@ def test():
     
 
 if __name__ == "__main__":
-    test()
+    # test()
     extract_table_columns()
