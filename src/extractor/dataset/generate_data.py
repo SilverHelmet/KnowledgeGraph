@@ -120,17 +120,21 @@ def generate_data_from_chapter(title, paragraphs, page_info, doc_processor, fb_r
 
 
             for subj, pred, obj, env in rels:
-                subj_name = ltp_result.text(subj.st, subj.ed)
-                obj_name = ltp_result.text(obj.st, obj.ed)
 
+                obj_name = ltp_result.text(obj.st, obj.ed)
                 if obj_name in page_info.names:
                     tmp = subj
                     subj = obj
                     obj = tmp
+                
+                subj_name = ltp_result.text(subj.st, subj.ed)
+                obj_name = ltp_result.text(obj.st, obj.ed)
+
+                if obj_name in page_info.names:
+                    continue
 
                 bk_subj = link_map[make_str_entity_key(subj)]
                 
-
                 if subj_name in page_info.names:
                     if obj.etype == "Nt":
                         obj_names = [str(obj.obj)]
