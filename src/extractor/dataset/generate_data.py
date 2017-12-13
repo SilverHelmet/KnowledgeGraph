@@ -61,108 +61,108 @@ def try_map_triple(obj_names, fb_rels, is_time, schema):
 def generate_data_from_chapter(title, paragraphs, page_info, doc_processor, fb_rels, rel_extractor, outf, e_linker, schema):
     results = doc_processor.parse_chapter(title, paragraphs, page_info, parse_ner = True)
     for ltp_result, str_entities, _ in results:
-        # try:
+        try:
         if ltp_result is None:
             continue
         # Print(ltp_result.sentence)
-        rels = rel_extractor.find_tripple(ltp_result, str_entities)
+            rels = rel_extractor.find_tripple(ltp_result, str_entities)
 
-        link_map = {}
-        baike_entities = []
-        for str_entity in str_entities:
-            baike_entity = e_linker.link(ltp_result, str_entity, page_info)
-            if len(baike_entity) > 0:
-                baike_entity = baike_entity[0]
-                baike_entities.append(baike_entity)
-                link_map[make_str_entity_key(str_entity)] = baike_entity
-            else:
-                baike_entities.append(None)
-                link_map[make_str_entity_key(str_entity)] = None
-        e_linker.add_sentence(ltp_result, str_entities, baike_entities)
-
-        new_rels = []
-        for subj, pred, obj, enviroment, rel_type  in rels:
-            if rel_type not in ['coo_noun_type', 'entity']:
-                continue
-            if type(subj) is int or type(obj) is int:
-                continue
-            if type(subj) is str or type(obj) is str:
-                continue
-            if pred is None or type(pred) is str:
-                continue
-
-            pred = ltp_result.text(pred, pred+1)
-            # if pred == '是':
-            #     continue
-            new_rels.append((subj, pred, obj, enviroment))
-
-        rels = new_rels
-        predicate_map = {}
-        
-        # for subj, pred, obj, env in rels:
-        #     subj_name = ltp_result.text(subj.st, subj.ed)
-        #     obj_name = ltp_result.text(obj.st, obj.ed)
-        #     # print ltp_result.text(subj.st, subj.ed), pred, ltp_result.text(obj.st, obj.ed)
-        #     mapped_predicate = []
-        #     if subj_name in page_info.names:
-        #         mapped_predicate.extend(try_map_triple(subj, obj, ltp_result, fb_rels))
-        #     if obj_name in page_info.names:
-        #         mapped_predicate.extend(try_map_triple(obj, subj, ltp_result, fb_rels))
-        
-        #     if len(mapped_predicate) > 0:
-        #         if not pred in predicate_map:
-        #             predicate_map[pred] = []
-        #         predicate_map[pred].extend(mapped_predicate)
-        # if len(predicate_map) > 0:
-        #     outf.write("%s\n" %(ltp_result.sentence))
-        #     for pred in predicate_map:
-        #         outf.write("\t%s\t%s\n" %(pred, "\t".join(predicate_map[pred])))
-
-
-        for subj, pred, obj, env in rels:
-            subj_name = ltp_result.text(subj.st, subj.ed)
-            obj_name = ltp_result.text(obj.st, obj.ed)
-
-            if obj_name in page_info.names:
-                tmp = subj
-                subj = obj
-                obj = tmp
-
-            bk_subj = link_map[make_str_entity_key(subj)]
-            
-
-            if subj_name in page_info.names:
-                if obj.etype == "Nt":
-                    obj_names = [str(obj.obj)]
-                    is_time = True
+            link_map = {}
+            baike_entities = []
+            for str_entity in str_entities:
+                baike_entity = e_linker.link(ltp_result, str_entity, page_info)
+                if len(baike_entity) > 0:
+                    baike_entity = baike_entity[0]
+                    baike_entities.append(baike_entity)
+                    link_map[make_str_entity_key(str_entity)] = baike_entity
                 else:
-                    bk_obj = link_map[make_str_entity_key(obj)]
-                    is_time = False
-                    if bk_obj:        
-                        obj_names = e_linker.url2names[bk_obj.baike_url]
-                    else:
-                        obj_names = [obj_name]
-                mapped_props = try_map_triple(obj_names, fb_rels, is_time, schema)
-                mapped_props = set(list(mapped_props))
-                if len(mapped_props) > 0:
-                    if type(env) is int:
-                        env = ltp_result.text(env, env + 1)
-                    else:
-                        env = None
+                    baike_entities.append(None)
+                    link_map[make_str_entity_key(str_entity)] = None
+            e_linker.add_sentence(ltp_result, str_entities, baike_entities)
 
-                    if env:
-                        key = pred + "#" + env
-                    else:
-                        key = pred
-                    
-                    add_values_to_dict_list(predicate_map, key, mapped_props)
-        if len(predicate_map) > 0:
-            outf.write("%s\n" %(ltp_result.sentence))
-            for pred in predicate_map:
-                outf.write("\t%s\t%s\n" %(pred, "\t".join(predicate_map[pred])))
+            new_rels = []
+            for subj, pred, obj, enviroment, rel_type  in rels:
+                if rel_type not in ['coo_noun_type', 'entity']:
+                    continue
+                if type(subj) is int or type(obj) is int:
+                    continue
+                if type(subj) is str or type(obj) is str:
+                    continue
+                if pred is None or type(pred) is str:
+                    continue
 
-        # except Exception, e:
-        #     print '\nerror in parsing %s' %ltp_result.sentence
+                pred = ltp_result.text(pred, pred+1)
+                # if pred == '是':
+                #     continue
+                new_rels.append((subj, pred, obj, enviroment))
+
+            rels = new_rels
+            predicate_map = {}
+            
+            # for subj, pred, obj, env in rels:
+            #     subj_name = ltp_result.text(subj.st, subj.ed)
+            #     obj_name = ltp_result.text(obj.st, obj.ed)
+            #     # print ltp_result.text(subj.st, subj.ed), pred, ltp_result.text(obj.st, obj.ed)
+            #     mapped_predicate = []
+            #     if subj_name in page_info.names:
+            #         mapped_predicate.extend(try_map_triple(subj, obj, ltp_result, fb_rels))
+            #     if obj_name in page_info.names:
+            #         mapped_predicate.extend(try_map_triple(obj, subj, ltp_result, fb_rels))
+            
+            #     if len(mapped_predicate) > 0:
+            #         if not pred in predicate_map:
+            #             predicate_map[pred] = []
+            #         predicate_map[pred].extend(mapped_predicate)
+            # if len(predicate_map) > 0:
+            #     outf.write("%s\n" %(ltp_result.sentence))
+            #     for pred in predicate_map:
+            #         outf.write("\t%s\t%s\n" %(pred, "\t".join(predicate_map[pred])))
+
+
+            for subj, pred, obj, env in rels:
+                subj_name = ltp_result.text(subj.st, subj.ed)
+                obj_name = ltp_result.text(obj.st, obj.ed)
+
+                if obj_name in page_info.names:
+                    tmp = subj
+                    subj = obj
+                    obj = tmp
+
+                bk_subj = link_map[make_str_entity_key(subj)]
+                
+
+                if subj_name in page_info.names:
+                    if obj.etype == "Nt":
+                        obj_names = [str(obj.obj)]
+                        is_time = True
+                    else:
+                        bk_obj = link_map[make_str_entity_key(obj)]
+                        is_time = False
+                        if bk_obj:        
+                            obj_names = e_linker.url2names[bk_obj.baike_url]
+                        else:
+                            obj_names = [obj_name]
+                    mapped_props = try_map_triple(obj_names, fb_rels, is_time, schema)
+                    mapped_props = set(list(mapped_props))
+                    if len(mapped_props) > 0:
+                        if type(env) is int:
+                            env = ltp_result.text(env, env + 1)
+                        else:
+                            env = None
+
+                        if env:
+                            key = pred + "#" + env
+                        else:
+                            key = pred
+                        
+                        add_values_to_dict_list(predicate_map, key, mapped_props)
+            if len(predicate_map) > 0:
+                outf.write("%s\n" %(ltp_result.sentence))
+                for pred in predicate_map:
+                    outf.write("\t%s\t%s\n" %(pred, "\t".join(predicate_map[pred])))
+
+        except Exception, e:
+            print '\nerror in parsing %s' %ltp_result.sentence
 
 
 def generate_data_from_summary(summary_path, bk2fb, fb_uris, outpath):
