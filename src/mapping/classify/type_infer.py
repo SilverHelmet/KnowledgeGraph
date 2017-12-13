@@ -302,6 +302,8 @@ class TypeInfer:
             self.choose_team(extra_info, prob, sep_prob, chosen_prob)
         else:
             self.extra_type_infer.infer(extra_info, prob, sep_prob)
+        if 'fb:people.person' in prob and prob['fb:people.person'] > chosen_prob:
+            self.choose_tv_actor(info, baike_title, prob, sep_prob, chosen_prob)
         return prob, sep_prob
 
     def choose_team(self, extra_info, prob, sep_prob, chosen_prob):
@@ -317,6 +319,18 @@ class TypeInfer:
                 prob[team_tuple[1]] = chosen_prob + 0.01
             if team_tuple[0] in extra_info:
                 sep_prob[team_tuple[1]] = [0, 0, 0, chosen_prob + 0.01]
+
+    def choose_tv_actor(self, info, title, prob, sep_prob, chosen_prob):
+        tv_title = [u'演艺经历_电视剧', u'演艺经历_电视剧作品', u'主要作品_电视剧', u'代表作品_电视剧', u'电视剧']
+        for tv in tv_title:
+            if tv not in title:
+                continue
+            if 'fb:tv.tv_actor' not in prob:
+                prob['fb:tv.tv_actor'] = 0
+                sep_prob['fb:tv.tv_actor'] = [0, 0, 0, 0]
+            prob['fb:tv.tv_actor'] += chosen_prob + 0.01
+            sep_prob['fb:tv.tv_actor'][3] += chosen_prob + 0.01
+            break
 
     def choose_one_music_type(self, type_probs, threshold):
         types = set(type_probs.keys())
