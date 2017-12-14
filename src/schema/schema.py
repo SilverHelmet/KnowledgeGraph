@@ -126,14 +126,23 @@ class Schema:
         subj_type = self.schema_type(prop)
         obj_type = self.expected_type(prop)
         
+        subj_ok = subj_type in subj_types
+        obj_obj = obj_type in obj_types
 
-        if subj_type in subj_types and obj_type in obj_types:
+        if subj_ok or obj_ok:
             return True
         else:
             if use_neighbor:
-                for cand_type in obj_types:
-                    if self.type_neighbors.get(cand_type, "") == obj_type:
-                        return True
+                if not obj_ok:
+                    for cand_type in obj_types:
+                        if self.type_neighbors.get(cand_type, "") == obj_type:
+                            obj_ok = True
+
+                if not subj_ok:
+                    for cand_type in subj_types:
+                        if self.type_neighbors.get(cand_type, "") == subj_type:
+                            subj_ok = True
+                return subj_ok and obj_ok
             return False
 
     def get_datetime_properties(self):
