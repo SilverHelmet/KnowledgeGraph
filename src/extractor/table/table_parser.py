@@ -33,6 +33,36 @@ class ValueStorage:
 def is_table(html):
     return html.startswith('<table') and html.endswith('</table>')
 
+def del_error_cols(columns, rows):
+    error_idxes = set()
+    m = len(columns)
+    for idx, col in enumerate(columns):
+        if len(col) == 0:
+            error_idxes.add(idx)
+
+    for col_idx in range(m):
+        error = True
+        for row_idx in range(len(rows)):
+            if len(rows[row_idx][col_idx]) > 0:
+                error = False
+                break
+        if error:
+            error_idxes.add(col_idx)
+    
+    if len(error_idxes) == 0:
+        return columns, rows
+
+    new_columns = [col for idx, col in enumerate(columns) if not idx in error_idxes]
+    new_rows = []
+    for row in rows:
+        row = [value for idx, value in enumerate(row) if not idx in error_idxes]
+        new_rows.append(row)
+    
+    return new_columns, new_rows
+
+    
+
+
 def parse_table(table):
     heads = table.find_all('thead')
     if len(heads) != 1:
@@ -72,8 +102,13 @@ def parse_table(table):
                 return None
             row.append(storage.pop(i))
         rows.append(row)
-    
-    return {'columns': columns, 'rows': rows}
+
+    columns, rows = del_error_cols(columns, rows)
+
+    if len(columns) > 0:
+        return {'columns': columns, 'rows': rows}
+    else:
+        return None
 
 
 
