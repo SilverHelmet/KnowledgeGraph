@@ -5,7 +5,7 @@ import json
 from bs4 import BeautifulSoup
 from tqdm import tqdm
 
-from src.baike_process.parse import html_unescape
+from src.baike_process.parse import html_unescape, del_space
 from src.IOUtil import rel_ext_dir, nb_lines_of, table_dir, Print
 
 
@@ -73,7 +73,7 @@ def parse_table(table):
     for th in head.find_all('th'):
         if int(th.get('colspan', "1")) > 1:
             return None
-        col = html_unescape(th.get_text()).strip()
+        col = del_space(html_unescape(th.get_text()))
         columns.append(col)
     nb_cols = len(columns)
 
@@ -95,7 +95,7 @@ def parse_table(table):
                 td_idx += 1
                 if int(td.get('colspan', "1")) > 1:
                     return None
-                text = html_unescape(td.get_text()).strip()
+                text = del_space(html_unescape(td.get_text()))
                 cnt = td.get('rowspan', "1")
                 storage.push(i, text, int(cnt))
             if not storage.has_value(i):
