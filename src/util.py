@@ -1,6 +1,12 @@
 #encoding: utf-8
 import re 
 
+def add_to_dict_cnt(d, key):
+    if not key in d:
+        d[key] = 1
+    else:
+        d[key] += 1
+        
 def add_to_dict_list(d, key, value):
     if not key in d:
         d[key] = []
