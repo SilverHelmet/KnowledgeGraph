@@ -229,12 +229,9 @@ def load_bk_static_info(filepath, extra_type_paths):
 
     return info_map
 
-def add_prop(probs, fb_props, added_prop):
-
+def set_prop(probs, fb_props, setted_prop):
     for prop in fb_props:
-        if not prop in probs:
-            probs[prop] = added_prop
-        probs[prop] += added_prop
+        probs[prop] = setted_prop
 
 def load_predicate_map(filepaths, extra_path = None):
     predicate_map  = {}
@@ -286,6 +283,10 @@ def load_predicate_map(filepaths, extra_path = None):
 
             infobox_pred = p[0]
             fb_props = json.loads(p[1])
+            if len(p) == 2:
+                setted_prop = 1
+            else:
+                setted_prop = float(p[2])
             if not "#" in infobox_pred:
                 if not infobox_pred in predicate_map:
                     predicate_map[infobox_pred] = {}
@@ -294,13 +295,13 @@ def load_predicate_map(filepaths, extra_path = None):
                 for predicate in predicate_map:
                     if predicate.split("#")[0] == infobox_pred:
                         # print 'add predicate %s -> %s, props %s' %(infobox_pred, predicate, fb_props)
-                        add_prop(predicate_map[predicate], fb_props, 1)
+                        set_prop(predicate_map[predicate], fb_props, setted_prop)
             else:
                 env = infobox_pred.split("#")[1]
                 for predicate in predicate_map:
                     if "#" in predicate and predicate.split("#")[1] == env:
                         # print 'add predicate %s -> %s, props %s' %(env, predicate, fb_props)
-                        add_prop(predicate_map[predicate], fb_props, 1)                  
+                        set_prop(predicate_map[predicate], fb_props, setted_prop)                  
 
                 
     return predicate_map

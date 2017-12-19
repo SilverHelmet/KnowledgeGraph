@@ -67,6 +67,7 @@ class SimpleLTPExtractor:
 
         baike_entities = []
         link_map = {}
+        
         for str_entity in str_entites:
             if out_link_map:
                 baike_entity = sentence_link_map.get(ltp_result.text(str_entity.st, str_entity.ed), None)

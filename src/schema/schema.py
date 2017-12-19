@@ -18,6 +18,8 @@ class Schema:
         if init_type_neighbor:
             self.type_neighbors = self.init_type_neighbor()
 
+        self.literal_types = set(['fb:type.rawstring', 'fb:type.enumeration', 'fb:type.float', 'fb:type.int'])
+
     # def init_type_neighbor(self):
     #     type_neighbors = {}
 
@@ -129,7 +131,9 @@ class Schema:
         subj_ok = subj_type in subj_types
         obj_ok = obj_type in obj_types
 
-        if obj_type == 'fb:type.rawstring':
+
+
+        if obj_type in self.literal_types:
             obj_ok = True
         if subj_ok and obj_ok:
             return True

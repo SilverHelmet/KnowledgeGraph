@@ -50,6 +50,11 @@ class SeparatedLinker:
             ltriple = LinkedTriple(e2, rel, e1)
             if self.schema.check_spo(ltriple.baike_subj.types, ltriple.fb_rel.fb_prop, ltriple.baike_obj.types, True):
                 linked_triples.append(ltriple)
+
+        for ltriple in linked_triples:
+            if self.schema.expected_type(ltriple.fb_rel.fb_prop) in self.schema.literal_types:
+                obj_name = ltp_result.text(ltriple.baike_obj.st, ltriple.baike_obj.ed)
+                ltriple.baike_obj.baike_url = obj_name
         
         # if len(linked_triples) == 0:
         #     triple = LinkedTriple(e1, FBRelation.null_relation(half_linked_triple.str_rel), e2)
@@ -484,10 +489,11 @@ class MatchRelLinker:
 
     def link(self, ltp_result, rel):
         predicate = ltp_result.text(rel.st, rel.ed)
+
         env = rel.env
         if env and (predicate + "#" + env) in self.predicate_map:
             predicate = predicate + '#' + env
-            
+
         fb_rels = []
         if predicate in self.predicate_map:
             probs = self.predicate_map[predicate]
@@ -497,6 +503,7 @@ class MatchRelLinker:
         #     probs = self.link_partial_match_predicate(predicate)
         for fb_prop in probs:
             fb_rels.append(FBRelation(rel, fb_prop, probs[fb_prop]))
+        
         return fb_rels
 
     def link_partial_match_predicate(self, predicate):
@@ -523,7 +530,7 @@ if __name__ == "__main__":
     resource = Resource.get_singleton()
     predicate_map = resource.get_predicate_map()
 
-    probs = predicate_map['执导']
+    probs = predicate_map['决赛']
     for prop in probs:
         print prop, probs[prop]
 
