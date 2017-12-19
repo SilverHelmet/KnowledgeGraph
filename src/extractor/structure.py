@@ -65,9 +65,10 @@ class BaikeEntity:
         return BaikeEntity(str_entity, obj['baike_url'], obj['pop'], obj['types'])
 
 class StrRelation:
-    def __init__(self, st, ed):
+    def __init__(self, st, ed, env = None):
         self.st = st
         self.ed = ed
+        self.env = env
 
 class FBRelation:
     def __init__(self, str_rel, fb_prop, prob):

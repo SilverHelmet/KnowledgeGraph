@@ -108,8 +108,12 @@ class SimpleLTPExtractor:
         for e1, pred, e2, env, rel_type in rels:
             e1 = local_link_map.get(e1.st * 10000 + e1.ed, None)
             e2 = local_link_map.get(e2.st * 10000 + e2.ed, None)
+            if type(env) is int:
+                env = ltp_result.text(env, env+1)
+            else:
+                env = None
             if e1 and e2:
-                half_linked_triples.append(HalfLinkedTriple(e1, StrRelation(pred, pred+1), e2))
+                half_linked_triples.append(HalfLinkedTriple(e1, StrRelation(pred, pred+1, env), e2))
         
         # half_linked_triples = self.parse_triples(ltp_result, baike_entities, entity_pool)
         # for half_linked_triple in half_linked_triples:

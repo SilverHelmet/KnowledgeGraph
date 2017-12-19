@@ -484,6 +484,10 @@ class MatchRelLinker:
 
     def link(self, ltp_result, rel):
         predicate = ltp_result.text(rel.st, rel.ed)
+        env = rel.env
+        if env and (predicate + "#" + env) in self.predicate_map:
+            predicate = predicate + '#' + env
+            
         fb_rels = []
         if predicate in self.predicate_map:
             probs = self.predicate_map[predicate]
