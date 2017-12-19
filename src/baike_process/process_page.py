@@ -28,7 +28,7 @@ def work(inpath, docuemnt_out_path):
         p = line.strip().split('\t')
         url = strip_url(p[0])
         b64content = p[1]
-        texts = parse_text(url, b64content, ignore_table = True)
+        texts = parse_text(url, b64content, ignore_table = False)
         sentences = []
         # obj = {
         #     'url': url,
