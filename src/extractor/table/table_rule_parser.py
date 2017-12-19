@@ -431,7 +431,6 @@ class TableParser():
         if len(rules) != 1:
             return []
 
-        print rule.name
 
         rule = rules[0]
         knowledges = []
