@@ -301,7 +301,19 @@ def load_predicate_map(filepaths, extra_path = None):
                 for predicate in predicate_map:
                     if "#" in predicate and predicate.split("#")[1] == env:
                         # print 'add predicate %s -> %s, props %s' %(env, predicate, fb_props)
-                        set_prop(predicate_map[predicate], fb_props, setted_prop)                  
+                        set_prop(predicate_map[predicate], fb_props, setted_prop)    
+
+    # adjust time score
+    schema = Resource.get_singleton().get_schema()
+    for predicate in predicate_map:
+        prop_probs = predicate_map[predicate]
+        error_props = set()
+        for prop in prop_probs:
+            if schema.expected_type(prop) == 'fb:type.datetime' and prop_probs[prop] < 0.2:
+                error_props.add(prop)
+        for prop in error_props:
+            prop_probs.pop(prop)
+                  
 
                 
     return predicate_map

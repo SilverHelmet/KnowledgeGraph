@@ -36,6 +36,8 @@ class PredicateMaps:
 
         for predicate in error_preds:
             main_pred = predicate.split("#")[0]
+            if len(main_pred.decode('utf-8')) < 2:
+                continue
             pred_map = self.map[predicate]
             for prop in pred_map:
                 prop_cnt = pred_map[prop]
@@ -70,6 +72,8 @@ if __name__ == '__main__':
     predicates.sort(key = lambda x: pred_maps.total_cnt[x], reverse = True)
     outf = file(outpath, 'w')
     for pred in predicates: 
+        if pred_maps.total_cnt[pred] <= 3:
+            continue
         ret = pred_maps.top_k(pred_maps.map[pred], 20, pred_maps.total_cnt[pred])
         outf.write('%s\t%s\n' %(pred, json.dumps(ret)))
     outf.close()
