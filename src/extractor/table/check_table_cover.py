@@ -5,7 +5,7 @@ from .collect_table import collect_tables, load_local_info
 from src.extractor.resource import Resource
 
 if __name__ == "__main__":
-    table_parser = TableParser(None)
+    table_parser = TableParser(None, None)
     table_parser.init(paths = None)
     table_parser.load_extra_table(None)
 

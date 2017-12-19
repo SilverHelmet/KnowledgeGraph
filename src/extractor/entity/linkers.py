@@ -51,9 +51,9 @@ class SeparatedLinker:
             if self.schema.check_spo(ltriple.baike_subj.types, ltriple.fb_rel.fb_prop, ltriple.baike_obj.types, True):
                 linked_triples.append(ltriple)
         
-        if len(linked_triples) == 0:
-            triple = LinkedTriple(e1, FBRelation.null_relation(half_linked_triple.str_rel), e2)
-            linked_triples.append(triple)
+        # if len(linked_triples) == 0:
+        #     triple = LinkedTriple(e1, FBRelation.null_relation(half_linked_triple.str_rel), e2)
+        #     linked_triples.append(triple)
         return linked_triples
 
 # class PopularityEntityLinker:
@@ -343,7 +343,7 @@ class PageMemoryEntityLinker:
 
     def link(self, ltp_result, str_entity, page_info):
         if str_entity.etype == "Nt":
-            return [BaikeEntity(str_entity, None, 1, ['fb:type.datetime'])]
+            return [BaikeEntity(str_entity, str_entity.obj, 1, ['fb:type.datetime'])]
 
         name = ltp_result.text(str_entity.st, str_entity.ed)
 
@@ -371,8 +371,8 @@ class PageMemoryEntityLinker:
         baike_urls, mapping_scores = self.get_candidate_urls(names)
         baike_entities = []
         for bk_url in baike_urls:
-            # if not bk_url in self.bk_info_map:
-            #     continue
+            if not bk_url in self.bk_info_map:
+                continue
             bk_info = self.bk_info_map[bk_url]
             pop = bk_info.pop
             summary = self.summary_map.get(bk_url, "")
@@ -391,7 +391,7 @@ class PageMemoryEntityLinker:
 
 
         if len(baike_entities) == 0:
-            return []
+            return [BaikeEntity(str_entity, name, 1, ['fb:type.rawstring'])]
 
         baike_entities.sort(key = lambda x: x.pop, reverse = True)
         total_score = 0.000
@@ -405,8 +405,9 @@ class PageMemoryEntityLinker:
         return [top_entity]
 
     def link_table_name(self, name, etype, context, page_info, preferred_types):
-        if self.memory.had_link(name, etype):
-            baike_entity = self.memory.find_link(name, etype)
+        memory_key = name + " ".join(preferred_types)
+        if self.memory.had_link(memory_key, etype):
+            baike_entity = self.memory.find_link(memory_key, etype)
             if baike_entity is None:
                 return None
             else:
@@ -417,6 +418,8 @@ class PageMemoryEntityLinker:
         faked_str_entity = StrEntity(0, 0, etype)
         baike_entities = []
         for bk_url in baike_urls:
+            if not bk_url in self.bk_info_map:
+                continue
             bk_info = self.bk_info_map[bk_url]
             pop = bk_info.pop
             summary = self.summary_map.get(bk_url, "")

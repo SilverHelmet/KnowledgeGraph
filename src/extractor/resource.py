@@ -77,7 +77,8 @@ class Resource:
     def get_predicate_map(self):
         if not "predicate_map" in self.dict:
             main_filepath = os.path.join(result_dir, '360/mapping/final_predicates_map.json')
-            dataset_path = os.path.join(dataset_dir, 'summary_dataset.tsv.v1.predicate_map.json')
+            # dataset_path = os.path.join(dataset_dir, 'summary_dataset.tsv.v1.predicate_map.json')
+            dataset_path = os.path.join(dataset_dir, 'doc_dataset.tsv.v1.predicate_map.json')
             extra_path = os.path.join(doc_dir, 'human_add_predicate_map.json')
             
             self.dict['predicate_map'] = load_predicate_map([main_filepath, dataset_path], extra_path)
@@ -228,6 +229,13 @@ def load_bk_static_info(filepath, extra_type_paths):
 
     return info_map
 
+def add_prop(probs, fb_props, added_prop):
+
+    for prop in fb_props:
+        if not prop in probs:
+            probs[prop] = added_prop
+        probs[prop] += added_prop
+
 def load_predicate_map(filepaths, extra_path = None):
     predicate_map  = {}
     for filepath in filepaths:
@@ -275,16 +283,26 @@ def load_predicate_map(filepaths, extra_path = None):
             if line.startswith("#"):
                 continue
             p = line.split('\t')
-            infobox_pred = p[0]
-            if not infobox_pred in predicate_map:
-                predicate_map[infobox_pred] = {}
-            fb_props = json.loads(p[1])
 
-            probs = predicate_map[infobox_pred]
-            for prop in fb_props:
-                if not prop in probs:
-                    probs[prop] = 0
-                probs[prop] += 1.0
+            infobox_pred = p[0]
+            fb_props = json.loads(p[1])
+            if not "#" in infobox_pred:
+                if not infobox_pred in predicate_map:
+                    predicate_map[infobox_pred] = {}
+                
+
+                for predicate in predicate_map:
+                    if predicate.split("#")[0] == infobox_pred:
+                        # print 'add predicate %s -> %s, props %s' %(infobox_pred, predicate, fb_props)
+                        add_prop(predicate_map[predicate], fb_props, 1)
+            else:
+                env = infobox_pred.split("#")[1]
+                for predicate in predicate_map:
+                    if "#" in predicate and predicate.split("#")[1] == env:
+                        # print 'add predicate %s -> %s, props %s' %(env, predicate, fb_props)
+                        add_prop(predicate_map[predicate], fb_props, 1)                  
+
+                
     return predicate_map
 
 
@@ -403,7 +421,7 @@ def load_half_named_fb_info(path):
 if __name__ == "__main__":
     s1 = Resource.get_singleton()
     s2 = Resource.get_singleton()
-    print s1 == s2
+    s1.get_predicate_map()
 
 
 

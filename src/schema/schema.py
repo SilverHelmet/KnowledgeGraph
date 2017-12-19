@@ -127,9 +127,11 @@ class Schema:
         obj_type = self.expected_type(prop)
         
         subj_ok = subj_type in subj_types
-        obj_obj = obj_type in obj_types
+        obj_ok = obj_type in obj_types
 
-        if subj_ok or obj_ok:
+        if obj_type == 'fb:type.rawstring':
+            obj_ok = True
+        if subj_ok and obj_ok:
             return True
         else:
             if use_neighbor:

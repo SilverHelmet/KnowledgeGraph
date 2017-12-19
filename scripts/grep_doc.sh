@@ -1,5 +1,7 @@
 urls=" \
-baike.so.com/doc/5348516-5583969.html
+baike.so.com/doc/1731826-1830977.html \
+baike.so.com/doc/3611440-3796872.html \
+baike.so.com/doc/1187735-1256389.html
 "
 
 sample_dir="result/samples"

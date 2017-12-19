@@ -30,10 +30,10 @@ def work(inpath, docuemnt_out_path):
         b64content = p[1]
         texts = parse_text(url, b64content, ignore_table = True)
         sentences = []
-        obj = {
-            'url': url,
-            'chapters': texts
-        }
+        # obj = {
+        #     'url': url,
+        #     'chapters': texts
+        # }
         # for _, text in texts:
         #     for paragraph in text:
         #         sentences.extend(split_sentences(paragraph))
@@ -42,7 +42,7 @@ def work(inpath, docuemnt_out_path):
         #     'sentences': sentences,
         # }
 
-        doc_outf.write("%s\n" %(json.dumps(obj, ensure_ascii=False)))
+        doc_outf.write("%s\t%s\n" %(url, json.dumps(text, ensure_ascii=False)))
 
         for sentence in sentences:
             sentence_outf.write(sentence + '\n')    

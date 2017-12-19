@@ -30,7 +30,7 @@ def find_entities(text, name2urls):
     if uni_text.startswith(u"《") and uni_text.endswith(u'》'):
         names.append((uni_text[1:-1], 'Nb'))
     elif text in name2urls:
-        names.append(uni_text, 'Nz')
+        names.append((uni_text, 'Nz'))
     else:
         max_sep = delimeters[0]
         for sep in delimeters:
@@ -90,7 +90,7 @@ class TableRelationParser:
         if not self.valid_func:
             return True
         if self.valid_func[1] == 'has':
-            return self.valid_func[2] in info[self.valid_func[0]]['value']
+            return self.valid_func[2] in row[self.valid_func[0]]
         if self.valid_func[1] == 'type':
             return self.valid_func[2] in entity_types
         return False
@@ -194,17 +194,17 @@ class TableRule:
                 return True
         return False
 
-    def link_cell(self, col_name, row_values, context, page_info, entity_types, elinker):
+    def link_cell(self, col_name, row, row_values, context, page_info, entity_types, elinker):
         if col_name == "entity":
-            return [(page_info.url, entity_types)]
+            return [(page_info.url, page_info.ename, entity_types)]
 
         col_entities = row_values[col_name]
 
         f_type = self.preferred_types[col_name][0]
         if f_type == 'str':
-            return [(e[0], ['text']) for e in col_entities]
+            return [(e[0], row[col_name], ['text']) for e in col_entities]
         elif f_type == 'time':
-            return [(e[0], ['datetime']) for e in col_entities]
+            return [(e[0], row[col_name], ['datetime']) for e in col_entities]
         else:
             preferred_types = self.preferred_types[col_name]
             baike_entities = []
@@ -216,17 +216,17 @@ class TableRule:
                     removed = True
                 
                 baike_entity = elinker.link_table_name(name, etype, context, page_info, preferred_types)
-                baike_entities.append(baike_entity)
-                elinker.add_table_map(name, baike_entity)
+                if baike_entity:
+                    baike_entities.append((baike_entity.baike_url, name, baike_entity.types))
+                elinker.add_table_map(name + " ".join(preferred_types), baike_entity)
 
                 if removed:
                     context.add(name)
 
             if col_name in self.forced_type_names:
-                baike_entities = [e for e in baike_entity if sef.has_types(e.types, preferred_types)]
+                baike_entities = [e for e in baike_entities if self.has_types(e[2], preferred_types)]
 
-            rets = [(entity.baike_url, entity.types) for entity in baike_entities if entity]
-            return rets
+            return baike_entities
                 
 
     def unfold_row(self, row, name2urls, ner):
@@ -264,7 +264,7 @@ class TableRule:
         for name in self.context_col_names:
             if name in row:
                 for value in unfold_row_values[name]:
-                    context.add(value)
+                    context.add(value[0])
         context.update(page_info.names)
 
         knowledges = []
@@ -283,10 +283,10 @@ class TableRule:
                 continue
 
             if not rel_parser.subj_name in link_cache:
-                entities = self.link_cell(rel_parser.subj_name, unfold_row_values, context, page_info, entity_types, elinker)
+                entities = self.link_cell(rel_parser.subj_name, row, unfold_row_values, context, page_info, entity_types, elinker)
                 link_cache[rel_parser.subj_name] = entities
             if not rel_parser.obj_name in link_cache:
-                entities = self.link_cell(rel_parser.obj_name, unfold_row_values, context, page_info, entity_types, elinker)
+                entities = self.link_cell(rel_parser.obj_name, row, unfold_row_values, context, page_info, entity_types, elinker)
                 link_cache[rel_parser.obj_name] = entities
             
             subj_entities = link_cache[rel_parser.subj_name]
@@ -297,7 +297,7 @@ class TableRule:
                 for obj_entity in obj_entities:
                     rel = rel_parser.choose_relation(subj_entity[1])
                     if rel:
-                        new_kns.append(Knowledge(rel_parser.subj_name, 'None', rel_parser.obj_name, subj_entity[0], rel, obj_entity[0]))
+                        new_kns.append(Knowledge(subj_entity[1], 'None', obj_entity[1], subj_entity[0], rel, obj_entity[0]))
 
             if len(new_kns) > 0:
                 parsed_name_pairs.add(pair_key)
@@ -318,7 +318,7 @@ class TableRule:
     def init_context_name(self):
         for name in self.preferred_types:
             first_type = self.preferred_types[name][0]
-            if name in ['str', 'time']:
+            if first_type in ['str', 'time']:
                 continue
             if name in self.forced_type_names:
                 continue
@@ -349,6 +349,7 @@ class TableRule:
             for x in rel_parser.need_cols:
                 assert x not in self.name_map
                 assert x in all_names
+            assert rel_parser.subj_name in self.preferred_types
             for rel in rel_parser.rels:
                 fb_type, fb_rels = rel
                 assert fb_type in schema.type_attrs or fb_type is None
@@ -430,6 +431,8 @@ class TableParser():
         if len(rules) != 1:
             return []
 
+        print rule.name
+
         rule = rules[0]
         knowledges = []
         columns = rule.transfer_col_name(table_obj['columns'])
@@ -438,7 +441,9 @@ class TableParser():
             row_map = {}
             for name, value in zip(columns, row):
                 row_map[name] = value
-            knowledges.extend(rule.parse_row(row_map, page_info, entity_types, self.elinker, self.ner))
+            row_knowledges = rule.parse_row(row_map, page_info, entity_types, self.elinker, self.ner)
+            if len(row_knowledges) > 0:
+                knowledges.append((" # ".join(row), row_knowledges))
         return knowledges
             
 

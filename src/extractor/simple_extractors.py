@@ -100,10 +100,12 @@ class SimpleLTPExtractor:
         
 
         rels = self.rel_extractor.find_tripple(ltp_result, str_entites)
-        rels = [rel for rel in rels if rel[3] == 'entity']
+        
+        rels = [rel for rel in rels if rel[-1] != 'not_entity' and rel[-1] != 'title' and type(rel[2]) is not int ]
+
 
         half_linked_triples = []
-        for e1, pred, e2, _ in rels:
+        for e1, pred, e2, env, rel_type in rels:
             e1 = local_link_map.get(e1.st * 10000 + e1.ed, None)
             e2 = local_link_map.get(e2.st * 10000 + e2.ed, None)
             if e1 and e2:
