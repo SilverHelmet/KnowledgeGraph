@@ -57,7 +57,6 @@ def work(inpath, outpath):
         for title, chapter in chapters:
             try:
                 if type(chapter) is unicode:
-                    continue
                     tables = parse_tables_from_html(chapter)
                     tables = [encode_table(table) for table in tables]
                     for table in tables:
