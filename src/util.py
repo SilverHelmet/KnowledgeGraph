@@ -6,7 +6,13 @@ def add_to_dict_cnt(d, key):
         d[key] = 1
     else:
         d[key] += 1
-        
+
+def topk_keys(d, k):
+    keys = sorted(d.keys(), key = lambda x: d[x], reverse = True)[:k]
+    ret = [(key, d[key])for key in keys]
+    return ret
+
+
 def add_to_dict_list(d, key, value):
     if not key in d:
         d[key] = []

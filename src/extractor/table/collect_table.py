@@ -1,9 +1,10 @@
+#encoding:utf-8
 import json
 import os
 
 from src.extractor.resource import Resource
 from src.IOUtil import Print, table_dir
-from src.util import add_to_dict_cnt
+from src.util import add_to_dict_cnt, topk_keys
 
 
 def is_sub_seq(sons, p):
@@ -43,28 +44,61 @@ def load_local_info(path, cnt_path):
 
 
 
-
-
-
-
-def collect_table_cnt(cnt_path, outpath):
-    Print("collect table cols cnt from [%s], write to [%s]" %(os.path.basename(cnt_path), os.path.basename(outpath)))
+def collect_tables(cnt_path, local_info):
     cols_cnt = {}
+    cols_type_cnt = {}
+    cols_title_cnt = {}
     for line in file(cnt_path):
         p = line.strip().split('\t')
+        bk_url = p[0]
+        titles = p[1]
         cols = p[2]
         add_to_dict_cnt(cols_cnt, cols)
-    
-    useful_cols = []
+        
+        if not cols in cols_type_cnt:
+            cols_type_cnt[cols] = {}
+            cols_title_cnt[cols] = {}
+        type_cnt = cols_type_cnt[cols]
+
+        types = local_info[bk_url]['types']
+        # if cols == '获奖时间 # 奖项名称 # 获奖作品 # 备注' and not 'fb:people.person' in types:
+        #     print bk_url
+        for fb_type in types:
+            add_to_dict_cnt(type_cnt, fb_type)
+
+        title = p[1].split("_")[-1]
+        add_to_dict_cnt(cols_title_cnt[cols], title)
+
+    return cols_cnt, cols_type_cnt, cols_title_cnt
+
+def collect_table_cnt(cnt_path, outpath, local_info):
+    Print("collect table cols cnt from [%s], write to [%s]" %(os.path.basename(cnt_path), os.path.basename(outpath)))
+    cols_cnt, cols_type_cnt, cols_title_cnt = collect_tables(cnt_path, local_info)
+
     outf = file(outpath, 'w')
+    useful_cols = []
+    total = 0
     for cols in sorted(cols_cnt.keys(), key = lambda x: (len(x), x), reverse = True):
-        cnt = cols_cnt[cols] 
-        if cnt < 40:
-            continue
-        cols = cols.split(" # ")
-        if not check_in(useful_cols, cols):
-            useful_cols.append(cols)
-            outf.write("%s\t%d\n" %(" # ".join(cols), cnt))
+        cols_obj = cols.split(" # ")
+        if not check_in(useful_cols, cols_obj):
+            if cols_cnt[cols]  < 20:
+                continue
+            total += cols_cnt[cols]
+            useful_cols.append(cols_obj)
+            
+            types_cnt = topk_keys(cols_type_cnt[cols], 8)
+            titles_cnt = topk_keys(cols_title_cnt[cols], 4)
+            types_str = " ".join([fb_type + "#" + str(cnt) for fb_type, cnt in types_cnt])
+            titles_str = " ".join([title + "#" + str(cnt) for title, cnt in titles_cnt])
+            outf.write("%s\t%d\n" %(cols, cols_cnt[cols] ))
+            for fb_type, cnt in types_cnt:
+                outf.write("\t%s\t%d\n" %(fb_type, cnt))
+            for title, cnt in titles_cnt:
+                outf.write('\t%s\t%d\n' %(title, cnt))
+
+        else:
+            total += cols_cnt[cols]
+    print total
     outf.close()
 
 if __name__ == "__main__":
@@ -73,4 +107,4 @@ if __name__ == "__main__":
 
     local_type_info_path = os.path.join(table_dir, 'local_info.json')
     local_info = load_local_info(local_type_info_path, table_cnt_path)
-    # collect_table_cnt(table_cnt_path, outpath)
+    collect_table_cnt(table_cnt_path, outpath, local_info)

@@ -95,7 +95,7 @@ def parse_table(table):
                 td_idx += 1
                 if int(td.get('colspan', "1")) > 1:
                     return None
-                text = del_space(html_unescape(td.get_text()))
+                text = del_space(html_unescape(td.get_text())).strip('-')
                 cnt = td.get('rowspan', "1")
                 storage.push(i, text, int(cnt))
             if not storage.has_value(i):
@@ -109,10 +109,6 @@ def parse_table(table):
         return {'columns': columns, 'rows': rows}
     else:
         return None
-
-
-
-
 
 def parse_tables_from_html(html):
     soup = BeautifulSoup(html, 'lxml')
@@ -151,6 +147,7 @@ def test():
     for table in tables:
         print  " ".join(table['columns'])
 
+    
 
 
     

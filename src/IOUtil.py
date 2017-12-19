@@ -64,6 +64,12 @@ def load_json_dict(path):
     Print("load finished")
     return res
 
+def load_html_file(path):
+    f = file(path, 'r')
+    html = f.read()
+    f.close()
+    return html
+
 def merge_dict(x, other):
     cnt = 0
     for key in other:
@@ -130,3 +136,4 @@ infobox_cnt_dir = os.path.join(rel_ext_dir, 'infobox_count')
 freebase_rel_dir = os.path.join(result_dir, 'freebase_rel')
 doc_dir = os.path.join(base_dir, "docs")
 data_dir = os.path.join(base_dir, 'data')
+

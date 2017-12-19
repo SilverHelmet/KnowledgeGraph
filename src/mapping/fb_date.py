@@ -97,7 +97,7 @@ class BaikeDatetime:
             time_str = time_str.decode('utf-8')
         args = {}
         if not strict:
-            patterns = [BaikeDatetime.date_p, BaikeDatetime.year_p, BaikeDatetime.year_p_2, month_day_p, BaikeDatetime.yearmonth_p]
+            patterns = [BaikeDatetime.date_p, BaikeDatetime.year_p, BaikeDatetime.year_p_2, BaikeDatetime.month_day_p, BaikeDatetime.yearmonth_p]
             pattern_names = [['year', 'month', 'day'],
                             ['year'],
                             ['year'],

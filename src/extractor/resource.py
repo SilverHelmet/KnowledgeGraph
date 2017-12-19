@@ -114,6 +114,16 @@ class Resource:
             self.dict['half_named_fb_info'] = load_half_named_fb_info(path)
         return self.dict['half_named_fb_info']
 
+    def get_table_parser(self, entity_linker, ner):
+        if not 'table_parser' in self.dict:
+            from src.extractor.table.table_rule_parser import TableParser
+            table_parser = TableParser(entity_linker, ner)
+            table_parser.init(None)
+            table_parser.load_extra_table(None)
+            table_parser.finish_load()
+            self.dict['table_parser'] = table_parser
+        return self.dict['table_parser']
+
     @staticmethod
     def get_singleton():
         if Resource.singleton is None:

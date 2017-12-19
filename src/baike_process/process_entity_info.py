@@ -19,7 +19,6 @@ ec_transform = {
 html_parser = HTMLParser.HTMLParser()
 bracket_pattern = re.compile(ur'（.*）|\(.*\)')
 digits = set([u'0', u'1', u'2', u'3', u'4', u'5', u'6', u'7', u'8', u'9'])
-text = u'2,627,000'
 def unfold_bracket(value, bracket_values):
     global bracket_pattern
     match = bracket_pattern.search(value)
