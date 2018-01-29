@@ -18,7 +18,7 @@ if __name__ == "__main__":
     prof_cnt_threshold = 10
     
     prof_dict_path = os.path.join(dict_dir, 'profession.txt')
-    prof__url_dict_path = os.path.join(dict_dir, 'profession_url.txt')
+    prof_url_dict_path = os.path.join(dict_dir, 'profession_url.txt')
     prof_dict = set(load_file(prof_dict_path))
 
     candidate_profs = set()
