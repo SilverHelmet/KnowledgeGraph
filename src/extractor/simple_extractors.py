@@ -33,6 +33,7 @@ class SimpleLTPExtractor:
         self.ner = doc_processor.ner
         self.rel_extractor = rel_extractor 
         self.linker = linker
+        self.title2url = Resource.get_singleton().get_title2url()
         if link_map_out:
             self.link_map_outf = file(os.path.join(cache_dir, 'link_map.json'), 'w')
         else:
@@ -102,19 +103,31 @@ class SimpleLTPExtractor:
 
         rels = self.rel_extractor.find_tripple(ltp_result, str_entites)
         
-        rels = [rel for rel in rels if rel[-1] != 'not_entity' and rel[-1] != 'title' and type(rel[2]) is not int ]
+        rels = [rel for rel in rels if rel[-1] != 'not_entity' and type(rel[2]) is not int ]
 
 
         half_linked_triples = []
         for e1, pred, e2, env, rel_type in rels:
-            e1 = local_link_map.get(e1.st * 10000 + e1.ed, None)
-            e2 = local_link_map.get(e2.st * 10000 + e2.ed, None)
-            if type(env) is int:
-                env = ltp_result.text(env, env+1)
-            else:
+            if rel_type == 'title':
+                title = e1
+                title_url = self.title2url[title]
+                idx = ltp_result.search_token(title)
+                title_str_entity = StrEntity(idx, idx + 1, 'title')
+                e1 = BaikeEntity(title_str_entity, title_url, 10, 'title')
+                
+                e2 = local_link_map.get(e2.st * 10000 + e2.ed, None)
                 env = None
-            if e1 and e2:
-                half_linked_triples.append(HalfLinkedTriple(e1, StrRelation(pred, pred+1, env), e2))
+                if e1 and e2:
+                    half_linked_triples.append(HalfLinkedTriple(e2, pred, e1))
+            else:
+                e1 = local_link_map.get(e1.st * 10000 + e1.ed, None)
+                e2 = local_link_map.get(e2.st * 10000 + e2.ed, None)
+                if type(env) is int:
+                    env = ltp_result.text(env, env+1)
+                else:
+                    env = None
+                if e1 and e2:
+                    half_linked_triples.append(HalfLinkedTriple(e1, StrRelation(pred, pred+1, env), e2))
         
         # half_linked_triples = self.parse_triples(ltp_result, baike_entities, entity_pool)
         # for half_linked_triple in half_linked_triples:

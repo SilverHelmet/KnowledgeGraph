@@ -73,6 +73,8 @@ class Schema:
         return self.is_mediator(expected_type)
 
     def is_uniq_prop(self, fb_property):
+        if not fb_property in self.property_attrs:
+            return False
         return get_bool(self.property_attrs[fb_property].get('fb:type.property.unique', '0'))
 
     def is_mediator(self, fb_type):
@@ -123,6 +125,10 @@ class Schema:
             if obj_type in neighbors:
                 return True
         return False
+
+    def check_schema_type(self, prop, types):
+        subj_type = self.schema_type(prop)
+        return subj_type in types
 
     def check_spo(self, subj_types, prop, obj_types, use_neighbor):
         subj_type = self.schema_type(prop)
@@ -274,6 +280,7 @@ if __name__ == "__main__":
     subj = [u'fb:media_common.netflix_title', u'fb:award.award_winning_work', u'fb:tv.tv_program', u'fb:award.award_nominated_work']
     obj = [u'fb:people.person', u'fb:tv.tv_program_creator', u'fb:influence.influence_node', u'fb:film.producer', u'fb:award.award_nominee', u'fb:tv.tv_writer', u'fb:fictional_universe.fictional_character_creator', u'fb:music.artist', u'fb:music.composer', u'fb:tv.tv_director', u'fb:tv.tv_producer', u'fb:film.writer', u'fb:award.award_winner', u'fb:tv.tv_actor', u'fb:music.lyricist']
     prop = u'fb:tv.tv_program.program_creator'
+    print schema.is_uniq_prop('fb:people.deceased_person.date_of_death')
     # print schema.check_spo(subj, prop, obj, True)
     # datetime_props = schema.datetime_property()
     # print len(datetime_props)

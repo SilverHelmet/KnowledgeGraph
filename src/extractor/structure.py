@@ -72,14 +72,20 @@ class StrRelation:
 
 class FBRelation:
     def __init__(self, str_rel, fb_prop, prob):
-        self.st = str_rel.st
-        self.ed = str_rel.ed
+        if type(str_rel) is str:
+            self.str_rel = str_rel
+            self.st = -1
+            self.ed = -1
+        else: 
+            self.st = str_rel.st
+            self.ed = str_rel.ed
         self.fb_prop = fb_prop
         self.prob = prob
 
     @staticmethod
     def null_relation(str_rel):
         return FBRelation(str_rel, 'None', 0.0001)
+    
 
 class SPO:
     def __init__(self, e1, rel, e2, score, type):
@@ -181,7 +187,10 @@ class LinkedTriple:
         subj_url = self.baike_subj.baike_url
         obj = ltp_result.text(self.baike_obj.st, self.baike_obj.ed)
         obj_url = self.baike_obj.baike_url
-        rel = ltp_result.text(self.fb_rel.st, self.fb_rel.ed)
+        if self.fb_rel.st == -1:
+            rel = self.fb_rel.str_rel
+        else:
+            rel = ltp_result.text(self.fb_rel.st, self.fb_rel.ed)
         fb_prop = self.fb_rel.fb_prop
         score = self.score()
         return  "%s:%s\t%s:%s\t%s:%s\t%f" %(subj, subj_url, rel, fb_prop, obj, obj_url, score)

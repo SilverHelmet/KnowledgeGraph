@@ -6,6 +6,7 @@ import os
 import json
 from tqdm import tqdm
 from src.mapping.fb_date import FBDatetime
+from src.mapping.one2one_mapping_cnt import load_baike_name_attrs
 
 
 class Resource:
@@ -125,6 +126,15 @@ class Resource:
             self.dict['table_parser'] = table_parser
         return self.dict['table_parser']
 
+    def get_title2url(self):
+        if not "title2url" in self.dict:
+            filepaths = [ os.path.join(dict_dir, 'nationality_url.txt'), os.path.join(dict_dir, 'full_profession_url.txt')]
+            title2url = load_title2url(filepaths)
+            self.dict['title2url'] = title2url
+        return self.dict['title2url']
+
+        
+
     @staticmethod
     def get_singleton():
         if Resource.singleton is None:
@@ -233,7 +243,49 @@ def set_prop(probs, fb_props, setted_prop):
     for prop in fb_props:
         probs[prop] = setted_prop
 
+def adjust_predicate_map(predicate_map, k = 25):
+    prop_predicate_scores = {}
+    for predicate in predicate_map:
+        prop_probs = predicate_map[predicate]
+        for prop in prop_probs:
+            prob = prop_probs[prop]
+            if not prop in prop_predicate_scores:
+                prop_predicate_scores[prop] = {}
+            predicate_scores = prop_predicate_scores[prop]
+            predicate_scores[predicate] = prob
+    
+    bad_mappings = {}
+    for prop in prop_predicate_scores:
+        predicate_scores = prop_predicate_scores[prop]
+        predicates = sorted(predicate_scores.keys(), key = lambda x: predicate_scores[x][0], reverse = True)
+        # if prop in ['fb:people.person.parents', 'fb:music.album.release_date',
+        #      'fb:education.educational_institution.nickname', 'fb:film.producer.film', 
+        #      'fb:organization.organization.founders', 'fb:organization.organization_founder.organizations_founded']:
+        #     print prop
+        #     Print(predicates)
+        #     Print(predicates[:k])
+        for predicate in predicates[k:]:
+            if not predicate in bad_mappings:
+                bad_mappings[predicate] = []
+            bad_mappings[predicate].append(prop)
+
+
+    for predicate in predicate_map:
+        bad_props = bad_mappings.get(predicate, [])
+        prop_probs = predicate_map[predicate]
+        for bad_prop in bad_props:
+            prop_probs.pop(bad_prop)
+            # Print("delete bad mapping %s -> %s" %(predicate, bad_prop))
+
+    bad_predicates = set(load_baike_name_attrs())
+    for predicate in bad_predicates:
+        predicate = predicate.encode('utf-8')
+        if predicate in predicate_map:
+            predicate_map.pop(predicate)
+            
+
 def load_predicate_map(filepaths, extra_path = None):
+    elimination_props = set(['fb:people.person.profession', 'fb:people.person.nationality'])
     predicate_map  = {}
     for filepath in filepaths:
         if not os.path.exists(filepath):
@@ -248,6 +300,8 @@ def load_predicate_map(filepaths, extra_path = None):
             probs = predicate_map[infobox_pred]
             total = None
             for prop, occur in mappings:
+                if prop in elimination_props:
+                    continue
                 if not prop in probs:
                     probs[prop] = (0, 0)
                 cnt, total = map(int, occur.split('/'))
@@ -258,6 +312,8 @@ def load_predicate_map(filepaths, extra_path = None):
                     cnt, pre_total = probs[prop]
                     probs[prop] = (cnt, pre_total + total)
             predicate_map[infobox_pred] = probs
+
+    adjust_predicate_map(predicate_map)
 
     for infobox_pred in predicate_map:
         prop_probs = predicate_map[infobox_pred]
@@ -270,6 +326,7 @@ def load_predicate_map(filepaths, extra_path = None):
                 error_prop.add(fb_prop)
         for prop in error_prop:
             prop_probs.pop(prop)
+
 
     if extra_path is not None:
         Print("load extra rule from [%s]" %extra_path)
@@ -314,11 +371,7 @@ def load_predicate_map(filepaths, extra_path = None):
         for prop in error_props:
             prop_probs.pop(prop)
                   
-
-                
     return predicate_map
-
-
 
 def load_dict(dicts_path):
     dict_names = set()
@@ -429,6 +482,17 @@ def load_half_named_fb_info(path):
         fb_info[fb_uri] = rels
         
     return fb_info
+
+def load_title2url(filepaths):
+    title2url = {}
+    for filepath in filepaths:
+        for line in file(filepath):
+            title, url = line.strip().split('\t')
+            if title in title2url:
+                # Print('error title %s' %title)
+                continue            
+            title2url[title] = url
+    return title2url
 
 
 if __name__ == "__main__":

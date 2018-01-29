@@ -14,6 +14,10 @@ class SeparatedLinker:
         self.entity_linker = entity_linker
         self.rel_linker = rel_linker
         self.schema = Resource.get_singleton().get_schema()
+        self.title2rel = {
+            'profession':'fb:people.person.profession',
+            'nationality':'fb:people.person.nationality',
+        }
 
     def link(self, ltp_result, triple, page_info):
         e1_entities = self.entity_linker.link(ltp_result, triple.e1, page_info)
@@ -34,6 +38,17 @@ class SeparatedLinker:
         return linked_triples
 
     def only_link_rel(self, ltp_result, half_linked_triple, page_info):
+        # title relation
+        if type(half_linked_triple.str_rel) is str:
+            prop = self.title2rel[half_linked_triple.str_rel]
+            if self.schema.check_schema_type(prop, half_linked_triple.baike_subj.types):
+                return [LinkedTriple(half_linked_triple.baike_subj, 
+                            FBRelation(half_linked_triple.str_rel, prop, 1), 
+                            half_linked_triple.baike_obj)]
+            else:
+                return []
+
+
         fb_rels = self.rel_linker.link(ltp_result, half_linked_triple.str_rel)
     
         linked_triples = []

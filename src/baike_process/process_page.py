@@ -42,7 +42,7 @@ def work(inpath, docuemnt_out_path):
         #     'sentences': sentences,
         # }
 
-        doc_outf.write("%s\t%s\n" %(url, json.dumps(texts, ensure_ascii=False)))
+        doc_outf.write("%s\t%s\n" %(url, json.dumps(texts, ensure_ascii = False)))
 
         for sentence in sentences:
             sentence_outf.write(sentence + '\n')    

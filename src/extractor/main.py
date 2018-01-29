@@ -13,7 +13,60 @@ import sys
 import os
 import json
 
+class PageKnowledgeHandler:
+    def __init__(self):
+        self.max_prop_score = {}
+        self.sents = []
+        self.kns_list = []
 
+    def add(self, sent, kns):
+        self.sents.append(sent)
+        self.kns_list.append(kns)
+
+    def parse(self, kn):
+        p = kn.strip().split("\t")
+        
+        url = p[0].split(":")[1]
+        prop = ":".join(p[1].split(":")[1:])
+        score = float(p[-1])
+        return url, prop, score
+
+    def handle_uniq_prop(self, schema):
+        for kns in self.kns_list:
+            for kn in kns:
+                subj_url, prop, score = self.parse(kn)
+                if not schema.is_uniq_prop(prop):
+                    continue
+                
+                key = subj_url + "#" + prop
+                if not key in self.max_prop_score:
+                    self.max_prop_score[key] = score
+                else:
+                    self.max_prop_score[key] = max(score, self.max_prop_score[key])
+
+        for idx in range(len(self.kns_list)):
+            kns = self.kns_list[idx]
+            new_kns = []
+            for kn in kns:
+                subj_url, prop, score = self.parse(kn)
+                if schema.is_uniq_prop(prop):
+                    key = subj_url + "#" + prop
+                    if self.max_prop_score[key] <= score:
+                        new_kns.append(kn)
+                    else:
+                        pass
+                        # Print('delete kn: %s' %kn)
+                else:
+                    new_kns.append(kn)
+            self.kns_list[idx] = new_kns
+
+    def output(self, writer):
+        for idx in range(len(self.sents)):
+            if len(self.kns_list[idx]) == 0:
+                continue
+            writer.write("%s\n" %(self.sents[idx]))
+            writer.write("%s\n" %('\n'.join(self.kns_list[idx])))
+        
 def work(inpath, outpath):
     ner = NamedEntityReg()
     doc_processor = DocProcessor(ner)
@@ -31,17 +84,13 @@ def work(inpath, outpath):
     baike_ename_title_map = Resource.get_singleton().get_baike_ename_title()
     
     important_domains = Resource.get_singleton().get_important_domains()
+    schema = Resource.get_singleton().get_schema()
 
     outf = file(outpath, 'w')
     total = nb_lines_of(inpath)
     for cnt, line in enumerate(file(inpath), start = 1):
-        # obj = json.loads(line)
-        # url = obj['url']
-        # chapters = obj['chapters']
         url, chapters = line.split('\t')
-        
-
-        
+    
         if not url in url2names or not url in bk_info_map or not url in baike_ename_title_map:
             print 'error url %s' %(url)
             continue
@@ -54,6 +103,8 @@ def work(inpath, outpath):
         page_info = PageInfo(baike_ename_title_map[url][0], names, url, get_url_domains(types, important_domains), types)
         entity_linker.start_new_page(url)
 
+        kn_writer = PageKnowledgeHandler()
+
         for title, chapter in chapters:
             try:
                 if type(chapter) is unicode:
@@ -63,9 +114,14 @@ def work(inpath, outpath):
                         table_kns = table_parser.parse(table, page_info, types)
                         if len(table_kns) > 0:
                             for line, row_kns in table_kns:
-                                outf.write("%s\n" %line)
+                                kns = []
                                 for kn in row_kns:
-                                    outf.write("\t%s\n" %kn.info())
+                                    kns.append("\t%s\t1" %kn.info())
+                                kn_writer.add(line, kns)
+
+                                # outf.write("%s\n" %line)
+                                # for kn in row_kns:
+                                #     outf.write("\t%s\t1\n" %kn.info())
 
                 else:
                     for ltp_result, str_entities, _ in doc_processor.parse_chapter(title, chapter, page_info, parse_ner = True):
@@ -74,13 +130,20 @@ def work(inpath, outpath):
                         triples, _ = ltp_extractor.parse_sentence(ltp_result, str_entities, page_info, None, False)
                         triples = [triple for triple in triples if triple.score() > 0.01]
                         if len(triples) > 0:
-                            outf.write("%s\n" %(ltp_result.sentence))
+                            kns = []
                             for triple in triples:
-                                outf.write("\t%s\n" %triple.info(ltp_result))
+                                kns.append("\t%s" %triple.info(ltp_result))
+                            kn_writer.add(ltp_result.sentence, kns)
+
+                            # outf.write("%s\n" %(ltp_result.sentence))
+                            # for triple in triples:
+                            #     outf.write("\t%s\n" %triple.info(ltp_result))
+                        
             except Exception, e:
                 print "error at url:%s chapter:%s" %(url, title)
                 print str(e)
-            
+        kn_writer.handle_uniq_prop(schema)
+        kn_writer.output(outf)
     outf.close()
 
 
@@ -94,4 +157,3 @@ if __name__ == "__main__":
         work(inpath, outpath)
         
 
-    

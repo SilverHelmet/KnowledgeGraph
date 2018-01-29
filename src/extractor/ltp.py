@@ -38,6 +38,12 @@ class LTPResult:
             st = word_st + len(word)
         return words_st
 
+    def search_token(self, token):
+        for idx, word in enumerate(self.words):
+            if word == token:
+                return idx
+        return -1
+
     def search_word(self, name, search_all = False):
         st_eds = []
         for i in range(0, self.length):
