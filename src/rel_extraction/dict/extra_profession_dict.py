@@ -70,8 +70,9 @@ if __name__ == "__main__":
             
 
     prof_outf.close()
+    prof_url_outf.close()
     prof_type_outf.close()
-    extra_prof_url_outf.close()
+    
 
     
     full_out_path = os.path.join(dict_dir, 'full_profession.txt')
