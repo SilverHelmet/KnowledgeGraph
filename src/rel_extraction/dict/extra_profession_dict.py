@@ -18,6 +18,7 @@ if __name__ == "__main__":
     prof_cnt_threshold = 10
     
     prof_dict_path = os.path.join(dict_dir, 'profession.txt')
+    prof__url_dict_path = os.path.join(dict_dir, 'profession_url.txt')
     prof_dict = set(load_file(prof_dict_path))
 
     candidate_profs = set()
@@ -43,7 +44,9 @@ if __name__ == "__main__":
 
     Print("#hit candidate name = %d" %len(prof2bk))
     extra_prof_out_path = os.path.join(dict_dir, 'extra_profession.txt')
+    extra_prof_url_out_path = os.path.join(dict_dir, 'extra_profession_url.txt')
     prof_outf = file(extra_prof_out_path, 'w')
+    prof_url_outf = file(extra_prof_url_out_path, 'w')
     prof_type_outf = file(os.path.join(dict_dir, 'extra_profession_types.tsv'), 'w')
     baike_info_map = resource.get_baike_info()
     
@@ -62,12 +65,16 @@ if __name__ == "__main__":
                 valid_bk_urls.append(bk_url)
         if len(valid_bk_urls) == 1:
             prof_outf.write("%s\n" %(prof))
+            prof_url_outf.write("%s\t%s\n" %(prof, valid_bk_urls[0]))
             prof_type_outf.write("%s\t%s\n" %(valid_bk_urls[0], "fb:people.profession"))
             
 
     prof_outf.close()
     prof_type_outf.close()
+    extra_prof_url_out_path.close()
 
     
     full_out_path = os.path.join(dict_dir, 'full_profession.txt')
-    commands.getoutput('cat %s %s > %s' %(prof_dict_path, extra_prof_out_path, os.path.join(full_out_path) ))
+    full_url_out_path = os.path.join(dict_dir, 'full_profession_url.txt')
+    commands.getoutput('cat %s %s > %s' %(prof_dict_path, extra_prof_out_path, full_out_path ))
+    commands.getoutput('cat %s %s > %s' %(prof_url_dict_path, extra_prof_url_out_path, full_url_out_path ))
