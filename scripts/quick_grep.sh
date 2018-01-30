@@ -1,7 +1,7 @@
 urls="\
-baike.so.com/doc/1731826-1830977.html \
-baike.so.com/doc/5401023-5638628.html \
-baike.so.com/doc/3611440-3796872.html
+baike.so.com/doc/6759533-6974158.html \
+baike.so.com/doc/5401418-25012047.html \
+baike.so.com/doc/4542215-4752596.html
 "
 paths="\
 result/rel_extraction/baike_static_info.tsv \
