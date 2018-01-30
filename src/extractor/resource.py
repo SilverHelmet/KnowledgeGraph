@@ -285,7 +285,7 @@ def adjust_predicate_map(predicate_map, k = 25):
             
 
 def load_predicate_map(filepaths, extra_path = None):
-    elimination_props = set(['fb:people.person.profession', 'fb:people.person.nationality'])
+    elimination_props = set(['fb:people.person.profession', 'fb:people.person.nationality', 'fb:music.artist.origin'])
     predicate_map  = {}
     for filepath in filepaths:
         if not os.path.exists(filepath):

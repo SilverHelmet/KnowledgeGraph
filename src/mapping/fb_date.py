@@ -112,9 +112,9 @@ class BaikeDatetime:
                             ['month', 'day']]
                             
             checkers =[None,
+                year_month_checker,
                 None,
-                None,
-               year_month_checker] 
+                None] 
 
         match_flag = False
         for pattern, names, checker in zip(patterns, pattern_names, checkers):
