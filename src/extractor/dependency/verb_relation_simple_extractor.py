@@ -8,6 +8,7 @@ class VerbRelationExtractor:
         self.debuger = Debug(debug_flag)
         pass
       
+    #寻找到树根的路径
     def find_path_to_root(self, node):
         path = [node]
         while node.father != None:
@@ -16,6 +17,7 @@ class VerbRelationExtractor:
             path.append(node)
         return path
         
+    #寻找几个节点共同最近的祖先节点
     def find_coo_father(self, nodes):
         coo_father = []
         process_father = []
@@ -38,6 +40,7 @@ class VerbRelationExtractor:
             res.append(process_father[0].index(i))
         return process_father[0][min(res)]
     
+    #寻找两个实体之间的联通路径
     def find_entity_path(self, ltp_result, e1, e2, entity_pool):
         tree = ParseTree(ltp_result)
         node_list_1 = tree.nodes[e1.st : e1.ed]
@@ -48,6 +51,7 @@ class VerbRelationExtractor:
         p2 = self.find_path_to_root(tree.nodes[w2])
         return p1, p2
     
+    #简单版关系抽取
     def find_relation(self, ltp_result, e1, e2, entity_pool):
         simple_res = []
         p1, p2 = self.find_entity_path(ltp_result, e1, e2, entity_pool)

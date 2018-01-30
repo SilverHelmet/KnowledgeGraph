@@ -9,7 +9,7 @@ class VerbRelationExtractor:
         self.debuger = Debug(debug_flag)
         self.nationality_dic = []
         self.profession_dic = []
-        #name = ["nationality.txt", "full_profession.txt", "province.txt", "langauge.txt", "citytown.txt"]
+        #加载字典以便于处理title关系
         with open("result/rel_extraction/dict/nationality.txt", "r") as f:
             self.nationality_dic = f.readlines()
         for i in range(len(self.nationality_dic)):
@@ -21,21 +21,24 @@ class VerbRelationExtractor:
         self.nationality_dic = set(self.nationality_dic)
         self.profession_dic = set(self.profession_dic)
       
-    def find_path_to_root(self, node):
+    #返回当前节点到根的句法依存树的路径
+    def find_path_to_root(self, node): 
         path = [node]
         while node.father != None:
             node = node.father
             path.append(node)
         return path
     
-    def find_COO_path(self, node):
+    #返回当前节点到根的句法依存树的关系为COO的路径
+    def find_COO_path(self, node): 
         path = [node]
         while node.father != None and node.rel == 'COO':
             path.append(node.father)
             node = node.father
         return path
 
-    def find_coo_father(self, nodes):
+    #找到多个节点的最近的共同父节点
+    def find_coo_father(self, nodes): 
         coo_father = []
         process_father = []
         index_father = []
@@ -57,6 +60,7 @@ class VerbRelationExtractor:
             res.append(process_father[0].index(i))
         return process_father[0][min(res)]
     
+    #找到两个实体的联通路径
     def find_entity_path(self, ltp_result, e1, e2, entity_pool):
         tree = ParseTree(ltp_result)
         node_list_1 = tree.nodes[e1.st : e1.ed]
@@ -67,6 +71,7 @@ class VerbRelationExtractor:
         p2 = self.find_path_to_root(tree.nodes[w2])
         return p1, p2
     
+    #判断两个节点之间是否全为COO
     def judge_coo(self, verb1, verb2):
         path1 = self.find_COO_path(verb1)
         path2 = self.find_COO_path(verb2)
@@ -74,12 +79,14 @@ class VerbRelationExtractor:
             return True
         return False
     
+    #处理关键字
     def judge_if_special(self, node):
         if node.word in ['例如','比如','包括','如','像']:
             return True
         else:
             return False 
 
+    #判断2个动词中是否有且仅有一个直接SBV依赖父节点
     def judge_one_SBV(self, near_verb1, near_verb2):
         if near_verb1.rel == 'SBV' and near_verb2.rel != 'SBV':
             if self.judge_if_special(near_verb2.father) == False:
@@ -92,6 +99,7 @@ class VerbRelationExtractor:
             elif self.judge_if_special(near_verb1.father) == True:
                 return near_verb2.father
 
+    #判断2个动词中是否有且仅有一个VOB依赖父节点
     def judge_one_VOB(self, verb1, verb2):
         if verb1.rel == 'VOB' and verb1.father == verb2:
             return True
@@ -99,6 +107,7 @@ class VerbRelationExtractor:
             return True
         return False
 
+    #寻找最近的动词
     def find_nearest_verb(self, path):
         res = []
         if len(path) == 1:
@@ -112,6 +121,7 @@ class VerbRelationExtractor:
                 break
         return res
 
+    #寻找距离一个实体最近的动词及其子节点
     def find_2_verbs(self, tree, e):
         node_list = tree.nodes[e.st : e.ed]
         w = self. find_coo_father(node_list)
@@ -120,6 +130,7 @@ class VerbRelationExtractor:
         verb = self.find_nearest_verb(p)[1]
         return tree.nodes[w], near_verb, verb
 
+    #判断实体关系
     def judge_entity_relation(self, near_verb, verb):
         if verb == None and near_verb == None:
             return None
@@ -132,6 +143,7 @@ class VerbRelationExtractor:
                 return 'dec'
             return None
 
+    #处理“是”关系
     def deal_with_isA(self, verb, rel, father, string):
         if verb == None or rel != 'SBV':
             return
@@ -142,6 +154,7 @@ class VerbRelationExtractor:
                     if child.rel in ['FOB', 'VOB'] and child.mark == None:
                         child.mark = string
 
+    #根据ATT规则寻找
     def find_by_ATT_rule(self, verb, rel, father):
         if verb == None:
             return
@@ -158,6 +171,7 @@ class VerbRelationExtractor:
                     return verb
         return None
 
+    #v1.2规则
     def find_relation(self, ltp_result, e1, e2, entity_pool):
         advanced_res = []
         tree = ParseTree(ltp_result)
@@ -208,6 +222,7 @@ class VerbRelationExtractor:
                 self.debuger.debug('found verb', ltp_result.words[res[0]] ,'is an entity! error!')
         return advanced_res
 
+    #处理名词关系
     def find_noun_relation(self, e1, e2, tree):
         if e1.depth - e2.depth == 2:
             if e1.rel == 'ATT' and e1.father.rel == 'ATT' and e1.father.father == e2:
@@ -229,6 +244,7 @@ class VerbRelationExtractor:
                         return e2.father
         return None
 
+    #寻找ATT/COO关系
     def find_ATT_or_COO_path(self, node):
         res = []
         path = self.find_path_to_root(node)
@@ -239,6 +255,7 @@ class VerbRelationExtractor:
                 break
         return res
 
+    #寻找ATT路径
     def find_ATT_path(self, node):
         res = []
         path = self.find_path_to_root(node)
@@ -249,6 +266,7 @@ class VerbRelationExtractor:
                 break
         return res
 
+    #返回所有与共同父节点并列的节点
     def find_all_COO_father(self, node):
         res = []
         path = self.find_path_to_root(node)
@@ -259,6 +277,7 @@ class VerbRelationExtractor:
                 break
         return res
 
+    #寻找所有子节点中与之并列的节点
     def find_all_COO_child(self, node):
         res = []
         for child in node.children:
@@ -267,6 +286,7 @@ class VerbRelationExtractor:
                 res += self.find_all_COO_child(child)
         return res
 
+    #寻找所有子节点中与有ATT关系的节点
     def find_all_ATT_child(self, node):
         res = []
         for child in node.children:
@@ -275,6 +295,7 @@ class VerbRelationExtractor:
                 res += self.find_all_ATT_child(child)
         return res
 
+    #寻找所有与当前节点COO的节点
     def find_all_COO(self, node, postag = None):
         res = self.find_all_COO_father(node) + self.find_all_COO_child(node)
         final_res = []
@@ -286,12 +307,14 @@ class VerbRelationExtractor:
                     final_res.append(node)
         return final_res
 
+    #判断路径是否全是ATT关系
     def judge_all_ATT(self, path):
         for node in path:
             if node.rel != 'ATT':
                 return False
         return True
 
+    #寻找直接依赖于此节点的指定关系的节点
     def find_direct_rel(self, node, rel, postag = None, if_use_entity = None, if_use_title = None):
         res = []
         for child in node.children:
@@ -307,6 +330,7 @@ class VerbRelationExtractor:
                 res.append(child)
         return res
 
+    #返回环境变量
     def get_environment_rule_1(self, verb_lis):
         for verb in verb_lis:
             for child in verb.children:
@@ -314,6 +338,7 @@ class VerbRelationExtractor:
                     verb.environment.append(child)
                     self.debuger.debug("environment of verb", verb.word, child.word, "found!")
 
+    #寻找所有TARGET关系
     def find_all_TARGET(self, verb_lis, entity_lis):
         for verb in verb_lis:
             if verb.rel != 'ATT':
@@ -326,6 +351,7 @@ class VerbRelationExtractor:
                 if (node.entity != None) or (len(node.mark) != 0 and node.postag == 'n'):
                     verb.target.append(node)
 
+    #寻找所有ATT关系
     def find_all_ATT(self, entity_lis):
         for entity in entity_lis:
             if entity.title != None:
@@ -338,6 +364,7 @@ class VerbRelationExtractor:
                             node.father.att.append(entity)
                     break
 
+    #寻找普通OBJ关系
     def find_normal_verb_OBJ(self, verb, entity_lis):
         res = []
         for child in verb.children:
@@ -347,6 +374,7 @@ class VerbRelationExtractor:
                 res += self.find_normal_verb_OBJ(child, entity_lis)
         return res
 
+    #寻找所有OBJ关系
     def find_verb_OBJ(self, verb, entity_lis):
         if verb.search_obj_mark == True:
             self.debuger.debug("the object of verb", verb.word ,"has been found!")
@@ -382,6 +410,7 @@ class VerbRelationExtractor:
         verb.obj = obj_res
         return obj_res
 
+    #根据ATT关系寻找实际主语
     def find_actualsub_by_ATT(self, verb, entity_lis, ltp_result, old_concept_res, actual_res):
         self.debuger.debug("verb", verb.word, "start finding sub by att!")
         for node in  old_concept_res:
@@ -395,21 +424,6 @@ class VerbRelationExtractor:
                     path = self.find_ATT_path(entity)
                     if concept_sub in path:
                         res.append(entity)                 
-                '''
-                path1, path2 = tree.find_path(concept_sub.idx, entity.idx)
-                self.debuger.debug("entity:", entity.word,"concept_sub",concept_sub.word)
-                for node in path1:
-                    self.debuger.debug("path1:", node.word)
-                self.debuger.debug("path2:")
-                for node in path2:
-                    self.debuger.debug(node.word, node.rel)
-                if len(path1) == 1 and self.judge_all_ATT(path2[:-1]) == True:
-                    res.append(entity)
-                    res_depth.append(entity.depth)
-                    self.debuger.debug("entity:", entity.word,"verb",verb.word,"ATT find!")
-                else:
-                    self.debuger.debug("entity:", entity.word,"verb",verb.word,"ATT not find!")
-                '''
             final_res = None
             min_depth = 100
             for item in res:
@@ -427,16 +441,8 @@ class VerbRelationExtractor:
                             actual_res.append(coo_final) 
                             self.debuger.debug("add new item to actual_sub:", self.deal_with_print(coo_final.entity, ltp_result))              
         old_concept_res = concept_res
-        '''
-        if final_res != None:
-            res.append(final_res)
-            coo_final_lis = self.find_all_COO(final_res)
-            for coo_final in coo_final_lis:
-                if coo_final not in res:
-                    res.append(coo_final)
-                    self.debuger.debug("coo_final_res.word")
-        '''
 
+    #寻找实际主语
     def find_rel_sub(self, verb, entity_lis, ltp_result):
         if verb.search_sub_mark == True:
             return verb.concept_sub, verb.actual_sub
@@ -483,6 +489,7 @@ class VerbRelationExtractor:
         verb.concept_sub = concept_res
         return concept_res, actual_res
 
+    #将返回结果转化为字符串
     def deal_with_res(self, res, verb, e1, e2, ltp_result):
         op1 = []
         op2 = []
@@ -523,6 +530,7 @@ class VerbRelationExtractor:
                     res.append((res1[i], None, res2[j]))
                     self.debuger.debug(r1[i], "是", r3[j])
 
+    #实现标定所有实体覆盖的token
     def premark_entity(self, tree, e_lis, ltp_result):
         self.debuger.debug('|'*40)
         for e in e_lis:
@@ -532,6 +540,7 @@ class VerbRelationExtractor:
                 self.debuger.debug("node", node.word ,"mark as entity:", ltp_result.text(e.st, e.ed))
         self.debuger.debug('|'*40)
 
+    #处理输出
     def deal_with_print(self, node, ltp_result):
         res = None
         if isinstance(node, StrEntity) == True:
@@ -540,6 +549,7 @@ class VerbRelationExtractor:
             res = node.word
         return res
 
+    #处理四元组
     def  deal_with_quadruple(self, node, ltp_result):
         res_1 = None
         res_2 = None
@@ -567,19 +577,13 @@ class VerbRelationExtractor:
             res = (res_1, res_2, res_3, res_4)
         return res
 
+    #去重
     def judge_remove_equal(self, node, ltp_result):
         ret = False
-        #flag = 0
         res_1 = None
         res_2 = None
         if isinstance(node[1], str) == True: #deal with title_res
             return False
-        '''
-        if (tripple[1] != None and ltp_result.text(tripple[1], tripple[1]+1) == "是") or (tripple[1] == None):
-            flag =1
-        '''
-        #if flag == 1:
-        #self.debuger.debug("verb is \"is\"")
         if isinstance(node[0], StrEntity) == True:
             res_1 = ltp_result.text(node[0].st, node[0].ed)
         elif isinstance(node[0], int) == True:
@@ -590,11 +594,6 @@ class VerbRelationExtractor:
             res_2 = ltp_result.text(node[2].st, node[2].ed)
         elif isinstance(node[2], int) == True:
             res_2 = ltp_result.text(node[2], node[2]+1)
-        '''
-        r = self. deal_with_quadruple(tripple, ltp_result)
-        r1 = r[0]
-        r2 = r[2]
-        '''
         self.debuger.debug("res_1 is ",res_1)
         self.debuger.debug("res_2 is ",res_2)
         if res_1 == res_2:
@@ -602,6 +601,7 @@ class VerbRelationExtractor:
             self.debuger.debug("tripple (a, is, a) is removed!")
         return ret
 
+    #寻找title关系
     def find_title(self, tree, ltp_result):
         res = []
         for node in tree.nodes:
@@ -625,6 +625,7 @@ class VerbRelationExtractor:
                         res.append((child.word, "profession", node.entity))
         return res
 
+    #得到四元组
     def get_quintuple(self, triple):
         appendix = None
         res = []
@@ -642,6 +643,7 @@ class VerbRelationExtractor:
             res.append((item[0], item[1], item[2], item[3], appendix))
         return res
 
+    #添加环境变量
     def add_environment(self, triples, tree):
         new_triples = []
         for item in triples:
@@ -656,6 +658,7 @@ class VerbRelationExtractor:
                 new_triples.append((item[0], item[1], item[2], None))
         return new_triples
 
+    #代词替换
     def replace_pronoun(self, tree, ltp_result):
         for k in range(len(tree.nodes) - 1, -1, -1):
             node = tree.nodes[k]
@@ -713,12 +716,14 @@ class VerbRelationExtractor:
                             self.debuger.debug('*'*40)
                             break                 
 
+    #预先判断句子中是否含有动词
     def judge_if_has_verb(self, tree):
         for node in tree.nodes:
             if node.postag == 'v':
                 return True
         return False
 
+    #代词替换部分工作：寻找修饰部分
     def find_ATT_part(self, node, tree, ltp_result):
         ed = node.idx
         st = node.idx
@@ -729,6 +734,7 @@ class VerbRelationExtractor:
                 break
         return ltp_result.text(st, ed + 1)
 
+    #寻找COO的名词关系
     def find_coo_noun_relation(self, tree, ltp_result):
         res = []
         #step one: find central word
@@ -758,6 +764,7 @@ class VerbRelationExtractor:
                 res.append((central_word.entity, r, node.idx))
         return res
 
+    #最终调用的接口函数
     def find_tripple(self, ltp_result, e_lis):
         res = []
         entity_lis = []
@@ -810,29 +817,8 @@ class VerbRelationExtractor:
         for verb in verb_lis:
             self.debuger.debug("verb", verb.word, "start finding its sub!")
             self.find_rel_sub(verb, entity_lis, ltp_result)
-        #step two: renew sub mark(has 2 type)
-        
-        #type1: (actual_sub, is, concept_sub)
-        '''
-        for verb in verb_lis:
-            if len(verb.actual_sub) != 0 and len(verb.concept_sub) != 0:
-                for actual_sub in verb.actual_sub:
-                    for concept_sub in verb.concept_sub:
-                        if concept_sub.postag not in ['n', 'nd', 'nh', 'ni', 'nl', 'ns', 'nt', 'nz']:
-                            continue
-                        if actual_sub.entity != None:
-                            if concept_sub.entity != None:
-                                res.append((actual_sub.entity, None, concept_sub.entity))
-                            else:
-                                res.append((actual_sub.entity, None, concept_sub.idx))
-                        else:
-                            if concept_sub.entity != None:
-                                res.append((actual_sub.idx, None, concept_sub.entity))
-                            else:
-                                res.append((actual_sub.idx, None, concept_sub.idx))
-                        self.debuger.debug("is relation found:(actual_sub, is, concept_sub)")
-        '''
-        #type2: (actual_sub, is, direct_obj_of_is)
+        #step two: renew sub mark
+        #(actual_sub, is, direct_obj_of_is)
         is_res = []
         for verb in verb_lis:
             if verb.word == '是' and len(verb.actual_sub) != 0:
@@ -854,14 +840,6 @@ class VerbRelationExtractor:
                                 else:
                                     is_res.append((actual_sub.idx, None, child.idx))
                             self.debuger.debug("is relation found:(actual_sub, is, direct_obj_of_is)")
-        '''
-        self.debuger.debug("is_res:")
-        for tmp in is_res:
-            r = self. deal_with_quadruple(tmp, ltp_result)
-            r1 = r[0]
-            r2 = r[2]
-            self.debuger.debug(r1, "是", r2)
-        '''
         #step three: confirm the obj, att, target part
         #obj&debug:
         self.debuger.debug("start finding environment!")
@@ -948,13 +926,7 @@ class VerbRelationExtractor:
         return final_res
 
 if __name__ == "__main__":
-    '''
-    ltp = LTP(None)
-    s = "1988年，主演由王家卫执导的黑帮片《旺角卡门》[4]，塑造了一个重情重义的江湖混混华仔形象，使其首次获得香港电影金像奖最佳男主角提名。".encode('utf-8')
-    ltp_result = ltp.parse(sentence)
-    ner = NamedEntityReg(process_bracket_flag = True, add_time_entity = True)
-    es = ner.recognize(sentence, ltp_result, None, None)
-    '''
+
     sentence = "1987年首度推出的PC平台的《伊苏》，截至本作发售已经推出正统系列作共6款，以及多款衍生作品，是日本知名度相当高的系列游戏。".encode('utf-8')
     doc_processor = DocProcessor()
     ltp_result, _ = doc_processor.parse_sentence(sentence, ParagraphInfo(3, ['刘德华'], '刘德华', False, True))
@@ -964,18 +936,8 @@ if __name__ == "__main__":
     info = PrintInfo()
     info.print_ltp(ltp_result, tree)
     e_lis = []
-    '''
-    e_lis.append(StrEntity(5, 6, None))
-    e_lis.append(StrEntity(17, 18, None))
-    e_lis.append(StrEntity(25, 26, None))
-    e_lis.append(StrEntity(3, 4, None))
-    e_lis.append(StrEntity(27, 28, None))
-    e_lis.append(StrEntity(0, 2, None))
-    e_lis.append(StrEntity(22, 24, None))
-    '''
     test = VerbRelationExtractor(True)
     tripple_res = test.find_tripple(ltp_result, es)
-    #print tripple_res
     r1 = None
     r2 = None
     r3 = None
@@ -988,6 +950,5 @@ if __name__ == "__main__":
     tripple_res = tmp_tripple_res
     for k, item in enumerate(tripple_res):
         ret.append(test. deal_with_quadruple(item, ltp_result))
-    #ret = set(ret)
     for k, triple in enumerate(ret):
         print '\t%s' %('\t'.join(triple)), '\t', extrainfo[k]
