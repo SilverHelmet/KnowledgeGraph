@@ -79,7 +79,7 @@ class Resource:
         if not "predicate_map" in self.dict:
             main_filepath = os.path.join(result_dir, '360/mapping/final_predicates_map.json')
             # dataset_path = os.path.join(dataset_dir, 'summary_dataset.tsv.v1.predicate_map.json')
-            dataset_path = os.path.join(dataset_dir, 'doc_dataset.tsv.v1.predicate_map.json')
+            dataset_path = os.path.join(dataset_dir, 'doc_dataset.tsv.predicate_map.json')
             extra_path = os.path.join(doc_dir, 'human_add_predicate_map.json')
             
             self.dict['predicate_map'] = load_predicate_map([main_filepath, dataset_path], extra_path)
