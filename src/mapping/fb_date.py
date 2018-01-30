@@ -97,19 +97,20 @@ class BaikeDatetime:
             time_str = time_str.decode('utf-8')
         args = {}
         if not strict:
-            patterns = [BaikeDatetime.date_p, BaikeDatetime.year_p, BaikeDatetime.year_p_2, BaikeDatetime.month_day_p, BaikeDatetime.yearmonth_p]
+            patterns = [BaikeDatetime.date_p, BaikeDatetime.yearmonth_p, BaikeDatetime.year_p, BaikeDatetime.year_p_2, BaikeDatetime.month_day_p]
             pattern_names = [['year', 'month', 'day'],
+                            ['year', 'month'],
                             ['year'],
                             ['year'],
-                            ['month', 'day'],
-                            ['year', 'month']]
+                            ['month', 'day']]
             checkers = [None, None, None, None, None]
         else:
-            patterns = [BaikeDatetime.date_p, BaikeDatetime.year_p, BaikeDatetime.month_day_p, BaikeDatetime.yearmonth_p_2]
+            patterns = [BaikeDatetime.date_p, BaikeDatetime.yearmonth_p_2, BaikeDatetime.year_p, BaikeDatetime.month_day_p]
             pattern_names = [['year', 'month', 'day'],
+                            ['year', 'month'],
                             ['year'],
-                            ['month', 'day'],
-                            ['year', 'month']]
+                            ['month', 'day']]
+                            
             checkers =[None,
                 None,
                 None,
