@@ -260,13 +260,19 @@ def adjust_predicate_map(predicate_map, k = 25):
     for prop in prop_predicate_scores:
         predicate_scores = prop_predicate_scores[prop]
         predicates = sorted(predicate_scores.keys(), key = lambda x: predicate_scores[x][0], reverse = True)
+        topk = k
         # if prop in ['fb:people.person.parents', 'fb:music.album.release_date',
         #      'fb:education.educational_institution.nickname', 'fb:film.producer.film', 
-        #      'fb:organization.organization.founders', 'fb:organization.organization_founder.organizations_founded']:
+        #      'fb:organization.organization.founders', 'fb:organization.organization_founder.organizations_founded', 'fb:music.artist.track']:
         #     print prop
         #     Print(predicates)
-        #     Print(predicates[:k])
-        for predicate in predicates[k:]:
+        #     Print(predicates[:topk])
+        good_verbs = set()
+        for predicate in predicates[:topk]:
+            good_verbs.add(predicate)
+        for predicate in predicates[topk:]:
+            if predicate.split("#")[0] in good_verbs:
+                continue
             if not predicate in bad_mappings:
                 bad_mappings[predicate] = []
             bad_mappings[predicate].append(prop)
