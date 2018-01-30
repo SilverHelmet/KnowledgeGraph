@@ -184,6 +184,7 @@ def load_baike_names_resource(filepaths):
     name2bk = {}
     for filepath in filepaths:
         if not os.path.exists(filepath):
+            assert False
             continue
         Print('generate url2names & name2baike from baike name file [%s]' %filepath)
         total = nb_lines_of(filepath)
@@ -227,6 +228,7 @@ def load_bk_static_info(filepath, extra_type_paths):
 
     for path in extra_type_paths:
         if not os.path.exists(path):
+            assert False
             continue
         Print('load extra type from [%s]' %(path))
         for line in file(path):
@@ -289,6 +291,7 @@ def load_predicate_map(filepaths, extra_path = None):
     predicate_map  = {}
     for filepath in filepaths:
         if not os.path.exists(filepath):
+            assert False
             continue
         Print('load predicate map from %s' %filepath)
         for line in file(filepath):
