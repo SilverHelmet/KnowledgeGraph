@@ -5,11 +5,11 @@ cp ~/KnowledgeGraph/result/rel_extraction/baike_names.tsv \
 ~/KnowledgeGraph/result/rel_extraction/baike_static_info.tsv \
 ~/KnowledgeGraph/result/rel_extraction/baike_filtered_summary_with_infobox.json \
 ~/360task/result/rel_extraction
-cp -r ~/KnowledgeGraph/rel_extraction/extra_name \
-~/KnowledgeGraph/rel_extraction/extra_type \
-~/KnowledgeGraph/rel_extraction/tables \
-~/KnowledgeGraph/rel_extraction/dict \
-~/KnowledgeGraph/rel_extraction/dataset \
+cp -r ~/KnowledgeGraph/result/rel_extraction/extra_name \
+~/KnowledgeGraph/result/rel_extraction/extra_type \
+~/KnowledgeGraph/result/rel_extraction/tables \
+~/KnowledgeGraph/result/rel_extraction/dict \
+~/KnowledgeGraph/result/rel_extraction/dataset \
 ~/360task/result/rel_extraction
 
 mkdir ~/360task/docs
